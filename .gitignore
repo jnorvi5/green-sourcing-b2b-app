@@ -15,3 +15,23 @@ Thumbs.db
 logs
 *.log
 logs/**
+
+# Build artifacts
+dist/
+build/
+out/
+.cache/
+*.tsbuildinfo
+
+# Vite
+.vite/
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Build tools & deployment
+.vercel/
+.turbo/
+.next/
