@@ -1,224 +1,336 @@
 # Copilot Instructions for GreenChainz B2B Platform
 
-This repository contains a minimal, multi-folder skeleton for the GreenChainz B2B platform - a verified sustainable sourcing platform that serves as the global trust layer for sustainable commerce. The stack uses Node.js/Express backend, React frontend (planned), and PostgreSQL database orchestrated via Docker Compose.
+GreenChainz is a B2B sustainable sourcing marketplace connecting verified green suppliers with sustainability-focused buyers. The platform features a **full-stack containerized architecture** with Node.js/Express backend, React/TypeScript frontend (Vite), PostgreSQL database, OAuth authentication, event sourcing, and external data provider integrations.
 
 ## Architecture and Source of Truth
 
-### Primary Working Tree
-**Always prefer these top-level directories** when making changes:
+### Stack at a Glance
+- **Backend**: Node.js + Express REST API (port 3001) with JWT auth, OAuth (Google/GitHub/LinkedIn/Microsoft), and Supabase Edge Function integration
+- **Frontend**: React 19 + TypeScript + Vite dev server (port 5173) with Tailwind CSS
+- **Database**: PostgreSQL 15 with event sourcing architecture (Product_Events, Certification_Events, Supply_Chain_Events)
+- **Container Orchestration**: Docker Compose with 3 services (db, backend, frontend)
+- **Key Pattern**: Monolithic backend with modular service layer (`services/`, `providers/`, `middleware/`)
 
-- **`backend/`** - Node.js + Express API server
-  - Entry point: `backend/index.js` (currently a minimal Express app listening on port 3001)
-  - **Current state**: No `package.json` exists yet; must be initialized before adding features
-  - **Code example**:
-    ```javascript
-    const express = require('express');
-    const app = express();
-    const port = 3001;
-    app.get('/', (req, res) => {
-      res.send('GreenChainz Backend API is running!');
-    });
-    ```
-  - **Pattern**: Single-file Express app with inline route definitions
+### Critical Directory Structure
 
-- **`frontend/`** - React application placeholder
-  - **Current state**: Empty directory with only README.md
-  - **Intent**: Future home for React-based UI for sustainable sourcing workflows
-  - **Not yet scaffolded**: Use `create-react-app` or `vite` when initializing
+- **`backend/`** - Express API server (fully implemented)
+  - `index.js` - Main entry point with ~1400 lines of route definitions
+  - `db.js` - PostgreSQL connection pooling with `pg` library
+  - `middleware/auth.js` - JWT authentication and role-based authorization
+  - `services/` - Business logic (verificationScore, mailer, errorMonitoring, bcorpService)
+  - `providers/` - External data integrations (baseProvider.js abstract class, fscMock.js)
+  - `config/passport.js` - OAuth strategies for 4 providers
+  - `eventLogger.js` - Blockchain-ready immutable event logging with SHA-256 hashing
+  - `scripts/seed.js` - Database seeding for demo data
 
-- **`database-schemas/`** - PostgreSQL schema definitions and migrations
-  - **Current state**: Empty directory with only README.md
-  - **Intent**: Will contain SQL DDL files, migration scripts
-  - **Future pattern**: Use migration tools like `knex`, `sequelize`, or raw SQL files
+- **`frontend/`** - React + TypeScript SPA (Vite)
+  - `src/main.tsx` - Entry point with React Router and AuthContext
+  - `src/lib/api.ts` - Axios client with JWT interceptor for `http://localhost:3001/api`
+  - `src/lib/supabaseClient.ts` - Supabase client for OAuth and edge functions
+  - `src/context/AuthContext.tsx` - Supabase-based authentication state management
+  - `src/pages/` - Full page components (LandingPage, SupplierDashboard, BuyerDashboard, Admin)
+  - Dev server proxies to backend at `localhost:3001`
 
-- **`docker-compose.yml`** - Infrastructure orchestration
-  - **Current state**: Defines only PostgreSQL database service (`greenchainz_db`)
-  - **Future enhancement**: Should include backend API service with `depends_on: [db]`
+- **`database-schemas/`** - PostgreSQL schemas and migrations
+  - `schema.sql` - Main schema with event sourcing tables (~610 lines)
+  - `mvp_schema.sql` - Simplified schema for MVP
+  - `init.sql`, `seed-*.sql` - Initialization and seeding scripts
+  - **Key tables**: Users, Companies, Suppliers, Certifications, FSC_Certifications, Product_Events, Certification_Events, Supply_Chain_Events
 
-### Repository Structure Gotcha
-⚠️ **Important**: There is an empty nested directory `green-sourcing-b2b-app/` at the repository root. This is a structural artifact - **always work in the top-level directories** (`backend/`, `frontend/`, `database-schemas/`) to avoid confusion and drift between duplicate structures.
+- **`docker-compose.yml`** - Three-service stack
+  - `db` service: PostgreSQL 15 on port 5432 (container: `greenchainz-db`)
+  - `backend` service: Express API on port 3001 (container: `greenchainz-backend`)
+  - `frontend` service: Vite dev server on port 5173 (container: `greenchainz-frontend`)
+  - Environment variables: `POSTGRES_HOST=db` for inter-container communication
 
-## Runtime Configuration and Ports
+⚠️ **Gotcha**: Empty `green-sourcing-b2b-app/` directory at root is a structural artifact - ignore it.
 
-### Database (PostgreSQL 15)
-Managed via `docker-compose.yml`:
-- **Service name**: `greenchainz_db`
-- **Container name**: `greenchainz_db`
-- **Image**: `postgres:15`
-- **Environment variables**:
-  - `POSTGRES_USER=user`
-  - `POSTGRES_PASSWORD=password`
-  - `POSTGRES_DB=greenchainz_dev`
-- **Port mapping**: `5432:5432` (host:container)
-- **Volume**: `postgres_data` (persistent storage)
-- **Connection string**: `postgres://user:password@localhost:5432/greenchainz_dev`
+## Critical Patterns and Conventions
 
-### Backend API Server
-Currently runs directly with Node.js (not containerized):
-- **Port**: `3001`
-- **Start command** (after creating package.json): `node backend/index.js`
-- **Not yet in docker-compose**: Should be added with service definition when ready for containerization
+### Authentication & Authorization
+- **JWT-based auth**: `middleware/auth.js` exports `authenticateToken` and `authorizeRoles(...roles)`
+- **OAuth providers**: Google, GitHub, LinkedIn, Microsoft via Passport.js (`config/passport.js`)
+- **Supabase integration**: Frontend uses Supabase Auth for OAuth flows; backend validates JWTs
+- **Token storage**: Frontend stores JWT in `localStorage` under key `greenchainz-token`
+- **Role system**: Users have roles ('Admin', 'Buyer', 'Supplier') - check with `authorizeRoles('Admin', 'Supplier')`
+
+### Database Access Pattern
+- **Always use the connection pool**: `const { pool } = require('./db');`
+- **Environment-driven config**: `backend/db.js` reads `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` from `.env`
+- **Containerized host**: Use `POSTGRES_HOST=db` in docker-compose (not `localhost`)
+- **Parameterized queries**: Always use `$1, $2` placeholders to prevent SQL injection
+- **Event sourcing**: Log all state changes via `eventLogger.js` functions (immutable, hash-chained)
+
+### External Provider Integration
+- **Abstract base class**: All providers extend `providers/baseProvider.js`
+- **Workflow**: `fetch()` → `transform()` → `validate()` → `insertRecords()`
+- **Example**: `providers/fscMock.js` reads JSON, transforms to schema, validates FSC cert numbers
+- **Registration**: Providers tracked in `Data_Providers` table with status, API costs, last sync timestamp
+
+### Frontend-Backend Communication
+- **Base URL**: Frontend uses `http://localhost:3001/api` (see `frontend/src/lib/api.ts`)
+- **JWT injection**: Axios interceptor adds `Authorization: Bearer <token>` header automatically
+- **CORS**: Backend allows `http://localhost:5173` (frontend dev server) in `cors()` middleware
+- **Supabase Edge Functions**: Used for transactional emails (password reset, welcome emails)
 
 ## Developer Workflows
 
-### Initial Setup (Windows PowerShell / Bash)
+### Full Stack Startup (Docker Compose)
 
-1. **Start the database**:
-   ```bash
-   docker compose up -d
-   ```
-   This starts PostgreSQL in detached mode.
-
-2. **Verify database is running**:
-   ```bash
-   docker ps
-   # Look for greenchainz_db container
-   ```
-
-3. **Initialize backend (first time only)**:
-   ```bash
-   cd backend
-   npm init -y
-   npm install express
-   # Pin versions in package.json for consistency
-   ```
-
-4. **Run the backend server**:
-   ```bash
-   node backend/index.js
-   # Server will start on http://localhost:3001
-   ```
-
-5. **Test the API**:
-   ```bash
-   curl http://localhost:3001/
-   # Should return: "GreenChainz Backend API is running!"
-   ```
-
-### Database Access and Management
-
-**Connect to PostgreSQL using psql**:
+**Start all services** (db, backend, frontend):
 ```bash
-docker exec -it greenchainz_db psql -U user -d greenchainz_dev
+docker compose up -d
 ```
 
-**Or from host** (if PostgreSQL client installed):
+**Verify containers are running**:
 ```bash
-psql postgres://user:password@localhost:5432/greenchainz_dev
+docker ps
+# Should see: greenchainz-db, greenchainz-backend, greenchainz-frontend
 ```
 
-**Check database contents**:
-```sql
-\dt              -- List tables
-\d table_name    -- Describe table structure
+**View logs** (all services):
+```bash
+docker compose logs -f
 ```
 
-### Typical Development Cycle
-
-1. Make code changes in `backend/index.js` or add new route files
-2. Restart the Node.js server (`Ctrl+C` and `node backend/index.js`)
-3. Test endpoints with `curl`, Postman, or browser
-4. For database changes:
-   - Write SQL migrations in `database-schemas/`
-   - Apply migrations via psql or migration tool
-5. Commit changes with descriptive messages
-
-## Coding Patterns and Conventions
-
-### Backend API Development
-
-**Current Pattern** - Simple Express routes directly in `backend/index.js`:
-```javascript
-// Example: Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ ok: true, timestamp: new Date().toISOString() });
-});
-
-// Example: RESTful API endpoint (future)
-app.get('/api/suppliers', async (req, res) => {
-  // TODO: Query database for suppliers
-  res.json({ suppliers: [] });
-});
+**Stop all services**:
+```bash
+docker compose down
 ```
 
-**Future Pattern** - Modular structure as app grows:
-```
-backend/
-├── index.js           # App entry point, middleware setup
-├── routes/
-│   ├── suppliers.js   # Supplier-related routes
-│   └── products.js    # Product-related routes
-├── controllers/       # Business logic
-├── models/            # Database models
-└── middleware/        # Custom middleware
+### Backend Development
+
+**Run backend standalone** (for development):
+```bash
+cd backend
+npm install              # Install dependencies
+npm run dev              # Starts backend on port 3001
 ```
 
-### Database Access Patterns
+**Seed database** with demo data:
+```bash
+npm run seed             # Runs backend/scripts/seed.js
+```
 
-**Not yet implemented** - When adding database connectivity:
+**Access API documentation**:
+- OpenAPI/Swagger UI: `http://localhost:3001/docs`
+- Raw YAML spec: `http://localhost:3001/api/docs`
 
-1. **Use environment variables** for connection config:
-   ```javascript
-   const dbConfig = {
-     user: process.env.POSTGRES_USER || 'user',
-     password: process.env.POSTGRES_PASSWORD || 'password',
-     host: process.env.POSTGRES_HOST || 'localhost',
-     database: process.env.POSTGRES_DB || 'greenchainz_dev',
-     port: process.env.POSTGRES_PORT || 5432
-   };
-   ```
+**Test endpoints**:
+```bash
+# Health check
+curl http://localhost:3001/
 
-2. **Prefer connection pooling** (using `pg` library):
-   ```javascript
-   const { Pool } = require('pg');
-   const pool = new Pool(dbConfig);
-   ```
-
-3. **Use parameterized queries** to prevent SQL injection:
-   ```javascript
-   const result = await pool.query(
-     'SELECT * FROM suppliers WHERE id = $1',
-     [supplierId]
-   );
-   ```
+# Register user
+curl -X POST http://localhost:3001/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"secret123","role":"Buyer"}'
+```
 
 ### Frontend Development
 
-**When scaffolding the React app**:
-- Initialize in `frontend/` directory
-- Use modern React (hooks, functional components)
-- Configure proxy to backend API (`http://localhost:3001`)
-- Document dev server port in this file
+**Run frontend standalone**:
+```bash
+cd frontend
+npm install
+npm run dev              # Starts Vite dev server on port 5173
+```
 
-### Environment Configuration
+**Build for production**:
+```bash
+npm run build            # Creates optimized build in frontend/dist/
+```
 
-**Current state**: Credentials are hardcoded in `docker-compose.yml`
+### Database Management
 
-**Best practice for future**:
-1. Create `.env` file at repository root (add to `.gitignore`)
-2. Reference in `docker-compose.yml`:
-   ```yaml
-   environment:
-     POSTGRES_USER: ${POSTGRES_USER}
-     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-   ```
-3. Document required variables in `README.md`
-4. Provide `.env.example` template
+**Connect to PostgreSQL**:
+```bash
+docker exec -it greenchainz-db psql -U user -d greenchainz_dev
+```
+
+**Apply schema changes**:
+```bash
+docker exec -i greenchainz-db psql -U user -d greenchainz_dev < database-schemas/schema.sql
+```
+
+**Check event sourcing integrity**:
+```sql
+-- Verify Product_Events chain
+SELECT EventID, ProductID, EventType, EventHash, PreviousEventHash 
+FROM Product_Events 
+WHERE ProductID = 1 
+ORDER BY Timestamp ASC;
+```
+
+## Coding Patterns and Conventions
+
+### Backend Route Structure
+
+Routes are defined directly in `backend/index.js` (~1400 lines). Major route groups:
+
+```javascript
+// Auth routes (register, login, OAuth callbacks)
+app.post('/api/v1/auth/register', async (req, res) => { /* bcrypt + JWT */ });
+app.post('/api/v1/auth/login', async (req, res) => { /* validate + token */ });
+app.get('/auth/:provider/callback', passport.authenticate(...), (req, res) => {});
+
+// Protected routes (use authenticateToken middleware)
+app.get('/api/v1/auth/me', authenticateToken, async (req, res) => {});
+
+// Admin-only routes (use authorizeRoles)
+app.post('/api/v1/suppliers/:id/certifications', 
+  authenticateToken, authorizeRoles('Admin'), 
+  async (req, res) => {}
+);
+```
+
+**Pattern**: Inline route handlers with direct `pool.query()` calls. For complex logic, use `services/` modules.
+
+### Service Layer Pattern
+
+**Verification Score Service** (`services/verificationScore.js`):
+```javascript
+const { computeSupplierScore, persistSupplierScore } = require('./services/verificationScore');
+
+// Compute score based on certifications
+const scoreData = await computeSupplierScore(pool, supplierId);
+// Score formula: BASE_SCORE + (distinctBodies * 5) + (nonExpired * 3) - (expired * 2)
+```
+
+**Mailer Service** (`services/mailer.js`):
+```javascript
+const { sendEmail } = require('./services/mailer');
+
+await sendEmail({
+  to: user.email,
+  subject: 'Welcome to GreenChainz',
+  text: 'Thank you for registering...',
+  notificationType: 'welcome_email'
+});
+```
+
+### Data Provider Integration
+
+**Create a new provider** by extending `BaseProvider`:
+```javascript
+// providers/myProvider.js
+const BaseProvider = require('./baseProvider');
+
+class MyProvider extends BaseProvider {
+  constructor() {
+    super('My Provider', 'certification');
+  }
+
+  async fetch(options) {
+    // Fetch data from external API or file
+    return rawData;
+  }
+
+  async transform(rawData) {
+    // Convert to GreenChainz schema
+    return transformedData.map(record => ({
+      certificateNumber: record.cert_id,
+      certificateHolder: record.company,
+      // ... map other fields
+    }));
+  }
+
+  validateRecord(record) {
+    const errors = [];
+    if (!record.certificateNumber) errors.push('Missing certificate number');
+    return { isValid: errors.length === 0, errors };
+  }
+
+  async insertRecords(validRecords, dbPool) {
+    // Insert into database with UPSERT pattern
+    // Return { inserted, updated, errors }
+  }
+}
+```
+
+**Run provider sync**:
+```javascript
+const provider = new MyProvider();
+const stats = await provider.sync({}, pool);
+// Returns: { fetched, transformed, valid, invalid, inserted, updated, errors }
+```
+
+### Event Sourcing Pattern
+
+**Log events** for audit trail and blockchain readiness:
+```javascript
+const { logCertificationEvent } = require('./eventLogger');
+
+await logCertificationEvent(
+  pool,
+  certificationId,
+  supplierId,
+  'API_VERIFIED',
+  { verifiedBy: 'FSC API', confidence: 0.95 },
+  'FSC_API',
+  userId,
+  req.ip
+);
+// Creates hash-chained immutable event record
+```
+
+### Frontend Authentication
+
+**Protected routes** with AuthContext:
+```typescript
+// frontend/src/pages/SupplierDashboard.tsx
+import { useAuth } from '../context/AuthContext';
+
+const SupplierDashboard = () => {
+  const { user, session, loading } = useAuth();
+  
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+  
+  return <div>Dashboard for {user.email}</div>;
+};
+```
+
+**API calls** with JWT:
+```typescript
+// frontend/src/lib/api.ts
+import api from '../lib/api';
+
+// Token automatically added by Axios interceptor
+const response = await api.get('/v1/suppliers');
+const suppliers = response.data;
+```
 
 ## Integration Points and Dependencies
 
-### Current Dependencies
-- **Backend**: `express` (must be installed manually - no package.json yet)
-- **Database**: PostgreSQL 15 (via Docker image)
-- **Container orchestration**: Docker Compose v3.8
+### Backend Dependencies (`backend/package.json`)
+- **Core**: `express`, `pg` (PostgreSQL client), `dotenv`, `cors`
+- **Authentication**: `bcrypt`, `jsonwebtoken`, `passport`, `passport-google-oauth20`, `passport-github2`, `passport-linkedin-oauth2`, `passport-microsoft`
+- **Session**: `express-session`
+- **Email**: `nodemailer`
+- **API Docs**: `swagger-ui-express`, `yaml`
+- **Web Scraping**: `cheerio` (for provider data extraction)
+- **CSV Processing**: `csv-parser`
+- **Supabase**: `@supabase/supabase-js`
 
-### Future Integration Points
-- **Authentication**: Consider JWT tokens, OAuth 2.0 for B2B partners
-- **API Gateway**: May need rate limiting, request validation
-- **Message Queue**: For async tasks (e.g., RabbitMQ, Redis)
-- **File Storage**: For product images, certifications (S3-compatible)
-- **Search**: Elasticsearch for product/supplier search
-- **Analytics**: Integration with sustainability data providers
+### Frontend Dependencies (`frontend/package.json`)
+- **Core**: `react@19`, `react-dom@19`, `react-router-dom`
+- **HTTP Client**: `axios`
+- **UI**: `@heroicons/react`, `tailwindcss`
+- **Supabase**: `@supabase/supabase-js`
+- **Build Tool**: `vite`
+- **TypeScript**: Full TypeScript support with type definitions
+
+### Root Dependencies (`package.json`)
+- **Email Templates**: `@react-email/components`, `@react-email/render`, `@react-email/tailwind`
+- **Email Service**: `resend`
+- **Supabase**: `@supabase/supabase-js`
+- **Analytics**: `@vercel/speed-insights`
+
+### External Integrations
+- **Supabase**: OAuth authentication, Edge Functions for transactional emails
+- **Data Providers**: FSC Mock (file-based), future: B Corp API, EPD databases
+- **Future**: Stripe for payments, AWS S3 for file storage
 
 ## Cross-Cutting Conventions
 
@@ -259,23 +371,46 @@ When adding tests:
 
 ## Common Pitfalls and Gotchas
 
-### ⚠️ Backend Has No package.json
-**Problem**: Running `node backend/index.js` will fail with "Cannot find module 'express'"
+### ⚠️ Environment Variables Required
+**Problem**: Backend fails to start with missing environment variable errors
 
-**Solution**: Initialize npm first:
+**Solution**: Create `.env` file in project root with required variables:
 ```bash
-cd backend
-npm init -y
-npm install express
-```
+# Database (for backend)
+POSTGRES_HOST=localhost  # Use 'db' when running in Docker
+POSTGRES_PORT=5432
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=greenchainz_dev
 
-**Best practice**: Pin dependency versions in `package.json`:
-```json
-{
-  "dependencies": {
-    "express": "^4.18.2"
-  }
-}
+# Docker Compose (use DB_* prefix)
+DB_USER=user
+DB_PASSWORD=password
+DB_NAME=greenchainz_dev
+
+# Backend
+JWT_SECRET=your-secret-key-change-in-production
+SESSION_SECRET=greenchainz-session-secret
+FRONTEND_URL=http://localhost:5173
+
+# Supabase (for OAuth and edge functions)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+
+# OAuth Providers (optional)
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+
+# Email (optional)
+NOTIFICATIONS_ENABLED=false
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+FROM_EMAIL=no-reply@greenchainz.com
+ADMIN_EMAIL=admin@greenchainz.com
 ```
 
 ### ⚠️ Duplicate Directory Structure
@@ -361,21 +496,24 @@ docker compose restart db
 docker stats
 ```
 
-## Next Steps and Future Enhancements
+## Key Files Reference Guide
 
-As the platform evolves, update this file when you:
-
-1. **Add package.json to backend** - Document npm scripts, dependencies
-2. **Containerize backend** - Update docker-compose.yml, document networking
-3. **Scaffold frontend** - Document dev server port, build process, proxy configuration
-4. **Add database migrations** - Document migration tool and workflow
-5. **Implement authentication** - Document auth flow, token management
-6. **Add testing** - Document test commands, coverage targets
-7. **Set up CI/CD** - Document build/deploy pipeline
-8. **Add API documentation** - Link to Swagger/OpenAPI specs
+| File | Purpose | Current State |
+|------|---------|---------------|
+| `docker-compose.yml` | Infrastructure definition, 3-service stack | Fully configured (db, backend, frontend) |
+| `backend/index.js` | Express API entry point | ~1400 lines, full REST API with auth |
+| `backend/db.js` | PostgreSQL connection pool | Environment-driven configuration |
+| `backend/middleware/auth.js` | JWT auth + role-based access | Fully implemented |
+| `backend/services/verificationScore.js` | Supplier trust scoring | Algorithm-based certification scoring |
+| `backend/providers/baseProvider.js` | External data integration framework | Abstract class for data providers |
+| `backend/eventLogger.js` | Immutable event logging | Blockchain-ready hash-chained events |
+| `database-schemas/schema.sql` | Main database schema | ~610 lines with event sourcing |
+| `frontend/src/main.tsx` | React app entry point | Router + AuthProvider setup |
+| `frontend/src/lib/api.ts` | API client with JWT interceptor | Configured for localhost:3001 |
+| `frontend/src/context/AuthContext.tsx` | Supabase auth integration | OAuth + session management |
 
 ---
 
-**Last Updated**: 2025-10-29  
+**Last Updated**: 2025-11-18  
 **Repository**: [jnorvi5/green-sourcing-b2b-app](https://github.com/jnorvi5/green-sourcing-b2b-app)  
 **Platform**: GreenChainz - Global Trust Layer for Sustainable Commerce
