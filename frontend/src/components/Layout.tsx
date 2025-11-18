@@ -1,12 +1,19 @@
 // frontend/src/components/Layout.tsx
 import { Outlet } from 'react-router-dom';
+import { ReactNode } from 'react';
+import Footer from './Footer';
 
-const Layout = () => {
+interface LayoutProps {
+  children?: ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
   return (
-    <div>
-      <main>
-        <Outlet />
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1">
+        {children || <Outlet />}
       </main>
+      <Footer />
     </div>
   );
 };
