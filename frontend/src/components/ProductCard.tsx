@@ -1,11 +1,11 @@
 // frontend/src/components/ProductCard.tsx
 import React, { useState } from 'react';
-import { Product } from '../mocks/productData';
+import { MockProduct } from '../mocks/productData';
 import { useProjects } from '../context/ProjectContext';
 import CreateProjectModal from './Projects/CreateProjectModal';
 
 type ProductCardProps = {
-  product: Product;
+  product: MockProduct;
   supplierName?: string;
   onRequestQuote?: (productId: string) => void;
 };
