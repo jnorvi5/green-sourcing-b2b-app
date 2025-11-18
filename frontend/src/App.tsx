@@ -56,62 +56,23 @@ function App() {
                   <BuyerDashboard />
               }
             />
-            {/* <Route
-              path="dashboard/supplier"
-              element={
-                <ProtectedRoute allowedRoles={['supplier']}>
-                  <SupplierDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="network"
-              element={
-                <ProtectedRoute allowedRoles={['buyer', 'supplier']}>
-                  <NetworkBoard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="admin"
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <AdminConsole />
-                </ProtectedRoute>
-              }
-            />
-          </Route> */}
+            <Route path="/search" element={<SearchPage />} />
+            
+            {/* Supplier Dashboard Routes */}
+            <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
+            <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
+            <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
+            
+            {/* Buyer Dashboard */}
+            <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
+            <Route path="/rfq-history" element={<RFQHistoryPage />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/content" element={<ContentModerationPage />} />
+          </Route>
         </Route>
-
-        {/* Public Routes */}
-        <Route path="/" element={<Layout><LandingPage /></Layout>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/features" element={<Layout><Features /></Layout>} />
-        <Route path="/contact" element={<Layout><Contact /></Layout>} />
-        <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-        <Route path="/terms" element={<Layout><Terms /></Layout>} />
-        <Route path="/unauthorized" element={<Layout><Unauthorized /></Layout>} />
-        <Route path="/architect-survey" element={<Layout><ArchitectSurvey /></Layout>} />
-        <Route path="/charter175" element={<Layout><Charter175 /></Layout>} />
-        
-        {/* Search & Product Routes */}
-        <Route path="/search" element={<Layout><SearchPage /></Layout>} />
-        
-        {/* Supplier Dashboard Routes */}
-        <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
-        <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
-        <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
-        <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
-        
-        {/* Buyer Dashboard */}
-        <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
-        <Route path="/rfq-history" element={<RFQHistoryPage />} />
-        
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/content" element={<ContentModerationPage />} />
  
       </Routes>
     </ErrorBoundary>
