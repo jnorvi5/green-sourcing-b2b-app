@@ -1,6 +1,11 @@
 // frontend/src/mocks/productData.ts
 
-export interface Product {
+/**
+ * MockProduct interface for UI components and demos
+ * This is distinct from the database Product interface in types.ts
+ * which uses snake_case and Supabase schema
+ */
+export interface MockProduct {
     id: number;
     name: string;
     supplier: string;
@@ -15,7 +20,7 @@ export interface Product {
     priceUnit?: string;
   }
 
-  export const MOCK_PRODUCTS: Product[] = [
+  export const MOCK_PRODUCTS: MockProduct[] = [
     {
       id: 1,
       name: 'Warmcel Cellulose Insulation',
