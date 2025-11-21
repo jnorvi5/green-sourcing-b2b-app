@@ -58,6 +58,35 @@ function App() {
             <Route path="dashboard/buyer/projects/:projectId" element={<ProjectDetail />} />
           </Route>
 
+
+          {/* Protected Routes - Temporarily disabled until demo pages are fixed */}
+          {/* <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}> */}
+            <Route
+              path="dashboard"
+              element={
+                  <BuyerDashboard />
+              }
+            />
+            <Route path="/search" element={<SearchPage />} />
+            
+            {/* Supplier Dashboard Routes */}
+            <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
+            <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
+            <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
+            
+            {/* Buyer Dashboard */}
+            <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
+            <Route path="/rfq-history" element={<RFQHistoryPage />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/content" element={<ContentModerationPage />} />
+          </Route>
+        </Route>
+ 
+      </Routes>
+
           {/* Standalone Routes (no main Layout) */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -78,6 +107,7 @@ function App() {
           <Route path="/admin/content" element={<ContentModerationPage />} />
         </Routes>
       </ProjectProvider>
+
     </ErrorBoundary>
   );
 }
