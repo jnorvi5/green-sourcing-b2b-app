@@ -1,7 +1,6 @@
 // frontend/src/pages/ProductDemoPage.tsx
 
-import { useState } from 'react';
-import Header from '../components/Header';
+import React from 'react';
 import ProductCard, { Product } from '../components/ProductCard';
 import './ProductDemoPage.css'; // We'll create this for layout
 

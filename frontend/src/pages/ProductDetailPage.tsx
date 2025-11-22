@@ -48,7 +48,7 @@ const MOCK_PRODUCT = {
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const productId = params?.id;
+  const _productId = params?.id;
 
   const [activeTab, setActiveTab] = useState('overview');
   const [currentImage, setCurrentImage] = useState(0);
