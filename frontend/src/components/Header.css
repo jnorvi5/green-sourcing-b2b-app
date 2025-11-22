@@ -1,10 +1,10 @@
 .header {
-  background-color: var(--white);
-  box-shadow: 0 2px 10px var(--shadow);
+  background-color: var(--color-bg-white);
+  box-shadow: var(--shadow-md);
   padding: 20px 0;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: var(--z-sticky);
 }
 
 .header-content {
@@ -15,8 +15,9 @@
 }
 
 .logo h1 {
-  color: var(--primary-green);
-  font-size: 1.8rem;
+  color: var(--color-primary);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
   margin: 0;
 }
 
@@ -28,39 +29,39 @@
 }
 
 .nav a {
-  color: var(--text-dark);
+  color: var(--color-text-primary);
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  font-weight: var(--font-medium);
+  transition: color var(--transition-base);
 }
 
 .nav a:hover {
-  color: var(--secondary-green);
+  color: var(--color-primary-light);
 }
 
 .health-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .status-indicator {
-  font-size: 1.2rem;
+  font-size: var(--text-lg);
   line-height: 1;
 }
 
 .status-indicator.ok {
-  color: #28a745;
+  color: var(--color-success);
 }
 
 .status-indicator.error {
-  color: #dc3545;
+  color: var(--color-error);
 }
 
 .status-text {
-  color: var(--text-light);
-  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-medium);
 }
 
 @media (max-width: 768px) {

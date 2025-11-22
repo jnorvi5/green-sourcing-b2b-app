@@ -1,3 +1,6 @@
+/* Import GreenChainz Design System */
+@import './styles/design-system.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,9 +9,30 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text-primary);
+  }
+  
+  h1 { font-size: var(--text-5xl); line-height: var(--leading-tight); }
+  h2 { font-size: var(--text-4xl); line-height: var(--leading-tight); }
+  h3 { font-size: var(--text-3xl); line-height: var(--leading-snug); }
+  h4 { font-size: var(--text-2xl); line-height: var(--leading-snug); }
+  h5 { font-size: var(--text-xl); line-height: var(--leading-normal); }
+  h6 { font-size: var(--text-lg); line-height: var(--leading-normal); }
+  
+  p {
+    line-height: var(--leading-relaxed);
   }
 }
 
