@@ -12,6 +12,7 @@ const { authenticateToken, authorizeRoles, JWT_SECRET } = require('./middleware/
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const FSCMockProvider = require('./providers/fscMock');
+const presignedUploadRouter = require('./routes/presigned-upload');
 const {
   computeSupplierScore,
   computeAllSupplierScores,
@@ -54,6 +55,9 @@ app.use(passport.session());
 
 // Serve static admin dashboard
 app.use('/admin/dashboard', express.static(path.join(__dirname, 'public')));
+
+// Mount upload route for S3 presigned URLs
+app.use('/api/v1/upload', presignedUploadRouter);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -536,26 +540,6 @@ async function initSchema() {
   }
 }
 
-// ============================================
-// RFQ (REQUEST FOR QUOTE) ENDPOINTS
-app.post('/api/rfq', async (req, res) => {
-  try {
-    const { buyer_email, project_name, message, quantity, timeline, contact_preference } = req.body;
-
-    // Basic validation
-    if (!buyer_email || !message) {
-      return res.status(400).json({ error: 'Email and message are required' });
-    }
-
-    // In a real application, you would save this to the database
-    console.log('Received RFQ:', { buyer_email, project_name, message, quantity, timeline, contact_preference });
-
-    res.status(201).json({ success: true, message: 'RFQ submitted successfully' });
-  } catch (err) {
-    console.error('Error submitting RFQ:', err);
-    res.status(500).json({ error: 'Failed to submit RFQ' });
-  }
-});
 // ============================================
 // DATA PROVIDER INTEGRATION ENDPOINTS
 // ============================================
