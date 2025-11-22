@@ -1,6 +1,7 @@
 import { useState, FormEvent, FocusEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useNotify } from '../hooks/useNotify';
 
 // --- Validation Utilities ---
 const validateEmail = (email: string) => {
@@ -55,6 +56,8 @@ export default function Login() {
         return !emailError && !passwordError;
     };
 
+    const { error: notifyError, success: notifySuccess } = useNotify();
+
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
         setErrors(prev => ({ ...prev, form: '' }));
@@ -68,9 +71,12 @@ export default function Login() {
                 password,
             });
             if (signInError) throw signInError;
+            notifySuccess('Successfully logged in!');
             navigate('/dashboard');
         } catch (err) {
-            setErrors(prev => ({...prev, form: 'Invalid email or password.'}));
+            const errorMessage = 'Invalid email or password.';
+            setErrors(prev => ({...prev, form: errorMessage}));
+            notifyError(errorMessage);
         } finally {
             setLoading(false);
         }
