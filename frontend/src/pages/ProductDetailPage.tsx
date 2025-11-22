@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import ReviewsSection from '../components/Reviews/ReviewsSection';
+import SEO from '../components/SEO';
 
 // MOCK DATA (replace with Supabase query in Phase 1)
 const MOCK_PRODUCT = {
@@ -67,6 +68,12 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${product.name} | ${product.company.name}`}
+        description={product.description}
+        image={product.images[0]}
+        type="product"
+      />
       {/* Breadcrumbs */}
       <div className="bg-muted border-b border-border py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

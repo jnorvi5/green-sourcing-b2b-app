@@ -1,4 +1,5 @@
 import Footer from './components/Footer';
+import './layout.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

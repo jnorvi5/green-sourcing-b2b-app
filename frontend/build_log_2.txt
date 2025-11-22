@@ -1,0 +1,15 @@
+
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.2.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 2493 modules transformed.
+Γ£ù Build failed in 3.12s
+error during build:
+Could not resolve "../../lib/utils" from "src/components/ui/sheet.tsx"
+file: D:/perplexitydownloads/green-sourcing-b2b-app/frontend/src/components/ui/sheet.tsx
+    at getRollupError (file:///D:/perplexitydownloads/green-sourcing-b2b-app/frontend/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///D:/perplexitydownloads/green-sourcing-b2b-app/frontend/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///D:/perplexitydownloads/green-sourcing-b2b-app/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21576:24)
+    at file:///D:/perplexitydownloads/green-sourcing-b2b-app/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21536:26

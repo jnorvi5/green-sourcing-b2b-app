@@ -1,6 +1,7 @@
 // src/components/RFQModal.tsx
 import { useState, useEffect, useRef } from 'react';
 import type { RFQData } from '../types';
+import { useNotify } from '../hooks/useNotify';
 
 interface RFQModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export default function RFQModal({ isOpen, onClose, onSubmit, productName }: RFQ
     timeline: '1-3 months',
     contact_preference: 'email',
   });
+
+  const { notifySuccess, notifyError } = useNotify();
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -54,9 +57,16 @@ export default function RFQModal({ isOpen, onClose, onSubmit, productName }: RFQ
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    try {
+      await onSubmit(formData);
+      notifySuccess('Quote Request Sent Successfully', `Your request for ${productName} has been sent.`);
+    } catch (error) {
+      notifyError('Failed to send request', 'Please try again later.');
+    }
   };
 
   return (

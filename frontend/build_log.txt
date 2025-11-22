@@ -1,0 +1,31 @@
+
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.2.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 2416 modules transformed.
+Γ£ù Build failed in 3.16s
+error during build:
+[vite:esbuild] Transform failed with 1 error:
+D:/perplexitydownloads/green-sourcing-b2b-app/frontend/src/lib/s3-upload.ts:23:8: ERROR: Expected ")" but found "const"
+file: D:/perplexitydownloads/green-sourcing-b2b-app/frontend/src/lib/s3-upload.ts:23:8
+
+Expected ")" but found "const"
+21 |              }
+22 |  
+23 |          const { signedUrl, publicUrl } = await response.json();
+   |          ^
+24 |  
+25 |              // 2. Upload the file directly to AWS using the signed URL
+
+    at failureErrorWithLog (D:\perplexitydownloads\green-sourcing-b2b-app\frontend\node_modules\esbuild\lib\main.js:1467:15)
+    at D:\perplexitydownloads\green-sourcing-b2b-app\frontend\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (D:\perplexitydownloads\green-sourcing-b2b-app\frontend\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (D:\perplexitydownloads\green-sourcing-b2b-app\frontend\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (D:\perplexitydownloads\green-sourcing-b2b-app\frontend\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)

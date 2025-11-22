@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import Pagination from './Pagination';
+import EmptyState from './EmptyState';
+import { SearchX } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductGridProps {
@@ -32,7 +34,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-8">No products found matching your criteria.</p>
+        <EmptyState
+          title="No products found"
+          description="Try adjusting your search or filters to find what you're looking for."
+          icon={SearchX}
+        />
       )}
       {totalPages > 1 && (
         <Pagination

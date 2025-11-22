@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { MockProduct } from '../mocks/productData';
 import { useProjects } from '../context/ProjectContext';
 import CreateProjectModal from './Projects/CreateProjectModal';
+import { useComparisonStore } from '../store/useComparisonStore';
 
 type ProductCardProps = {
   product: MockProduct;
@@ -19,9 +20,7 @@ const CertificationIcon: React.FC<{ name: string }> = ({ name }) => (
 const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequestQuote }) => {
   const {
     name,
-    image_url,
     imageUrl,
-    recycled_content,
     recycledContent,
     certifications,
     epd,
@@ -38,9 +37,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
     alert(`Product added to project!`);
   };
 
-  const displayImage = image_url || imageUrl || 'https://via.placeholder.com/400x300.png?text=No+Image';
+  const displayImage = imageUrl || 'https://via.placeholder.com/400x300.png?text=No+Image';
   const displaySupplier = supplierName || supplier || 'Unknown Supplier';
-  const displayRecycledContent = recycled_content ?? recycledContent;
+  const displayRecycledContent = recycledContent;
+
+  const { products: comparisonProducts, addProduct, removeProduct } = useComparisonStore();
+  const isSelected = comparisonProducts.some(p => p.id === product.id);
+
+  const handleCompareToggle = () => {
+    if (isSelected) {
+      removeProduct(product.id);
+    } else {
+      if (comparisonProducts.length >= 3) {
+        alert("You can only compare up to 3 products.");
+        return;
+      }
+      addProduct(product);
+    }
+  };
 
   return (
     <>
@@ -51,6 +65,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
             src={displayImage}
             alt={name}
           />
+          <div className="absolute top-2 right-2">
+            <label className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm cursor-pointer hover:bg-white transition-colors">
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={handleCompareToggle}
+                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+              />
+              <span className="text-xs font-medium text-gray-700">Compare</span>
+            </label>
+          </div>
         </div>
         <div className="p-4 flex-grow flex flex-col">
           <h3 className="text-sm text-gray-500 uppercase tracking-wide">{displaySupplier}</h3>

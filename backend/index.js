@@ -136,6 +136,29 @@ try {
   console.error('❌ Failed to initialize Swagger UI:', e.message);
 }
 
+// Upload Routes
+// Upload Routes
+// const uploadRouter = require('./routes/upload'); // Legacy direct upload
+const presignedUploadRouter = require('./routes/presigned-upload');
+app.use('/api/v1/upload', presignedUploadRouter); // Switched to S3 Presigned URLs
+// app.use('/api/v1/presigned-upload', presignedUploadRouter); // Redundant
+
+// Newsletter Route
+const { subscribeToNewsletter } = require('./services/mailerLite');
+app.post('/api/v1/newsletter/subscribe', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    
+    const result = await subscribeToNewsletter(email);
+    res.json({ message: 'Successfully subscribed to newsletter', ...result });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to subscribe to newsletter' });
+  }
+});
+
 // ============================================
 // AUTH ENDPOINTS
 // ============================================
@@ -538,24 +561,7 @@ async function initSchema() {
 
 // ============================================
 // RFQ (REQUEST FOR QUOTE) ENDPOINTS
-app.post('/api/rfq', async (req, res) => {
-  try {
-    const { buyer_email, project_name, message, quantity, timeline, contact_preference } = req.body;
-
-    // Basic validation
-    if (!buyer_email || !message) {
-      return res.status(400).json({ error: 'Email and message are required' });
-    }
-
-    // In a real application, you would save this to the database
-    console.log('Received RFQ:', { buyer_email, project_name, message, quantity, timeline, contact_preference });
-
-    res.status(201).json({ success: true, message: 'RFQ submitted successfully' });
-  } catch (err) {
-    console.error('Error submitting RFQ:', err);
-    res.status(500).json({ error: 'Failed to submit RFQ' });
-  }
-});
+// Legacy RFQ endpoint removed
 // ============================================
 // DATA PROVIDER INTEGRATION ENDPOINTS
 // ============================================
@@ -829,7 +835,7 @@ app.post('/api/v1/rfqs', authenticateToken, authorizeRoles('Buyer'), async (req,
         FROM Users u
         JOIN Companies c ON u.CompanyID = c.CompanyID
         WHERE u.UserID IN (SELECT UserID FROM Suppliers WHERE SupplierID = $1)`,
-      [supplierId]);
+        [supplierId]);
 
       const productInfoRes = await pool.query('SELECT Name FROM Products WHERE ProductID = $1', [productId]);
 

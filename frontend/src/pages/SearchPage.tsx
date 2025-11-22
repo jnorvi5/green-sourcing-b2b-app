@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import FilterPanel from '../components/FilterPanel';
 import ProductGrid from '../components/ProductGrid';
+import ProductGridSkeleton from '../components/ProductGridSkeleton';
 import { Product } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -87,7 +88,7 @@ const SearchPage = () => {
           />
         </div>
         <div className="w-3/4 pl-8">
-          {loading ? <p>Loading...</p> : <ProductGrid products={products} />}
+          {loading ? <ProductGridSkeleton /> : <ProductGrid products={products} />}
         </div>
       </div>
     </div>
