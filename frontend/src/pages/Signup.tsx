@@ -153,6 +153,9 @@ export default function Signup() {
                     <p className="mt-2 text-emerald-400 font-semibold italic">
                         Where profit and sustainability are on the same side
                     </p>
+                    <p className="mt-2 text-blue-400 font-medium">
+                        We authenticate and verify so you can focus on the build and the design
+                    </p>
                     <p className="mt-2 text-slate-400">Lock in lifetime benefits. Only <span className="text-amber-400 font-bold">32 spots left</span></p>
                 </div>
 

@@ -93,6 +93,9 @@ export default function Login() {
                     <p className="mt-2 text-emerald-400 font-semibold italic text-lg">
                         Where profit and sustainability are on the same side
                     </p>
+                    <p className="mt-2 text-blue-400 font-medium">
+                        We authenticate and verify so you can focus on the build and the design
+                    </p>
                     <p className="mt-2 text-slate-400">Sign in to access your sustainable sourcing dashboard</p>
                 </div>
 

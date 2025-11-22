@@ -11,11 +11,14 @@ export default function Footer() {
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400" />
                             <span className="font-bold text-white">GreenChainz</span>
                         </div>
-                        <p className="text-slate-400 text-sm mb-3">
+                        <p className="text-slate-400 text-sm mb-2">
                             Global Trust Layer for Sustainable Commerce
                         </p>
-                        <p className="text-emerald-400 text-sm font-semibold italic">
+                        <p className="text-emerald-400 text-sm font-semibold italic mb-2">
                             Where profit and sustainability are on the same side
+                        </p>
+                        <p className="text-blue-400 text-sm font-medium">
+                            We authenticate and verify so you can focus on the build and the design
                         </p>
                     </div>
 

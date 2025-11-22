@@ -76,6 +76,17 @@ export function LandingPage() {
                             The global trust layer for sustainable commerce. 
                             We connect <span className="text-white font-semibold">verified green suppliers</span> with forward-thinking architects and builders who refuse to compromise—on quality OR sustainability.
                         </p>
+
+                        <div className="mb-8 max-w-3xl mx-auto">
+                            <div className="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 border-2 border-blue-500/30 backdrop-blur-sm">
+                                <p className="text-xl lg:text-2xl font-bold text-white">
+                                    <span className="text-blue-400">We Authenticate and Verify</span>
+                                </p>
+                                <p className="text-xl lg:text-2xl font-bold text-slate-300">
+                                    So You Can Focus on the <span className="text-emerald-400">Build</span> and the <span className="text-purple-400">Design</span>
+                                </p>
+                            </div>
+                        </div>
                         
                         <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
                             <span className="text-emerald-400">✓</span> Zero greenwashing 
