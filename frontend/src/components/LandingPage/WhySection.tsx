@@ -26,9 +26,14 @@ export default function WhySection() {
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
-          Why Choose GreenChainz?
-        </h2>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Why Choose GreenChainz?
+          </h2>
+          <p className="text-xl text-gray-600 font-semibold">
+            We authenticate and verify so you can focus on the build and the design
+          </p>
+        </div>
 
         {/* 3-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
