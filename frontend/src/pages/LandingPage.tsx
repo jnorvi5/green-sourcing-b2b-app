@@ -189,15 +189,18 @@ export function LandingPage() {
                         <p className="text-2xl text-amber-400 font-bold mb-4">
                             Treated Like ROYALTY For Life 👑
                         </p>
-                        <div className="mb-6 max-w-3xl mx-auto">
+                        <div className="mb-6 max-w-3xl mx-auto space-y-3">
                             <p className="text-xl text-emerald-400 font-bold italic">
-                                "Where profit and sustainability are on the same side"
+                                "GreenChainz: Where profit meets purpose"
+                            </p>
+                            <p className="text-lg text-amber-400 font-semibold">
+                                Making green profitable and sustainable
                             </p>
                         </div>
                         <p className="text-xl text-slate-300 max-w-3xl mx-auto">
                             The first 175 members get <span className="text-amber-400 font-bold">LIFETIME benefits</span> that will NEVER be available again. 
                             This is your once-in-a-lifetime chance to lock in the best deal in sustainable sourcing history—
-                            <span className="text-white font-bold"> and prove that going green means growing profits</span>.
+                            <span className="text-white font-bold"> build smarter, greener, and more profitable with GreenChainz</span>.
                         </p>
                     </div>
 
@@ -211,7 +214,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-amber-400 font-bold">$0 forever.</span> No monthly fees. No transaction fees. No hidden costs. Ever.
                                 </p>
-                                <div className="text-sm text-emerald-400/90 italic mb-2">💰 "Profit meets purpose"</div>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">💰 "GreenChainz helps you make cents of sustainability"</div>
                                 <div className="text-sm text-amber-400/80">Regular members: $499/month</div>
                             </div>
                         </div>
@@ -225,7 +228,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-emerald-400 font-bold">VIP treatment forever:</span> First access to new suppliers, instant verification, dedicated support, exclusive events.
                                 </p>
-                                <div className="text-sm text-emerald-400/90 italic mb-2">🌱 "Better deals, greener planet"</div>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">🌱 "Build smarter, greener, and more profitable"</div>
                                 <div className="text-sm text-emerald-400/80">Worth $10,000+/year</div>
                             </div>
                         </div>
@@ -239,7 +242,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-purple-400 font-bold">Own part of GreenChainz.</span> Founding members get equity options + revenue sharing as the platform grows.
                                 </p>
-                                <div className="text-sm text-emerald-400/90 italic mb-2">📈 "Profit WITH purpose, not despite it"</div>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">📈 "Making green profitable and sustainable"</div>
                                 <div className="text-sm text-purple-400/80">Potential 7-figure value</div>
                             </div>
                         </div>
@@ -277,6 +280,30 @@ export function LandingPage() {
                             </Link>
                             <p className="text-sm text-slate-400 mt-4">
                                 No credit card required • Cancel anytime • 30-day money-back guarantee
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CONFIDENCE & TRUST SECTION */}
+            <section className="py-20 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950" />
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                    <div className="text-center">
+                        <div className="inline-block px-8 py-6 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-blue-500/10 to-cyan-500/10 border-2 border-indigo-500/30 backdrop-blur-sm shadow-2xl shadow-indigo-500/20">
+                            <div className="flex items-center justify-center gap-4 mb-4">
+                                <span className="text-4xl">✓</span>
+                                <h3 className="text-3xl lg:text-4xl font-extrabold text-white">
+                                    Verified and Authenticated
+                                </h3>
+                                <span className="text-4xl">✓</span>
+                            </div>
+                            <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+                                Build and Design with Confidence
+                            </p>
+                            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+                                Every supplier checked. Every certification verified. Every material traceable.
                             </p>
                         </div>
                     </div>
@@ -452,9 +479,14 @@ export function LandingPage() {
                     <h3 className="text-5xl lg:text-6xl font-extrabold text-white mb-4">
                         Don't Miss The <span className="bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Best Deal Ever</span>
                     </h3>
-                    <p className="text-3xl font-bold text-emerald-400 mb-6">
-                        Let Us Help You Make CENTS of It All 💰💡
-                    </p>
+                    <div className="mb-8 space-y-3">
+                        <p className="text-3xl font-bold text-emerald-400">
+                            GreenChainz Helps You Make Cents of Sustainability 💰
+                        </p>
+                        <p className="text-2xl font-semibold text-indigo-400">
+                            Verified and Authenticated — Build and Design with Confidence
+                        </p>
+                    </div>
                     <p className="text-2xl text-slate-300 mb-4 font-semibold">
                         Join the sustainable building revolution as a FOUNDING MEMBER
                     </p>
@@ -462,7 +494,8 @@ export function LandingPage() {
                         Lock in <span className="text-emerald-400 font-bold">lifetime zero fees</span>, 
                         get <span className="text-purple-400 font-bold">equity in GreenChainz</span>, 
                         and enjoy <span className="text-amber-400 font-bold">VIP treatment forever</span>. 
-                        Make money while making a difference. This offer will NEVER come back.
+                        <span className="text-white font-bold"> Build smarter, greener, and more profitable with GreenChainz</span>. 
+                        This offer will NEVER come back.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                         <Link

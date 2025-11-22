@@ -52,9 +52,17 @@ export default function Footer() {
                 </div>
 
                 <div className="mt-12 pt-8 border-t border-slate-800 text-center">
-                    <p className="text-emerald-400 text-sm font-semibold mb-3">
-                        Let GreenChainz Help You Make CENTS of It All 💰💡
-                    </p>
+                    <div className="space-y-2 mb-4">
+                        <p className="text-emerald-400 text-sm font-semibold">
+                            GreenChainz: Where profit meets purpose
+                        </p>
+                        <p className="text-indigo-400 text-sm font-medium">
+                            Verified and authenticated — build and design with confidence
+                        </p>
+                        <p className="text-slate-400 text-sm">
+                            Build smarter, greener, and more profitable
+                        </p>
+                    </div>
                     <p className="text-slate-500 text-sm">
                         © {new Date().getFullYear()} GreenChainz. All rights reserved.
                     </p>
