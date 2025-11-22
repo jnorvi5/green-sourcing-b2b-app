@@ -35,6 +35,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 
+// Debugging Env:
+console.log("Debugging Env:");
+console.log("URL:", process.env.SUPABASE_URL);
+console.log("KEY:", process.env.SUPABASE_KEY ? "Found" : "Missing");
+
 // Session middleware for OAuth
 app.use(session({
   secret: process.env.SESSION_SECRET || 'greenchainz-session-secret',
@@ -1058,7 +1063,7 @@ app.post('/api/v1/rfqs/:rfqId/responses/:responseId/status', authenticateToken, 
         try {
           const supplierEmailRes = await pool.query(`
             SELECT u.Email FROM Users u
-            JOIN Suppliers s ON u.CompanyID = s.CompanyID
+            JOIN Suppliers s ON u.CompanyID = s.COMPANYID
             JOIN RFQ_Responses rr ON rr.SupplierID = s.SupplierID
             WHERE rr.ResponseID = $1 LIMIT 1`, [responseId]);
           if (supplierEmailRes.rows.length) {
@@ -1088,7 +1093,7 @@ app.post('/api/v1/rfqs/:rfqId/responses/:responseId/status', authenticateToken, 
         try {
           const supplierEmailRes = await pool.query(`
             SELECT u.Email FROM Users u
-            JOIN Suppliers s ON u.CompanyID = s.CompanyID
+            JOIN Suppliers s ON u.CompanyID = s.COMPANYID
             JOIN RFQ_Responses rr ON rr.SupplierID = s.SupplierID
             WHERE rr.ResponseID = $1 LIMIT 1`, [responseId]);
           if (supplierEmailRes.rows.length) {
@@ -1132,7 +1137,7 @@ app.get('/api/v1/buyers/rfqs', authenticateToken, authorizeRoles('Buyer'), async
         (SELECT COUNT(*) FROM RFQ_Responses WHERE RFQID = r.RFQID) AS ResponseCount
       FROM RFQs r
       JOIN Suppliers s ON r.SupplierID = s.SupplierID
-      LEFT JOIN Companies c ON s.CompanyID = c.CompanyID
+      LEFT JOIN Companies c ON s.COMPANYID = c.COMPANYID
       WHERE r.BuyerID = $1
     `;
     const params = [buyerId];
@@ -1186,7 +1191,7 @@ app.get('/api/v1/rfqs/:id/responses', authenticateToken, async (req, res) => {
         c.CompanyName AS SupplierCompany
       FROM RFQ_Responses rr
       JOIN Suppliers s ON rr.SupplierID = s.SupplierID
-      LEFT JOIN Companies c ON s.CompanyID = c.CompanyID
+      LEFT JOIN Companies c ON s.COMPANYID = c.COMPANYID
       WHERE rr.RFQID = $1
       ORDER BY rr.CreatedAt DESC
     `, [rfqId]);
@@ -1321,7 +1326,7 @@ app.get('/api/v1/suppliers/:id/analytics', authenticateToken, async (req, res) =
       FROM Notification_Log
       WHERE Recipient IN (
         SELECT u.Email FROM Users u
-        JOIN Suppliers s ON u.CompanyID = s.CompanyID
+        JOIN Suppliers s ON u.CompanyID = s.COMPANYID
         WHERE s.SupplierID = $1
       )
       ORDER BY CreatedAt DESC
