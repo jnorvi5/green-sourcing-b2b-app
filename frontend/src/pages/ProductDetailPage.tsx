@@ -48,7 +48,8 @@ const MOCK_PRODUCT = {
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const _productId = params?.id;
+  // TODO: Use productId to fetch actual product data from backend
+  // const productId = params?.id;
 
   const [activeTab, setActiveTab] = useState('overview');
   const [currentImage, setCurrentImage] = useState(0);

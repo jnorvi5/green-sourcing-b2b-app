@@ -3,12 +3,17 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps {
     id: string;
     label: string;
+    type?: string;
+    value?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    placeholder?: string;
+    required?: boolean;
 }
 
-const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true, ...props }: InputProps) => (
+const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}

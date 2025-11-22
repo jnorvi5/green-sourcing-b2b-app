@@ -1,6 +1,6 @@
 // frontend/src/components/ProductCard.tsx
 import React, { useState } from 'react';
-import { MockProduct } from '../mocks/productData';
+import type { MockProduct } from '../mocks/productData';
 import { useProjects } from '../context/ProjectContext';
 import CreateProjectModal from './Projects/CreateProjectModal';
 import { useComparisonStore } from '../store/useComparisonStore';

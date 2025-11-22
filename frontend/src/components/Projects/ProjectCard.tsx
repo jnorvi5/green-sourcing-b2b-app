@@ -1,6 +1,6 @@
 // frontend/src/components/Projects/ProjectCard.tsx
 import React from 'react';
-import { Project } from '../../mocks/projectData';
+import type { Project } from '../../mocks/projectData';
 
 interface ProjectCardProps {
   project: Project;

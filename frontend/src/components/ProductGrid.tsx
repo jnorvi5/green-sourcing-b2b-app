@@ -3,7 +3,7 @@ import ProductCard from './ProductCard';
 import Pagination from './Pagination';
 import EmptyState from './EmptyState';
 import { SearchX } from 'lucide-react';
-import { Product } from '../types';
+import type { Product } from '../types';
 
 interface ProductGridProps {
   products: Product[];

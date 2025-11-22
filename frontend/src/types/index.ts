@@ -10,7 +10,7 @@ export interface User {
 
 export interface Supplier extends User {
   // Supplier-specific fields
-  verification_status?: string;
+  verification_status?: 'verified' | 'pending' | 'rejected';
 }
 
 export interface Product {

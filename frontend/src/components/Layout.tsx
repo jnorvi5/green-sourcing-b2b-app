@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Footer from './Footer';
 import Header from './Header'; // Assuming Header exists or will be created
 import CompareBar from './CompareBar';
