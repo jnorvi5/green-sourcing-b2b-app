@@ -90,6 +90,9 @@ export default function Login() {
                         <img src="/assets/logo/greenchainz-full-400.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
                     </Link>
                     <h2 className="mt-6 text-3xl font-bold text-white">Welcome Back to GreenChainz</h2>
+                    <p className="mt-2 text-emerald-400 font-semibold italic text-lg">
+                        Where profit and sustainability are on the same side
+                    </p>
                     <p className="mt-2 text-slate-400">Sign in to access your sustainable sourcing dashboard</p>
                 </div>
 

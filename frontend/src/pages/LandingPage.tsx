@@ -61,18 +61,36 @@ export function LandingPage() {
                             </span>
                         </h2>
 
+                        <div className="mb-8 max-w-3xl mx-auto">
+                            <div className="inline-block px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-green-500/10 to-teal-500/10 border-2 border-emerald-500/30 backdrop-blur-sm">
+                                <p className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                                    <span className="text-emerald-400">GreenChainz:</span> Where Profit and Sustainability
+                                </p>
+                                <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                                    Are on the Same Side
+                                </p>
+                            </div>
+                        </div>
+
                         <p className="text-xl text-slate-300 mb-6 max-w-3xl mx-auto leading-relaxed">
-                            <span className="font-semibold text-emerald-400">GreenChainz</span> is the global trust layer for sustainable commerce. 
-                            We connect <span className="text-white font-semibold">verified green suppliers</span> with forward-thinking architects and builders who refuse to compromise.
+                            The global trust layer for sustainable commerce. 
+                            We connect <span className="text-white font-semibold">verified green suppliers</span> with forward-thinking architects and builders who refuse to compromise—on quality OR sustainability.
                         </p>
                         
-                        <p className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto">
+                        <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
                             <span className="text-emerald-400">✓</span> Zero greenwashing 
                             <span className="mx-3">•</span> 
                             <span className="text-emerald-400">✓</span> Blockchain-verified certifications 
                             <span className="mx-3">•</span> 
                             <span className="text-emerald-400">✓</span> Real cost savings
                         </p>
+
+                        <div className="mb-12">
+                            <p className="text-2xl font-bold text-white">
+                                Let GreenChainz Help You Make <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">CENTS</span> of It All
+                            </p>
+                            <p className="text-sm text-slate-400 mt-2">(Both kinds 💰💡)</p>
+                        </div>
 
                         {/* Powerful Mission-Driven CTAs */}
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -160,9 +178,15 @@ export function LandingPage() {
                         <p className="text-2xl text-amber-400 font-bold mb-4">
                             Treated Like ROYALTY For Life 👑
                         </p>
+                        <div className="mb-6 max-w-3xl mx-auto">
+                            <p className="text-xl text-emerald-400 font-bold italic">
+                                "Where profit and sustainability are on the same side"
+                            </p>
+                        </div>
                         <p className="text-xl text-slate-300 max-w-3xl mx-auto">
                             The first 175 members get <span className="text-amber-400 font-bold">LIFETIME benefits</span> that will NEVER be available again. 
-                            This is your once-in-a-lifetime chance to lock in the best deal in sustainable sourcing history.
+                            This is your once-in-a-lifetime chance to lock in the best deal in sustainable sourcing history—
+                            <span className="text-white font-bold"> and prove that going green means growing profits</span>.
                         </p>
                     </div>
 
@@ -176,6 +200,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-amber-400 font-bold">$0 forever.</span> No monthly fees. No transaction fees. No hidden costs. Ever.
                                 </p>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">💰 "Profit meets purpose"</div>
                                 <div className="text-sm text-amber-400/80">Regular members: $499/month</div>
                             </div>
                         </div>
@@ -189,6 +214,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-emerald-400 font-bold">VIP treatment forever:</span> First access to new suppliers, instant verification, dedicated support, exclusive events.
                                 </p>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">🌱 "Better deals, greener planet"</div>
                                 <div className="text-sm text-emerald-400/80">Worth $10,000+/year</div>
                             </div>
                         </div>
@@ -202,6 +228,7 @@ export function LandingPage() {
                                 <p className="text-slate-300 mb-4">
                                     <span className="text-purple-400 font-bold">Own part of GreenChainz.</span> Founding members get equity options + revenue sharing as the platform grows.
                                 </p>
+                                <div className="text-sm text-emerald-400/90 italic mb-2">📈 "Profit WITH purpose, not despite it"</div>
                                 <div className="text-sm text-purple-400/80">Potential 7-figure value</div>
                             </div>
                         </div>
@@ -254,11 +281,14 @@ export function LandingPage() {
                             <span className="text-xl">🎥</span>
                             SEE IT IN ACTION
                         </div>
-                        <h3 className="text-5xl lg:text-6xl font-extrabold text-white mb-6">
+                        <h3 className="text-5xl lg:text-6xl font-extrabold text-white mb-4">
                             Watch How <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">GreenChainz Works</span>
                         </h3>
+                        <p className="text-2xl font-bold text-emerald-400 mb-4">
+                            Let Us Help You Make CENTS of It All 💰💡
+                        </p>
                         <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-                            See real builders transforming their supply chains with verified sustainable materials
+                            See real builders transforming their supply chains with verified sustainable materials—and saving money while doing it
                         </p>
                     </div>
 
@@ -382,13 +412,15 @@ export function LandingPage() {
 
                     {/* CTA Below Videos */}
                     <div className="mt-12 text-center">
-                        <p className="text-slate-400 mb-6">Ready to experience it yourself?</p>
+                        <p className="text-slate-400 mb-6">
+                            Ready to make <span className="text-emerald-400 font-bold">CENTS</span> of sustainable sourcing?
+                        </p>
                         <Link
                             to="/signup"
                             className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all hover:scale-105"
                         >
                             <span className="text-2xl">🚀</span>
-                            Start Your Free Trial
+                            Start Saving Money & The Planet
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
@@ -406,9 +438,12 @@ export function LandingPage() {
                     <div className="inline-block px-6 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold mb-6">
                         👑 Last Chance for Founding Member Benefits 👑
                     </div>
-                    <h3 className="text-5xl lg:text-6xl font-extrabold text-white mb-6">
+                    <h3 className="text-5xl lg:text-6xl font-extrabold text-white mb-4">
                         Don't Miss The <span className="bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Best Deal Ever</span>
                     </h3>
+                    <p className="text-3xl font-bold text-emerald-400 mb-6">
+                        Let Us Help You Make CENTS of It All 💰💡
+                    </p>
                     <p className="text-2xl text-slate-300 mb-4 font-semibold">
                         Join the sustainable building revolution as a FOUNDING MEMBER
                     </p>
@@ -416,7 +451,7 @@ export function LandingPage() {
                         Lock in <span className="text-emerald-400 font-bold">lifetime zero fees</span>, 
                         get <span className="text-purple-400 font-bold">equity in GreenChainz</span>, 
                         and enjoy <span className="text-amber-400 font-bold">VIP treatment forever</span>. 
-                        This offer will NEVER come back.
+                        Make money while making a difference. This offer will NEVER come back.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                         <Link

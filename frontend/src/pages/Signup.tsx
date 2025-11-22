@@ -150,6 +150,9 @@ export default function Signup() {
                         <span className="text-lg">👑</span>
                     </div>
                     <h2 className="mt-4 text-3xl font-bold text-white">Join the Elite 175</h2>
+                    <p className="mt-2 text-emerald-400 font-semibold italic">
+                        Where profit and sustainability are on the same side
+                    </p>
                     <p className="mt-2 text-slate-400">Lock in lifetime benefits. Only <span className="text-amber-400 font-bold">32 spots left</span></p>
                 </div>
 
@@ -179,7 +182,7 @@ export default function Signup() {
                 <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
                     {/* Founding Member Benefits Preview */}
                     <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/30 rounded-lg">
-                        <p className="text-amber-400 font-bold text-sm mb-2">✨ Your Founding Member Benefits:</p>
+                        <p className="text-emerald-400 font-bold text-sm mb-2 italic">💰 Making CENTS of sustainability:</p>
                         <ul className="text-slate-300 text-xs space-y-1">
                             <li>💎 $0 Lifetime Fees (Save $5,988/year)</li>
                             <li>🎯 VIP Priority Access Forever</li>
