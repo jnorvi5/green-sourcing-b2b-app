@@ -1,4 +1,4 @@
-import { useState, FormEvent, FocusEvent } from 'react';
+import { useState, type FormEvent, type FocusEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useNotify } from '../hooks/useNotify';
@@ -12,7 +12,13 @@ const validateEmail = (email: string) => {
 };
 
 // --- Reusable Input Component with Error Handling ---
-const Input = ({ id, label, error, ...props }) => (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    id: string;
+    label: string;
+    error?: string;
+}
+
+const Input = ({ id, label, error, ...props }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}
@@ -73,7 +79,7 @@ export default function Login() {
             if (signInError) throw signInError;
             notifySuccess('Successfully logged in!');
             navigate('/dashboard');
-        } catch (err) {
+        } catch (_err) {
             const errorMessage = 'Invalid email or password.';
             setErrors(prev => ({...prev, form: errorMessage}));
             notifyError(errorMessage);

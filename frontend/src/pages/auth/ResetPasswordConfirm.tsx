@@ -3,7 +3,12 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
-const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true }) => (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    id: string;
+    label: string;
+}
+
+const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true, ...props }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}
@@ -17,6 +22,7 @@ const Input = ({ id, label, type = 'password', value, onChange, placeholder, req
             placeholder={placeholder}
             required={required}
             className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+            {...props}
         />
     </div>
 );
