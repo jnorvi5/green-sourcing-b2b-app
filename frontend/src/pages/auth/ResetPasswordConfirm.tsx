@@ -27,7 +27,6 @@ const Input = ({ id, label, type = 'password', value, onChange, placeholder, req
             placeholder={placeholder}
             required={required}
             className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            {...props}
         />
     </div>
 );
@@ -43,7 +42,7 @@ export default function ResetPasswordConfirm() {
     // This effect handles the session update from the reset token in the URL.
     // Supabase automatically detects the `access_token` and updates the session.
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
             if (event === 'PASSWORD_RECOVERY') {
                 // The user is now in a password recovery state.
                 // We don't need to do anything here, just let them set a new password.
