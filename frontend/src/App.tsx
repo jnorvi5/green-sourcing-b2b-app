@@ -59,10 +59,7 @@ function App() {
           </Route>
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 00dda8b26144a677b079dae0c3f4782bf01f9d89
+
           {/* Protected Routes - Temporarily disabled until demo pages are fixed */}
           {/* <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}> */}
             <Route
@@ -90,16 +87,13 @@ function App() {
         </Route>
  
       </Routes>
-<<<<<<< HEAD
-=======
-=======
 
           {/* Standalone Routes (no main Layout) */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
 
->>>>>>> 00dda8b26144a677b079dae0c3f4782bf01f9d89
+
           {/* Supplier Dashboard Routes */}
           <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
           <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
@@ -115,11 +109,8 @@ function App() {
           <Route path="/admin/content" element={<ContentModerationPage />} />
         </Routes>
       </ProjectProvider>
-<<<<<<< HEAD
->>>>>>> f18a4d538f187dbffce8025b48f9131be8f907ca
-=======
 
->>>>>>> 00dda8b26144a677b079dae0c3f4782bf01f9d89
+
     </ErrorBoundary>
   );
 }
