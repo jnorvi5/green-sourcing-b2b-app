@@ -62,7 +62,7 @@ export default function Login() {
         return !emailError && !passwordError;
     };
 
-    const { error: notifyError, success: notifySuccess } = useNotify();
+    const { notifyError, notifySuccess } = useNotify();
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();

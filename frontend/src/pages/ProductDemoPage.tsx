@@ -1,6 +1,4 @@
 // frontend/src/pages/ProductDemoPage.tsx
-
-import React from 'react';
 import ProductCard, { Product } from '../components/ProductCard';
 import './ProductDemoPage.css'; // We'll create this for layout
 
