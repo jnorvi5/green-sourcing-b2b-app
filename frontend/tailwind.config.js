@@ -7,11 +7,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // GreenChainz Brand Colors (from layout.css spec in blueprint)
+        // GreenChainz Brand Colors - Updated for premium feel
         primary: {
-          DEFAULT: 'hsl(142.1, 76.2%, 36.3%)', // Main green
-          hover: 'hsl(142.1, 76.2%, 32%)',     // Darker on hover
-          light: 'hsl(142.1, 76.2%, 45%)',     // Lighter variant
+          DEFAULT: '#10b981', // Emerald-500 - Main brand green
+          hover: '#059669',   // Emerald-600 - Darker on hover
+          light: '#34d399',   // Emerald-400 - Lighter variant
+          dark: '#047857',    // Emerald-700 - Dark variant
+        },
+        // Secondary accent colors
+        accent: {
+          emerald: '#10b981',
+          teal: '#14b8a6',
+          amber: '#f59e0b',
+          purple: '#a855f7',
         },
         // System Colors (for UI consistency)
         background: 'hsl(0, 0%, 100%)',        // White
@@ -28,6 +36,9 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'], // Clean, modern font
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

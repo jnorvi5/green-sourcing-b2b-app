@@ -83,33 +83,97 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
-                    <img src="/brand/greenchainz-logo.png" alt="GreenChainz" className="mx-auto h-16 w-auto" />
-                    <h2 className="mt-6 text-3xl font-bold text-foreground">Sign in to your account</h2>
+                    <Link to="/" className="inline-block">
+                        <img src="/assets/logo/greenchainz-full-400.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
+                    </Link>
+                    <h2 className="mt-6 text-3xl font-bold text-white">Welcome Back to GreenChainz</h2>
+                    <p className="mt-2 text-slate-400">Sign in to access your sustainable sourcing dashboard</p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleLogin} noValidate>
-                     {errors.form && <div className="p-4 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm" role="alert">{errors.form}</div>}
-
-                    <div className="rounded-md shadow-sm flex flex-col gap-y-4">
-                        <Input id="email" name="email" label="Email Address" type="email" value={email} onChange={e => setEmail(e.target.value)} onBlur={handleBlur} placeholder="you@company.com" error={errors.email} />
-
-                        <div>
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-sm font-medium text-foreground">Password</label>
-                                <div className="text-sm"><Link to="/auth/reset-password" className="font-medium text-primary hover:underline">Forgot Password?</Link></div>
+                <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+                    <form className="space-y-6" onSubmit={handleLogin} noValidate>
+                        {errors.form && (
+                            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm" role="alert">
+                                {errors.form}
                             </div>
-                            <input id="password" name="password" type="password" value={password} onChange={e => setPassword(e.target.value)} onBlur={handleBlur} placeholder="••••••••" required className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition ${errors.password ? 'border-destructive ring-destructive' : 'border-border focus:ring-primary'}`} />
-                            {errors.password && <p className="mt-1 text-sm text-destructive" role="alert">{errors.password}</p>}
+                        )}
+
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+                                    Email Address
+                                </label>
+                                <input 
+                                    id="email" 
+                                    name="email" 
+                                    type="email" 
+                                    value={email} 
+                                    onChange={e => setEmail(e.target.value)} 
+                                    onBlur={handleBlur} 
+                                    placeholder="you@company.com" 
+                                    className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.email ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition`}
+                                />
+                                {errors.email && <p className="mt-1 text-sm text-red-400" role="alert">{errors.email}</p>}
+                            </div>
+
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label htmlFor="password" className="block text-sm font-medium text-slate-300">Password</label>
+                                    <Link to="/auth/reset-password" className="text-sm font-medium text-emerald-400 hover:text-emerald-300">
+                                        Forgot Password?
+                                    </Link>
+                                </div>
+                                <input 
+                                    id="password" 
+                                    name="password" 
+                                    type="password" 
+                                    value={password} 
+                                    onChange={e => setPassword(e.target.value)} 
+                                    onBlur={handleBlur} 
+                                    placeholder="••••••••" 
+                                    className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.password ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition`}
+                                />
+                                {errors.password && <p className="mt-1 text-sm text-red-400" role="alert">{errors.password}</p>}
+                            </div>
                         </div>
+
+                        <button 
+                            type="submit" 
+                            disabled={loading} 
+                            className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
+                        >
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
+                                    Signing In...
+                                </span>
+                            ) : (
+                                'Sign In to Your Dashboard'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-slate-400">
+                            Don't have an account?{' '}
+                            <Link to="/signup" className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+                                Join as a Founding Member 👑
+                            </Link>
+                        </p>
                     </div>
+                </div>
 
-                    <button type="submit" disabled={loading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors">{loading ? 'Signing In...' : 'Sign In'}</button>
-                </form>
-
-                <p className="text-center text-sm text-muted-foreground">Don't have an account?{' '}<Link to="/signup" className="font-medium text-primary hover:underline">Sign up</Link></p>
+                <div className="text-center">
+                    <Link to="/" className="text-slate-500 hover:text-slate-400 text-sm transition-colors">
+                        ← Back to Home
+                    </Link>
+                </div>
             </div>
         </div>
     );
