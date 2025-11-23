@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Public read S3 bucket with admin upload permissions for GreenChainz assets"
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: greenchainz-public-assets
+    Description: Name of the S3 bucket for public assets
+
+Resources:
+  # Public S3 Bucket for assets (EPD documents, images, etc.)
+  PublicS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: [GET, HEAD]
+            AllowedOrigins: ["*"]
+            MaxAge: 3600
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Project
+          Value: GreenChainz
+        - Key: Environment
+          Value: Production
+
+  # Bucket Policy for public read access
+  PublicBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PublicS3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${PublicS3Bucket.Arn}/*"
+
+  # IAM User for backend service to upload files
+  BackendServiceUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: greenchainz-backend-service
+      Tags:
+        - Key: Project
+          Value: GreenChainz
+        - Key: Purpose
+          Value: S3Upload
+
+  # Access Key for the backend service
+  BackendServiceAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref BackendServiceUser
+
+  # Policy for backend to upload, delete, and manage files
+  BackendUploadPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GreenChainzS3UploadPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:DeleteObject
+              - s3:GetObject
+            Resource: !Sub "${PublicS3Bucket.Arn}/*"
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
+            Resource: !GetAtt PublicS3Bucket.Arn
+      Users:
+        - !Ref BackendServiceUser
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref PublicS3Bucket
+    Export:
+      Name: !Sub "${AWS::StackName}-BucketName"
+
+  BucketURL:
+    Description: Public URL of the S3 bucket
+    Value: !Sub "https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com"
+    Export:
+      Name: !Sub "${AWS::StackName}-BucketURL"
+
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt PublicS3Bucket.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-BucketArn"
+
+  AccessKeyId:
+    Description: Access Key ID for backend service (store in .env)
+    Value: !Ref BackendServiceAccessKey
+
+  SecretAccessKey:
+    Description: Secret Access Key for backend service (store in .env securely)
+    Value: !GetAtt BackendServiceAccessKey.SecretAccessKey

@@ -1,6 +1,7 @@
 // frontend/src/App.tsx
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -37,11 +38,23 @@ import ProjectDetail from './pages/BuyerDashboard/ProjectDetail';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import { HelmetProvider } from 'react-helmet-async';
-
+import { initGA, trackPageView } from './lib/analytics';
 
 
 
 function App() {
+  const location = useLocation();
+
+  // Initialize Google Analytics on app mount
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  // Track pageview on route change
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
   return (
     <ErrorBoundary>
       <HelmetProvider>

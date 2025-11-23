@@ -1,6 +1,5 @@
 # Copilot Instructions for GreenChainz B2B Platform
 
-
 GreenChainz is a B2B sustainable sourcing marketplace connecting verified green suppliers with sustainability-focused buyers. The platform features a **full-stack containerized architecture** with Node.js/Express backend, React/TypeScript frontend (Vite), PostgreSQL database, OAuth authentication, event sourcing, and external data provider integrations.
 
 ## Architecture and Source of Truth
@@ -30,142 +29,27 @@ GreenChainz is a B2B sustainable sourcing marketplace connecting verified green 
   - `src/lib/supabaseClient.ts` - Supabase client for OAuth and edge functions
   - `src/context/AuthContext.tsx` - Supabase-based authentication state management
   - `src/pages/` - Full page components (LandingPage, SupplierDashboard, BuyerDashboard, Admin)
-  - Dev server proxies to backend at `localhost:3001`
+  - `src/components/` - Reusable UI components
+  - `src/types/` - TypeScript type definitions
+  - `src/mocks/` - Mock data for development
 
-- **`database-schemas/`** - PostgreSQL schemas and migrations
-  - `schema.sql` - Main schema with event sourcing tables (~610 lines)
+- **`database-schemas/`** - PostgreSQL schema definitions and migrations
+  - `schema.sql` - Full database schema (26KB+) with event sourcing tables (~610 lines)
   - `mvp_schema.sql` - Simplified schema for MVP
-  - `init.sql`, `seed-*.sql` - Initialization and seeding scripts
+  - `init.sql` - Database initialization script
+  - `seed-data-providers.sql` - Seed data for sustainability data providers
+  - `seed-plans.sql` - Subscription plan seeding
+  - `migrations/` - Migration scripts with timestamps
   - **Key tables**: Users, Companies, Suppliers, Certifications, FSC_Certifications, Product_Events, Certification_Events, Supply_Chain_Events
 
-- **`docker-compose.yml`** - Three-service stack
+- **`docker-compose.yml`** - Infrastructure orchestration
   - `db` service: PostgreSQL 15 on port 5432 (container: `greenchainz-db`)
   - `backend` service: Express API on port 3001 (container: `greenchainz-backend`)
   - `frontend` service: Vite dev server on port 5173 (container: `greenchainz-frontend`)
   - Environment variables: `POSTGRES_HOST=db` for inter-container communication
+  - Volumes: Persistent PostgreSQL data in `greenchainz-db-data` volume
 
-⚠️ **Gotcha**: Empty `green-sourcing-b2b-app/` directory at root is a structural artifact - ignore it.
-
-## Critical Patterns and Conventions
-
-### Authentication & Authorization
-- **JWT-based auth**: `middleware/auth.js` exports `authenticateToken` and `authorizeRoles(...roles)`
-- **OAuth providers**: Google, GitHub, LinkedIn, Microsoft via Passport.js (`config/passport.js`)
-- **Supabase integration**: Frontend uses Supabase Auth for OAuth flows; backend validates JWTs
-- **Token storage**: Frontend stores JWT in `localStorage` under key `greenchainz-token`
-- **Role system**: Users have roles ('Admin', 'Buyer', 'Supplier') - check with `authorizeRoles('Admin', 'Supplier')`
-
-### Database Access Pattern
-- **Always use the connection pool**: `const { pool } = require('./db');`
-- **Environment-driven config**: `backend/db.js` reads `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` from `.env`
-- **Containerized host**: Use `POSTGRES_HOST=db` in docker-compose (not `localhost`)
-- **Parameterized queries**: Always use `$1, $2` placeholders to prevent SQL injection
-- **Event sourcing**: Log all state changes via `eventLogger.js` functions (immutable, hash-chained)
-
-### External Provider Integration
-- **Abstract base class**: All providers extend `providers/baseProvider.js`
-- **Workflow**: `fetch()` → `transform()` → `validate()` → `insertRecords()`
-- **Example**: `providers/fscMock.js` reads JSON, transforms to schema, validates FSC cert numbers
-- **Registration**: Providers tracked in `Data_Providers` table with status, API costs, last sync timestamp
-
-### Frontend-Backend Communication
-- **Base URL**: Frontend uses `http://localhost:3001/api` (see `frontend/src/lib/api.ts`)
-- **JWT injection**: Axios interceptor adds `Authorization: Bearer <token>` header automatically
-- **CORS**: Backend allows `http://localhost:5173` (frontend dev server) in `cors()` middleware
-- **Supabase Edge Functions**: Used for transactional emails (password reset, welcome emails)
-
-## Developer Workflows
-
-### Full Stack Startup (Docker Compose)
-
-**Start all services** (db, backend, frontend):
-```bash
-docker compose up -d
-
-This repository contains the GreenChainz B2B platform - a verified sustainable sourcing platform that serves as the global trust layer for sustainable commerce. The stack uses Node.js/Express backend, React/Vite frontend with TypeScript, and PostgreSQL database orchestrated via Docker Compose.
-
-## Architecture and Source of Truth
-
-### Primary Working Tree
-**Always prefer these top-level directories** when making changes:
-
-- **`backend/`** - Node.js + Express API server
-  - Entry point: `backend/index.js`
-  - **Current state**: Fully functional Express server with comprehensive REST API
-  - **Tech stack**: Express 4.18, PostgreSQL (via `pg`), JWT auth, Passport.js OAuth
-  - **Key dependencies**: 
-    - Authentication: `bcrypt`, `jsonwebtoken`, `passport`, `express-session`
-    - OAuth providers: `passport-google-oauth20`, `passport-github2`, `passport-linkedin-oauth2`, `passport-microsoft`
-    - Database: `pg` (PostgreSQL client)
-    - Email: `nodemailer`
-    - API docs: `swagger-ui-express`, OpenAPI 3.0 spec in `openapi.yaml`
-    - Data providers: FSC mock integration, verification scoring
-  - **Structure**:
-    ```
-    backend/
-    ├── index.js           # Main Express app entry point
-    ├── db.js              # PostgreSQL connection pool
-    ├── openapi.yaml       # OpenAPI 3.0 API specification
-    ├── config/            # Configuration (passport strategies)
-    ├── middleware/        # Auth middleware (JWT, role-based access)
-    ├── providers/         # External data provider integrations (FSC)
-    ├── services/          # Business logic (verification scores, mailer, error monitoring)
-    ├── scripts/           # Database seeding scripts
-    └── public/            # Static admin dashboard files
-    ```
-
-- **`frontend/`** - React + Vite + TypeScript application
-  - **Current state**: Fully scaffolded modern React SPA with TypeScript
-  - **Tech stack**: 
-    - Build tool: Vite 7.x
-    - Framework: React 19.x with TypeScript
-    - Routing: React Router DOM 6.x
-    - Styling: Tailwind CSS 3.x with autoprefixer
-    - Icons: Heroicons
-    - API client: Axios
-    - Backend integration: Supabase client (`@supabase/supabase-js`)
-  - **Dev server**: Runs on port 5173 (Vite default)
-  - **Build command**: `npm run build` (outputs to `dist/`)
-  - **Linting**: ESLint with React hooks and TypeScript support
-  - **Structure**:
-    ```
-    frontend/
-    ├── src/
-    │   ├── main.tsx       # App entry point
-    │   ├── App.tsx        # Root component
-    │   ├── components/    # Reusable UI components
-    │   ├── pages/         # Route pages
-    │   ├── api/           # API client utilities
-    │   ├── context/       # React context providers
-    │   ├── types/         # TypeScript type definitions
-    │   ├── lib/           # Utility functions
-    │   └── mocks/         # Mock data for development
-    ├── public/            # Static assets
-    └── index.html         # HTML entry point
-    ```
-
-- **`database-schemas/`** - PostgreSQL schema definitions and migrations
-  - **Current state**: Contains production schema with migrations
-  - **Files**:
-    - `schema.sql` - Full database schema (26KB+)
-    - `init.sql` - Database initialization script
-    - `mvp_schema.sql` - MVP-specific schema
-    - `seed-data-providers.sql` - Seed data for sustainability data providers
-    - `seed-plans.sql` - Subscription plan seeding
-    - `migrations/` - Migration scripts with timestamps
-  - **Pattern**: Raw SQL files with manual migration tracking
-
-- **`docker-compose.yml`** - Infrastructure orchestration
-  - **Current state**: Defines all three services: database, backend, and frontend
-  - **Services**:
-    - `db` (PostgreSQL 15) - Port 5432
-    - `backend` (Node.js/Express) - Port 3001
-    - `frontend` (Vite dev server) - Port 5173
-  - **Networking**: Services communicate via Docker network, backend connects to `db:5432`
-  - **Volumes**: Persistent PostgreSQL data in `greenchainz-db-data` volume
-
-### Repository Structure Gotcha
-⚠️ **Important**: There is an empty nested directory `green-sourcing-b2b-app/` at the repository root. This is a structural artifact - **always work in the top-level directories** (`backend/`, `frontend/`, `database-schemas/`) to avoid confusion and drift between duplicate structures.
+⚠️ **Gotcha**: Empty `green-sourcing-b2b-app/` directory at root is a structural artifact - ignore it. **Always work in the top-level directories** (`backend/`, `frontend/`, `database-schemas/`).
 
 ## Runtime Configuration and Ports
 
@@ -460,6 +344,34 @@ ORDER BY Timestamp ASC;
    ```
 
 
+## Critical Patterns and Conventions
+
+### Authentication & Authorization
+- **JWT-based auth**: `middleware/auth.js` exports `authenticateToken` and `authorizeRoles(...roles)`
+- **OAuth providers**: Google, GitHub, LinkedIn, Microsoft via Passport.js (`config/passport.js`)
+- **Supabase integration**: Frontend uses Supabase Auth for OAuth flows; backend validates JWTs
+- **Token storage**: Frontend stores JWT in `localStorage` under key `greenchainz-token`
+- **Role system**: Users have roles ('Admin', 'Buyer', 'Supplier') - check with `authorizeRoles('Admin', 'Supplier')`
+
+### Database Access Pattern
+- **Always use the connection pool**: `const { pool } = require('./db');`
+- **Environment-driven config**: `backend/db.js` reads `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` from `.env`
+- **Containerized host**: Use `POSTGRES_HOST=db` in docker-compose (not `localhost`)
+- **Parameterized queries**: Always use `$1, $2` placeholders to prevent SQL injection
+- **Event sourcing**: Log all state changes via `eventLogger.js` functions (immutable, hash-chained)
+
+### External Provider Integration
+- **Abstract base class**: All providers extend `providers/baseProvider.js`
+- **Workflow**: `fetch()` → `transform()` → `validate()` → `insertRecords()`
+- **Example**: `providers/fscMock.js` reads JSON, transforms to schema, validates FSC cert numbers
+- **Registration**: Providers tracked in `Data_Providers` table with status, API costs, last sync timestamp
+
+### Frontend-Backend Communication
+- **Base URL**: Frontend uses `http://localhost:3001/api` (see `frontend/src/lib/api.ts`)
+- **JWT injection**: Axios interceptor adds `Authorization: Bearer <token>` header automatically
+- **CORS**: Backend allows `http://localhost:5173` (frontend dev server) in `cors()` middleware
+- **Supabase Edge Functions**: Used for transactional emails (password reset, welcome emails)
+
 ## Coding Patterns and Conventions
 
 ### Backend Route Structure
@@ -708,67 +620,6 @@ const suppliers = response.data;
 
 ## Integration Points and Dependencies
 
-### Backend Dependencies (`backend/package.json`)
-- **Core**: `express`, `pg` (PostgreSQL client), `dotenv`, `cors`
-- **Authentication**: `bcrypt`, `jsonwebtoken`, `passport`, `passport-google-oauth20`, `passport-github2`, `passport-linkedin-oauth2`, `passport-microsoft`
-- **Session**: `express-session`
-- **Email**: `nodemailer`
-- **API Docs**: `swagger-ui-express`, `yaml`
-- **Web Scraping**: `cheerio` (for provider data extraction)
-- **CSV Processing**: `csv-parser`
-- **Supabase**: `@supabase/supabase-js`
-
-### Frontend Dependencies (`frontend/package.json`)
-- **Core**: `react@19`, `react-dom@19`, `react-router-dom`
-- **HTTP Client**: `axios`
-- **UI**: `@heroicons/react`, `tailwindcss`
-- **Supabase**: `@supabase/supabase-js`
-- **Build Tool**: `vite`
-- **TypeScript**: Full TypeScript support with type definitions
-
-### Root Dependencies (`package.json`)
-- **Email Templates**: `@react-email/components`, `@react-email/render`, `@react-email/tailwind`
-- **Email Service**: `resend`
-- **Supabase**: `@supabase/supabase-js`
-- **Analytics**: `@vercel/speed-insights`
-
-### External Integrations
-- **Supabase**: OAuth authentication, Edge Functions for transactional emails
-- **Data Providers**: FSC Mock (file-based), future: B Corp API, EPD databases
-- **Future**: Stripe for payments, AWS S3 for file storage
-=======
-**Environment variables are managed via `.env` file** (never commit this file!):
-
-1. **Copy the template**:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Required variables** (see `.env.example` for full list):
-   - `DB_USER`, `DB_PASSWORD`, `DB_NAME` - Database credentials
-   - `JWT_SECRET` - Secret for JWT token signing
-   - `SESSION_SECRET` - Secret for session management (min 32 chars)
-   - `FRONTEND_URL` - Frontend URL for CORS (default: http://localhost:5173)
-   - OAuth credentials: `GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, etc.
-   - Supabase: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-
-3. **Environment-specific configs**:
-   - Development: Use `.env` with localhost URLs
-   - Docker Compose: Use `POSTGRES_HOST=db` (service name)
-   - Production: Set all variables in hosting platform (Vercel, Railway, etc.)
-
-4. **Frontend variables**:
-   - Must be prefixed with `VITE_` to be accessible in browser
-   - Access via `import.meta.env.VITE_API_BASE_URL`
-   - Embedded at build time, not runtime
-
-5. **Backend variables**:
-   - Loaded via `dotenv` in `backend/index.js`
-   - Access via `process.env.VARIABLE_NAME`
-   - Available at runtime
-
-## Integration Points and Dependencies
-
 ### Current Dependencies
 
 **Backend** (`backend/package.json`):
@@ -884,25 +735,6 @@ const suppliers = response.data;
 - Create test database: `greenchainz_test`
 - Use transactions in tests (rollback after each test)
 - Seed test data in `database-schemas/test-data.sql`
-
-## Key Files Reference Guide
-
-| File | Purpose | Current State |
-|------|---------|---------------|
-| `docker-compose.yml` | Infrastructure definition | Defines 3 services: db, backend, frontend |
-| `backend/index.js` | Express API entry point | Full REST API with auth, OAuth, database |
-| `backend/db.js` | PostgreSQL connection pool | Database connection configuration |
-| `backend/openapi.yaml` | API specification | OpenAPI 3.0 spec for all endpoints |
-| `backend/middleware/auth.js` | Auth middleware | JWT verification, role-based access |
-| `backend/services/` | Business logic | Verification scoring, email, monitoring |
-| `frontend/src/main.tsx` | React app entry | TypeScript + React 19 entry point |
-| `frontend/src/App.tsx` | Root component | Main app component with routing |
-| `frontend/vite.config.ts` | Vite configuration | Build tool configuration |
-| `frontend/tailwind.config.js` | Tailwind config | CSS framework configuration |
-| `database-schemas/schema.sql` | Main database schema | Full table definitions (26KB+) |
-| `database-schemas/migrations/` | Database migrations | Timestamped migration scripts |
-| `.env.example` | Environment template | All required env variables documented |
-| `README.md` | Project overview | Platform mission, tech stack, status |
 
 ## Common Pitfalls and Gotchas
 
@@ -1217,7 +1049,7 @@ docker exec -it greenchainz-frontend env | grep VITE
 
 ---
 
-**Last Updated**: 2025-11-18  
+**Last Updated**: 2025-11-22  
 **Repository**: [jnorvi5/green-sourcing-b2b-app](https://github.com/jnorvi5/green-sourcing-b2b-app)  
 **Platform**: GreenChainz - Global Trust Layer for Sustainable Commerce
 

@@ -15,11 +15,11 @@ export default function Logo({ height = 40, showText = true, variant = 'main', c
   const getLogoSrc = () => {
     switch (variant) {
       case 'icon':
-        return '/brand/logo-icon.png';
+        return '/brand/greenchainz-logo-icon.png';
       case 'white':
-        return '/brand/logo-white.png';
+        return '/brand/greenchainz-logo-white.png';
       default:
-        return '/brand/greenchainz-logo.png';
+        return '/brand/greenchainz-logo-full.png';
     }
   };
 
@@ -34,14 +34,14 @@ export default function Logo({ height = 40, showText = true, variant = 'main', c
           onError={() => setImgOk(false)}
         />
       ) : (
-        // Fallback with brand color
+        // Fallback with GreenChainz brand colors
         <div
           className="rounded-lg shadow-lg"
           style={{
             width: height,
             height: height,
-            background: 'linear-gradient(135deg, #21808D 0%, #32B8C6 100%)',
-            boxShadow: '0 0 20px rgba(33, 128, 141, 0.3)',
+            background: 'linear-gradient(135deg, #4C7D5D 0%, #7FA884 100%)',
+            boxShadow: '0 0 20px rgba(76, 125, 93, 0.3)',
           }}
           aria-hidden
         />

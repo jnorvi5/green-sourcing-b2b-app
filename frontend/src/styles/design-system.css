@@ -5,11 +5,14 @@
 
 :root {
   /* ============ BRAND COLORS ============ */
+  /* GreenChainz Brand Palette - From Logo */
 
-  /* Primary Green - Main brand color (Teal/Green) */
-  --color-primary: #21808d;
-  --color-primary-dark: #1a6873;
-  --color-primary-light: #32b8c6;
+  /* Primary Green Palette */
+  --color-primary: #4C7D5D; /* Forest green - main brand */
+  --color-primary-dark: #1D3D34; /* Deep forest - dark variant */
+  --color-primary-light: #7FA884; /* Sage green - light variant */
+  --color-primary-lighter: #B4D5B6; /* Light mint - accent */
+  --color-primary-teal: #2A5F5C; /* Dark teal - secondary */
 
   /* Background Colors */
   --color-bg-light: #fcfcf9; /* Cream/Off-white */

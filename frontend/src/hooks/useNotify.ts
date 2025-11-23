@@ -4,9 +4,9 @@ export const useNotify = () => {
   const success = (message: string, description?: string) => {
     toast.success(message, {
       description,
-      className: "border-l-4 border-[#21808D] bg-[#32B8C6]/10 text-[#13343B]",
+      className: "border-l-4 border-[#4C7D5D] bg-[#7FA884]/10 text-[#13343B]",
       style: {
-        borderLeftColor: '#21808D',
+        borderLeftColor: '#4C7D5D',
       },
     });
   };
@@ -24,9 +24,9 @@ export const useNotify = () => {
   const info = (message: string, description?: string) => {
     toast.info(message, {
       description,
-      className: "border-l-4 border-[#21808D] bg-[#DBEAFE] text-[#1E3A8A]",
+      className: "border-l-4 border-[#4C7D5D] bg-[#DBEAFE] text-[#1E3A8A]",
       style: {
-        borderLeftColor: '#21808D',
+        borderLeftColor: '#4C7D5D',
       },
     });
   };
