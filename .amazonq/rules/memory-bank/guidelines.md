@@ -1,4 +1,4 @@
-# Development Guidelines & Patterns
+# Djkevelopment Guidelines & Patterns
 
 ## Code Quality Standards
 
