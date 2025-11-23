@@ -1,4 +1,3 @@
-import React from 'react';
 import { useComparisonStore } from '../store/useComparisonStore';
 import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import { RFQ } from '../types';
+import type { RFQ } from '../types';
 
 export function RfqsTab({ rfqs }: { rfqs: RFQ[] }) {
     return (

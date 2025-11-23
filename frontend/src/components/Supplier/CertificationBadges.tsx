@@ -1,5 +1,5 @@
 import React from 'react';
-import { Certification } from '../../mocks/supplierData';
+import type { Certification } from '../../mocks/supplierData';
 
 interface CertificationBadgesProps {
   certifications: Certification[];

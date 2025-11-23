@@ -1,5 +1,5 @@
 import React from 'react';
-import { Supplier } from '../../mocks/supplierData';
+import type { Supplier } from '../../mocks/supplierData';
 
 interface ProfileHeaderProps {
   supplier: Supplier;

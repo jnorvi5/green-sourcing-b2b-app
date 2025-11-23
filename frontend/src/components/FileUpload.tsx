@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, type ChangeEvent } from 'react';
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;

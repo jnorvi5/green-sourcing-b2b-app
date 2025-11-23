@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MockProduct } from '../mocks/productData';
+import type { MockProduct } from '../mocks/productData';
 
 interface ComparisonStore {
   products: MockProduct[];

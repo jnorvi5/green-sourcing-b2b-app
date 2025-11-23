@@ -1,4 +1,4 @@
-import { useState, FormEvent, FocusEvent } from 'react';
+import { useState, type FormEvent, type FocusEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -13,13 +13,19 @@ const validateEmail = (email: string) => {
 const validatePassword = (password: string) => {
     if (!password) return "Password is required.";
     if (password.length < 8) return "Password must be at least 8 characters.";
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/;
     if (!passwordRegex.test(password)) return "Password must include 1 uppercase letter, 1 number, and 1 special character.";
     return "";
 };
 
 // --- Reusable Components with Error Handling ---
-const Input = ({ id, label, error, ...props }) => (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    id: string;
+    label: string;
+    error?: string;
+}
+
+const Input = ({ id, label, error, ...props }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}
@@ -38,7 +44,12 @@ const Input = ({ id, label, error, ...props }) => (
     </div>
 );
 
-const Dropdown = ({ id, label, ...props }) => (
+interface DropdownProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+    id: string;
+    label: string;
+}
+
+const Dropdown = ({ id, label, ...props }: DropdownProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">{label}</label>
         <select id={id} name={id} {...props} className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition bg-white" />
@@ -295,7 +306,7 @@ export default function Signup() {
                             </div>
                     </div>
 
-                    {process.env.NODE_ENV === 'development' && (
+                    {import.meta.env.DEV && (
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"

@@ -12,7 +12,7 @@ const MOCK_SUPPLIER = {
 };
 
 export default function SupplierProfilePage() {
-  const { id } = useParams();
+  const { id: _id } = useParams();
   const [activeTab, setActiveTab] = useState('reviews');
 
   // In a real implementation, you would fetch supplier data here based on `id`

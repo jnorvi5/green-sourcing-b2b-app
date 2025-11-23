@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import FilterPanel from '../components/FilterPanel';
 import ProductGrid from '../components/ProductGrid';
 import ProductGridSkeleton from '../components/ProductGridSkeleton';
-import { Product } from '../types';
+import type { Product } from '../types';
 import { supabase } from '../lib/supabase';
 
 const SearchPage = () => {
