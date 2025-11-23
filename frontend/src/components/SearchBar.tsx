@@ -1,7 +1,7 @@
 // frontend/src/components/SearchBar.tsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Product } from '../types'; // Assuming Product type has necessary fields
+import type { Product } from '../types'; // Assuming Product type has necessary fields
 import './SearchBar.css';
 
 interface SearchBarProps {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import MobileNav from './MobileNav';
 import Logo from './Logo'; // Assuming Logo component exists

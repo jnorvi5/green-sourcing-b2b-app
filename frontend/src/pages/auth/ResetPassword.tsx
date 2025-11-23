@@ -1,4 +1,4 @@
-import { useState, FormEvent, FocusEvent } from 'react';
+import { useState, type FormEvent, type FocusEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
@@ -11,7 +11,13 @@ const validateEmail = (email: string) => {
 };
 
 // --- Reusable Input Component with Error Handling ---
-const Input = ({ id, label, error, ...props }) => (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    id: string;
+    label: string;
+    error?: string;
+}
+
+const Input = ({ id, label, error, ...props }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}

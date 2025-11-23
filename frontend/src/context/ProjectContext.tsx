@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { MOCK_PROJECTS, Project } from '../mocks/projectData';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import { MOCK_PROJECTS, type Project } from '../mocks/projectData';
 
 interface ProjectContextType {
   projects: Project[];

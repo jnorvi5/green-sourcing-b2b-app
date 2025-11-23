@@ -1,7 +1,7 @@
 import React from 'react';
-import { Product as MockProduct } from '../../mocks/supplierData';
+import type { Product as MockProduct } from '../../mocks/supplierData';
 import ProductCard from '../ProductCard';
-import { Product as ProductCardType } from '../../types';
+import type { Product as ProductCardType } from '../../types';
 
 interface SupplierProductsProps {
   products: MockProduct[];

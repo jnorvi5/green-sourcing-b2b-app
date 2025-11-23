@@ -1,5 +1,5 @@
 import { StarIcon } from '@heroicons/react/24/solid';
-import { Review } from '../../mocks/reviewData';
+import type { Review } from '../../mocks/reviewData';
 
 interface RatingDistributionProps {
   reviews: Review[];

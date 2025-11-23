@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import AdminSidebar from '../../components/Admin/AdminSidebar';
 

@@ -9,7 +9,8 @@ export interface User {
 }
 
 export interface Supplier extends User {
-  // Supplier-specific fields can be added here if any in the future
+  // Supplier-specific fields
+  verification_status?: 'verified' | 'pending' | 'rejected';
 }
 
 export interface Product {
@@ -39,6 +40,16 @@ export interface RFQ {
   quantity?: number;
   message?: string;
   created_at: string; // Timestamp
+  status: 'New' | 'Responded' | 'Archived';
+}
+
+export interface RFQData {
+  buyer_email: string;
+  project_name: string;
+  message: string;
+  quantity?: number;
+  timeline?: string;
+  contact_preference?: string;
 }
 
 export interface FilterState {

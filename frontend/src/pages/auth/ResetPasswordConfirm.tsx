@@ -3,7 +3,17 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
-const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true }) => (
+interface InputProps {
+    id: string;
+    label: string;
+    type?: string;
+    value?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    placeholder?: string;
+    required?: boolean;
+}
+
+const Input = ({ id, label, type = 'password', value, onChange, placeholder, required = true }: InputProps) => (
     <div>
         <label htmlFor={id} className="block text-sm font-medium text-foreground">
             {label}
@@ -32,7 +42,7 @@ export default function ResetPasswordConfirm() {
     // This effect handles the session update from the reset token in the URL.
     // Supabase automatically detects the `access_token` and updates the session.
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
             if (event === 'PASSWORD_RECOVERY') {
                 // The user is now in a password recovery state.
                 // We don't need to do anything here, just let them set a new password.

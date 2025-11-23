@@ -64,7 +64,7 @@ export default function RFQModal({ isOpen, onClose, onSubmit, productName }: RFQ
     try {
       await onSubmit(formData);
       notifySuccess('Quote Request Sent Successfully', `Your request for ${productName} has been sent.`);
-    } catch (error) {
+    } catch (_error) {
       notifyError('Failed to send request', 'Please try again later.');
     }
   };

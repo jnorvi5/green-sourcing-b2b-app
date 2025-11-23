@@ -1,3 +1,9 @@
+---
+name: "GreenChainz Code Review Agent"
+description: "Reviews the entire GreenChainz repo for code, configuration, and deployment issues, with a focus on why frontend changes may not appear in production."
+model: "gpt-4.1-mini"
+---
+
 # Copilot Custom Code Review Instructions
 
 ## Objective
@@ -17,5 +23,3 @@
 - Write a report as CODE_REVIEW_REPORT.md in the root folder.
 - Suggest terminal commands for me to test or deploy the fixes.
 - If possible, create scripts/tasks to automate fixing the common issues.
-
-

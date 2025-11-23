@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import Logo from '../components/Logo';
 import WhySection from '../components/LandingPage/WhySection';
 import Footer from '../components/Footer';
-
+import Hero from '../components/home/Hero';
+import TrustBar from '../components/home/TrustBar';
 import SEO from '../components/SEO';
 
 export function LandingPage() {
@@ -40,7 +41,8 @@ export function LandingPage() {
             </header>
 
             {/* Hero Banner */}
-            <section className="relative overflow-hidden">
+            <Hero />
+            <TrustBar />
                 <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-cyan-500/10" />
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 relative">
                     <div className="text-center max-w-4xl mx-auto">
