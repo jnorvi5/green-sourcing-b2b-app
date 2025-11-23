@@ -8,13 +8,6 @@ export default {
   theme: {
     extend: {
       colors: {
-<<<<<<< HEAD
-        // GreenChainz Brand Colors
-        primary: {
-          DEFAULT: '#21808D',      // Teal/Green - Main brand color
-          dark: '#1A6873',         // Hover/active states
-          light: '#32B8C6',        // Accents & highlights
-=======
         // GreenChainz Brand Colors - Updated for premium feel
         primary: {
           DEFAULT: '#10b981', // Emerald-500 - Main brand green
@@ -28,7 +21,6 @@ export default {
           teal: '#14b8a6',
           amber: '#f59e0b',
           purple: '#a855f7',
->>>>>>> c2cd445727aaaed874df2d05516ad7f6573cd95c
         },
         // Background Colors
         background: {
@@ -41,10 +33,6 @@ export default {
           DEFAULT: '#13343B',      // Slate - Primary text
           secondary: '#626C71',    // Gray - Secondary text
           light: '#8E9BA0',        // Light gray - Muted text
-        },
-        // Accent & Semantic Colors
-        accent: {
-          brown: '#5E5240',        // Warm brown accent
         },
         success: {
           DEFAULT: '#059669',

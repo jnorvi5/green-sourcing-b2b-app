@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-import React, { useState } from 'react';
-=======
->>>>>>> 7f27a4c2cf56bf868d22b93b5a77bee9fd20ba55
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   HomeIcon,
@@ -82,4 +79,3 @@ export default function Sidebar() {
     </>
   );
 }
-
