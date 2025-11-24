@@ -796,6 +796,162 @@ app.post('/api/v1/buyers', authenticateToken, async (req, res) => {
   }
 });
 
+// ============================================
+// DATA SCOUT ENDPOINTS
+// ============================================
+
+const dataScoutService = require('./services/dataScoutService');
+
+// Search for EPDs across multiple sources
+app.get('/api/v1/data-scout/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q) {
+      return res.status(400).json({ error: 'Query parameter "q" is required' });
+    }
+
+    const results = await dataScoutService.aggregateSearch(q);
+    
+    res.json({
+      query: q,
+      count: results.length,
+      results: results
+    });
+  } catch (err) {
+    console.error('Data Scout search error:', err);
+    res.status(500).json({ error: 'Failed to perform Data Scout search' });
+  }
+});
+
+// ============================================
+// MATCHMAKER ENDPOINTS
+// ============================================
+
+const matchmakerService = require('./services/matchmakerService');
+
+// Find matches for a project
+app.post('/api/v1/matchmaker/matches', async (req, res) => {
+  try {
+    const criteria = req.body;
+    
+    // Basic validation
+    if (!criteria.material_needed || !criteria.location) {
+      return res.status(400).json({ error: 'Material needed and location are required' });
+    }
+
+    const matches = await matchmakerService.findMatches(criteria);
+    
+    res.json({
+      count: matches.length,
+      matches: matches
+    });
+  } catch (err) {
+    console.error('Matchmaker error:', err);
+    res.status(500).json({ error: 'Failed to find matches' });
+  }
+});
+
+// ============================================
+// CERTIFIER ENDPOINTS
+// ============================================
+
+const certifierService = require('./services/certifierService');
+
+// Assess EPD readiness
+app.post('/api/v1/certifier/assess', async (req, res) => {
+  try {
+    const input = req.body;
+    
+    // Basic validation
+    if (!input.product_name || !input.manufacturer) {
+      return res.status(400).json({ error: 'Product name and manufacturer are required' });
+    }
+
+    const assessment = certifierService.assessReadiness(input);
+    
+    res.json(assessment);
+  } catch (err) {
+    console.error('Certifier error:', err);
+    res.status(500).json({ error: 'Failed to assess readiness' });
+  }
+});
+
+// ============================================
+// COMPLIANCE ORACLE ENDPOINTS
+// ============================================
+
+const complianceOracleService = require('./services/complianceOracleService');
+
+// Generate Compliance Report
+app.post('/api/v1/compliance/report', async (req, res) => {
+  try {
+    const projectData = req.body;
+    
+    // Basic validation
+    if (!projectData.project_name || !projectData.materials_selected) {
+      return res.status(400).json({ error: 'Project name and materials are required' });
+    }
+
+    const report = complianceOracleService.generateComplianceReport(projectData);
+    
+    res.json(report);
+  } catch (err) {
+    console.error('Compliance Oracle error:', err);
+    res.status(500).json({ error: 'Failed to generate compliance report' });
+  }
+});
+
+// ============================================
+// RFQ ROUTER ENDPOINTS
+// ============================================
+
+const rfqRouterService = require('./services/rfqRouterService');
+
+// Route RFQ
+app.post('/api/v1/rfq-router/route', async (req, res) => {
+  try {
+    const rfqDetails = req.body;
+    
+    // Basic validation
+    if (!rfqDetails.material_needed || !rfqDetails.location) {
+      return res.status(400).json({ error: 'Material needed and location are required' });
+    }
+
+    const routingAnalysis = await rfqRouterService.routeRFQ(rfqDetails);
+    
+    res.json(routingAnalysis);
+  } catch (err) {
+    console.error('RFQ Router error:', err);
+    res.status(500).json({ error: 'Failed to route RFQ' });
+  }
+});
+
+// ============================================
+// MARKET INTEL ENDPOINTS
+// ============================================
+
+const marketIntelService = require('./services/marketIntelService');
+
+// Analyze Competitiveness
+app.post('/api/v1/market-intel/analyze', async (req, res) => {
+  try {
+    const input = req.body;
+    
+    // Basic validation
+    if (!input.supplier_name || !input.product_category || !input.current_price_per_sqft) {
+      return res.status(400).json({ error: 'Supplier name, category, and price are required' });
+    }
+
+    const analysis = marketIntelService.analyzeCompetitiveness(input);
+    
+    res.json(analysis);
+  } catch (err) {
+    console.error('Market Intel error:', err);
+    res.status(500).json({ error: 'Failed to analyze market' });
+  }
+});
+
 // Send RFQ to a supplier
 app.post('/api/v1/rfqs', authenticateToken, authorizeRoles('Buyer'), async (req, res) => {
   try {

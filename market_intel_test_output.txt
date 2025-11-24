@@ -1,0 +1,22 @@
+🧪 Starting Market Intel Tests...
+
+Test 1: Analyze Competitiveness for Bamboo Flooring
+[Market Intel] Analyzing for: EcoTimber (Bamboo flooring)
+Your Position: You're in the top 25% most expensive.
+Price Percentile: 100
+
+Competitor Benchmarks:
+- Competitor A: $5.21 (Win Rate: 54%)
+- Competitor B: $4.71 (Win Rate: 54%)
+- Competitor C: $4.34 (Win Rate: 67%)
+
+Pricing Recommendation:
+Optimal Price: $5.5
+Rationale: Market average is $4.75. Your certifications justify a premium to $5.50.
+
+Demand Trends (West Coast):
+Trend: +4% vs. last month
+Top Certs: FSC, LEED, FloorScore
+
+✅ Generated 3 mock competitors
+✅ Pricing recommendation generated

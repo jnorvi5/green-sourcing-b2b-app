@@ -1,0 +1,68 @@
+🧪 Starting Compliance Oracle Tests...
+
+Test 1: Generate Report
+[Compliance Oracle] Generating report for: Green Office Tower Seattle
+Project: Green Office Tower Seattle
+LEED Credits: 2
+Buy Clean Status: PASS
+Carbon Budget Status: OVER BUDGET - 105% of budget used
+
+Detailed Report Structure:
+{
+  "project_name": "Green Office Tower Seattle",
+  "certification_target": "LEED Gold",
+  "leed_credit_calculation": {
+    "total_credits_earned": 2,
+    "breakdown": {
+      "MR Credit 4: Material Ingredients": 1,
+      "EQ Credit 2: Low-Emitting Materials": 1
+    },
+    "certification_status": {
+      "current_total": 42,
+      "target": "LEED Gold (60-79 credits)",
+      "gap": 18,
+      "likelihood": "On track"
+    },
+    "recommendations": [
+      "Need 18 more EPD-verified products for MR Credit 2 (Option 1).",
+      "Select more FSC-certified or high-recycled-content materials for MR Credit 3."
+    ]
+  },
+  "buy_clean_act_compliance": {
+    "compliance_status": "PASS",
+    "gwp_limits_check": {
+      "Structural steel": {
+        "actual_gwp": 450,
+        "limit_gwp": 630,
+        "margin": 180,
+        "status": "COMPLIANT"
+      },
+      "Concrete": {
+        "actual_gwp": 280,
+        "limit_gwp": 400,
+        "margin": 120,
+        "status": "COMPLIANT"
+      }
+    },
+    "documentation_generated": [
+      "Buy Clean Act Compliance Report (PDF)",
+      "EPD Verification Letter for RecycledSteel Co",
+      "EPD Verification Letter for CarbonCure NW"
+    ]
+  },
+  "embodied_carbon_budget_tracking": {
+    "project_carbon_budget_kg_co2e": 750000,
+    "current_emissions_kg_co2e": 790000,
+    "remaining_budget_kg_co2e": -40000,
+    "budget_utilization_pct": 105,
+    "status": "OVER BUDGET - 105% of budget used",
+    "mitigation_options": [
+      "Switch to mass timber framing → Save ~20% emissions",
+      "Use CarbonCure concrete → Save ~10% emissions"
+    ]
+  },
+  "timestamp": "2025-11-24T19:33:28.805Z"
+}
+
+✅ LEED calculation working
+✅ Buy Clean check working

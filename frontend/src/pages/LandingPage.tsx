@@ -43,6 +43,7 @@ export function LandingPage() {
             {/* Hero Banner */}
             <Hero />
             <TrustBar />
+<<<<<<< Updated upstream
 
             <section className="relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-cyan-500/10" />
@@ -57,123 +58,9 @@ export function LandingPage() {
                             <span>FOUNDING MEMBERS ONLY - Limited to 175 Spots</span>
                             <span className="text-lg">👑</span>
                         </div>
+=======
+>>>>>>> Stashed changes
 
-                        <h2 className="text-5xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
-                            Stop Greenwashing.{' '}
-                            <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
-                                Start Building Sustainably.
-                            </span>
-                        </h2>
-
-                        <div className="mb-8 max-w-3xl mx-auto">
-                            <div className="inline-block px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-green-500/10 to-teal-500/10 border-2 border-emerald-500/30 backdrop-blur-sm">
-                                <p className="text-2xl lg:text-3xl font-bold text-white mb-2">
-                                    <span className="text-emerald-400">GreenChainz:</span> Where Profit and Sustainability
-                                </p>
-                                <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                                    Are on the Same Side
-                                </p>
-                            </div>
-                        </div>
-
-                        <p className="text-xl text-slate-300 mb-6 max-w-3xl mx-auto leading-relaxed">
-                            The global trust layer for sustainable commerce. 
-                            We connect <span className="text-white font-semibold">verified green suppliers</span> with forward-thinking architects and builders who refuse to compromise—on quality OR sustainability.
-                        </p>
-
-                        <div className="mb-8 max-w-3xl mx-auto">
-                            <div className="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 border-2 border-blue-500/30 backdrop-blur-sm">
-                                <p className="text-xl lg:text-2xl font-bold text-white">
-                                    <span className="text-blue-400">We Authenticate and Verify</span>
-                                </p>
-                                <p className="text-xl lg:text-2xl font-bold text-slate-300">
-                                    So You Can Focus on the <span className="text-emerald-400">Build</span> and the <span className="text-purple-400">Design</span>
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
-                            <span className="text-emerald-400">✓</span> Zero greenwashing 
-                            <span className="mx-3">•</span> 
-                            <span className="text-emerald-400">✓</span> Blockchain-verified certifications 
-                            <span className="mx-3">•</span> 
-                            <span className="text-emerald-400">✓</span> Real cost savings
-                        </p>
-
-                        <div className="mb-12">
-                            <p className="text-2xl font-bold text-white">
-                                Let GreenChainz Help You Make <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">CENTS</span> of It All
-                            </p>
-                            <p className="text-sm text-slate-400 mt-2">(Both kinds 💰💡)</p>
-                        </div>
-
-                        {/* Powerful Mission-Driven CTAs */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                            <Link
-                                to="/signup"
-                                className="group relative px-10 py-5 rounded-xl bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 text-white font-bold text-xl shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 w-full sm:w-auto overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-                                <span className="relative flex items-center gap-3 justify-center">
-                                    <span className="text-2xl">🌍</span>
-                                    Start Building Green Today
-                                    <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                    </svg>
-                                </span>
-                                <div className="text-xs mt-1 opacity-90">Join 500+ sustainable builders</div>
-                            </Link>
-
-                            <Link
-                                to="/survey/architect"
-                                className="group px-10 py-5 rounded-xl border-2 border-emerald-500/60 bg-emerald-500/5 text-emerald-400 font-bold text-xl hover:bg-emerald-500/10 hover:border-emerald-400 transition-all duration-300 hover:scale-105 w-full sm:w-auto backdrop-blur-sm"
-                            >
-                                <span className="flex items-center gap-3 justify-center">
-                                    <span className="text-2xl">📊</span>
-                                    See Your Impact Score
-                                    <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                    </svg>
-                                </span>
-                                <div className="text-xs mt-1 opacity-75">Free sustainability assessment</div>
-                            </Link>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-sm flex-wrap">
-                            <a
-                                href="mailto:partnerships@greenchainz.com"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-400 transition-colors font-medium"
-                            >
-                                <span className="text-lg">🤝</span>
-                                <span>Supplier? Join Our Network</span>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                            <a
-                                href="mailto:careers@greenchainz.com"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:border-purple-400 transition-colors font-medium"
-                            >
-                                <span className="text-lg">💼</span>
-                                <span>We're Hiring! Join Our Team</span>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                            <a
-                                href="mailto:partnerships@greenchainz.com"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-teal-500/30 text-teal-400 hover:bg-teal-500/10 hover:border-teal-400 transition-colors font-medium"
-                            >
-                                <span className="text-lg">📡</span>
-                                <span>Data Provider Partners</span>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* FOUNDING MEMBERS ROYAL TREATMENT SECTION */}
             <section className="relative py-24 overflow-hidden">
