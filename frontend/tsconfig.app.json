@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
-=======
     "ignoreDeprecations": "5.0",
->>>>>>> 7f27a4c2cf56bf868d22b93b5a77bee9fd20ba55
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
