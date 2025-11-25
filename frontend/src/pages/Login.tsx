@@ -93,7 +93,7 @@ export default function Login() {
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
                     <Link to="/" className="inline-block">
-                        <img src="/assets/logo/greenchainz-full-400.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
+                        <img src="/assets/logo/greenchainz-logo-full.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
                     </Link>
                     <h2 className="mt-6 text-3xl font-bold text-white">Welcome Back to GreenChainz</h2>
                     <p className="mt-2 text-emerald-400 font-semibold italic text-lg">
