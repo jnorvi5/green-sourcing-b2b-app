@@ -53,3 +53,5 @@ coverage/
 .turbo/
 .next/
 
+# Python
+__pycache__/
