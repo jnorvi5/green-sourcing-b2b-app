@@ -48,6 +48,9 @@ coverage/
 *.lcov
 .nyc_output/
 
+# Python
+__pycache__/
+
 # Build tools & deployment
 .vercel/
 .turbo/
