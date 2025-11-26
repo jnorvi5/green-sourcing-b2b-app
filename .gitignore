@@ -53,3 +53,4 @@ coverage/
 .turbo/
 .next/
 
+\n# Python build artifacts\n__pycache__/\n.pytest_cache/
