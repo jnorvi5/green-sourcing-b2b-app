@@ -1,57 +1,80 @@
 #!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Exit if any of the required commands are not found.
-command -v az >/dev/null 2>&1 || { echo >&2 "Azure CLI ('az') is required but not installed. Aborting."; exit 1; }
-command -v gh >/dev/null 2>&1 || { echo >&2 "GitHub CLI ('gh') is required but not installed. Aborting."; exit 1; }
+# --- Configuration (User needs to set these for the GitHub part) ---
+# Example: GH_REPO="your-org/your-repo"
+GH_REPO=""
+# Example: SECRET_NAME="AZURE_CREDENTIALS"
+SECRET_NAME=""
 
-echo "Starting API key rotation process..."
+# 1. Verify Authentication
+echo "Verifying Azure login status..."
+if ! az account show > /dev/null 2>&1; then
+    echo "Error: You are not logged in to Azure. Please run 'az login' first."
+    exit 1
+fi
+echo "Azure account verified."
 
-# Step 1: Dynamically retrieve Azure account and service principal information.
-echo "Fetching Azure subscription, tenant, and client IDs..."
-SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-TENANT_ID=$(az account show --query tenantId -o tsv)
-CLIENT_ID=$(az ad sp list --display-name "http://greenchainz-sp" --query "[0].appId" -o tsv)
+# 2. Dynamically Extract Service Principal ID
+SP_DISPLAY_NAME="http://greenchainz-sp"
+echo "Fetching Application ID for Service Principal with display name: $SP_DISPLAY_NAME"
 
-if [ -z "$SUBSCRIPTION_ID" ] || [ -z "$TENANT_ID" ] || [ -z "$CLIENT_ID" ]; then
-  echo >&2 "Error: Failed to retrieve one or more required IDs from Azure. Aborting."
-  exit 1
+APP_ID=$(az ad sp list --display-name "$SP_DISPLAY_NAME" --query "[0].appId" -o tsv)
+
+if [ -z "$APP_ID" ]; then
+    echo "Error: Could not find a Service Principal with display name '$SP_DISPLAY_NAME'."
+    exit 1
+fi
+echo "Found Application ID: $APP_ID"
+
+# 3. Reset the Credential
+echo "Resetting credential for the Service Principal..."
+
+# Ensure jq is installed for JSON parsing
+if ! command -v jq &> /dev/null; then
+    echo "Error: 'jq' is not installed. Please install it to proceed."
+    exit 1
 fi
 
-echo "Successfully retrieved IDs."
-echo "  - Subscription ID: $SUBSCRIPTION_ID"
-echo "  - Tenant ID:       $TENANT_ID"
-echo "  - Client ID:       $CLIENT_ID"
+# The output of this command is a JSON object containing the new secret.
+NEW_CREDENTIAL=$(az ad sp credential reset --id "$APP_ID" --query "{appId:appId, displayName:displayName, name:name, password:password, tenant:tenant}" -o json)
 
-# Step 2: Reset the service principal credential to generate a new secret.
-echo "Resetting Azure Service Principal credential..."
-CLIENT_SECRET=$(az ad sp credential reset --name "http://greenchainz-sp" --query password -o tsv)
-
-if [ -z "$CLIENT_SECRET" ]; then
-  echo >&2 "Error: Failed to reset credential. The new secret is empty. Aborting."
-  exit 1
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to reset credential."
+    exit 1
 fi
 
-echo "Credential reset successful. A new client secret has been generated."
+NEW_SECRET=$(echo "$NEW_CREDENTIAL" | jq -r .password)
+echo "Credential successfully reset. IMPORTANT: This is the only time the new secret will be displayed."
+echo "New Secret: $NEW_SECRET"
 
-# Step 3: Construct the JSON payload for the GitHub secret.
-echo "Constructing JSON payload for GitHub secret..."
-JSON_PAYLOAD=$(printf '{
-  "clientId": "%s",
-  "clientSecret": "%s",
-  "subscriptionId": "%s",
-  "tenantId": "%s",
-  "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
-  "resourceManagerEndpointUrl": "https://management.azure.com/",
-  "activeDirectoryGraphResourceId": "https://graph.windows.net/",
-  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
-  "galleryEndpointUrl": "https://gallery.azure.com/",
-  "managementEndpointUrl": "https://management.core.windows.net/"
-}' "$CLIENT_ID" "$CLIENT_SECRET" "$SUBSCRIPTION_ID" "$TENANT_ID")
 
-# Step 4: Update the secret in GitHub.
-echo "Updating the AZURE_CREDENTIALS secret in the GitHub repository..."
-echo "$JSON_PAYLOAD" | gh secret set AZURE_CREDENTIALS --body -
+# 4. Update GitHub Secret (Commented out by default for safety)
+# This section demonstrates how to update a GitHub repository secret with the new credential.
+# The 'gh' CLI must be installed and authenticated.
+: <<'END_COMMENT'
+if [ -n "$GH_REPO" ] && [ -n "$SECRET_NAME" ]; then
+    echo "Updating GitHub secret '$SECRET_NAME' in repository '$GH_REPO'..."
 
-echo "Successfully updated the AZURE_CREDENTIALS secret in GitHub."
-echo "Key rotation process completed."
+    # Ensure gh is installed
+    if ! command -v gh &> /dev/null; then
+        echo "Error: The GitHub CLI ('gh') is not installed. Please install it to update secrets."
+        exit 1
+    fi
+
+    # Update the secret
+    echo "$NEW_CREDENTIAL" | gh secret set "$SECRET_NAME" --repo "$GH_REPO" --body -
+
+    if [ $? -eq 0 ]; then
+        echo "Successfully updated GitHub secret '$SECRET_NAME'."
+    else
+        echo "Error: Failed to update GitHub secret."
+    fi
+else
+    echo "Skipping GitHub secret update. Set GH_REPO and SECRET_NAME variables to enable."
+fi
+END_COMMENT
+
+echo "Script completed."

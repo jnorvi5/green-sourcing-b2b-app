@@ -1,0 +1,22 @@
+--- Starting Conflict Resolution Test ---
+
+1. Agent A requests write...
+Agent A Result: { success: true, message: 'Deployment recorded successfully.' }
+
+2. Simulating Conflict: Agent B tries to write while Agent A holds lock (simulated manually for test)
+Agent B Result (should fail): {
+  success: false,
+  message: 'Conflict: Write lock currently held by Agent-A. Priority to JULES.'
+}
+
+3. JULES Priority: JULES tries to write while Agent A holds lock
+[DeploymentService] JULES overriding lock held by Agent-A
+JULES Result (should succeed): { success: true, message: 'Deployment recorded successfully.' }
+
+4. Agent A tries to write while JULES holds lock (simulated)
+Agent A Result (should fail): {
+  success: false,
+  message: 'Conflict: Write lock currently held by JULES. Priority to JULES.'
+}
+
+--- Test Complete ---

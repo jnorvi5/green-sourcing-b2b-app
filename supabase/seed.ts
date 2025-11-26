@@ -1,0 +1,81 @@
+
+import { faker } from '@faker-js/faker';
+import * as dotenv from 'dotenv';
+import { Client } from 'pg';
+
+dotenv.config();
+
+const client = new Client({
+  host: process.env.POSTGRES_HOST,
+  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+async function seed() {
+  await client.connect();
+
+  try {
+    // Add a transaction to truncate tables before seeding
+    await client.query('BEGIN');
+    await client.query('TRUNCATE TABLE products, suppliers CASCADE');
+
+    // Create a dummy supplier
+    const supplierResult = await client.query(
+      `INSERT INTO suppliers (name, description, location, logo_url)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id`,
+      [
+        faker.company.name(),
+        faker.company.catchPhrase(),
+        faker.location.city(),
+        faker.image.url(),
+      ]
+    );
+    const supplierId = supplierResult.rows[0].id;
+    console.log(`Created supplier with id: ${supplierId}`);
+
+    // Create 20 dummy products
+    for (let i = 0; i < 20; i++) {
+      await client.query(
+        `INSERT INTO products (supplier_id, name, description, material_type, application, certifications, sustainability_data, specs, images, epd_url, verified)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [
+          supplierId,
+          `Sustainable Insulation ${i + 1}`,
+          faker.commerce.productDescription(),
+          'Insulation',
+          'Roofing',
+          ['LEED', 'FSC'],
+          JSON.stringify({
+            gwp: faker.number.float({ min: 1, max: 10, multipleOf: 0.01 }),
+            recycled_content_percent: faker.number.int({ min: 10, max: 90 }),
+          }),
+          JSON.stringify({
+            r_value: faker.number.float({ min: 2, max: 7, multipleOf: 0.1 }),
+            fire_rating: 'Class A',
+          }),
+          [faker.image.url(), faker.image.url()],
+          faker.internet.url(),
+          faker.datatype.boolean(),
+        ]
+      );
+    }
+    await client.query('COMMIT');
+    console.log('Successfully seeded 20 dummy products.');
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error seeding database:', err);
+  } finally {
+    await client.end();
+  }
+}
+
+export { seed };
+
+// This allows running the script directly via `tsx supabase/seed.ts`
+if (require.main === module) {
+  seed();
+}
