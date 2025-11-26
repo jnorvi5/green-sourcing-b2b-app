@@ -1,0 +1,87 @@
+🧪 Starting Matchmaker Tests...
+
+Test 1: Find matches for "flooring" in Seattle
+Criteria: {
+  "project_type": "LEED Gold office building",
+  "location": "Seattle, WA",
+  "material_needed": "flooring",
+  "square_footage": 10000,
+  "budget": 50000,
+  "carbon_target_kg_co2e_per_m2": 15,
+  "required_certifications": [
+    "LEED"
+  ],
+  "timeline": "6 weeks"
+}
+[Matchmaker] Finding matches for: flooring in Seattle, WA
+
+Found 0 matches.
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }

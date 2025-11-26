@@ -1,55 +1,61 @@
-# GreenChainz - B2B Green Sourcing Marketplace
+# GreenChainz - Product Overview
 
 ## Project Purpose
-GreenChainz is a data-driven B2B marketplace connecting sustainability-minded buyers (architects, contractors, procurement teams) with verified green suppliers. The platform aggregates, standardizes, and presents Environmental Product Declarations (EPDs), certifications, and carbon footprints in a single, trusted platform.
+GreenChainz is a B2B green sourcing marketplace connecting sustainability-minded buyers (architects, contractors, procurement teams) with verified green suppliers. The platform aggregates, standardizes, and presents Environmental Product Declarations (EPDs), certifications, and carbon footprints in a single, trusted platform.
 
 ## Core Value Proposition
-**Data Moat**: Verifiable sustainability data aggregated from multiple sources (EPD International, WAP Sustainability, Building Transparency, Autodesk, FSC) providing "apples-to-apples" comparisons for green materials.
+- **Verifiable Sustainability Data**: Aggregated EPDs, certifications, and carbon metrics from 5+ data providers
+- **Apples-to-Apples Comparisons**: Standardized sustainability metrics for informed purchasing decisions
+- **Risk Mitigation**: De-risk sourcing of green materials through verified supplier data
+- **B2B Focus**: Tailored for architects, contractors, and procurement teams
 
 ## Key Features & Capabilities
 
-### For Buyers (Architects, Contractors, Procurement Teams)
-- **Product Discovery**: Search and filter sustainable building materials with verified EPDs
-- **Sustainability Comparison**: Side-by-side comparison of carbon footprints and certifications
-- **RFQ System**: Request for Quote functionality with automated supplier matching
-- **Verification Scores**: Proprietary scoring system for supplier sustainability credentials
-- **Dashboard**: Track RFQ history, saved products, and procurement analytics
+### For Buyers (Architects/Contractors)
+- Search and discover green materials with verified sustainability data
+- Compare products using standardized EPD metrics and carbon footprints
+- Request for Quotes (RFQ) system for bulk sourcing
+- Supplier verification and compliance tracking
+- Market intelligence and trend analysis
 
-### For Suppliers (Material Manufacturers)
-- **Product Management**: Upload and manage product catalogs with sustainability data
-- **Quote Management**: Respond to RFQs with integrated pricing and availability
-- **Verification System**: Multi-tier verification (B-Corp, FSC, EC3 integration)
-- **Analytics Dashboard**: Track product views, RFQ responses, and market insights
-- **White-glove Onboarding**: Tiered integration (API, file upload, manual entry)
+### For Suppliers
+- Product listing with sustainability certifications
+- Supplier verification and B-Corp certification tracking
+- Quote management and RFQ response system
+- Brand verification and compliance documentation
+- Access to qualified buyer network
 
-### Platform Features
-- **Multi-channel Authentication**: OAuth integration (Google, GitHub, LinkedIn, Microsoft)
-- **Email Automation**: Transactional emails for RFQs, approvals, and notifications
-- **Admin Console**: Content moderation, supplier approval, and platform analytics
-- **API-first Architecture**: RESTful APIs with OpenAPI documentation
-- **Real-time Updates**: Live notifications and status tracking
+### Platform Services
+- **Data Integration**: Multi-provider EPD and certification data aggregation
+- **Verification System**: Brand verification, B-Corp certification, compliance oracle
+- **Matchmaking**: Intelligent supplier-buyer matching based on requirements
+- **RFQ Management**: Request for Quote routing and management
+- **Market Intelligence**: Sustainability trends and market insights
+- **Email Notifications**: Transactional and marketing email system
+- **File Management**: S3-based product and document uploads
 
 ## Target Users
 
-### Primary Personas
-1. **Sustainability-Minded Architect (Sarah)**
-   - Goal: Discover and de-risk sourcing of green materials
-   - Pain Point: Fragmented research, no standardized comparisons
+### Demand Side: Sustainability-Minded Architect
+- Goal: Discover, compare, and de-risk sourcing of green materials
+- Pain Point: Fragmented research, no standardized comparisons
 
-2. **Regional Materials Manufacturer (David)**
-   - Goal: Connect innovative sustainable products with qualified buyers
-   - Pain Point: High marketing costs, low ROI from traditional channels
+### Supply Side: Regional Materials Manufacturer
+- Goal: Get innovative, sustainable products in front of qualified buyers
+- Pain Point: High cost, low ROI of traditional marketing
 
-### Use Cases
-- **Material Specification**: Architects finding LEED/BREEAM compliant materials
-- **Procurement Optimization**: Contractors comparing sustainability vs. cost
-- **Supply Chain Transparency**: Tracking carbon footprint across material lifecycle
-- **Compliance Reporting**: Automated sustainability reporting for green building certifications
-- **Market Intelligence**: Suppliers understanding demand trends for sustainable products
+## Competitive Differentiators
+- Modern, API-first, headless architecture (scalable, multi-channel)
+- Hybrid SQL/NoSQL database (transactional integrity + flexible sustainability data)
+- Verified EPDs and certifications from multiple authoritative sources
+- B2B focus vs. B2C competitors
+- Compliance with ISO 14025, EN 15804, ISO 21930 standards
 
-## Compliance & Standards
-- ISO 14025: Type III Environmental Declarations (EPDs)
-- EN 15804: Sustainability of construction works
-- ISO 21930: Environmental declarations for building products
-- EPD Hub GPI v1.3: General Program Instructions for EPD verification
-- LEED, BREEAM, and other green building certification alignment
+## Current MVP Status
+- Phase 1: Foundation (IN PROGRESS)
+  - Strategic blueprint finalized
+  - Tech stack selected
+  - Data provider partnerships in progress
+  - Local MVP deployed to Vercel staging
+- Phase 2: Data Integration (Weeks 5-8)
+- Phase 3: Supplier Onboarding (Weeks 9-12)

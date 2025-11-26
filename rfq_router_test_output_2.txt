@@ -1,0 +1,39 @@
+≡ƒº¬ Starting RFQ Router Tests...
+
+Test 1: Route RFQ for Mass Timber
+[RFQ Router] Routing RFQ for: FSC-certified mass timber beams in San Francisco, CA
+RFQ ID: RFQ-2025-0042
+[RFQ Router] DB Query failed (using mocks): 
+Suppliers Selected: 3
+Conversion Prediction: 0.77
+Urgency: High - project starts Dec 1
+
+Top Supplier Match:
+Name: EcoWood Systems
+Score: 0.85
+Why: Matches certifications, 382km from site, 55% win rate.
+Suggested Response: Hi Sarah Chen, we can supply FSC-certified mass timber beams. Delivery in 2 weeks. Preliminary quote: $79315. Schedule call?
+
+Γ£à Correctly routed to 3 suppliers
+Γ£à Urgency detected correctly
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }
+Pool stats: { total: 0, idle: 0, waiting: 0 }

@@ -15,11 +15,11 @@ export default function Logo({ height = 40, showText = true, variant = 'main', c
   const getLogoSrc = () => {
     switch (variant) {
       case 'icon':
-        return '/brand/greenchainz-logo-icon.png';
+        return '/assets/logo/greenchainz-logo-icon.png';
       case 'white':
-        return '/brand/greenchainz-logo-white.png';
+        return '/assets/logo/greenchainz-logo-white.png';
       default:
-        return '/brand/greenchainz-logo-full.png';
+        return '/assets/logo/greenchainz-logo-full.png';
     }
   };
 

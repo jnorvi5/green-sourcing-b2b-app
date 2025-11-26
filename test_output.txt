@@ -1,0 +1,62 @@
+🧪 Starting Data Scout Tests...
+
+Test 1: Search for "steel"
+[Data Scout] Starting aggregation for: "steel"
+[EPD International] Searching for: steel
+[EC3 (Building Transparency)] Searching for: steel
+[ECO Platform] Searching for: steel
+[Data Scout] Found 2 total records before deduplication
+Found 1 results.
+Sample result: {
+  "product_name": "Recycled Steel Rebar",
+  "manufacturer": "SteelCorp Industries",
+  "epd_number": "S-P-00123",
+  "gwp_fossil_a1_a3": 450.2,
+  "recycled_content_pct": 95,
+  "certifications": [
+    "ISO 14025",
+    "EN 15804"
+  ],
+  "validity_start": "2024-01-15",
+  "validity_end": "2029-01-15",
+  "verified_by": "EPD International",
+  "data_source_url": "https://www.environdec.com/library/epd123",
+  "confidence_score": 0.95
+}
+
+-----------------------------------
+
+Test 2: Search for "wood"
+[Data Scout] Starting aggregation for: "wood"
+[EPD International] Searching for: wood
+[EC3 (Building Transparency)] Searching for: wood
+[ECO Platform] Searching for: wood
+[Data Scout] Found 1 total records before deduplication
+Found 1 results.
+Sample result: {
+  "product_name": "Cross Laminated Timber (CLT)",
+  "manufacturer": "Nordic Structures",
+  "epd_number": "ECO-55555",
+  "gwp_fossil_a1_a3": -150,
+  "recycled_content_pct": 0,
+  "certifications": [
+    "PEFC",
+    "FSC"
+  ],
+  "validity_start": "2022-05-20",
+  "validity_end": "2027-05-20",
+  "verified_by": "Institut Bauen und Umwelt e.V.",
+  "data_source_url": "https://www.eco-platform.org/epd/55555",
+  "confidence_score": 0.92
+}
+
+-----------------------------------
+
+Test 3: Search for "unobtanium"
+[Data Scout] Starting aggregation for: "unobtanium"
+[EPD International] Searching for: unobtanium
+[EC3 (Building Transparency)] Searching for: unobtanium
+[ECO Platform] Searching for: unobtanium
+[Data Scout] Found 0 total records before deduplication
+Found 0 results.
+✅ Correctly found 0 results.

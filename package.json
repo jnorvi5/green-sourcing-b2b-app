@@ -26,6 +26,14 @@
   },
   "scripts": {
     "seed": "tsx supabase/seed.ts",
+    "@types/jest": "^30.0.0",
+    "glob": "^11.1.0",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "ts-jest": "^29.4.5"
+  },
+  "scripts": {
     "test": "jest"
   }
 }

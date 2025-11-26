@@ -89,7 +89,7 @@ export default function ResetPasswordConfirm() {
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
                      <img
-                        src="/brand/greenchainz-logo.png"
+                        src="/assets/logo/greenchainz-logo.png"
                         alt="GreenChainz"
                         className="mx-auto h-16 w-auto"
                     />
