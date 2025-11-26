@@ -153,7 +153,7 @@ export default function Signup() {
             <div className="w-full max-w-lg space-y-8">
                 <div className="text-center">
                     <Link to="/" className="inline-block">
-                        <img src="/assets/logo/greenchainz-full-400.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
+                        <img src="/assets/logo/greenchainz-logo-full.png" alt="GreenChainz" className="mx-auto h-20 w-auto" />
                     </Link>
                     <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 text-sm font-bold">
                         <span className="text-lg">👑</span>

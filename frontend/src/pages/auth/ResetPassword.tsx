@@ -73,7 +73,7 @@ export default function ResetPassword() {
         <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
-                    <img src="/brand/greenchainz-logo.png" alt="GreenChainz" className="mx-auto h-16 w-auto" />
+                    <img src="/assets/logo/greenchainz-logo.png" alt="GreenChainz" className="mx-auto h-16 w-auto" />
                     <h2 className="mt-6 text-3xl font-bold text-foreground">Forgot Your Password?</h2>
                     <p className="mt-2 text-sm text-muted-foreground">Enter your email address and we'll send you a link to reset it.</p>
                 </div>

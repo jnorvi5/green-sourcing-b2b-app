@@ -26,7 +26,7 @@ export default function Hero() {
           {/* Right Column: The Visual Hook */}
           <div className="hidden lg:mt-0 lg:col-span-5 lg:flex relative animate-float">
             <img 
-              src="/assets/hero-visual.png" 
+              src="/assets/logo/logo/hero-visual.png" 
               alt="Green Sourcing Dashboard Mockup"
               width={600} 
               height={600}
