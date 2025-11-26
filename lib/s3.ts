@@ -15,12 +15,22 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * S3 Client initialized with AWS credentials from environment variables
  */
+const region = process.env.AWS_REGION || 'us-east-1';
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+
+if (!accessKeyId || !secretAccessKey) {
+  console.warn('AWS credentials not configured. S3 operations will fail.');
+}
+
 export const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-  },
+  region,
+  ...(accessKeyId && secretAccessKey && {
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  }),
 });
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME || '';
