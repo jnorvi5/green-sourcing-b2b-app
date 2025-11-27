@@ -71,13 +71,13 @@ export async function getAutodeskToken(): Promise<string> {
 export async function getEmbodiedCarbon(materialId: string) {
   try {
     const token = await getAutodeskToken();
-    
+
     // TODO: Call real Sustainability API when available
     // const response = await fetch(
     //   `https://developer.api.autodesk.com/sustainability/v1/materials/${materialId}`,
     //   { headers: { 'Authorization': `Bearer ${token}` } }
     // );
-    
+
     // For MVP, return structured mock data
     return {
       id: materialId,
