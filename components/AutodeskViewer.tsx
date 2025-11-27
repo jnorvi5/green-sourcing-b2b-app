@@ -50,8 +50,12 @@ interface TokenResponse {
   expires_in: number;
 }
 
+// Autodesk recommends using 7.* to get latest stable viewer in the 7.x line
 const VIEWER_SCRIPT_URL = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js';
 const VIEWER_STYLE_URL = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css';
+
+// Token endpoint - uses Next.js API route by default, can be overridden via environment variable
+const TOKEN_ENDPOINT = process.env.NEXT_PUBLIC_APS_TOKEN_ENDPOINT || '/api/aps/token';
 
 // Ghost Mode Component - Spinning Wireframe Cube
 function GhostMode(): JSX.Element {
@@ -228,8 +232,8 @@ export default function AutodeskViewer({ urn }: AutodeskViewerProps): JSX.Elemen
       try {
         setStatus('loading');
 
-        // Fetch token
-        const tokenResponse = await fetch('/api/aps/token');
+        // Fetch token from API endpoint (configurable via NEXT_PUBLIC_APS_TOKEN_ENDPOINT)
+        const tokenResponse = await fetch(TOKEN_ENDPOINT);
         if (!tokenResponse.ok) {
           throw new Error('Failed to fetch viewer token');
         }
