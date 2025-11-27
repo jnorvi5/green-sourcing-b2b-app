@@ -36,6 +36,9 @@ import ContentModerationPage from './pages/Admin/ContentModerationPage';
 import { ProjectProvider } from './context/ProjectContext';
 import Projects from './pages/BuyerDashboard/Projects';
 import ProjectDetail from './pages/BuyerDashboard/ProjectDetail';
+import SavedMaterials from './pages/BuyerDashboard/SavedMaterials';
+import AccountSettings from './pages/BuyerDashboard/AccountSettings';
+import CarbonAnalytics from './pages/BuyerDashboard/CarbonAnalytics';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -106,6 +109,9 @@ function App() {
 
             {/* Buyer Dashboard */}
             <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
+            <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
+            <Route path="/dashboard/buyer/settings" element={<AccountSettings />} />
+            <Route path="/dashboard/buyer/analytics" element={<CarbonAnalytics />} />
             <Route path="/rfq-history" element={<RFQHistoryPage />} />
 
             {/* Admin Routes */}

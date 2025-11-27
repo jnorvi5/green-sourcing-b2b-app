@@ -13,6 +13,7 @@
     "dependencies": {
         "@aws-sdk/client-s3": "^3.937.0",
         "@aws-sdk/s3-request-presigner": "^3.937.0",
+        "dotenv": "^17.2.3",
         "mongoose": "^8.2.0",
         "next": "14.1.0",
         "react": "^18.2.0",
