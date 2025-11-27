@@ -50,6 +50,8 @@ import Settings from './pages/Settings';
 import HelpCenter from './pages/HelpCenter';
 import Reports from './pages/BuyerDashboard/Reports';
 import QuoteDetails from './pages/QuoteDetails';
+import SupplierOnboarding from './pages/SupplierDashboard/SupplierOnboarding';
+import TeamManagement from './pages/TeamManagement';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -119,6 +121,8 @@ function App() {
             <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
             <Route path="/dashboard/supplier/analytics" element={<SupplierAnalytics />} />
             <Route path="/dashboard/supplier/rfqs" element={<SupplierRFQs />} />
+            <Route path="/dashboard/supplier/onboarding" element={<SupplierOnboarding />} />
+            <Route path="/team" element={<TeamManagement />} />
 
             {/* Buyer Dashboard */}
             <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
