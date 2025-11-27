@@ -38,6 +38,9 @@ import Projects from './pages/BuyerDashboard/Projects';
 import ProjectDetail from './pages/BuyerDashboard/ProjectDetail';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
+import Sustainability from './pages/Sustainability';
+import Investors from './pages/Investors';
+import Network from './pages/Network';
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, trackPageView } from './lib/analytics';
 
@@ -69,6 +72,9 @@ function App() {
               <Route path="privacy-policy" element={<Privacy />} />
               <Route path="terms-of-service" element={<Terms />} />
               <Route path="supplier-agreement" element={<SupplierAgreement />} />
+              <Route path="sustainability" element={<Sustainability />} />
+              <Route path="investors" element={<Investors />} />
+              <Route path="network" element={<Network />} />
               <Route path="unauthorized" element={<Unauthorized />} />
               <Route path="survey/architect" element={<ArchitectSurvey />} />
               <Route path="badges/charter175" element={<Charter175 />} />
@@ -123,3 +129,5 @@ function App() {
 }
 
 export default App;
+
+
