@@ -39,6 +39,10 @@ import ProjectDetail from './pages/BuyerDashboard/ProjectDetail';
 import SavedMaterials from './pages/BuyerDashboard/SavedMaterials';
 import AccountSettings from './pages/BuyerDashboard/AccountSettings';
 import CarbonAnalytics from './pages/BuyerDashboard/CarbonAnalytics';
+import ProductComparison from './pages/ProductComparison';
+import SupplierAnalytics from './pages/SupplierDashboard/SupplierAnalytics';
+import SupplierRFQs from './pages/SupplierDashboard/SupplierRFQs';
+import AdminAnalytics from './pages/AdminDashboard/AdminAnalytics';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -106,17 +110,21 @@ function App() {
             <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
             <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
             <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
+            <Route path="/dashboard/supplier/analytics" element={<SupplierAnalytics />} />
+            <Route path="/dashboard/supplier/rfqs" element={<SupplierRFQs />} />
 
             {/* Buyer Dashboard */}
             <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
             <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
             <Route path="/dashboard/buyer/settings" element={<AccountSettings />} />
             <Route path="/dashboard/buyer/analytics" element={<CarbonAnalytics />} />
+            <Route path="/compare" element={<ProductComparison />} />
             <Route path="/rfq-history" element={<RFQHistoryPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
               <Route path="content" element={<ContentModerationPage />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
             </Route>
 
 
