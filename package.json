@@ -13,11 +13,9 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.81.1",
     "@vercel/speed-insights": "^1.2.0",
-    "mongoose": "^8.2.0",
-    "mongoose": "^9.0.0",
-    "next": "14.1.0",
     "mongoose": "^9.0.0",
     "next": "14.2.33",
+    "pdfkit": "^0.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "resend": "^6.4.2",
@@ -26,8 +24,8 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.24",
     "@types/node": "^24.10.1",
+    "@types/pdfkit": "^0.13.8",
     "@types/pg": "^8.11.6",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
@@ -39,7 +37,6 @@
     "pg": "^8.11.3",
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.2",
-    "typescript": "^5.3.3"
     "typescript": "^5.9.3"
   },
   "scripts": {
