@@ -60,6 +60,8 @@ import Payments from './pages/Payments';
 import Documents from './pages/Documents';
 import AuditLogs from './pages/Admin/AuditLogs';
 import UserManagement from './pages/Admin/UserManagement';
+import SystemSettings from './pages/Admin/SystemSettings';
+import PlatformAnalytics from './pages/Admin/PlatformAnalytics';
 import Notifications from './pages/Notifications';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
@@ -161,6 +163,8 @@ function App() {
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="audit" element={<AuditLogs />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="settings" element={<SystemSettings />} />
+              <Route path="platform" element={<PlatformAnalytics />} />
             </Route>
 
 
