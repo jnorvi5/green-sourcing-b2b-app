@@ -45,7 +45,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
     setShowProjectMenu(false);
   };
 
-  const handleCompareToggle = (e: React.MouseEvent) => {
+  const handleCompareToggle = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (isSelected) {
       removeProduct(product.id);
@@ -96,8 +96,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               <input
                 type="checkbox"
                 checked={isSelected}
-                onChange={() => handleCompareToggle}
-                onClick={handleCompareToggle}
+                onChange={handleCompareToggle}
                 className="rounded border-gray-300 text-[#4C7D5D] focus:ring-[#4C7D5D]"
               />
               <span className="text-xs font-medium text-gray-700">Compare</span>
