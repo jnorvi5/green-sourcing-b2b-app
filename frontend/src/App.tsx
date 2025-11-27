@@ -55,6 +55,7 @@ import TeamManagement from './pages/TeamManagement';
 import ApiIntegrations from './pages/ApiIntegrations';
 import Invoices from './pages/Invoices';
 import Quotes from './pages/Quotes';
+import KPIDashboard from './pages/KPIDashboard';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -144,6 +145,7 @@ function App() {
             <Route path="/quote/:quoteId" element={<QuoteDetails />} />
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/quotes" element={<Quotes />} />
+            <Route path="/kpi" element={<KPIDashboard />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
