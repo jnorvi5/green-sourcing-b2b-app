@@ -64,6 +64,8 @@ import SystemSettings from './pages/Admin/SystemSettings';
 import PlatformAnalytics from './pages/Admin/PlatformAnalytics';
 import Notifications from './pages/Notifications';
 import SupplierLeaderboard from './pages/SupplierLeaderboard';
+import CarbonCalculator from './pages/CarbonCalculator';
+import Contracts from './pages/Contracts';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -158,6 +160,8 @@ function App() {
             <Route path="/documents" element={<Documents />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/leaderboard" element={<SupplierLeaderboard />} />
+            <Route path="/carbon-calculator" element={<CarbonCalculator />} />
+            <Route path="/contracts" element={<Contracts />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
