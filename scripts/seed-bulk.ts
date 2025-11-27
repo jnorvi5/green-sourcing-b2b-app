@@ -35,27 +35,6 @@ async function main() {
     ]
   };
 
-  const unsplashKeywords: Record<string, string> = {
-    'Mass Timber': 'timber,construction',
-    'Cross-Laminated Timber (CLT)': 'wood,construction',
-    'Green Concrete': 'concrete,construction',
-    'Low-Carbon Concrete': 'concrete,eco',
-    'Recycled Steel': 'steel,construction',
-    'High-Recycled Steel': 'steel,recycled',
-    'Smart Glass': 'glass,building',
-    'Electrochromic Glass': 'smart-glass,window',
-    'Hempcrete Insulation': 'hempcrete,insulation',
-    'Natural Fiber Insulation': 'natural-fiber,insulation',
-    'Mycelium Panels': 'mycelium,biotech',
-    'Aerogel Composite Panels': 'aerogel,insulation',
-    'Recycled Ocean Plastic Tiles': 'ocean,plastic,recycled',
-    'Low-VOC Paints': 'paint,eco',
-    'Bamboo Flooring': 'bamboo,flooring',
-    'Cork Flooring': 'cork,floor',
-    'Linoleum (Natural)': 'linoleum,natural',
-    'Reclaimed Wood Cladding': 'wood,reclaimed'
-  };
-
   const certificationsPool = ['EPD', 'Cradle to Cradle', 'LEED', 'BREEAM', 'Declare', 'FSC', 'GreenGuard'];
   const lifecycleStages = ['A1-A3 (Product)', 'A4-A5 (Construction)', 'B1-B7 (Use)', 'C1-C4 (End of Life)', 'D (Benefits)'];
   const unitsOfMeasure = ['m2', 'kg', 'm3', 'unit', 'liter', 'ton'];
@@ -87,22 +66,24 @@ async function main() {
 
     const greenData = {
       epdId: hasEpd ? `EPD-${faker.string.alphanumeric(10).toUpperCase()}` : undefined,
-      carbonFootprint: Number(faker.number.float({ min: 0.5, max: 120, fractionDigits: 1 }).toFixed(1)),
+      carbonFootprint: parseFloat(faker.number.float({ min: 0.5, max: 120, fractionDigits: 1 }).toFixed(1)),
       recycledContent,
       renewableEnergy: faker.number.int({ min: 0, max: 100 }),
-      waterUsage: Number(faker.number.float({ min: 0.1, max: 500, fractionDigits: 1 }).toFixed(1)),
+      waterUsage: parseFloat(faker.number.float({ min: 0.1, max: 500, fractionDigits: 1 }).toFixed(1)),
       certifications,
       lifecycleStage: faker.helpers.arrayElement(lifecycleStages),
     };
 
-    // Images using Unsplash source query (keyword-based)
-    const keyword = unsplashKeywords[subcategory] || 'building,material,construction';
+    // Images using picsum.photos (reliable placeholder service)
+    // Each product gets a unique image based on index
+    const imageId1 = (i * 2) + 100;
+    const imageId2 = (i * 2) + 101;
     const images = [
-      `https://source.unsplash.com/featured/?${encodeURIComponent(keyword)}&w=1200&h=800`,
-      `https://source.unsplash.com/featured/?${encodeURIComponent(keyword)},industry&w=1200&h=800`
+      `https://picsum.photos/seed/${imageId1}/1200/800`,
+      `https://picsum.photos/seed/${imageId2}/1200/800`
     ];
 
-    const price = Number(faker.commerce.price({ min: 10, max: 5000, dec: 2 }));
+    const price = parseFloat(faker.commerce.price({ min: 10, max: 5000, dec: 2 }));
 
     // Generate tags based on category and subcategory
     const baseTags = [category.toLowerCase(), subcategory.toLowerCase().replace(/[()]/g, ''), 'sustainable', 'green'];
