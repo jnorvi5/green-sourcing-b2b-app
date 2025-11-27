@@ -43,7 +43,7 @@ function buildMaterialProperties(product: MockProduct): APSMaterialProperties {
  * Builds metadata for an APS material
  */
 function buildMaterialMetadata(productId: number): APSMaterialMetadata {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0] ?? new Date().toISOString().substring(0, 10);
   
   return {
     greenchainzUrl: `${BASE_URL}/products/${productId}`,

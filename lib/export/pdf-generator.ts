@@ -3,8 +3,6 @@
  * Generates branded sustainability profile documents using PDFKit
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const PDFDocument = require('pdfkit');
 import { v4 as uuidv4 } from 'uuid';
 import type { MockProduct, ESGReportData, ProductExportData, ESGReportSummary } from './types';
 
@@ -243,13 +241,20 @@ function drawProductTable(doc: PDFDoc, products: ProductExportData[], startY: nu
 
   y += 25;
 
+  // Table column definitions with fixed widths
+  const COL_PRODUCT_NAME_WIDTH = 140;
+  const COL_SUPPLIER_WIDTH = 100;
+  const COL_CARBON_WIDTH = 90;
+  const COL_RECYCLED_WIDTH = 70;
+  const COL_CERTS_WIDTH = 110;
+  
   // Table headers
   const columns = [
-    { label: 'Product Name', width: 140 },
-    { label: 'Supplier', width: 100 },
-    { label: 'Carbon (kgCO₂e)', width: 90 },
-    { label: 'Recycled %', width: 70 },
-    { label: 'Certifications', width: 110 },
+    { label: 'Product Name', width: COL_PRODUCT_NAME_WIDTH },
+    { label: 'Supplier', width: COL_SUPPLIER_WIDTH },
+    { label: 'Carbon (kgCO₂e)', width: COL_CARBON_WIDTH },
+    { label: 'Recycled %', width: COL_RECYCLED_WIDTH },
+    { label: 'Certifications', width: COL_CERTS_WIDTH },
   ];
 
   // Header row background
@@ -291,27 +296,27 @@ function drawProductTable(doc: PDFDoc, products: ProductExportData[], startY: nu
 
     // Product Name (truncate if too long)
     const name = product.name.length > 22 ? product.name.substring(0, 20) + '...' : product.name;
-    doc.text(name, cellX, y + 5, { width: columns[0].width - 10 });
-    cellX += columns[0].width;
+    doc.text(name, cellX, y + 5, { width: COL_PRODUCT_NAME_WIDTH - 10 });
+    cellX += COL_PRODUCT_NAME_WIDTH;
 
     // Supplier (truncate if too long)
     const supplier = product.supplier.length > 15 ? product.supplier.substring(0, 13) + '...' : product.supplier;
-    doc.text(supplier, cellX, y + 5, { width: columns[1].width - 10 });
-    cellX += columns[1].width;
+    doc.text(supplier, cellX, y + 5, { width: COL_SUPPLIER_WIDTH - 10 });
+    cellX += COL_SUPPLIER_WIDTH;
 
     // Carbon Footprint
-    doc.text(product.carbonFootprint.toString(), cellX, y + 5, { width: columns[2].width - 10 });
-    cellX += columns[2].width;
+    doc.text(product.carbonFootprint.toString(), cellX, y + 5, { width: COL_CARBON_WIDTH - 10 });
+    cellX += COL_CARBON_WIDTH;
 
     // Recycled Content
-    doc.text(`${product.recycledContent}%`, cellX, y + 5, { width: columns[3].width - 10 });
-    cellX += columns[3].width;
+    doc.text(`${product.recycledContent}%`, cellX, y + 5, { width: COL_RECYCLED_WIDTH - 10 });
+    cellX += COL_RECYCLED_WIDTH;
 
     // Certifications
     const certs = product.certifications.length > 0 
       ? product.certifications.slice(0, 3).join(', ') 
       : 'None';
-    doc.text(certs, cellX, y + 5, { width: columns[4].width - 10 });
+    doc.text(certs, cellX, y + 5, { width: COL_CERTS_WIDTH - 10 });
 
     y += 20;
   });
@@ -350,6 +355,11 @@ function drawFooter(doc: PDFDoc, reportId: string, pageWidth: number): void {
  */
 export async function generatePdf(products: MockProduct[]): Promise<Buffer> {
   const reportData = prepareReportData(products);
+
+  // Dynamic import for PDFKit (CommonJS module)
+  const PDFDocumentModule = await import('pdfkit');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const PDFDocument = (PDFDocumentModule as any).default || PDFDocumentModule;
 
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
