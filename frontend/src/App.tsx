@@ -53,6 +53,8 @@ import QuoteDetails from './pages/QuoteDetails';
 import SupplierOnboarding from './pages/SupplierDashboard/SupplierOnboarding';
 import TeamManagement from './pages/TeamManagement';
 import ApiIntegrations from './pages/ApiIntegrations';
+import Invoices from './pages/Invoices';
+import Quotes from './pages/Quotes';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -140,6 +142,8 @@ function App() {
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/dashboard/buyer/reports" element={<Reports />} />
             <Route path="/quote/:quoteId" element={<QuoteDetails />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/quotes" element={<Quotes />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
