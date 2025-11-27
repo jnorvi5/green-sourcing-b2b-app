@@ -81,14 +81,8 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
     overallStatus = 'degraded';
   }
 
-  // Get app version from package.json
-  let version = '1.0.0';
-  try {
-    // In production, version would typically come from environment or build-time injection
-    version = process.env.npm_package_version || '1.0.0';
-  } catch {
-    // Fallback to default version
-  }
+  // Get app version from environment or use default
+  const version = process.env.npm_package_version || '1.0.0';
 
   const response: HealthResponse = {
     status: overallStatus,

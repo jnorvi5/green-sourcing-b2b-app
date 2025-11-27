@@ -116,8 +116,8 @@ jobs:
           
           echo "Response time: ${RESPONSE_TIME}s"
           
-          # Check if response time is under 5 seconds
-          RESPONSE_TIME_MS=$(echo "$RESPONSE_TIME * 1000" | bc | cut -d. -f1)
+          # Check if response time is under 5 seconds (using awk instead of bc)
+          RESPONSE_TIME_MS=$(awk "BEGIN {print int($RESPONSE_TIME * 1000)}")
           if [ "$RESPONSE_TIME_MS" -gt 5000 ]; then
             echo "⚠️ Response time (${RESPONSE_TIME}s) exceeds 5 second threshold"
             # Don't fail, just warn
