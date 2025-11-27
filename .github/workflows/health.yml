@@ -1,0 +1,126 @@
+name: Health Check - Production Monitoring
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SITE_URL: ${{ vars.SITE_URL || 'https://greenchainz.com' }}
+  MAX_RETRIES: 3
+  RETRY_DELAY: 10
+  TIMEOUT: 5
+
+jobs:
+  health-check:
+    name: Verify Production Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Health Check with Retries
+        id: health
+        run: |
+          HEALTH_URL="${SITE_URL}/api/health"
+          echo "Checking health endpoint: ${HEALTH_URL}"
+          
+          attempt=0
+          success=false
+          
+          while [ $attempt -lt $MAX_RETRIES ]; do
+            attempt=$((attempt + 1))
+            echo ""
+            echo "=== Attempt ${attempt}/${MAX_RETRIES} ==="
+            
+            # Capture response and HTTP status code
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" --max-time $TIMEOUT "${HEALTH_URL}" 2>&1) || true
+            
+            # Extract status code (last line) and body (everything else)
+            HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n 1)
+            RESPONSE_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
+            
+            echo "HTTP Status: ${HTTP_STATUS}"
+            echo "Response: ${RESPONSE_BODY}"
+            
+            # Check if we got a valid response
+            if [ "$HTTP_STATUS" = "200" ]; then
+              # Validate JSON response contains status: ok
+              STATUS=$(echo "$RESPONSE_BODY" | jq -r '.status' 2>/dev/null || echo "")
+              
+              if [ "$STATUS" = "ok" ]; then
+                echo ""
+                echo "✅ Health check passed!"
+                
+                # Log additional health info
+                DB_STATUS=$(echo "$RESPONSE_BODY" | jq -r '.database // "unknown"' 2>/dev/null)
+                VERSION=$(echo "$RESPONSE_BODY" | jq -r '.version // "unknown"' 2>/dev/null)
+                TIMESTAMP=$(echo "$RESPONSE_BODY" | jq -r '.timestamp // "unknown"' 2>/dev/null)
+                
+                echo ""
+                echo "=== Health Details ==="
+                echo "Status: ${STATUS}"
+                echo "Database: ${DB_STATUS}"
+                echo "Version: ${VERSION}"
+                echo "Timestamp: ${TIMESTAMP}"
+                
+                success=true
+                break
+              else
+                echo "⚠️ Status field is not 'ok': ${STATUS}"
+              fi
+            elif [ "$HTTP_STATUS" = "503" ]; then
+              echo "⚠️ Service unavailable (503) - system may be degraded"
+            else
+              echo "⚠️ Unexpected HTTP status: ${HTTP_STATUS}"
+            fi
+            
+            # Wait before retry (except on last attempt)
+            if [ $attempt -lt $MAX_RETRIES ]; then
+              echo "Waiting ${RETRY_DELAY} seconds before retry..."
+              sleep $RETRY_DELAY
+            fi
+          done
+          
+          if [ "$success" = "false" ]; then
+            echo ""
+            echo "❌ Health check failed after ${MAX_RETRIES} attempts!"
+            echo ""
+            echo "=== Debugging Information ==="
+            echo "URL: ${HEALTH_URL}"
+            echo "Last HTTP Status: ${HTTP_STATUS}"
+            echo "Last Response: ${RESPONSE_BODY}"
+            exit 1
+          fi
+
+      - name: Response Time Check
+        run: |
+          HEALTH_URL="${SITE_URL}/api/health"
+          echo "Checking response time for: ${HEALTH_URL}"
+          
+          # Measure response time
+          RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" --max-time $TIMEOUT "${HEALTH_URL}" 2>/dev/null || echo "timeout")
+          
+          if [ "$RESPONSE_TIME" = "timeout" ]; then
+            echo "❌ Request timed out after ${TIMEOUT} seconds"
+            exit 1
+          fi
+          
+          echo "Response time: ${RESPONSE_TIME}s"
+          
+          # Check if response time is under 5 seconds (using awk instead of bc)
+          RESPONSE_TIME_MS=$(awk "BEGIN {print int($RESPONSE_TIME * 1000)}")
+          if [ "$RESPONSE_TIME_MS" -gt 5000 ]; then
+            echo "⚠️ Response time (${RESPONSE_TIME}s) exceeds 5 second threshold"
+            # Don't fail, just warn
+          else
+            echo "✅ Response time is within acceptable range"
+          fi
