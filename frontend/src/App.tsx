@@ -67,6 +67,7 @@ import SupplierLeaderboard from './pages/SupplierLeaderboard';
 import CarbonCalculator from './pages/CarbonCalculator';
 import Contracts from './pages/Contracts';
 import SustainabilityReports from './pages/SustainabilityReports';
+import Inventory from './pages/Inventory';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -164,6 +165,7 @@ function App() {
             <Route path="/carbon-calculator" element={<CarbonCalculator />} />
             <Route path="/contracts" element={<Contracts />} />
             <Route path="/sustainability-reports" element={<SustainabilityReports />} />
+            <Route path="/inventory" element={<Inventory />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
