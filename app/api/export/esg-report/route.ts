@@ -102,11 +102,14 @@ export async function GET(request: Request): Promise<NextResponse> {
     const pdfBuffer = await generatePdf(products);
     const filename = generateEsgReportFilename();
 
-    // Convert Buffer to Uint8Array for NextResponse compatibility
-    const pdfUint8Array = new Uint8Array(pdfBuffer);
-
     // Return PDF response with proper headers
-    return new NextResponse(pdfUint8Array, {
+    // Use ArrayBuffer slice for NextResponse compatibility
+    const arrayBuffer = pdfBuffer.buffer.slice(
+      pdfBuffer.byteOffset, 
+      pdfBuffer.byteOffset + pdfBuffer.byteLength
+    ) as ArrayBuffer;
+    
+    return new NextResponse(arrayBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

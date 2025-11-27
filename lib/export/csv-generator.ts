@@ -11,38 +11,45 @@ const CSV_INJECTION_CHARS = ['=', '+', '-', '@', '\t', '\r'];
 /**
  * Escapes a value for safe CSV inclusion
  * - Handles special characters (commas, quotes, newlines)
- * - Prevents CSV injection attacks
+ * - Prevents CSV injection attacks using defense-in-depth approach
+ * 
+ * Security measures:
+ * 1. Prefix dangerous characters with a single quote (Excel/Sheets will treat as literal)
+ * 2. Always quote values that contain dangerous characters to prevent formula execution
+ * 3. Double-escape any existing quotes
  */
 export function escapeCsvValue(value: string | number | null | undefined): string {
   if (value === null || value === undefined) {
     return '';
   }
 
-  const stringValue = String(value);
+  let stringValue = String(value);
 
-  // Prevent CSV injection by prefixing with single quote if starts with dangerous char
+  // Check if value starts with dangerous characters that could trigger formula execution
   const needsInjectionProtection = CSV_INJECTION_CHARS.some(char => 
     stringValue.startsWith(char)
   );
 
-  let escapedValue = stringValue;
-
   if (needsInjectionProtection) {
-    // Prefix with single quote to treat as literal text in Excel/Sheets
-    escapedValue = "'" + escapedValue;
+    // Defense-in-depth: prefix with space and single quote
+    // The space prevents formula execution in most spreadsheet apps
+    // The single quote tells Excel/Sheets to treat as literal text
+    stringValue = " '" + stringValue;
   }
 
-  // Check if value needs quoting (contains comma, quote, or newline)
-  const needsQuoting = /[",\n\r]/.test(escapedValue);
+  // Escape existing quotes by doubling them
+  stringValue = stringValue.replace(/"/g, '""');
+
+  // Always wrap in quotes if contains dangerous chars, commas, quotes, or newlines
+  // This provides additional protection layer as quoted values are less likely to be executed
+  const needsQuoting = needsInjectionProtection || /[",\n\r]/.test(stringValue);
 
   if (needsQuoting) {
-    // Escape existing quotes by doubling them
-    escapedValue = escapedValue.replace(/"/g, '""');
     // Wrap in quotes
-    escapedValue = `"${escapedValue}"`;
+    stringValue = `"${stringValue}"`;
   }
 
-  return escapedValue;
+  return stringValue;
 }
 
 /**
