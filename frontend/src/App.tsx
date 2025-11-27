@@ -56,6 +56,11 @@ import ApiIntegrations from './pages/ApiIntegrations';
 import Invoices from './pages/Invoices';
 import Quotes from './pages/Quotes';
 import KPIDashboard from './pages/KPIDashboard';
+import Payments from './pages/Payments';
+import Documents from './pages/Documents';
+import AuditLogs from './pages/Admin/AuditLogs';
+import UserManagement from './pages/Admin/UserManagement';
+import Notifications from './pages/Notifications';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -146,11 +151,16 @@ function App() {
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/quotes" element={<Quotes />} />
             <Route path="/kpi" element={<KPIDashboard />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/documents" element={<Documents />} />
+            <Route path="/notifications" element={<Notifications />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
               <Route path="content" element={<ContentModerationPage />} />
               <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="audit" element={<AuditLogs />} />
+              <Route path="users" element={<UserManagement />} />
             </Route>
 
 
