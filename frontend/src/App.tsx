@@ -19,6 +19,7 @@ import RFQHistoryPage from './pages/RFQHistoryPage';
 import Layout from './components/Layout';
 import Charter175 from './pages/Charter175';
 import SearchPage from './pages/SearchPage';
+import BuyerExplorationPage from './pages/BuyerExplorationPage';
 
 import ProductDetailPage from './pages/ProductDetailPage';
 import SupplierProfilePage from './pages/SupplierProfilePage';
@@ -72,6 +73,7 @@ function App() {
               <Route path="survey/architect" element={<ArchitectSurvey />} />
               <Route path="badges/charter175" element={<Charter175 />} />
               <Route path="search" element={<SearchPage />} />
+              <Route path="explore" element={<BuyerExplorationPage />} />
               <Route path="product/:id" element={<ProductDetailPage />} />
               <Route path="supplier/:id" element={<SupplierProfilePage />} />
               <Route path="suppliers/:id" element={<SupplierProfile />} />
