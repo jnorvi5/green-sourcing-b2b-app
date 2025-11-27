@@ -28,6 +28,7 @@ import S3Test from './pages/S3Test';
 
 import SupplierDashboard from './pages/SupplierDashboard/index';
 import ProductsPage from './pages/SupplierDashboard/ProductsPage';
+import HelpButton from './components/HelpButton';
 import AddProductPage from './pages/SupplierDashboard/AddProductPage';
 import EditProductPage from './pages/SupplierDashboard/EditProductPage';
 import AdminDashboard from './pages/Admin';
@@ -81,30 +82,30 @@ function App() {
             </Route>
 
 
-              {/* Protected Routes - Temporarily disabled until demo pages are fixed */}
-              {/* <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}> */}
-              <Route
-                path="dashboard"
-                element={
-                    <BuyerDashboard />
-                }
-              />
-              <Route path="/search" element={<SearchPage />} />
+            {/* Protected Routes - Temporarily disabled until demo pages are fixed */}
+            {/* <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}> */}
+            <Route
+              path="dashboard"
+              element={
+                <BuyerDashboard />
+              }
+            />
+            <Route path="/search" element={<SearchPage />} />
 
-              {/* Supplier Dashboard Routes */}
-              <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
-              <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
-              <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
-              <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
+            {/* Supplier Dashboard Routes */}
+            <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            <Route path="/dashboard/supplier/products" element={<ProductsPage />} />
+            <Route path="/dashboard/supplier/products/new" element={<AddProductPage />} />
+            <Route path="/dashboard/supplier/products/:id/edit" element={<EditProductPage />} />
 
-              {/* Buyer Dashboard */}
-              <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
-              <Route path="/rfq-history" element={<RFQHistoryPage />} />
+            {/* Buyer Dashboard */}
+            <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
+            <Route path="/rfq-history" element={<RFQHistoryPage />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />}>
-                <Route path="content" element={<ContentModerationPage />} />
-              </Route>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />}>
+              <Route path="content" element={<ContentModerationPage />} />
+            </Route>
 
 
             {/* Standalone Routes (no main Layout) */}
@@ -115,6 +116,7 @@ function App() {
           </Routes>
         </ProjectProvider>
         <Toaster />
+        <HelpButton variant="floating" />
       </HelmetProvider>
     </ErrorBoundary >
   );

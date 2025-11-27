@@ -6,10 +6,12 @@ import ProductGridSkeleton from '../components/ProductGridSkeleton';
 import Pagination from '../components/Pagination';
 import type { Product } from '../types';
 import { fetchProducts, toFrontendProduct, type ProductFilters } from '../lib/products-api';
+import { useIntercomTracking } from '../hooks/useIntercomTracking';
 
 const ITEMS_PER_PAGE = 20;
 
 const SearchPage = () => {
+  const { trackSearch } = useIntercomTracking();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +70,11 @@ const SearchPage = () => {
         setProducts(frontendProducts);
         setTotalProducts(response.pagination.total);
         setHasMore(response.pagination.hasMore);
+
+        // Track search for analytics
+        if (searchQuery) {
+          trackSearch(searchQuery, response.pagination.total);
+        }
       } else {
         setError(response.error || 'Failed to load products');
         setProducts([]);
@@ -158,3 +165,6 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
+
+
+

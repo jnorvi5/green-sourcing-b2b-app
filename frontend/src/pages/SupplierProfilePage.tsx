@@ -4,10 +4,11 @@ import { useParams, Link } from 'react-router-dom';
 import ReviewsSection from '../components/Reviews/ReviewsSection';
 import { fetchSupplier, MongoSupplier, formatLocation, formatRating } from '../lib/suppliers-api';
 import { fetchProducts, MongoProduct, toFrontendProduct } from '../lib/products-api';
-import { 
-  MapPinIcon, 
-  GlobeAltIcon, 
-  PhoneIcon, 
+import { useIntercomTracking } from '../hooks/useIntercomTracking';
+import {
+  MapPinIcon,
+  GlobeAltIcon,
+  PhoneIcon,
   EnvelopeIcon,
   CheckBadgeIcon,
   StarIcon,
@@ -36,16 +37,16 @@ function ProfileSkeleton() {
 // Product card component
 function ProductCard({ product }: { product: MongoProduct }) {
   const displayProduct = toFrontendProduct(product);
-  
+
   return (
-    <Link 
+    <Link
       to={`/product/${product._id}`}
       className="group block bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 transition-colors"
     >
       <div className="aspect-video bg-muted relative overflow-hidden">
         {product.images?.[0] ? (
-          <img 
-            src={product.images[0]} 
+          <img
+            src={product.images[0]}
             alt={product.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -83,7 +84,8 @@ function ProductCard({ product }: { product: MongoProduct }) {
 
 export default function SupplierProfilePage() {
   const { id } = useParams<{ id: string }>();
-  
+  const { trackSupplierContact } = useIntercomTracking();
+
   const [supplier, setSupplier] = useState<MongoSupplier | null>(null);
   const [products, setProducts] = useState<MongoProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,7 @@ export default function SupplierProfilePage() {
 
       // Fetch supplier
       const supplierRes = await fetchSupplier(id!, true);
-      
+
       if (!supplierRes.success || !supplierRes.data._id) {
         setError(supplierRes.error || 'Supplier not found');
         setLoading(false);
@@ -157,8 +159,8 @@ export default function SupplierProfilePage() {
       {/* Cover Image */}
       <div className="h-48 md:h-64 bg-gradient-to-br from-primary/20 to-primary/5 relative">
         {supplier.coverImage && (
-          <img 
-            src={supplier.coverImage} 
+          <img
+            src={supplier.coverImage}
             alt={`${supplier.companyName} cover`}
             className="w-full h-full object-cover"
           />
@@ -206,6 +208,7 @@ export default function SupplierProfilePage() {
             <div className="flex gap-2">
               <a
                 href={`mailto:${supplier.email}`}
+                onClick={() => trackSupplierContact(supplier._id, supplier.name, 'email')}
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors flex items-center gap-2"
               >
                 <EnvelopeIcon className="w-4 h-4" />
@@ -251,7 +254,7 @@ export default function SupplierProfilePage() {
                 <h3 className="text-lg font-semibold text-foreground mb-3">Certifications</h3>
                 <div className="flex flex-wrap gap-2">
                   {supplier.certifications.map((cert, idx) => (
-                    <span 
+                    <span
                       key={idx}
                       className="px-3 py-1 bg-primary/10 text-primary border border-primary/30 rounded-full text-sm"
                     >
@@ -268,7 +271,7 @@ export default function SupplierProfilePage() {
                 <h3 className="text-lg font-semibold text-foreground mb-3">Product Categories</h3>
                 <div className="flex flex-wrap gap-2">
                   {supplier.categories.map((cat, idx) => (
-                    <Link 
+                    <Link
                       key={idx}
                       to={`/search?category=${encodeURIComponent(cat)}&supplier=${id}`}
                       className="px-3 py-1 bg-muted text-foreground rounded-full text-sm hover:bg-muted/80 transition-colors"
@@ -286,7 +289,7 @@ export default function SupplierProfilePage() {
             <h3 className="text-lg font-semibold text-foreground mb-4">Contact Information</h3>
             <div className="space-y-3">
               {supplier.website && (
-                <a 
+                <a
                   href={supplier.website}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -297,7 +300,7 @@ export default function SupplierProfilePage() {
                 </a>
               )}
               {supplier.phone && (
-                <a 
+                <a
                   href={`tel:${supplier.phone}`}
                   className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
                 >
@@ -305,7 +308,7 @@ export default function SupplierProfilePage() {
                   <span>{supplier.phone}</span>
                 </a>
               )}
-              <a 
+              <a
                 href={`mailto:${supplier.email}`}
                 className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
               >
@@ -326,21 +329,19 @@ export default function SupplierProfilePage() {
         <div className="border-b border-border flex gap-8 mb-8">
           <button
             onClick={() => setActiveTab('products')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'products'
+            className={`px-4 py-3 font-medium transition-colors ${activeTab === 'products'
                 ? 'border-b-2 border-primary text-primary'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Products ({products.length})
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'reviews'
+            className={`px-4 py-3 font-medium transition-colors ${activeTab === 'reviews'
                 ? 'border-b-2 border-primary text-primary'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Reviews ({supplier.rating.count})
           </button>
@@ -368,10 +369,10 @@ export default function SupplierProfilePage() {
           )}
 
           {activeTab === 'reviews' && (
-            <ReviewsSection 
-              itemId={supplier._id} 
-              itemType="supplier" 
-              itemName={supplier.companyName} 
+            <ReviewsSection
+              itemId={supplier._id}
+              itemType="supplier"
+              itemName={supplier.companyName}
             />
           )}
         </div>
@@ -379,3 +380,6 @@ export default function SupplierProfilePage() {
     </div>
   );
 }
+
+
+

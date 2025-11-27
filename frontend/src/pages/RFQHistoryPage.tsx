@@ -37,7 +37,7 @@ export default function RFQHistoryPage() {
       setLoading(true);
       setError(null);
 
-      const filters = filter === 'all' 
+      const filters = filter === 'all'
         ? { buyerId: userId }
         : { buyerId: userId, status: filter };
 
@@ -59,17 +59,17 @@ export default function RFQHistoryPage() {
   // Handle accept/decline actions
   const handleStatusUpdate = async (rfqId: string, newStatus: 'accepted' | 'declined') => {
     setActionLoading(rfqId);
-    
+
     const response = await updateRFQStatus(rfqId, newStatus);
-    
+
     if (response.success) {
-      setRfqs(prev => prev.map(rfq => 
+      setRfqs(prev => prev.map(rfq =>
         rfq._id === rfqId ? { ...rfq, status: newStatus } : rfq
       ));
     } else {
       alert(response.error || 'Failed to update status');
     }
-    
+
     setActionLoading(null);
   };
 
@@ -104,11 +104,10 @@ export default function RFQHistoryPage() {
             <button
               key={opt.value}
               onClick={() => setFilter(opt.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                filter === opt.value
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${filter === opt.value
                   ? 'bg-primary text-white'
                   : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
+                }`}
             >
               {opt.label}
             </button>
@@ -167,7 +166,7 @@ export default function RFQHistoryPage() {
                     return (
                       <tr key={rfq._id} className="hover:bg-muted/50 transition-colors">
                         <td className="px-6 py-4">
-                          <Link 
+                          <Link
                             to={`/product/${rfq.productId}`}
                             className="text-sm font-medium text-foreground hover:text-primary"
                           >
@@ -175,7 +174,7 @@ export default function RFQHistoryPage() {
                           </Link>
                         </td>
                         <td className="px-6 py-4">
-                          <Link 
+                          <Link
                             to={`/supplier/${rfq.supplierId}`}
                             className="text-sm text-muted-foreground hover:text-primary"
                           >

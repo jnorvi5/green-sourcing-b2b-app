@@ -5,6 +5,7 @@ import ReviewsSection from '../components/Reviews/ReviewsSection';
 import SEO from '../components/SEO';
 import AutodeskViewer from '../components/AutodeskViewer';
 import { fetchProduct, MongoProduct } from '../lib/products-api';
+import { useIntercomTracking } from '../hooks/useIntercomTracking';
 
 // Skeleton component for loading state
 function ProductSkeleton() {
@@ -50,6 +51,7 @@ export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const productId = params.id;
+  const { trackProductView, trackRFQSubmission } = useIntercomTracking();
 
   // Product state from MongoDB API
   const [product, setProduct] = useState<MongoProduct | null>(null);
@@ -85,9 +87,9 @@ export default function ProductDetailPage() {
     async function loadProduct() {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetchProduct(productId!, true);
-      
+
       if (!response.success || !response.data._id) {
         setError(response.error || 'Product not found');
         setLoading(false);
@@ -99,6 +101,9 @@ export default function ProductDetailPage() {
         setAutodeskCarbon(response.autodeskCarbon);
       }
       setLoading(false);
+
+      // Track product view
+      trackProductView(response.data._id, response.data.name, response.data.supplier?.name || 'Unknown');
     }
 
     loadProduct();
@@ -114,7 +119,7 @@ export default function ProductDetailPage() {
     try {
       const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
       const token = localStorage.getItem('greenchainz-token');
-      
+
       const response = await fetch(`${API_BASE}/api/rfq`, {
         method: 'POST',
         headers: {
@@ -138,6 +143,7 @@ export default function ProductDetailPage() {
 
       setShowQuoteModal(false);
       setRFQSubmitted(true);
+      trackRFQSubmission(product._id, product.name, parseInt(rfqForm.quantity) || 1);
       setRfqForm({ email: '', companyName: '', projectDetails: '', quantity: '' });
     } catch (err) {
       console.error('RFQ submission error:', err);
@@ -227,7 +233,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
+      <SEO
         title={`${displayProduct.name} | ${displayProduct.company.name}`}
         description={displayProduct.description}
         image={displayProduct.images[0]}
@@ -264,9 +270,8 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setCurrentImage(idx)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    currentImage === idx ? 'border-primary ring-2 ring-primary/30' : 'border-border hover:border-primary/50'
-                  }`}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${currentImage === idx ? 'border-primary ring-2 ring-primary/30' : 'border-border hover:border-primary/50'
+                    }`}
                 >
                   <img
                     src={img}
@@ -399,232 +404,235 @@ export default function ProductDetailPage() {
                 Download Environmental Product Declaration (EPD)
               </a>
             )}
-        {/* Tabs Section */}
-        <div className="mt-12">
-          {/* Tab Headers */}
-          <div className="border-b border-border flex gap-8 overflow-x-auto">
-            {['overview', 'specs', 'certifications', 'reviews'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-3 font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab
-                    ? 'border-b-2 border-primary text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {tab === 'overview' ? 'Overview' :
-                 tab === 'specs' ? 'Technical Specifications' :
-                 tab === 'certifications' ? 'Sustainability Data' : 'Reviews'}
-              </button>
-            ))}
-          </div>
+            {/* Tabs Section */}
+            <div className="mt-12">
+              {/* Tab Headers */}
+              <div className="border-b border-border flex gap-8 overflow-x-auto">
+                {['overview', 'specs', 'certifications', 'reviews'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-3 font-medium whitespace-nowrap transition-colors ${activeTab === tab
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                  >
+                    {tab === 'overview' ? 'Overview' :
+                      tab === 'specs' ? 'Technical Specifications' :
+                        tab === 'certifications' ? 'Sustainability Data' : 'Reviews'}
+                  </button>
+                ))}
+              </div>
 
-          {/* Tab Content */}
-          <div className="py-8">
-            {activeTab === 'overview' && (
-              <div>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Product Overview</h2>
-                <p className="text-foreground leading-relaxed mb-6">
-                  {displayProduct.description}
-                </p>
-                <h3 className="text-xl font-semibold text-foreground mb-3">Categories</h3>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-muted rounded-full text-sm text-foreground">
-                    {displayProduct.specs.materialType}
-                  </span>
-                  {displayProduct.specs.subcategory && (
-                    <span className="px-3 py-1 bg-muted rounded-full text-sm text-foreground">
-                      {displayProduct.specs.subcategory}
-                    </span>
-                  )}
-                </div>
-                {product.tags && product.tags.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-3">Tags</h3>
+              {/* Tab Content */}
+              <div className="py-8">
+                {activeTab === 'overview' && (
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Product Overview</h2>
+                    <p className="text-foreground leading-relaxed mb-6">
+                      {displayProduct.description}
+                    </p>
+                    <h3 className="text-xl font-semibold text-foreground mb-3">Categories</h3>
                     <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                          {tag}
+                      <span className="px-3 py-1 bg-muted rounded-full text-sm text-foreground">
+                        {displayProduct.specs.materialType}
+                      </span>
+                      {displayProduct.specs.subcategory && (
+                        <span className="px-3 py-1 bg-muted rounded-full text-sm text-foreground">
+                          {displayProduct.specs.subcategory}
                         </span>
-                      ))}
+                      )}
+                    </div>
+                    {product.tags && product.tags.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="text-xl font-semibold text-foreground mb-3">Tags</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {product.tags.map((tag, idx) => (
+                            <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'specs' && (
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Technical Specifications</h2>
+                    <table className="w-full border-collapse">
+                      <tbody>
+                        <tr className="border-b border-border">
+                          <td className="py-3 font-medium text-foreground">Category</td>
+                          <td className="py-3 text-muted-foreground">{product.category}</td>
+                        </tr>
+                        {product.subcategory && (
+                          <tr className="border-b border-border">
+                            <td className="py-3 font-medium text-foreground">Subcategory</td>
+                            <td className="py-3 text-muted-foreground">{product.subcategory}</td>
+                          </tr>
+                        )}
+                        <tr className="border-b border-border">
+                          <td className="py-3 font-medium text-foreground">Unit of Measure</td>
+                          <td className="py-3 text-muted-foreground">{product.unitOfMeasure || 'Each'}</td>
+                        </tr>
+                        <tr className="border-b border-border">
+                          <td className="py-3 font-medium text-foreground">Minimum Order Quantity</td>
+                          <td className="py-3 text-muted-foreground">{product.minOrderQuantity || 1}</td>
+                        </tr>
+                        {product.leadTimeDays && (
+                          <tr className="border-b border-border">
+                            <td className="py-3 font-medium text-foreground">Lead Time</td>
+                            <td className="py-3 text-muted-foreground">{product.leadTimeDays} days</td>
+                          </tr>
+                        )}
+                        {product.greenData?.recycledContent !== undefined && (
+                          <tr className="border-b border-border">
+                            <td className="py-3 font-medium text-foreground">Recycled Content</td>
+                            <td className="py-3 text-muted-foreground">{product.greenData.recycledContent}%</td>
+                          </tr>
+                        )}
+                        {product.greenData?.renewableEnergy !== undefined && (
+                          <tr className="border-b border-border">
+                            <td className="py-3 font-medium text-foreground">Renewable Energy Used</td>
+                            <td className="py-3 text-muted-foreground">{product.greenData.renewableEnergy}%</td>
+                          </tr>
+                        )}
+                        {product.greenData?.waterUsage !== undefined && (
+                          <tr className="border-b border-border">
+                            <td className="py-3 font-medium text-foreground">Water Usage</td>
+                            <td className="py-3 text-muted-foreground">{product.greenData.waterUsage} L/unit</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {activeTab === 'certifications' && (
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground mb-6">Sustainability Certifications & Data</h2>
+                    <div className="space-y-6">
+                      {displayProduct.certifications.length > 0 ? (
+                        displayProduct.certifications.map((cert, idx) => (
+                          <div key={idx} className="p-6 border border-border rounded-lg">
+                            <h3 className="text-lg font-semibold text-foreground mb-2">{cert.name}</h3>
+                            <p className="text-sm text-muted-foreground">Verified certification</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground">No certifications listed for this product.</p>
+                      )}
+                      <div className="p-6 bg-muted rounded-lg">
+                        <h3 className="text-lg font-semibold text-foreground mb-4">Environmental Impact Data</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Global Warming Potential</p>
+                            <p className="text-xl font-bold text-primary">
+                              {displayProduct.epd.gwp > 0 ? `${displayProduct.epd.gwp.toFixed(2)} kg CO₂e` : 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">Recycled Content</p>
+                            <p className="text-xl font-bold text-primary">{displayProduct.epd.recycledContent}%</p>
+                          </div>
+                          {product.greenData?.renewableEnergy !== undefined && (
+                            <div>
+                              <p className="text-sm text-muted-foreground">Renewable Energy</p>
+                              <p className="text-xl font-bold text-primary">{product.greenData.renewableEnergy}%</p>
+                            </div>
+                          )}
+                        </div>
+                        {autodeskCarbon && (
+                          <p className="text-sm text-muted-foreground mt-4 italic">
+                            Carbon data enriched via Autodesk Platform Services • Updated: {new Date(autodeskCarbon.last_updated).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
-              </div>
-            )}
 
-            {activeTab === 'specs' && (
-              <div>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Technical Specifications</h2>
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr className="border-b border-border">
-                      <td className="py-3 font-medium text-foreground">Category</td>
-                      <td className="py-3 text-muted-foreground">{product.category}</td>
-                    </tr>
-                    {product.subcategory && (
-                      <tr className="border-b border-border">
-                        <td className="py-3 font-medium text-foreground">Subcategory</td>
-                        <td className="py-3 text-muted-foreground">{product.subcategory}</td>
-                      </tr>
-                    )}
-                    <tr className="border-b border-border">
-                      <td className="py-3 font-medium text-foreground">Unit of Measure</td>
-                      <td className="py-3 text-muted-foreground">{product.unitOfMeasure || 'Each'}</td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="py-3 font-medium text-foreground">Minimum Order Quantity</td>
-                      <td className="py-3 text-muted-foreground">{product.minOrderQuantity || 1}</td>
-                    </tr>
-                    {product.leadTimeDays && (
-                      <tr className="border-b border-border">
-                        <td className="py-3 font-medium text-foreground">Lead Time</td>
-                        <td className="py-3 text-muted-foreground">{product.leadTimeDays} days</td>
-                      </tr>
-                    )}
-                    {product.greenData?.recycledContent !== undefined && (
-                      <tr className="border-b border-border">
-                        <td className="py-3 font-medium text-foreground">Recycled Content</td>
-                        <td className="py-3 text-muted-foreground">{product.greenData.recycledContent}%</td>
-                      </tr>
-                    )}
-                    {product.greenData?.renewableEnergy !== undefined && (
-                      <tr className="border-b border-border">
-                        <td className="py-3 font-medium text-foreground">Renewable Energy Used</td>
-                        <td className="py-3 text-muted-foreground">{product.greenData.renewableEnergy}%</td>
-                      </tr>
-                    )}
-                    {product.greenData?.waterUsage !== undefined && (
-                      <tr className="border-b border-border">
-                        <td className="py-3 font-medium text-foreground">Water Usage</td>
-                        <td className="py-3 text-muted-foreground">{product.greenData.waterUsage} L/unit</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                {activeTab === 'reviews' && (
+                  <ReviewsSection itemId={product._id} itemType="product" itemName={displayProduct.name} />
+                )}
               </div>
-            )}
+            </div>
+          </div>
 
-            {activeTab === 'certifications' && (
-              <div>
-                <h2 className="text-2xl font-bold text-foreground mb-6">Sustainability Certifications & Data</h2>
-                <div className="space-y-6">
-                  {displayProduct.certifications.length > 0 ? (
-                    displayProduct.certifications.map((cert, idx) => (
-                      <div key={idx} className="p-6 border border-border rounded-lg">
-                        <h3 className="text-lg font-semibold text-foreground mb-2">{cert.name}</h3>
-                        <p className="text-sm text-muted-foreground">Verified certification</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground">No certifications listed for this product.</p>
-                  )}
-                  <div className="p-6 bg-muted rounded-lg">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Environmental Impact Data</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Global Warming Potential</p>
-                        <p className="text-xl font-bold text-primary">
-                          {displayProduct.epd.gwp > 0 ? `${displayProduct.epd.gwp.toFixed(2)} kg CO₂e` : 'N/A'}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Recycled Content</p>
-                        <p className="text-xl font-bold text-primary">{displayProduct.epd.recycledContent}%</p>
-                      </div>
-                      {product.greenData?.renewableEnergy !== undefined && (
-                        <div>
-                          <p className="text-sm text-muted-foreground">Renewable Energy</p>
-                          <p className="text-xl font-bold text-primary">{product.greenData.renewableEnergy}%</p>
-                        </div>
+          {/* Request Quote Modal */}
+          {showQuoteModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-background rounded-lg p-8 max-w-md w-full">
+                <h2 className="text-2xl font-bold text-foreground mb-4">Request Quote</h2>
+                <p className="text-muted-foreground mb-6">Product: {displayProduct.name}</p>
+                <form onSubmit={handleRequestQuote} className="space-y-4">
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    required
+                    value={rfqForm.email}
+                    onChange={(e) => setRfqForm({ ...rfqForm, email: e.target.value })}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Company Name"
+                    required
+                    value={rfqForm.companyName}
+                    onChange={(e) => setRfqForm({ ...rfqForm, companyName: e.target.value })}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Quantity Needed"
+                    min="1"
+                    required
+                    value={rfqForm.quantity}
+                    onChange={(e) => setRfqForm({ ...rfqForm, quantity: e.target.value })}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                  />
+                  <textarea
+                    placeholder="Project Details & Special Requirements"
+                    rows={4}
+                    required
+                    value={rfqForm.projectDetails}
+                    onChange={(e) => setRfqForm({ ...rfqForm, projectDetails: e.target.value })}
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                  />
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowQuoteModal(false)}
+                      disabled={rfqLoading}
+                      className="flex-1 px-6 py-3 border-2 border-border text-foreground font-semibold rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={rfqLoading}
+                      className="flex-1 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {rfqLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send RFQ'
                       )}
-                    </div>
-                    {autodeskCarbon && (
-                      <p className="text-sm text-muted-foreground mt-4 italic">
-                        Carbon data enriched via Autodesk Platform Services • Updated: {new Date(autodeskCarbon.last_updated).toLocaleDateString()}
-                      </p>
-                    )}
+                    </button>
                   </div>
-                </div>
+                </form>
               </div>
-            )}
-
-            {activeTab === 'reviews' && (
-              <ReviewsSection itemId={product._id} itemType="product" itemName={displayProduct.name} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Request Quote Modal */}
-      {showQuoteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-foreground mb-4">Request Quote</h2>
-            <p className="text-muted-foreground mb-6">Product: {displayProduct.name}</p>
-            <form onSubmit={handleRequestQuote} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Your Email"
-                required
-                value={rfqForm.email}
-                onChange={(e) => setRfqForm({ ...rfqForm, email: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
-              />
-              <input
-                type="text"
-                placeholder="Company Name"
-                required
-                value={rfqForm.companyName}
-                onChange={(e) => setRfqForm({ ...rfqForm, companyName: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
-              />
-              <input
-                type="number"
-                placeholder="Quantity Needed"
-                min="1"
-                required
-                value={rfqForm.quantity}
-                onChange={(e) => setRfqForm({ ...rfqForm, quantity: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
-              />
-              <textarea
-                placeholder="Project Details & Special Requirements"
-                rows={4}
-                required
-                value={rfqForm.projectDetails}
-                onChange={(e) => setRfqForm({ ...rfqForm, projectDetails: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
-              />
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowQuoteModal(false)}
-                  disabled={rfqLoading}
-                  className="flex-1 px-6 py-3 border-2 border-border text-foreground font-semibold rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={rfqLoading}
-                  className="flex-1 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {rfqLoading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    'Send RFQ'
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        );
 }
+
+
+
+
