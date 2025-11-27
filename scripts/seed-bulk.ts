@@ -2,14 +2,6 @@ import { faker } from '@faker-js/faker';
 import dbConnect from '../lib/mongodb';
 import Product from '../models/Product';
 
-interface GreenData {
-  gwp: number; // kg CO2e per functional unit (m2 or kg)
-  recycledContent?: string; // e.g., "85%"
-  embodiedCarbon?: number;
-  epdCertified: boolean;
-  certifications?: string[];
-}
-
 async function main() {
   await dbConnect();
 
@@ -43,7 +35,7 @@ async function main() {
     ]
   };
 
-  const unsplashKeywords = {
+  const unsplashKeywords: Record<string, string> = {
     'Mass Timber': 'timber,construction',
     'Cross-Laminated Timber (CLT)': 'wood,construction',
     'Green Concrete': 'concrete,construction',
@@ -65,8 +57,15 @@ async function main() {
   };
 
   const certificationsPool = ['EPD', 'Cradle to Cradle', 'LEED', 'BREEAM', 'Declare', 'FSC', 'GreenGuard'];
+  const lifecycleStages = ['A1-A3 (Product)', 'A4-A5 (Construction)', 'B1-B7 (Use)', 'C1-C4 (End of Life)', 'D (Benefits)'];
+  const unitsOfMeasure = ['m2', 'kg', 'm3', 'unit', 'liter', 'ton'];
+  const currencies: Array<'USD' | 'EUR' | 'GBP' | 'CAD'> = ['USD', 'EUR', 'GBP', 'CAD'];
+  const statusOptions: Array<'draft' | 'active' | 'archived'> = ['draft', 'active', 'archived'];
 
-  const products = [] as any[];
+  // Generate sample supplier IDs
+  const supplierIds = Array.from({ length: 10 }, () => faker.string.uuid());
+
+  const products: Array<Record<string, unknown>> = [];
   const total = 60;
   const categoryKeys = Object.keys(categories);
 
@@ -81,25 +80,19 @@ async function main() {
     const title = `${adjective} ${materialDescriptor}`;
     const description = `${faker.lorem.paragraphs(2)}\n\nMaterial overview: ${faker.lorem.sentence()}`;
 
-    // Green data (credible variety)
-    const gwp = Number((faker.number.float({ min: -8, max: 120, fractionDigits: 1 })).toFixed(1));
-    const recycledContentPercent = faker.helpers.arrayElement([0, 5, 15, 30, 45, 60, 75, 85, 95]);
-    const embodiedCarbon = Number((faker.number.float({ min: 0.5, max: 300, fractionDigits: 1 })).toFixed(1));
-    const epdCertified = faker.datatype.boolean();
-
-    const certs = faker.helpers.arrayElements(certificationsPool, faker.number.int({ min: 0, max: 3 }));
+    // Green data matching IGreenData interface
+    const recycledContent = faker.helpers.arrayElement([0, 5, 15, 30, 45, 60, 75, 85, 95]);
+    const hasEpd = faker.datatype.boolean();
+    const certifications = faker.helpers.arrayElements(certificationsPool, faker.number.int({ min: 0, max: 3 }));
 
     const greenData = {
-      gwp,
-      recycledContent: recycledContentPercent > 0 ? `${recycledContentPercent}%` : '0%',
-      embodiedCarbon,
-      epdCertified,
-      certifications: certs
-    } as GreenData;
-
-    // Autodesk placeholder
-    const autodeskData = {
-      materialId: faker.string.uuid()
+      epdId: hasEpd ? `EPD-${faker.string.alphanumeric(10).toUpperCase()}` : undefined,
+      carbonFootprint: Number(faker.number.float({ min: 0.5, max: 120, fractionDigits: 1 }).toFixed(1)),
+      recycledContent,
+      renewableEnergy: faker.number.int({ min: 0, max: 100 }),
+      waterUsage: Number(faker.number.float({ min: 0.1, max: 500, fractionDigits: 1 }).toFixed(1)),
+      certifications,
+      lifecycleStage: faker.helpers.arrayElement(lifecycleStages),
     };
 
     // Images using Unsplash source query (keyword-based)
@@ -110,32 +103,29 @@ async function main() {
     ];
 
     const price = Number(faker.commerce.price({ min: 10, max: 5000, dec: 2 }));
-    const sku = `PRD-${faker.string.hexadecimal({ length: 8, prefix: '' }).toUpperCase()}`;
 
-    const technicalProperties = {
-      density: `${faker.number.int({ min: 10, max: 2200 })} kg/m3`,
-      thermalConductivity: `${(faker.number.float({ min: 0.02, max: 2, fractionDigits: 2 })).toFixed(2)} W/mK`,
-      fireRating: faker.helpers.arrayElement(['A1', 'A2', 'B', 'C']),
-      serviceLife: `${faker.number.int({ min: 10, max: 100 })} years`
-    };
+    // Generate tags based on category and subcategory
+    const baseTags = [category.toLowerCase(), subcategory.toLowerCase().replace(/[()]/g, ''), 'sustainable', 'green'];
+    const additionalTags = faker.helpers.arrayElements(['eco-friendly', 'low-carbon', 'recyclable', 'renewable', 'bio-based', 'non-toxic'], faker.number.int({ min: 1, max: 3 }));
+    const tags = [...new Set([...baseTags, ...additionalTags])];
 
     products.push({
       title,
       description,
+      price,
+      currency: faker.helpers.arrayElement(currencies),
+      supplierId: faker.helpers.arrayElement(supplierIds),
+      supplierName: faker.company.name(),
       category,
       subcategory,
-      greenData,
-      autodeskData,
       images,
-      price,
-      sku,
-      technicalProperties,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      metadata: {
-        visibility: 'public',
-        featured: i < 6
-      }
+      certificates: certifications, // Reuse certifications for certificates field
+      status: i < 50 ? 'active' : faker.helpers.arrayElement(statusOptions), // First 50 are active
+      minOrderQuantity: faker.number.int({ min: 1, max: 100 }),
+      unitOfMeasure: faker.helpers.arrayElement(unitsOfMeasure),
+      leadTimeDays: faker.number.int({ min: 3, max: 45 }),
+      tags,
+      greenData,
     });
   }
 
