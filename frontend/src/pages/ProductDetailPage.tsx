@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import ReviewsSection from '../components/Reviews/ReviewsSection';
 import SEO from '../components/SEO';
+import AutodeskViewer from '../components/AutodeskViewer';
 
 // MOCK DATA (replace with Supabase query in Phase 1)
 const MOCK_PRODUCT = {
@@ -43,6 +44,10 @@ const MOCK_PRODUCT = {
   pricing: {
     range: '$$',
     contactForQuote: true
+  },
+  // Autodesk Platform Services data - URN for 3D model
+  autodeskData: {
+    urn: '' // Empty URN triggers Ghost Mode - set to valid URN when 3D model is available
   }
 };
 
@@ -95,19 +100,13 @@ export default function ProductDetailPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left: Image Gallery */}
+          {/* Left: 3D Viewer or Image Gallery */}
           <div>
-            {/* Main Image */}
-            <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
-              <img
-                src={product.images[currentImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {/* 3D Viewer - shows Ghost Mode if no URN */}
+            <AutodeskViewer urn={product.autodeskData?.urn || ''} />
 
-            {/* Thumbnails */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* Thumbnails - shown below viewer as supplementary images */}
+            <div className="grid grid-cols-3 gap-4 mt-4">
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
