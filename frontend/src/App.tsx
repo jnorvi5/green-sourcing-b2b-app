@@ -63,6 +63,7 @@ import UserManagement from './pages/Admin/UserManagement';
 import SystemSettings from './pages/Admin/SystemSettings';
 import PlatformAnalytics from './pages/Admin/PlatformAnalytics';
 import Notifications from './pages/Notifications';
+import SupplierLeaderboard from './pages/SupplierLeaderboard';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -156,6 +157,7 @@ function App() {
             <Route path="/payments" element={<Payments />} />
             <Route path="/documents" element={<Documents />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/leaderboard" element={<SupplierLeaderboard />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>
