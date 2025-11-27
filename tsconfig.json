@@ -48,6 +48,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["lib/mongodb.ts", "lib/s3.ts", "lib/supabase/**/*.ts", "models/**/*.ts", "scripts/**/*.ts"],
-  "exclude": ["node_modules", "frontend", "app", "src", "lib/s3-upload.ts"]
+  "include": ["lib/mongodb.ts", "lib/s3.ts", "lib/autodesk.ts", "lib/supabase/**/*.ts", "models/**/*.ts", "scripts/**/*.ts", "app/**/*.ts"],
+  "exclude": ["node_modules", "frontend", "src", "lib/s3-upload.ts"]
 }
