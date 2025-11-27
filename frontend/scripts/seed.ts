@@ -107,6 +107,7 @@ const Product = mongoose.models.Product || mongoose.model('Product', ProductSche
  */
 async function seed(): Promise<void> {
   const MONGODB_URI = process.env.MONGODB_URI;
+  const NODE_ENV = process.env.NODE_ENV || 'development';
 
   if (!MONGODB_URI) {
     console.error('❌ Error: MONGODB_URI environment variable is not defined.');
@@ -114,7 +115,16 @@ async function seed(): Promise<void> {
     process.exit(1);
   }
 
+  // Safety check: warn if running against production
+  if (NODE_ENV === 'production' && !process.env.SEED_FORCE) {
+    console.error('⚠️  Warning: Attempting to seed in production environment.');
+    console.error('   This will DELETE all existing products.');
+    console.error('   Set SEED_FORCE=true environment variable to proceed.');
+    process.exit(1);
+  }
+
   console.log('🌱 Starting MongoDB seed script...\n');
+  console.log(`   Environment: ${NODE_ENV}\n`);
 
   try {
     // Connect to MongoDB
