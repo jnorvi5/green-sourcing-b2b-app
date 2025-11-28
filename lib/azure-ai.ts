@@ -234,12 +234,26 @@ Ensure the HTML body uses inline styles and is compatible with email clients. Us
 // Helper Functions
 // =============================================================================
 
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+}
+
 function generateHtmlBody(textBody: string): string {
   // Convert plain text to HTML with GreenChainz styling
   const paragraphs = textBody.split('\n\n').map(p => p.trim()).filter(p => p);
   
   const htmlParagraphs = paragraphs
-    .map(p => `<p style="margin: 0 0 16px 0; color: #d1d5db; font-size: 15px; line-height: 1.6;">${p.replace(/\n/g, '<br>')}</p>`)
+    .map(p => `<p style="margin: 0 0 16px 0; color: #d1d5db; font-size: 15px; line-height: 1.6;">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
     .join('\n');
 
   return `

@@ -14,6 +14,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 // Load environment variables
 dotenv.config();
@@ -182,8 +183,15 @@ async function main() {
           generatedAt: new Date(),
           status: autoSend ? EmailStatus.APPROVED : EmailStatus.DRAFT,
           type: emailType,
-          sentAt: undefined as Date | undefined,
-          messageId: undefined as string | undefined,
+        } as {
+          subject: string;
+          body: string;
+          htmlBody: string;
+          generatedAt: Date;
+          status: EmailStatus;
+          type: EmailType;
+          sentAt?: Date;
+          messageId?: string;
         };
 
         lead.emails.push(newEmail);
@@ -346,8 +354,6 @@ Return JSON: { "subject": "...", "body": "...", "htmlBody": "..." }`;
 }
 
 // Zoho SMTP email sending (simplified version for script)
-import nodemailer from 'nodemailer';
-
 interface SendEmailParams {
   to: string;
   subject: string;

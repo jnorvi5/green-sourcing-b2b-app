@@ -85,8 +85,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessFo
           generatedAt: new Date(),
           status: autoSend ? EmailStatus.APPROVED : EmailStatus.DRAFT,
           type: emailType,
-          sentAt: undefined as Date | undefined,
-          messageId: undefined as string | undefined,
+        } as {
+          subject: string;
+          body: string;
+          htmlBody: string;
+          generatedAt: Date;
+          status: EmailStatus;
+          type: EmailType;
+          sentAt?: Date;
+          messageId?: string;
         };
 
         lead.emails.push(newEmail);
