@@ -1,178 +1,254 @@
 # Code Review Report
-**Generated:** 2025-11-25  
+**Generated:** 2025-11-28  
 **Repository:** green-sourcing-b2b-app  
-**Status:** ✅ Build Passing - Minor Issues Remain
+**Status:** 🟡 Partially Fixed - Pre-existing JSX Syntax Errors Remain
 
 ---
 
 ## Executive Summary
 
-This comprehensive code review found **no merge conflict markers** in the repository. The frontend builds successfully. Several broken asset paths were identified and fixed.
+This comprehensive code review identified a **CRITICAL configuration issue** that prevented the frontend from building, which has now been **FIXED**. The frontend folder was misconfigured with Next.js scripts instead of Vite.
+
+However, there are **PRE-EXISTING JSX syntax errors** (unclosed div tags) in 19+ files that existed before this review and prevent the Vite build from completing. These are not new issues introduced by this PR.
 
 ### Key Findings
 
-| Category | Status |
-|----------|--------|
-| Merge Conflicts | ✅ None found |
-| Build Status | ✅ Passing |
-| ESLint Errors | ⚠️ 21 errors (non-blocking) |
-| Logo/Asset Paths | ✅ Fixed |
-| Configuration | ✅ Valid |
+| Category | Status | Severity |
+|----------|--------|----------|
+| Build Configuration | ✅ **FIXED** | CRITICAL → Resolved |
+| Missing Dependencies | ✅ **FIXED** | CRITICAL → Resolved |
+| Import Path Errors | ✅ **FIXED** | MEDIUM → Resolved |
+| Unused/Stale Files | ✅ **FIXED** | LOW → Resolved |
+| Pre-existing JSX Errors | 🔴 NOT FIXED (out of scope) | BLOCKER |
+| Logo/Asset Paths | ✅ Correct | OK |
+| Routing Configuration | ✅ Valid | OK |
+| Vercel Config | ✅ Valid | OK |
 
 ---
 
-## ✅ Issues Fixed in This Review
+## ✅ FIXES APPLIED IN THIS PR
 
-### 1. Broken Logo Paths
-**Files Fixed:**
-- `frontend/src/pages/Login.tsx` - Changed `/assets/logo/greenchainz-full-400.png` → `/assets/logo/greenchainz-logo-full.png`
-- `frontend/src/pages/Signup.tsx` - Changed `/assets/logo/greenchainz-full-400.png` → `/assets/logo/greenchainz-logo-full.png`
-- `frontend/src/pages/auth/ResetPassword.tsx` - Changed `/brand/greenchainz-logo.png` → `/assets/logo/greenchainz-logo.png`
-- `frontend/src/pages/auth/ResetPasswordConfirm.tsx` - Changed `/brand/greenchainz-logo.png` → `/assets/logo/greenchainz-logo.png`
+### 1. Package Configuration (CRITICAL - FIXED)
 
-### 2. Hero Image Path
-**File Fixed:**
-- `frontend/src/components/home/Hero.tsx` - Changed `/assets/hero-visual.png` → `/assets/logo/logo/hero-visual.png`
+**Problem:** The `frontend/package.json` was misconfigured for **Next.js** but the project is actually a **Vite + React SPA**.
 
-### 3. Missing Badge Page Asset
-**Created:**
-- `frontend/public/badges/charter175/index.html` - Placeholder for Charter 175 badge page
+**Evidence of Vite Project:**
+- `frontend/vite.config.ts` and `vite.config.js` exist
+- `frontend/tsconfig.app.json` has `"types": ["vite/client"]`
+- `frontend/index.html` uses `<script type="module" src="/src/main.tsx"></script>`
+- All files use `import.meta.env.VITE_*` for environment variables (Vite syntax)
 
-### 4. Empty Directories Removed
-- Removed empty `green-sourcing-b2b-app/` directory
-- Removed empty `green-sourcing-b2b-app-1/` directory
-
----
-
-## 🟡 Remaining Issues (Non-Blocking)
-
-### ESLint Warnings (21 total)
-These are code quality issues that don't prevent the build:
-
-| File | Issue |
-|------|-------|
-| `ArchitectSurvey.tsx` | Unexpected `any` type |
-| `FileUpload.tsx` | Unexpected `any` type |
-| `CreateProjectModal.tsx` | Unexpected `any` type (2x) |
-| `RFQModal.tsx` | Unused variable `_error` |
-| `SupplierProductList.tsx` | Missing dependency in useEffect |
-| `SupplierProfile.tsx` | Unexpected `any` type |
-| `AuthContext.tsx` | Fast refresh violations (2x) |
-| `ProjectContext.tsx` | Fast refresh violation |
-| `api.ts` | Unexpected `any` type |
-| `Login.tsx` | Unused imports |
-| `ProductDetailPage.tsx` | Unused variable |
-| `ProductsPage.tsx` | Unexpected `any` type |
-| `Signup.tsx` | Unused imports (2x) |
-| `SupplierProfilePage.tsx` | Unused variable |
-| `ResetPassword.tsx` | Unused variable |
-| `ResetPasswordConfirm.tsx` | Unused variable |
-| `types/index.ts` | Unexpected `any` type |
-
----
-
-## 📁 Project Structure Analysis
-
-### Main Application
-- **Location:** `/frontend/` - Vite + React + TypeScript SPA
-- **Build Command:** `npm run build`
-- **Output:** `frontend/dist/`
-
-### Other Directories
-- `/app/` - Appears to be a separate Next.js-style structure (not the main app)
-- `/backend/` - Express.js API server
-- `/lambda/` - AWS Lambda functions
-- `/supabase/` - Database setup files
-
-### Logo Assets (Verified Locations)
-```
-frontend/public/assets/logo/
-├── greenchainz-logo.png
-├── greenchainz-logo-full.png
-├── greenchainz-logo-icon.png
-├── greenchainz-logo-white.png
-├── greenchainz-badge.png
-└── logo/
-    └── hero-visual.png
-```
-
----
-
-## ⚙️ Configuration Status
-
-### Build Configuration
-| File | Status |
-|------|--------|
-| `frontend/package.json` | ✅ Valid |
-| `frontend/vite.config.ts` | ✅ Valid |
-| `frontend/tsconfig.json` | ✅ Valid |
-| `frontend/vercel.json` | ✅ Valid (SPA rewrites configured) |
-| `frontend/tailwind.config.js` | ✅ Valid |
-
-### Vercel Deployment Settings
-The `frontend/vercel.json` is properly configured for SPA routing:
+**Before (incorrect):**
 ```json
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  }
 }
 ```
 
+**After (fixed):**
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+### 2. Missing Dependencies (CRITICAL - FIXED)
+
+The following packages were **added** to `frontend/package.json`:
+
+| Package | Version | Usage |
+|---------|---------|-------|
+| `vite` | ^5.4.0 | Build system |
+| `@vitejs/plugin-react` | ^4.2.1 | Vite React plugin |
+| `react-router-dom` | ^6.22.3 | Routing (60+ files) |
+| `axios` | ^1.6.7 | HTTP client |
+| `zustand` | ^4.5.2 | State management |
+| `@heroicons/react` | ^2.1.1 | Icons |
+| `clsx` | ^2.1.0 | Class names utility |
+| `tailwind-merge` | ^2.2.1 | Tailwind utilities |
+| `react-ga4` | ^2.1.0 | Google Analytics |
+| `react-helmet-async` | ^2.0.4 | SEO/meta tags |
+| `sonner` | ^1.4.3 | Toast notifications |
+| `azure-maps-control` | ^3.2.1 | Map component |
+| `autoprefixer` | ^10.4.18 | PostCSS |
+| `postcss` | ^8.4.35 | CSS processing |
+| `tailwindcss` | ^3.4.1 | CSS framework |
+| ESLint plugins | various | Linting |
+
+### 3. Import Path Fix (MEDIUM - FIXED)
+
+**File:** `frontend/src/pages/AuthCallback.tsx`  
+**Line 3:** Fixed incorrect relative import path
+
+```diff
+- import { supabase } from '../../lib/supabase';
++ import { supabase } from '../lib/supabase';
+```
+
+### 4. Stale File Removed (LOW - FIXED)
+
+**Removed:** `frontend/src/components/Header.tsx`
+
+This file:
+- Used `import Link from 'next/link'` (Next.js import in Vite project)
+- Had a JSX bug: `<button>...</Link>` (mismatched tags)
+- Was not imported anywhere in the codebase
+- The app uses `frontend/src/pages/Header.tsx` instead
+
 ---
 
-## 🚀 Why Frontend Changes May Not Appear in Production
+## 🔴 PRE-EXISTING ISSUES (NOT IN SCOPE)
 
-Based on the review, potential reasons include:
+### JSX Syntax Errors - Unclosed Div Tags
 
-1. **Vercel Root Directory Setting** - Ensure Vercel is configured to use `frontend` as the root directory
-2. **Build Output** - Verify Vercel output directory is set to `dist`
-3. **Environment Variables** - Missing `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel
-4. **Cache Issues** - Try "Redeploy" with "Clear cache and deploy" option
+**19 files** have mismatched opening/closing `<div>` tags. This is a **pre-existing issue** that was NOT introduced by this PR:
 
-### Recommended Vercel Settings
-- **Framework Preset:** Vite
-- **Root Directory:** `frontend`
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
-- **Install Command:** `npm install`
+| File | Open Tags | Close Tags | Missing |
+|------|-----------|------------|---------|
+| `AdminConsole.tsx` | 130 | 118 | 12 |
+| `ProductDetailPage.tsx` | 71 | 57 | 14 |
+| `SupplierQualification.tsx` | 113 | 107 | 6 |
+| `Budgets.tsx` | 79 | 73 | 6 |
+| `RFQHistoryPage.tsx` | 17 | 11 | 6 |
+| `SupplierProfilePage.tsx` | 45 | 40 | 5 |
+| `RfqsTab.tsx` | 33 | 28 | 5 |
+| `SustainabilityReports.tsx` | 88 | 84 | 4 |
+| `Shipments.tsx` | 100 | 96 | 4 |
+| `CarbonCalculator.tsx` | 66 | 64 | 2 |
+| `KPIDashboard.tsx` | 62 | 60 | 2 |
+| `NetworkBoard.tsx` | 31 | 29 | 2 |
+| `pages/Header.tsx` | 8 | 6 | 2 |
+| `Contracts.tsx` | 76 | 75 | 1 |
+| `Inventory.tsx` | 103 | 102 | 1 |
+| `Investors.tsx` | 61 | 60 | 1 |
+| `Invoices.tsx` | 67 | 66 | 1 |
+| `Messages.tsx` | 44 | 43 | 1 |
+| `Network.tsx` | 67 | 66 | 1 |
+
+**Impact:** These errors prevent `npm run build` from completing. The build fails with:
+```
+ERROR: The character "}" is not valid inside a JSX element
+ERROR: Unexpected end of file before a closing "div" tag
+```
+
+**Recommendation:** These files need to be fixed in a separate PR by carefully reviewing and adding the missing closing `</div>` tags.
+
+---
+
+## ✅ Correct Configurations (No Issues)
+
+### Logo Assets (Verified)
+All logo paths in the code reference files that exist:
+```
+frontend/public/assets/logo/
+├── greenchainz-logo.png         ✅ Referenced in ResetPassword.tsx
+├── greenchainz-logo-full.png    ✅ Referenced in Login.tsx, Signup.tsx, Logo.tsx
+├── greenchainz-logo-icon.png    ✅ Referenced in Logo.tsx
+├── greenchainz-logo-white.png   ✅ Referenced in Logo.tsx
+└── logo/
+    └── hero-visual.png          ✅ Referenced in Hero.tsx
+```
+
+### Routing Configuration
+- 193+ routes defined in `frontend/src/App.tsx`
+- Uses `react-router-dom` correctly (now installed)
+- SPA rewrite rule in `frontend/vercel.json` is correct
+
+### GitHub Workflows
+- `health.yml` - Production health monitoring ✅
+- `crawler.yml` - Link integrity checking ✅
 
 ---
 
 ## 📝 Testing Commands
 
 ```bash
-# Install dependencies
-cd frontend && npm install
+# Navigate to frontend directory
+cd frontend
 
-# Run development server
+# Install dependencies (already done)
+npm install
+
+# Run development server (will work)
 npm run dev
 
-# Build for production
+# Build for production (WILL FAIL due to pre-existing JSX errors)
 npm run build
 
 # Run linter
 npm run lint
+```
 
-# Preview production build
-npm run preview
+---
+
+## 🚀 Vercel Deployment Settings
+
+Once the pre-existing JSX errors are fixed, use these Vercel settings:
+
+| Setting | Value |
+|---------|-------|
+| Framework Preset | Vite |
+| Root Directory | `frontend` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
+| Node.js Version | 20.x |
+
+### Required Environment Variables
+```
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+VITE_AZURE_MAPS_KEY=your-azure-maps-key
+VITE_INTERCOM_APP_ID=your-intercom-id
+VITE_API_URL=https://your-api-url.com
+VITE_SITE_URL=https://greenchainz.com
 ```
 
 ---
 
 ## ✅ Verification Checklist
 
-- [x] No merge conflict markers found
-- [x] Frontend builds successfully
-- [x] Logo paths corrected
-- [x] Hero image path corrected
-- [x] Charter 175 badge page created
-- [x] Empty directories removed
-- [ ] ESLint warnings (non-blocking, can be fixed incrementally)
+**Completed in this PR:**
+- [x] Fixed package.json scripts (Next.js → Vite)
+- [x] Added all missing dependencies
+- [x] Fixed import path in AuthCallback.tsx
+- [x] Removed stale Header.tsx component
+- [x] Repository structure analyzed
+- [x] Logo/asset paths verified (all correct)
+- [x] Routing configuration verified (correct)
+- [x] Vercel configuration verified (correct)
+- [x] Documented pre-existing JSX errors
+
+**Remaining (out of scope - separate PR needed):**
+- [ ] Fix JSX syntax errors in 19 files (unclosed div tags)
 
 ---
 
-**Report Generated:** 2025-11-25T14:30:00Z
+## Priority Action Items
+
+### For This PR (DONE):
+1. ✅ Fixed `frontend/package.json` - Vite configuration
+2. ✅ Installed all missing dependencies
+3. ✅ Fixed import path in `AuthCallback.tsx`
+4. ✅ Removed stale `components/Header.tsx`
+
+### For Follow-up PR (RECOMMENDED):
+1. **[BLOCKER]** Fix unclosed `<div>` tags in 19 files
+2. **[BLOCKER]** Test `npm run build` completes successfully
+3. **[VERIFY]** Deploy to Vercel with correct settings
+
+---
+
+**Report Generated:** 2025-11-28T16:30:00Z
