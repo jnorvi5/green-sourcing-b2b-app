@@ -117,15 +117,10 @@ const SearchPage = () => {
   }, [loadProducts]);
 
   // Reset to page 1 when filters change (not on page change)
-  // Using JSON.stringify for more robust serialization that handles special characters
-  const filterDependencies = useMemo(() => 
-    JSON.stringify([searchQuery, materialTypes, application, certifications, location, recycledContent, carbonFootprint, vocLevel]),
-    [searchQuery, materialTypes, application, certifications, location, recycledContent, carbonFootprint, vocLevel]
-  );
-
+  // Use primitive values directly as dependencies for better performance
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterDependencies]);
+  }, [searchQuery, materialTypes, application, certifications, location, recycledContent, carbonFootprint, vocLevel]);
 
   const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
 

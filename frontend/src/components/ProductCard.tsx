@@ -60,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = memo(({ product, supplierName, o
       }
       addProduct(product);
     }
-  }, [isSelected, removeProduct, addProduct, product, comparisonProducts.length]);
+  }, [isSelected, removeProduct, addProduct, product, comparisonProducts]);
 
   // OPTIMIZED: Memoize callbacks
   const handleToggleProjectMenu = useCallback(() => {

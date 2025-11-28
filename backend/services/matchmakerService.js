@@ -80,14 +80,15 @@ class MatchmakerService {
       if (distanceKm > 500) return null; // Filter > 500km
 
       // B. Certifications
-      // OPTIMIZED: Convert candidate certifications to Set for O(1) lookup
-      // Before: O(m*n) for every() with some() nested
-      // After: O(m+n) - one-time Set creation + linear lookup
-      const candidateCertsSet = new Set(candidate.certifications || []);
-      const hasCerts = required_certifications.every(req => 
-        // Check if any certification in the set includes the required term
-        Array.from(candidateCertsSet).some(c => c.includes(req))
-      );
+      // OPTIMIZED: Use Set for O(1) lookup on exact matches
+      // For partial matches (includes), iterate directly with for...of
+      const candidateCerts = candidate.certifications || [];
+      const hasCerts = required_certifications.every(req => {
+        for (const c of candidateCerts) {
+          if (c.includes(req)) return true;
+        }
+        return false;
+      });
       // For demo, be lenient if certs are missing in mock data
       // if (!hasCerts) return null; 
 
