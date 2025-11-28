@@ -53,6 +53,24 @@
       }
     ]
   },
-  "include": ["lib/mongodb.ts", "lib/s3.ts", "lib/autodesk.ts", "lib/supabase/**/*.ts", "models/**/*.ts", "scripts/**/*.ts", "app/**/*.ts"],
-  "exclude": ["node_modules", "frontend", "src", "lib/s3-upload.ts"]
+  "include": [
+    "lib/mongodb.ts",
+    "lib/s3.ts",
+    "lib/autodesk.ts",
+    "lib/azure-ai.ts",
+    "lib/zoho-smtp.ts",
+    "lib/supabase/**/*.ts",
+    "models/**/*.ts",
+    "scripts/**/*.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "types/**/*.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "frontend",
+    "src",
+    "lib/s3-upload.ts"
+  ]
 }
