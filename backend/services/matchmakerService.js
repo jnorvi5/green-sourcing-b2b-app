@@ -80,8 +80,13 @@ class MatchmakerService {
       if (distanceKm > 500) return null; // Filter > 500km
 
       // B. Certifications
+      // OPTIMIZED: Convert candidate certifications to Set for O(1) lookup
+      // Before: O(m*n) for every() with some() nested
+      // After: O(m+n) - one-time Set creation + linear lookup
+      const candidateCertsSet = new Set(candidate.certifications || []);
       const hasCerts = required_certifications.every(req => 
-        (candidate.certifications || []).some(c => c.includes(req))
+        // Check if any certification in the set includes the required term
+        Array.from(candidateCertsSet).some(c => c.includes(req))
       );
       // For demo, be lenient if certs are missing in mock data
       // if (!hasCerts) return null; 
@@ -130,7 +135,7 @@ class MatchmakerService {
       // LEED Credits (Mock logic based on certs)
       const leedCredits = [];
       if ((candidate.certifications || []).includes('FSC')) leedCredits.push('MR Credit: Sourcing of Raw Materials');
-      if (epd.EPDNumber) leedCredits.push('MR Credit: Environmental Product Declarations');
+      if (candidate.EPDNumber) leedCredits.push('MR Credit: Environmental Product Declarations');
       if (distanceKm < 160) leedCredits.push('MR Credit: Regional Materials');
 
       return {
