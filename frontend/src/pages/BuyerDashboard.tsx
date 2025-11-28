@@ -8,7 +8,8 @@ import {
   DocumentTextIcon,
   Cog6ToothIcon,
   ChatBubbleLeftRightIcon,
-  SparklesIcon
+  SparklesIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 
@@ -58,42 +59,49 @@ export default function BuyerDashboard() {
           <h2 className="text-lg font-semibold text-foreground mb-6">GreenChainz</h2>
           <nav className="space-y-2">
             <Link
-              to="/dashboard"
+              to="/dashboard/buyer"
               className="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-md font-medium"
             >
               <HomeIcon className="w-5 h-5" />
               Dashboard
             </Link>
             <Link
-              to="/dashboard/search"
+              to="/search"
               className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
             >
               <MagnifyingGlassIcon className="w-5 h-5" />
               Product Search
             </Link>
             <Link
-              to="/dashboard/projects"
+              to="/dashboard/buyer/projects"
               className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
             >
               <FolderIcon className="w-5 h-5" />
               My Projects
             </Link>
             <Link
-              to="/dashboard/saved"
+              to="/dashboard/buyer/saved"
               className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
             >
               <BookmarkIcon className="w-5 h-5" />
               Saved Materials
             </Link>
             <Link
-              to="/dashboard/rfqs"
+              to="/dashboard/buyer/analytics"
+              className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
+            >
+              <ChartBarIcon className="w-5 h-5" />
+              Carbon Analytics
+            </Link>
+            <Link
+              to="/rfq-history"
               className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
             >
               <DocumentTextIcon className="w-5 h-5" />
               RFQ History
             </Link>
             <Link
-              to="/dashboard/settings"
+              to="/dashboard/buyer/settings"
               className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
             >
               <Cog6ToothIcon className="w-5 h-5" />

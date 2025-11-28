@@ -11,15 +11,15 @@ export function Header() {
                             <span className="font-bold text-white">GreenChainz</span>
                         </Link>
                         <nav className="hidden md:flex items-center gap-4">
-                            <a href="#" className="px-3 py-2 rounded-lg bg-sky-500/10 text-sky-400 font-medium">Dashboard</a>
-                            <a href="#" className="px-3 py-2 text-slate-400 hover:text-white transition-colors">Products</a>
+                            <Link to="/dashboard/buyer" className="px-3 py-2 rounded-lg bg-sky-500/10 text-sky-400 font-medium">Dashboard</Link>
+                            <Link to="/search" className="px-3 py-2 text-slate-400 hover:text-white transition-colors">Products</Link>
                             <Link to="/rfq-history" className="px-3 py-2 text-slate-400 hover:text-white transition-colors">RFQs</Link>
-                            <a href="#" className="px-3 py-2 text-slate-400 hover:text-white transition-colors">Network</a>
+                            <Link to="/network" className="px-3 py-2 text-slate-400 hover:text-white transition-colors">Network</Link>
                         </nav>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 text-xs font-bold">
-                            🏆 FOUNDING 50
+                            FOUNDING 50
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-500" />
