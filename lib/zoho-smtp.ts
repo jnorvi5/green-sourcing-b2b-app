@@ -5,7 +5,8 @@
  * Used for outreach email delivery in the GreenChainz platform.
  */
 
-import nodemailer, { Transporter } from 'nodemailer';
+import * as nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import { SendSmtpEmailParams, SendSmtpEmailResult } from '../types/outreach';
 
 // =============================================================================

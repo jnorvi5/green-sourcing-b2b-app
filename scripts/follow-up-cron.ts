@@ -14,7 +14,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 // Load environment variables
 dotenv.config();
