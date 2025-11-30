@@ -296,8 +296,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
       if (!result) return [];
 
-      interface Alt { reduction?: number }
-      let alternatives = result.alternatives as Alt[];
+      let alternatives = result.alternatives as { reduction?: number }[];
 
       if (options?.minReduction) {
         alternatives = alternatives.filter(a => (a.reduction || 0) >= options.minReduction!);
