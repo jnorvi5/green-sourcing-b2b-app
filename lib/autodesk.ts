@@ -82,7 +82,8 @@ export async function getEmbodiedCarbon(
       try {
         await connectDB();
         const Material = mongoose.models.Material ||
-          (await import('../models/Material.js')).default;
+        // @ts-ignore
+          (await import('../models/Material')).default;
 
         // Search by various IDs
         const cachedMaterial = await Material.findOne({
@@ -255,7 +256,8 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonFactor = mongoose.models.CarbonFactor ||
-        (await import('../models/CarbonFactor.js')).default;
+        // @ts-ignore
+        (await import('../models/CarbonFactor')).default;
 
       const query: Record<string, unknown> = { type, isActive: true };
 
@@ -287,7 +289,8 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonAlternative = mongoose.models.CarbonAlternative ||
-        (await import('../models/CarbonAlternative.js')).default;
+        // @ts-ignore
+        (await import('../models/CarbonAlternative')).default;
 
       const result = await CarbonAlternative.findOne({
         'originalMaterial.category': { $regex: category, $options: 'i' },
@@ -325,7 +328,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const Material = mongoose.models.Material ||
-        (await import('../models/Material.js')).default;
+        (await import('../models/Material')).default;
 
       const searchQuery: Record<string, unknown> = {
         isActive: true,
@@ -371,7 +374,8 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const UnitConversion = mongoose.models.UnitConversion ||
-        (await import('../models/UnitConversion.js')).default;
+        // @ts-ignore
+        (await import('../models/UnitConversion')).default;
 
       const conversionDoc = await UnitConversion.findOne({
         materialCategory: { $regex: category, $options: 'i' },
