@@ -1,7 +1,6 @@
 /**
  * Email Send API
- * 
- * POST /api/email/send
+ * * POST /api/email/send
  * Sends transactional emails via MailerLite
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -39,23 +38,26 @@ export async function POST(request: NextRequest) {
         switch (body.type) {
             case 'welcome':
                 subject = `Welcome to GreenChainz, ${body.data.name}! 🌱`;
-               // FIX: Force TypeScript to accept the data object
+                // FIX: Force TypeScript to accept the data object
                 html = generateWelcomeEmail(body.data as any);
                 break;
 
             case 'rfq_notification':
                 subject = `New RFQ Request: ${body.data.productName} - ${body.data.rfqNumber}`;
-                html = generateRfqNotificationEmail(body.data);
+                // FIX: Force TypeScript to accept the data object
+                html = generateRfqNotificationEmail(body.data as any);
                 break;
 
             case 'quote_received':
                 subject = `Quote Received for ${body.data.productName} - ${body.data.rfqNumber}`;
-                html = generateQuoteReceivedEmail(body.data);
+                // FIX: Force TypeScript to accept the data object
+                html = generateQuoteReceivedEmail(body.data as any);
                 break;
 
             case 'carbon_report':
                 subject = `Your Carbon Report - ${body.data.reportPeriod} 🌍`;
-                html = generateCarbonReportEmail(body.data);
+                // FIX: Force TypeScript to accept the data object
+                html = generateCarbonReportEmail(body.data as any);
                 break;
 
             case 'custom':
