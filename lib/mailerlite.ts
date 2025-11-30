@@ -137,8 +137,17 @@ export async function addSubscriber(data: SubscriberData): Promise<{ success: bo
 /**
  * Remove subscriber from MailerLite
  */
+function isValidEmail(email: string): boolean {
+    // Very basic email regex (does not allow slashes or dangerous chars)
+    return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email);
+}
+
 export async function removeSubscriber(email: string): Promise<{ success: boolean; error?: string }> {
     try {
+        if (!isValidEmail(email)) {
+            console.error('Attempt to remove subscriber with invalid email:', email);
+            return { success: false, error: 'Invalid email address' };
+        }
         if (!MAILERLITE_API_KEY) {
             console.log('[DEV] Subscriber would be removed:', email);
             return { success: true };
