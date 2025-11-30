@@ -31,8 +31,14 @@ export async function POST(
         const body = await request.json() as SignatureRequestBody | RecordSignatureBody;
 
         // Get client IP for signature recording
+        let ip: string = 'unknown';
         const forwarded = request.headers.get('x-forwarded-for');
-        const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
+        if (typeof forwarded === 'string' && forwarded.length > 0) {
+            const firstIp = forwarded.split(',')[0];
+            if (firstIp) {
+                ip = firstIp.trim();
+            }
+        }
 
         // Check if this is a signature request or recording
         if ('signers' in body) {
