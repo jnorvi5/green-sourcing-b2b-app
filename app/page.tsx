@@ -1,4 +1,5 @@
-import ImageUpload from "@/components/ImageUpload";
+// FIX: Use relative path (Up one folder -> components)
+import ImageUpload from "../components/ImageUpload";
 
 export default function Home() {
     return (
