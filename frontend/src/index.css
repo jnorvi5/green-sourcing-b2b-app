@@ -1,5 +1,7 @@
 /* Import GreenChainz Design System */
 @import './styles/design-system.css';
+@import './styles/layout.css';
+
 
 @tailwind base;
 @tailwind components;

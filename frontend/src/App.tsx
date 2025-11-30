@@ -25,6 +25,7 @@ import SupplierProfilePage from './pages/SupplierProfilePage';
 
 import SupplierProfile from './pages/SupplierProfile';
 import S3Test from './pages/S3Test';
+import VerifyPage from './pages/VerifyPage';
 
 import SupplierDashboard from './pages/SupplierDashboard/index';
 import ProductsPage from './pages/SupplierDashboard/ProductsPage';
@@ -71,6 +72,7 @@ import Inventory from './pages/Inventory';
 import Shipments from './pages/Shipments';
 import Budgets from './pages/Budgets';
 import SupplierQualification from './pages/SupplierQualification';
+import OutreachDashboard from './pages/OutreachDashboard';
 import { Toaster } from './components/ui/sonner';
 import NotFound from './pages/NotFound';
 import Sustainability from './pages/Sustainability';
@@ -78,6 +80,16 @@ import Investors from './pages/Investors';
 import Network from './pages/Network';
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, trackPageView } from './lib/analytics';
+
+// Import ProtectedRoute with role guard variants
+import ProtectedRoute, {
+  SupplierRoute,
+  BuyerRoute,
+  AdminRoute,
+  AuthenticatedRoute,
+  SupplierOrAdminRoute,
+  BuyerOrAdminRoute
+} from './components/ProtectedRoute';
 
 
 
@@ -120,17 +132,12 @@ function App() {
               <Route path="dashboard/buyer/projects" element={<Projects />} />
               <Route path="dashboard/buyer/projects/:projectId" element={<ProjectDetail />} />
               <Route path="test/s3" element={<S3Test />} />
+              <Route path="verify" element={<VerifyPage />} />
             </Route>
 
 
-            {/* Protected Routes - Temporarily disabled until demo pages are fixed */}
-            {/* <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}> */}
-            <Route
-              path="dashboard"
-              element={
-                <BuyerDashboard />
-              }
-            />
+            {/* Dashboard Routes - All Public */}
+            <Route path="dashboard" element={<BuyerDashboard />} />
             <Route path="/search" element={<SearchPage />} />
 
             {/* Supplier Dashboard Routes */}
@@ -144,7 +151,7 @@ function App() {
             <Route path="/team" element={<TeamManagement />} />
             <Route path="/integrations" element={<ApiIntegrations />} />
 
-            {/* Buyer Dashboard */}
+            {/* Buyer Dashboard Routes */}
             <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
             <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
             <Route path="/dashboard/buyer/settings" element={<AccountSettings />} />
@@ -172,6 +179,7 @@ function App() {
             <Route path="/shipments" element={<Shipments />} />
             <Route path="/budgets" element={<Budgets />} />
             <Route path="/supplier-qualification" element={<SupplierQualification />} />
+            <Route path="/outreach" element={<OutreachDashboard />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />}>

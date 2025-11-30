@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   description: "The Tesla of environmental sourcing.",
 };
 
+declare module "*.css" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{

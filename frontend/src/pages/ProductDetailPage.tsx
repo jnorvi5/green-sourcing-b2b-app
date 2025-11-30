@@ -413,8 +413,8 @@ export default function ProductDetailPage() {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-3 font-medium whitespace-nowrap transition-colors ${activeTab === tab
-                        ? 'border-b-2 border-primary text-primary'
-                        : 'text-muted-foreground hover:text-foreground'
+                      ? 'border-b-2 border-primary text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                       }`}
                   >
                     {tab === 'overview' ? 'Overview' :
@@ -630,9 +630,7 @@ export default function ProductDetailPage() {
             </div>
           )}
         </div>
-        );
+      </div>
+    </div>
+  );
 }
-
-
-
-
