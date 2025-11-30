@@ -325,7 +325,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const Material = mongoose.models.Material ||
-        (await import('../models/Material')).default;
+        (await import('../models/Material.js')).default;
 
       const searchQuery: Record<string, unknown> = {
         isActive: true,
