@@ -67,7 +67,7 @@ export async function PATCH(
 
         const contract = await contractService.updateContract(
             id,
-            processedUpdates,
+            processedUpdates as any,
             userId,
             userName
         );

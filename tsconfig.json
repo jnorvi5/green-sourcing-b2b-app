@@ -1,19 +1,19 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     // File Layout
     // "rootDir": "./src",
     // "outDir": "./dist",
+
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "NodeNext",
     "target": "ESNext",
-    "types": [
-      "node"
-    ],
-    "lib": [
-      "ESNext"
-    ],
+    "types": ["node"],
+    "lib": ["ESNext"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

@@ -391,6 +391,7 @@ export default function AddProductPage() {
               className="flex-1 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? 'Creating...' : 'Publish Product'}
+            </button>
           </div>
 
         </form>

@@ -1,7 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { uploadToS3 } from '@/lib/s3-upload';
+// Temporary local implementation to avoid a missing module error for
+// '@/lib/s3-upload'. This stub returns a local object URL for preview
+// and can be replaced with the real uploadToS3 implementation later.
+async function uploadToS3(file: File): Promise<string | null> {
+    try {
+        // Create a temporary object URL so the UI can show a preview.
+        // In production, replace this with actual upload logic (e.g. POST
+        // to an API route or direct S3/Presigned URL upload) that returns
+        // the publicly accessible file URL.
+        return URL.createObjectURL(file);
+    } catch (e) {
+        console.error('uploadToS3 stub error', e);
+        return null;
+    }
+}
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);

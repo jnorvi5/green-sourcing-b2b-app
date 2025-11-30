@@ -3,11 +3,96 @@ import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
+<<<<<<< HEAD
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import AuthCallback from './pages/AuthCallback';
+import { LandingPage } from './pages/LandingPage';
+import BuyerDashboard from './pages/BuyerDashboard';
+import { ArchitectSurvey } from './components/ArchitectSurvey';
+import Features from './pages/Features';
+import Contact from './pages/Contact';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import SupplierAgreement from './pages/SupplierAgreement';
+import Unauthorized from './pages/Unauthorized';
+import RFQHistoryPage from './pages/RFQHistoryPage';
+import Layout from './components/Layout';
+import Charter175 from './pages/Charter175';
+import SearchPage from './pages/SearchPage';
+
+import ProductDetailPage from './pages/ProductDetailPage';
+import SupplierProfilePage from './pages/SupplierProfilePage';
+
+import SupplierProfile from './pages/SupplierProfile';
+import S3Test from './pages/S3Test';
+import VerifyPage from './pages/VerifyPage';
+
+import SupplierDashboard from './pages/SupplierDashboard/index';
+import ProductsPage from './pages/SupplierDashboard/ProductsPage';
+import HelpButton from './components/HelpButton';
+import AddProductPage from './pages/SupplierDashboard/AddProductPage';
+import EditProductPage from './pages/SupplierDashboard/EditProductPage';
+import AdminDashboard from './pages/Admin';
+import ContentModerationPage from './pages/Admin/ContentModerationPage';
 import { ProjectProvider } from './context/ProjectContext';
+import Projects from './pages/BuyerDashboard/Projects';
+import ProjectDetail from './pages/BuyerDashboard/ProjectDetail';
+import SavedMaterials from './pages/BuyerDashboard/SavedMaterials';
+import AccountSettings from './pages/BuyerDashboard/AccountSettings';
+import CarbonAnalytics from './pages/BuyerDashboard/CarbonAnalytics';
+import ProductComparison from './pages/ProductComparison';
+import SupplierAnalytics from './pages/SupplierDashboard/SupplierAnalytics';
+import SupplierRFQs from './pages/SupplierDashboard/SupplierRFQs';
+import AdminAnalytics from './pages/AdminDashboard/AdminAnalytics';
+import OrderTracking from './pages/BuyerDashboard/OrderTracking';
+import Messages from './pages/Messages';
+import Favorites from './pages/BuyerDashboard/Favorites';
+import Settings from './pages/Settings';
+import HelpCenter from './pages/HelpCenter';
+import Reports from './pages/BuyerDashboard/Reports';
+import QuoteDetails from './pages/QuoteDetails';
+import SupplierOnboarding from './pages/SupplierDashboard/SupplierOnboarding';
+import TeamManagement from './pages/TeamManagement';
+import ApiIntegrations from './pages/ApiIntegrations';
+import Invoices from './pages/Invoices';
+import Quotes from './pages/Quotes';
+import KPIDashboard from './pages/KPIDashboard';
+import Payments from './pages/Payments';
+import Documents from './pages/Documents';
+import AuditLogs from './pages/Admin/AuditLogs';
+import UserManagement from './pages/Admin/UserManagement';
+import SystemSettings from './pages/Admin/SystemSettings';
+import PlatformAnalytics from './pages/Admin/PlatformAnalytics';
+import Notifications from './pages/Notifications';
+import SupplierLeaderboard from './pages/SupplierLeaderboard';
+import CarbonCalculator from './pages/CarbonCalculator';
+import Contracts from './pages/Contracts';
+import SustainabilityReports from './pages/SustainabilityReports';
+import Inventory from './pages/Inventory';
+import Shipments from './pages/Shipments';
+import Budgets from './pages/Budgets';
+import SupplierQualification from './pages/SupplierQualification';
+import OutreachDashboard from './pages/OutreachDashboard';
+=======
+import { ProjectProvider } from './context/ProjectContext';
+>>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
 import { Toaster } from './components/ui/sonner';
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, trackPageView } from './lib/analytics';
 
+<<<<<<< HEAD
+// Import ProtectedRoute with role guard variants
+import ProtectedRoute, {
+  SupplierRoute,
+  BuyerRoute,
+  AdminRoute,
+  AuthenticatedRoute,
+  SupplierOrAdminRoute,
+  BuyerOrAdminRoute
+} from './components/ProtectedRoute';
+
+=======
 // OPTIMIZED: Code splitting with React.lazy for route-based chunking
 // Core pages that are always needed (keep as regular imports)
 import Layout from './components/Layout';
@@ -105,6 +190,7 @@ const SupplierQualification = lazy(() => import('./pages/SupplierQualification')
 const ArchitectSurvey = lazy(() => import('./components/ArchitectSurvey').then(m => ({ default: m.ArchitectSurvey })));
 const Charter175 = lazy(() => import('./pages/Charter175'));
 const S3Test = lazy(() => import('./pages/S3Test'));
+>>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
 
 
 function App() {
@@ -124,6 +210,37 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <ProjectProvider>
+<<<<<<< HEAD
+          <Routes>
+            {/* Routes with the main Layout (Header, Footer, etc.) */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<LandingPage />} />
+              <Route path="features" element={<Features />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="privacy-policy" element={<Privacy />} />
+              <Route path="terms-of-service" element={<Terms />} />
+              <Route path="supplier-agreement" element={<SupplierAgreement />} />
+              <Route path="sustainability" element={<Sustainability />} />
+              <Route path="investors" element={<Investors />} />
+              <Route path="network" element={<Network />} />
+              <Route path="unauthorized" element={<Unauthorized />} />
+              <Route path="survey/architect" element={<ArchitectSurvey />} />
+              <Route path="badges/charter175" element={<Charter175 />} />
+              <Route path="search" element={<SearchPage />} />
+              <Route path="product/:id" element={<ProductDetailPage />} />
+              <Route path="supplier/:id" element={<SupplierProfilePage />} />
+              <Route path="suppliers/:id" element={<SupplierProfile />} />
+              <Route path="dashboard/buyer/projects" element={<Projects />} />
+              <Route path="dashboard/buyer/projects/:projectId" element={<ProjectDetail />} />
+              <Route path="test/s3" element={<S3Test />} />
+              <Route path="verify" element={<VerifyPage />} />
+            </Route>
+
+
+            {/* Dashboard Routes - All Public */}
+            <Route path="dashboard" element={<BuyerDashboard />} />
+            <Route path="/search" element={<SearchPage />} />
+=======
           {/* OPTIMIZED: Wrap Routes with Suspense for lazy-loaded components */}
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -161,6 +278,7 @@ function App() {
                 }
               />
               <Route path="/search" element={<SearchPage />} />
+>>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
 
               {/* Supplier Dashboard Routes */}
               <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
@@ -173,6 +291,37 @@ function App() {
               <Route path="/team" element={<TeamManagement />} />
               <Route path="/integrations" element={<ApiIntegrations />} />
 
+<<<<<<< HEAD
+            {/* Buyer Dashboard Routes */}
+            <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
+            <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
+            <Route path="/dashboard/buyer/settings" element={<AccountSettings />} />
+            <Route path="/dashboard/buyer/analytics" element={<CarbonAnalytics />} />
+            <Route path="/dashboard/buyer/orders" element={<OrderTracking />} />
+            <Route path="/dashboard/buyer/favorites" element={<Favorites />} />
+            <Route path="/compare" element={<ProductComparison />} />
+            <Route path="/rfq-history" element={<RFQHistoryPage />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/dashboard/buyer/reports" element={<Reports />} />
+            <Route path="/quote/:quoteId" element={<QuoteDetails />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/quotes" element={<Quotes />} />
+            <Route path="/kpi" element={<KPIDashboard />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/documents" element={<Documents />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/leaderboard" element={<SupplierLeaderboard />} />
+            <Route path="/carbon-calculator" element={<CarbonCalculator />} />
+            <Route path="/contracts" element={<Contracts />} />
+            <Route path="/sustainability-reports" element={<SustainabilityReports />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/shipments" element={<Shipments />} />
+            <Route path="/budgets" element={<Budgets />} />
+            <Route path="/supplier-qualification" element={<SupplierQualification />} />
+            <Route path="/outreach" element={<OutreachDashboard />} />
+=======
               {/* Buyer Dashboard */}
               <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
               <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
@@ -201,6 +350,7 @@ function App() {
               <Route path="/shipments" element={<Shipments />} />
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/supplier-qualification" element={<SupplierQualification />} />
+>>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
 
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />}>
