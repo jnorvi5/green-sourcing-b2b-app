@@ -1,4 +1,4 @@
-import { EmailAgent } from '@/lib/azure/emailer';
+import { EmailAgent } from '../../lib/azure/emailer';
 
 export default async function handler(req, res) {
   try {

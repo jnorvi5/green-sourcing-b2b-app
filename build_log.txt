@@ -1,0 +1,59 @@
+
+> greenchainz-api@1.0.0 build
+> next build
+
+   Γû▓ Next.js 14.1.0
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./lib/autodesk.ts
+Error: 
+  x Expression expected
+    ,-[D:\perplexitydownloads\green-sourcing-b2b-app\lib\autodesk.ts:25:1]
+ 25 |     await mongoose.connect(MONGODB_URI);
+ 26 |   }
+ 27 | }
+ 28 |  * Scopes:
+    :  ^
+ 29 |  * - data: read - Read data from BIM 360 / ACC
+ 30 |   * - viewables: read - Access translated models for viewer
+ 30 |     */
+    `----
+
+  x Expected ';', '}' or <eof>
+    ,-[D:\perplexitydownloads\green-sourcing-b2b-app\lib\autodesk.ts:25:1]
+ 25 |     await mongoose.connect(MONGODB_URI);
+ 26 |   }
+ 27 | }
+ 28 |  * Scopes:
+    :  ^^^^|^^^^
+    :      `-- This is the expression part of an expression statement
+ 29 |  * - data: read - Read data from BIM 360 / ACC
+ 30 |   * - viewables: read - Access translated models for viewer
+ 30 |     */
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/autodesk.ts
+./app/api/aps/token/route.ts
+
+./lib/export/pdf-generator.ts
+Module not found: Can't resolve 'pdfkit'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/api/export/esg-report/route.ts
+
+./pages/api/test-email.ts
+Module not found: Can't resolve '@/lib/azure/emailer'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors

@@ -25,10 +25,7 @@ async function connectDB() {
     await mongoose.connect(MONGODB_URI);
   }
 }
- * Scopes:
- * - data: read - Read data from BIM 360 / ACC
-  * - viewables: read - Access translated models for viewer
-    */
+
 export async function getAutodeskToken(): Promise<string> {
     // Return cached token if still valid (with 5 min buffer)
     if (cachedToken && cachedToken.expires_at > Date.now() + 300000) {
@@ -85,7 +82,7 @@ export async function getEmbodiedCarbon(
       try {
         await connectDB();
         const Material = mongoose.models.Material ||
-          (await import('../models/Material')).default;
+          (await import('../models/Material.js')).default;
 
         // Search by various IDs
         const cachedMaterial = await Material.findOne({
@@ -173,9 +170,11 @@ export async function getEmbodiedCarbon(
       methodology: 'EN 15804',
       scope: ['A1-A3'], // Cradle to gate
       cached: false,
-      console.error('Embodied Carbon Error:', error);
-      return null;
-    }
+    };
+  } catch (error) {
+    console.error('Embodied Carbon Error:', error);
+    return null;
+  }
   }
 
 /**
@@ -256,7 +255,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonFactor = mongoose.models.CarbonFactor ||
-        (await import('../models/CarbonFactor')).default;
+        (await import('../models/CarbonFactor.js')).default;
 
       const query: Record<string, unknown> = { type, isActive: true };
 
@@ -288,7 +287,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonAlternative = mongoose.models.CarbonAlternative ||
-        (await import('../models/CarbonAlternative')).default;
+        (await import('../models/CarbonAlternative.js')).default;
 
       const result = await CarbonAlternative.findOne({
         'originalMaterial.category': { $regex: category, $options: 'i' },
@@ -373,7 +372,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const UnitConversion = mongoose.models.UnitConversion ||
-        (await import('../models/UnitConversion')).default;
+        (await import('../models/UnitConversion.js')).default;
 
       const conversionDoc = await UnitConversion.findOne({
         materialCategory: { $regex: category, $options: 'i' },
