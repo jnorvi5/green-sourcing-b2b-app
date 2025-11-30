@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
         switch (body.type) {
             case 'welcome':
                 subject = `Welcome to GreenChainz, ${body.data.name}! 🌱`;
-                html = generateWelcomeEmail(body.data);
+               // FIX: Force TypeScript to accept the data object
+                html = generateWelcomeEmail(body.data as any);
                 break;
 
             case 'rfq_notification':
