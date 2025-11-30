@@ -1,20 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-// IMPORT THE NEW HEADER HERE
-import Header from "../components/Header"; 
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "GreenChainz | Verified Sustainable Sourcing",
-  description: "The Tesla of environmental sourcing.",
-};
-
-declare module "*.css" {
-  const classes: { [key: string]: string };
-  export default classes;
-}
+import "@/app/globals.css";
+import Header from "@/components/Header";
 
 export default function RootLayout({
   children,

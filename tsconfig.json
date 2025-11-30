@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     // File Layout
     // "rootDir": "./src",
     // "outDir": "./dist",
