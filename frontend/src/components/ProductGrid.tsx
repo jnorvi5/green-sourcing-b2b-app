@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import ProductCard from './ProductCard';
 import Pagination from './Pagination';
 import EmptyState from './EmptyState';
@@ -11,7 +11,8 @@ interface ProductGridProps {
 
 const PRODUCTS_PER_PAGE = 24;
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
+// OPTIMIZED: Wrapped with memo and added useMemo for expensive computations
+const ProductGrid: React.FC<ProductGridProps> = memo(({ products }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -19,10 +20,16 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     setCurrentPage(1);
   }, [products]);
 
-  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
-  const paginatedProducts = products.slice(
-    (currentPage - 1) * PRODUCTS_PER_PAGE,
-    currentPage * PRODUCTS_PER_PAGE
+  // OPTIMIZED: Memoize pagination calculations to prevent recalculation on every render
+  const totalPages = useMemo(() => Math.ceil(products.length / PRODUCTS_PER_PAGE), [products.length]);
+  
+  // OPTIMIZED: Memoize the sliced array to prevent new array creation on every render
+  const paginatedProducts = useMemo(() => 
+    products.slice(
+      (currentPage - 1) * PRODUCTS_PER_PAGE,
+      currentPage * PRODUCTS_PER_PAGE
+    ),
+    [products, currentPage]
   );
 
   return (
@@ -49,6 +56,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
       )}
     </div>
   );
-};
+});
+
+ProductGrid.displayName = 'ProductGrid';
 
 export default ProductGrid;
