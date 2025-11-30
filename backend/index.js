@@ -1,9 +1,10 @@
-require('dotenv').config();
+const path = require('path');
+// Load .env from the backend directory (supports running from different working directories)
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const { pool } = require('./db');
 const fs = require('fs');
-const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
@@ -24,21 +25,94 @@ const errorMonitoring = require('./services/errorMonitoring');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yaml');
 
+// Enterprise middleware imports
+const {
+  helmetConfig,
+  defaultLimiter,
+  authLimiter,
+  passwordResetLimiter,
+  signupLimiter,
+  apiLimiter,
+  compressionMiddleware,
+  sanitizeRequest,
+  apiSecurityHeaders
+} = require('./middleware/security');
+const { logger, httpLogger, requestLogger, errorLogger } = require('./middleware/logger');
+const { globalErrorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { initRedis, healthCheck: redisHealthCheck } = require('./services/redis');
+
+// Supabase Auth Middleware (RBAC)
+const {
+  authenticateSupabase,
+  ensureRole,
+  ensureOwnership,
+  adminOnly,
+  supplierOnly,
+  buyerOnly,
+  authenticated
+} = require('./middleware/supabaseAuth');
+
 const app = express();
+
+// Make db pool available to routes via app.locals
+app.locals.pool = pool;
+
+// ==========================================
+// ENTERPRISE SECURITY MIDDLEWARE (First!)
+// ==========================================
+
+// Helmet security headers
+app.use(helmetConfig);
+
+// Compression
+app.use(compressionMiddleware);
+
+// Request sanitization
+app.use(sanitizeRequest);
+
+// API security headers
+app.use(apiSecurityHeaders);
+
+// HTTP request logging
+app.use(httpLogger);
+
+// Detailed request logging
+app.use(requestLogger);
+
+// Default rate limiting (all routes)
+app.use(defaultLimiter);
+
+// ==========================================
+// END SECURITY MIDDLEWARE
+// ==========================================
 
 // Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
 
-// Middleware
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }));
-app.use(express.json());
+// Only create Supabase client if credentials are available
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey);
+} else {
+  console.warn('⚠️ Supabase credentials not configured - some features will be disabled');
+}
 
-// Debugging Env:
-console.log("Debugging Env:");
-console.log("URL:", process.env.SUPABASE_URL);
-console.log("KEY:", process.env.SUPABASE_KEY ? "Found" : "Missing");
+// CORS
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Startup logging
+logger.info('GreenChainz API starting...', {
+  nodeEnv: process.env.NODE_ENV || 'development',
+  port: process.env.PORT || 3001
+});
 
 // Session middleware for OAuth
 app.use(session({
@@ -60,6 +134,33 @@ app.get('/', (req, res) => {
   res.json({ message: 'GreenChainz Backend API is running!' });
 });
 
+// Enhanced health check with service status
+app.get('/health', async (req, res) => {
+  const redisStatus = await redisHealthCheck();
+  let dbStatus = { status: 'unknown' };
+
+  try {
+    const start = Date.now();
+    await pool.query('SELECT 1');
+    dbStatus = { status: 'healthy', latency: `${Date.now() - start}ms` };
+  } catch (err) {
+    dbStatus = { status: 'unhealthy', error: err.message };
+  }
+
+  const health = {
+    status: dbStatus.status === 'healthy' ? 'healthy' : 'degraded',
+    timestamp: new Date().toISOString(),
+    services: {
+      database: dbStatus,
+      redis: redisStatus
+    },
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  };
+
+  res.status(health.status === 'healthy' ? 200 : 503).json(health);
+});
+
 // Serve OpenAPI spec (YAML)
 app.get('/api/docs', (req, res) => {
   try {
@@ -72,8 +173,8 @@ app.get('/api/docs', (req, res) => {
   }
 });
 
-// Request password reset
-app.post('/api/v1/auth/request-password-reset', async (req, res) => {
+// Request password reset (with rate limiting)
+app.post('/api/v1/auth/request-password-reset', passwordResetLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -97,20 +198,22 @@ app.post('/api/v1/auth/request-password-reset', async (req, res) => {
 
     // Trigger the password reset email
     const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/reset-password?token=${resetToken}`;
-    const { error: emailError } = await supabase.functions.invoke('handle-transactional-email', {
-      body: {
-        emailType: 'password-reset',
-        payload: {
-          to: user.email,
-          userName: user.firstname || 'User',
-          resetLink: resetLink,
+    if (supabase) {
+      const { error: emailError } = await supabase.functions.invoke('handle-transactional-email', {
+        body: {
+          emailType: 'password-reset',
+          payload: {
+            to: user.email,
+            userName: user.firstname || 'User',
+            resetLink: resetLink,
+          },
         },
-      },
-    });
+      });
 
-    if (emailError) {
-      console.error('Failed to send password reset email:', emailError);
-      // We don't want to fail the request if the email fails to send
+      if (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        // We don't want to fail the request if the email fails to send
+      }
     }
 
     res.status(200).json({ message: 'If a user with that email exists, a password reset link has been sent.' });
@@ -143,6 +246,202 @@ const presignedUploadRouter = require('./routes/presigned-upload');
 app.use('/api/v1/upload', presignedUploadRouter); // Switched to S3 Presigned URLs
 // app.use('/api/v1/presigned-upload', presignedUploadRouter); // Redundant
 
+// Certification Verification Routes (Automated Cross-Reference)
+const verifyRouter = require('./routes/verify');
+app.use('/api/v1/verify', verifyRouter);
+
+// MailerLite Routes (Email Automation)
+const mailerliteRouter = require('./routes/mailerlite');
+app.use('/api/v1/mailerlite', mailerliteRouter);
+
+// Products Routes (with Auto-Verification)
+const productsRouter = require('./routes/products');
+app.use('/api/v1/products', productsRouter);
+
+// ============================================
+// SUPABASE AUTH PROTECTED ROUTES
+// ============================================
+// Note: These routes use Supabase JWT verification and role-based access control
+// The verifySupabaseToken middleware validates the JWT from Supabase Auth
+// The ensureRole middleware checks if user has required role from profiles table
+
+// Protected Supplier Routes (Supabase Auth)
+const supplierProtectedRouter = express.Router();
+supplierProtectedRouter.use(authenticateSupabase);
+supplierProtectedRouter.use(ensureRole('supplier', 'admin'));
+
+// Supplier-only endpoints that require Supabase auth
+supplierProtectedRouter.get('/my-products', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT p.* FROM Products p
+       JOIN Suppliers s ON p.SupplierID = s.SupplierID
+       JOIN Companies c ON s.CompanyID = c.CompanyID
+       WHERE c.CompanyID = (
+         SELECT company_id FROM public.profiles WHERE id = $1
+       )`,
+      [req.user.userId]
+    );
+    res.json({ products: result.rows });
+  } catch (e) {
+    logger.error('Get supplier products error:', e);
+    res.status(500).json({ error: 'Failed to get products' });
+  }
+});
+
+supplierProtectedRouter.get('/my-rfqs', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.* FROM RFQs r
+       JOIN Suppliers s ON r.SupplierID = s.SupplierID
+       JOIN Companies c ON s.CompanyID = c.CompanyID
+       WHERE c.CompanyID = (
+         SELECT company_id FROM public.profiles WHERE id = $1
+       )
+       ORDER BY r.CreatedAt DESC`,
+      [req.user.userId]
+    );
+    res.json({ rfqs: result.rows });
+  } catch (e) {
+    logger.error('Get supplier RFQs error:', e);
+    res.status(500).json({ error: 'Failed to get RFQs' });
+  }
+});
+
+app.use('/api/v2/supplier', supplierProtectedRouter);
+
+// Protected Buyer Routes (Supabase Auth)
+const buyerProtectedRouter = express.Router();
+buyerProtectedRouter.use(authenticateSupabase);
+buyerProtectedRouter.use(ensureRole('buyer', 'admin'));
+
+// Buyer-only endpoints
+buyerProtectedRouter.get('/my-rfqs', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.*, c.CompanyName as SupplierCompany
+       FROM RFQs r
+       JOIN Buyers b ON r.BuyerID = b.BuyerID
+       LEFT JOIN Suppliers s ON r.SupplierID = s.SupplierID
+       LEFT JOIN Companies c ON s.CompanyID = c.CompanyID
+       WHERE b.UserID = (
+         SELECT user_id FROM public.profiles WHERE id = $1
+       )
+       ORDER BY r.CreatedAt DESC`,
+      [req.user.userId]
+    );
+    res.json({ rfqs: result.rows });
+  } catch (e) {
+    logger.error('Get buyer RFQs error:', e);
+    res.status(500).json({ error: 'Failed to get RFQs' });
+  }
+});
+
+buyerProtectedRouter.get('/saved-materials', async (req, res) => {
+  try {
+    // Placeholder for saved materials feature
+    res.json({
+      saved: [],
+      message: 'Saved materials feature coming soon'
+    });
+  } catch (e) {
+    logger.error('Get saved materials error:', e);
+    res.status(500).json({ error: 'Failed to get saved materials' });
+  }
+});
+
+app.use('/api/v2/buyer', buyerProtectedRouter);
+
+// Protected Admin Routes (Supabase Auth)
+const adminProtectedRouter = express.Router();
+adminProtectedRouter.use(authenticateSupabase);
+adminProtectedRouter.use(ensureRole('admin'));
+
+// Admin-only endpoints
+adminProtectedRouter.get('/all-users', async (req, res) => {
+  try {
+    // Get all profiles from Supabase
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ users: data });
+  } catch (e) {
+    logger.error('Get all users error:', e);
+    res.status(500).json({ error: 'Failed to get users' });
+  }
+});
+
+adminProtectedRouter.patch('/users/:userId/role', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    if (!['buyer', 'supplier', 'admin'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ role, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Role updated', user: data });
+  } catch (e) {
+    logger.error('Update user role error:', e);
+    res.status(500).json({ error: 'Failed to update role' });
+  }
+});
+
+adminProtectedRouter.patch('/users/:userId/verification', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    if (!['pending', 'verified', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid verification status' });
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ verification_status: status, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Verification status updated', user: data });
+  } catch (e) {
+    logger.error('Update verification status error:', e);
+    res.status(500).json({ error: 'Failed to update verification status' });
+  }
+});
+
+app.use('/api/v2/admin', adminProtectedRouter);
+
+// ============================================
+// END SUPABASE AUTH PROTECTED ROUTES
+// ============================================
+
+// Auto-Verification Service (for product lifecycle hooks)
+const ProductAutoVerifier = require('./services/productAutoVerifier');
+const autoVerifier = new ProductAutoVerifier(pool);
+app.locals.autoVerifier = autoVerifier; // Make available to routes
+
+// Outreach Agent Service (AI-powered lead outreach) - Uses MongoDB
+const OutreachService = require('./services/outreach');
+const outreachService = new OutreachService(); // No pool needed - uses MongoDB
+app.locals.outreachService = outreachService;
+
+// Outreach Routes
+const outreachRouter = require('./routes/outreach');
+app.use('/api/v1/outreach', outreachRouter);
+
 // Newsletter Route
 const { subscribeToNewsletter } = require('./services/mailerLite');
 app.post('/api/v1/newsletter/subscribe', async (req, res) => {
@@ -151,7 +450,7 @@ app.post('/api/v1/newsletter/subscribe', async (req, res) => {
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
-    
+
     const result = await subscribeToNewsletter(email);
     res.json({ message: 'Successfully subscribed to newsletter', ...result });
   } catch (error) {
@@ -163,8 +462,8 @@ app.post('/api/v1/newsletter/subscribe', async (req, res) => {
 // AUTH ENDPOINTS
 // ============================================
 
-// Register new user
-app.post('/api/v1/auth/register', async (req, res) => {
+// Register new user (with signup rate limiting)
+app.post('/api/v1/auth/register', signupLimiter, async (req, res) => {
   try {
     const { email, password, firstName, lastName, role } = req.body;
 
@@ -195,7 +494,7 @@ app.post('/api/v1/auth/register', async (req, res) => {
     );
 
     // Send welcome email via Supabase Edge Function
-    if (notificationsEnabled) {
+    if (notificationsEnabled && supabase) {
       const emailType = userRole === 'Supplier' ? 'supplier-welcome-pending' : 'buyer-welcome';
       const { error: emailError } = await supabase.functions.invoke('handle-transactional-email', {
         body: {
@@ -223,8 +522,8 @@ app.post('/api/v1/auth/register', async (req, res) => {
   }
 });
 
-// Login
-app.post('/api/v1/auth/login', async (req, res) => {
+// Login (with auth rate limiting)
+app.post('/api/v1/auth/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -806,13 +1105,13 @@ const dataScoutService = require('./services/dataScoutService');
 app.get('/api/v1/data-scout/search', async (req, res) => {
   try {
     const { q } = req.query;
-    
+
     if (!q) {
       return res.status(400).json({ error: 'Query parameter "q" is required' });
     }
 
     const results = await dataScoutService.aggregateSearch(q);
-    
+
     res.json({
       query: q,
       count: results.length,
@@ -834,14 +1133,14 @@ const matchmakerService = require('./services/matchmakerService');
 app.post('/api/v1/matchmaker/matches', async (req, res) => {
   try {
     const criteria = req.body;
-    
+
     // Basic validation
     if (!criteria.material_needed || !criteria.location) {
       return res.status(400).json({ error: 'Material needed and location are required' });
     }
 
     const matches = await matchmakerService.findMatches(criteria);
-    
+
     res.json({
       count: matches.length,
       matches: matches
@@ -862,14 +1161,14 @@ const certifierService = require('./services/certifierService');
 app.post('/api/v1/certifier/assess', async (req, res) => {
   try {
     const input = req.body;
-    
+
     // Basic validation
     if (!input.product_name || !input.manufacturer) {
       return res.status(400).json({ error: 'Product name and manufacturer are required' });
     }
 
     const assessment = certifierService.assessReadiness(input);
-    
+
     res.json(assessment);
   } catch (err) {
     console.error('Certifier error:', err);
@@ -887,14 +1186,14 @@ const complianceOracleService = require('./services/complianceOracleService');
 app.post('/api/v1/compliance/report', async (req, res) => {
   try {
     const projectData = req.body;
-    
+
     // Basic validation
     if (!projectData.project_name || !projectData.materials_selected) {
       return res.status(400).json({ error: 'Project name and materials are required' });
     }
 
     const report = complianceOracleService.generateComplianceReport(projectData);
-    
+
     res.json(report);
   } catch (err) {
     console.error('Compliance Oracle error:', err);
@@ -912,14 +1211,14 @@ const rfqRouterService = require('./services/rfqRouterService');
 app.post('/api/v1/rfq-router/route', async (req, res) => {
   try {
     const rfqDetails = req.body;
-    
+
     // Basic validation
     if (!rfqDetails.material_needed || !rfqDetails.location) {
       return res.status(400).json({ error: 'Material needed and location are required' });
     }
 
     const routingAnalysis = await rfqRouterService.routeRFQ(rfqDetails);
-    
+
     res.json(routingAnalysis);
   } catch (err) {
     console.error('RFQ Router error:', err);
@@ -937,14 +1236,14 @@ const marketIntelService = require('./services/marketIntelService');
 app.post('/api/v1/market-intel/analyze', async (req, res) => {
   try {
     const input = req.body;
-    
+
     // Basic validation
     if (!input.supplier_name || !input.product_category || !input.current_price_per_sqft) {
       return res.status(400).json({ error: 'Supplier name, category, and price are required' });
     }
 
     const analysis = marketIntelService.analyzeCompetitiveness(input);
-    
+
     res.json(analysis);
   } catch (err) {
     console.error('Market Intel error:', err);
@@ -995,7 +1294,7 @@ app.post('/api/v1/rfqs', authenticateToken, authorizeRoles('Buyer'), async (req,
 
       const productInfoRes = await pool.query('SELECT Name FROM Products WHERE ProductID = $1', [productId]);
 
-      if (supplierInfoRes.rows.length) {
+      if (supplierInfoRes.rows.length && supabase) {
         const supplier = supplierInfoRes.rows[0];
         const productName = productInfoRes.rows.length ? productInfoRes.rows[0].name : 'a product';
 
@@ -1144,7 +1443,7 @@ app.post('/api/v1/rfqs/:id/respond', authenticateToken, authorizeRoles('Supplier
         WHERE r.RFQID = $1`, [rfqId]
       );
 
-      if (rfqDetailsRes.rows.length) {
+      if (rfqDetailsRes.rows.length && supabase) {
         const details = rfqDetailsRes.rows[0];
         const supplierCompanyRes = await pool.query('SELECT CompanyName FROM Companies WHERE CompanyID = (SELECT CompanyID FROM Suppliers WHERE SupplierID = $1)', [details.supplierid]);
         const supplierCompany = supplierCompanyRes.rows.length ? supplierCompanyRes.rows[0].companyname : 'A Supplier';
@@ -1291,15 +1590,19 @@ app.get('/api/v1/buyers/rfqs', authenticateToken, authorizeRoles('Buyer'), async
     }
     const buyerId = buyerResult.rows[0].buyerid;
 
+    // OPTIMIZED: Replaced correlated subquery with LEFT JOIN + GROUP BY
+    // Before: (SELECT COUNT(*) FROM RFQ_Responses WHERE RFQID = r.RFQID) - O(n) queries
+    // After: Single query with aggregation - O(1) query
     let query = `
       SELECT 
         r.RFQID, r.SupplierID, r.ProductID, r.ProjectName, r.Message,
         r.QuantityNeeded, r.Unit, r.BudgetRange, r.DeadlineDate, r.Status, r.CreatedAt,
         c.CompanyName AS SupplierCompany,
-        (SELECT COUNT(*) FROM RFQ_Responses WHERE RFQID = r.RFQID) AS ResponseCount
+        COUNT(rr.ResponseID) AS ResponseCount
       FROM RFQs r
       JOIN Suppliers s ON r.SupplierID = s.SupplierID
       LEFT JOIN Companies c ON s.COMPANYID = c.COMPANYID
+      LEFT JOIN RFQ_Responses rr ON r.RFQID = rr.RFQID
       WHERE r.BuyerID = $1
     `;
     const params = [buyerId];
@@ -1309,6 +1612,7 @@ app.get('/api/v1/buyers/rfqs', authenticateToken, authorizeRoles('Buyer'), async
       params.push(status);
     }
 
+    query += ' GROUP BY r.RFQID, r.SupplierID, r.ProductID, r.ProjectName, r.Message, r.QuantityNeeded, r.Unit, r.BudgetRange, r.DeadlineDate, r.Status, r.CreatedAt, c.CompanyName';
     query += ' ORDER BY r.CreatedAt DESC';
 
     const result = await pool.query(query, params);
@@ -1377,8 +1681,10 @@ app.get('/api/v1/suppliers/:id/certifications', async (req, res) => {
       return res.status(400).json({ error: 'Invalid supplier ID' });
     }
 
-    // Internal certifications
-    const internalRes = await pool.query(`
+    // OPTIMIZED: Combined two sequential queries into single UNION ALL query
+    // Before: 2 round trips to database
+    // After: 1 round trip with UNION ALL
+    const combinedRes = await pool.query(`
       SELECT sc.SupplierCertificationID AS id,
              c.Name AS name,
              c.CertifyingBody AS body,
@@ -1393,31 +1699,28 @@ app.get('/api/v1/suppliers/:id/certifications', async (req, res) => {
       FROM Supplier_Certifications sc
       JOIN Certifications c ON sc.CertificationID = c.CertificationID
       WHERE sc.SupplierID = $1
-    `, [supplierId]);
-
-    // FSC certifications
-    const fscRes = await pool.query(`
+      
+      UNION ALL
+      
       SELECT f.FSCCertID AS id,
+             'FSC Certification' AS name,
+             f.CertifyingBody AS body,
              f.CertificateNumber AS number,
-             f.CertificateType AS certificateType,
              f.CertificateStatus AS status,
              f.IssueDate AS issueDate,
              f.ExpiryDate AS expiryDate,
-             f.CertifyingBody AS body,
-             'FSC Certification' AS name,
              'fsc' AS source,
              NULL AS scope,
-             NULL AS products
+             NULL AS products,
+             f.CertificateType AS certificateType
       FROM FSC_Certifications f
       WHERE f.SupplierID = $1
     `, [supplierId]);
 
-    const combined = [...internalRes.rows, ...fscRes.rows];
-
     res.json({
       supplierId,
-      total: combined.length,
-      certifications: combined
+      total: combinedRes.rows.length,
+      certifications: combinedRes.rows
     });
   } catch (e) {
     console.error('❌ Unified certifications error:', e);
@@ -1444,59 +1747,65 @@ app.get('/api/v1/suppliers/:id/analytics', authenticateToken, async (req, res) =
       }
     }
 
-    // RFQ statistics
-    const rfqStats = await pool.query(`
-      SELECT 
-        COUNT(*) as total_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Pending') as pending_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Responded') as responded_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Cancelled') as cancelled_rfqs
-      FROM RFQs WHERE SupplierID = $1
-    `, [supplierId]);
+    // OPTIMIZED: Run all independent queries in parallel with Promise.all
+    // Before: 5 sequential queries (~500ms total if each takes 100ms)
+    // After: All queries run in parallel (~100ms total)
+    const [rfqStats, responseStats, recentRFQs, notifications, scoreData] = await Promise.all([
+      // RFQ statistics
+      pool.query(`
+        SELECT 
+          COUNT(*) as total_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Pending') as pending_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Responded') as responded_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Cancelled') as cancelled_rfqs
+        FROM RFQs WHERE SupplierID = $1
+      `, [supplierId]),
 
-    // Response statistics
-    const responseStats = await pool.query(`
-      SELECT 
-        COUNT(*) as total_responses,
-        COUNT(*) FILTER (WHERE Status = 'Pending') as pending_responses,
-        COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_responses,
-        COUNT(*) FILTER (WHERE Status = 'Declined') as declined_responses,
-        AVG(QuotedPrice) as avg_quoted_price,
-        AVG(LeadTimeDays) as avg_lead_time
-      FROM RFQ_Responses WHERE SupplierID = $1
-    `, [supplierId]);
+      // Response statistics
+      pool.query(`
+        SELECT 
+          COUNT(*) as total_responses,
+          COUNT(*) FILTER (WHERE Status = 'Pending') as pending_responses,
+          COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_responses,
+          COUNT(*) FILTER (WHERE Status = 'Declined') as declined_responses,
+          AVG(QuotedPrice) as avg_quoted_price,
+          AVG(LeadTimeDays) as avg_lead_time
+        FROM RFQ_Responses WHERE SupplierID = $1
+      `, [supplierId]),
 
-    // Recent RFQs
-    const recentRFQs = await pool.query(`
-      SELECT 
-        r.RFQID, r.ProjectName, r.Message, r.Status, r.CreatedAt,
-        r.QuantityNeeded, r.Unit, r.BudgetRange,
-        c.CompanyName as BuyerCompany,
-        (SELECT Status FROM RFQ_Responses WHERE RFQID = r.RFQID AND SupplierID = $1 LIMIT 1) as ResponseStatus
-      FROM RFQs r
-      LEFT JOIN Buyers b ON r.BuyerID = b.BuyerID
-      LEFT JOIN Companies c ON b.CompanyID = c.CompanyID
-      WHERE r.SupplierID = $1
-      ORDER BY r.CreatedAt DESC
-      LIMIT 10
-    `, [supplierId]);
+      // Recent RFQs - OPTIMIZED: Replaced correlated subquery with LEFT JOIN
+      pool.query(`
+        SELECT 
+          r.RFQID, r.ProjectName, r.Message, r.Status, r.CreatedAt,
+          r.QuantityNeeded, r.Unit, r.BudgetRange,
+          c.CompanyName as BuyerCompany,
+          rr.Status as ResponseStatus
+        FROM RFQs r
+        LEFT JOIN Buyers b ON r.BuyerID = b.BuyerID
+        LEFT JOIN Companies c ON b.CompanyID = c.CompanyID
+        LEFT JOIN RFQ_Responses rr ON r.RFQID = rr.RFQID AND rr.SupplierID = $1
+        WHERE r.SupplierID = $1
+        ORDER BY r.CreatedAt DESC
+        LIMIT 10
+      `, [supplierId]),
 
-    // Notification history for this supplier
-    const notifications = await pool.query(`
-      SELECT NotificationID, NotificationType, Subject, Status, CreatedAt
-      FROM Notification_Log
-      WHERE Recipient IN (
-        SELECT u.Email FROM Users u
-        JOIN Suppliers s ON u.CompanyID = s.COMPANYID
-        WHERE s.SupplierID = $1
-      )
-      ORDER BY CreatedAt DESC
-      LIMIT 20
-    `, [supplierId]);
+      // Notification history for this supplier
+      pool.query(`
+        SELECT NotificationID, NotificationType, Subject, Status, CreatedAt
+        FROM Notification_Log
+        WHERE Recipient IN (
+          SELECT u.Email FROM Users u
+          JOIN Suppliers s ON u.CompanyID = s.COMPANYID
+          WHERE s.SupplierID = $1
+        )
+        ORDER BY CreatedAt DESC
+        LIMIT 20
+      `, [supplierId]),
 
-    // Verification score
-    const scoreData = await getPersistedOrLiveScore(pool, supplierId);
+      // Verification score
+      getPersistedOrLiveScore(pool, supplierId)
+    ]);
 
     res.json({
       supplierId,
@@ -1599,12 +1908,44 @@ app.get('/auth/microsoft/callback',
 );
 
 // ============================================
+// ERROR HANDLING (Must be last!)
+// ============================================
+
+// 404 handler for unmatched routes
+app.use(notFoundHandler);
+
+// Error logging middleware
+app.use(errorLogger);
+
+// Global error handler
+app.use(globalErrorHandler);
+
+// ============================================
 // SERVER STARTUP
 // ============================================
 
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Backend server listening at http://localhost:${PORT}`);
+  logger.info(`🚀 Backend server listening at http://localhost:${PORT}`);
+
+  // Initialize Redis
+  try {
+    initRedis();
+    logger.info('✅ Redis client initialized');
+  } catch (err) {
+    logger.warn('⚠️ Redis not available, continuing without cache:', err.message);
+  }
+
   await initSchema();
+
+  // Initialize Outreach Agent Service
+  try {
+    await outreachService.initialize();
+    logger.info('✅ Outreach Agent Service initialized');
+  } catch (err) {
+    logger.error('⚠️ Outreach Agent Service initialization failed:', err.message);
+  }
+
+  logger.info('🏢 GreenChainz API ready with enterprise security enabled');
 });

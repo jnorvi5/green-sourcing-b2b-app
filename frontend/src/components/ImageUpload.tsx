@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { uploadToS3 } from '../lib/s3-upload';
+// @ts-ignore: CSS import - project may not have global CSS module declarations
 import '../glassmorphism.css';
 
 export default function ImageUpload() {

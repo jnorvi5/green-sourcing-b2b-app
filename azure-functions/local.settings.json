@@ -1,0 +1,14 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "node",
+        "MONGODB_URI": "mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/greenchainz?retryWrites=true&w=majority",
+        "MONGODB_BUYERS_URI": "mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/buyers?retryWrites=true&w=majority",
+        "MONGODB_SUPPLIERS_URI": "mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/suppliers?retryWrites=true&w=majority",
+        "MONGODB_ANALYTICS_URI": "mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/analytics?retryWrites=true&w=majority",
+        "MONGODB_DATAPROVIDERS_URI": "mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/dataproviders?retryWrites=true&w=majority",
+        "JOBS_API_KEY": "your-secure-api-key-here",
+        "NEXT_API_BASE_URL": "http://localhost:3001"
+    }
+}

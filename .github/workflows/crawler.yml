@@ -1,0 +1,109 @@
+name: Site Crawler - Link Integrity Check
+
+on:
+  schedule:
+    # Daily at 08:00 UTC
+    - cron: '0 8 * * *'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link-check:
+    name: Check for Broken Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Run Lychee Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --timeout 30
+            --max-retries 3
+            --retry-wait-time 5
+            --accept 200,204,301,302,307,308
+            --exclude-mail
+            --exclude '^https?://(www\.)?(twitter|x)\.com'
+            --exclude '^https?://(www\.)?facebook\.com'
+            --exclude '^https?://(www\.)?linkedin\.com'
+            --exclude '^https?://(www\.)?instagram\.com'
+            --cache
+            --max-cache-age 1d
+            https://greenchainz.com
+          fail: false
+          output: ./lychee-report.md
+          format: markdown
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fallback to www subdomain
+        if: steps.lychee.outcome == 'failure'
+        id: lychee-fallback
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --timeout 30
+            --max-retries 3
+            --retry-wait-time 5
+            --accept 200,204,301,302,307,308
+            --exclude-mail
+            --exclude '^https?://(www\.)?(twitter|x)\.com'
+            --exclude '^https?://(www\.)?facebook\.com'
+            --exclude '^https?://(www\.)?linkedin\.com'
+            --exclude '^https?://(www\.)?instagram\.com'
+            --cache
+            --max-cache-age 1d
+            https://www.greenchainz.com
+          fail: false
+          output: ./lychee-report.md
+          format: markdown
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload link check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: ./lychee-report.md
+          retention-days: 30
+
+      - name: Check for broken links
+        run: |
+          if [ -f "./lychee-report.md" ]; then
+            echo "=== Link Check Report ==="
+            cat ./lychee-report.md
+            
+            # Check if report contains errors
+            if grep -q "🔴\|❌\|Failed\|error" ./lychee-report.md 2>/dev/null; then
+              echo ""
+              echo "❌ Broken links detected! See report above."
+              exit 1
+            else
+              echo ""
+              echo "✅ All links are valid."
+            fi
+          else
+            echo "⚠️ No report generated - site may be unreachable"
+            exit 1
+          fi

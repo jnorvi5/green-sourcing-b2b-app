@@ -1,5 +1,5 @@
 // frontend/src/components/ProductCard.tsx
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import type { MockProduct } from '../mocks/productData';
 import { useProjects } from '../context/ProjectContext';
 import CreateProjectModal from './Projects/CreateProjectModal';
@@ -11,13 +11,17 @@ type ProductCardProps = {
   onRequestQuote?: (productId: string) => void;
 };
 
-const CertificationIcon: React.FC<{ name: string }> = ({ name }) => (
+const CertificationIcon: React.FC<{ name: string }> = memo(({ name }) => (
   <div className="bg-gray-200 text-gray-700 text-xs font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded-full">
     {name}
   </div>
-);
+));
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequestQuote }) => {
+CertificationIcon.displayName = 'CertificationIcon';
+
+// OPTIMIZED: Wrapped component with React.memo to prevent unnecessary re-renders
+// This is especially important in a ProductGrid where many cards are rendered
+const ProductCard: React.FC<ProductCardProps> = memo(({ product, supplierName, onRequestQuote }) => {
   const {
     name,
     imageUrl,
@@ -31,11 +35,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const handleAddToProject = (projectId: number) => {
+  // OPTIMIZED: Memoize callback to prevent recreation on every render
+  const handleAddToProject = useCallback((projectId: number) => {
     addProductToProject(projectId, product.id);
     setShowProjectMenu(false);
     alert(`Product added to project!`);
-  };
+  }, [addProductToProject, product.id]);
 
   const displayImage = imageUrl || 'https://via.placeholder.com/400x300.png?text=No+Image';
   const displaySupplier = supplierName || supplier || 'Unknown Supplier';
@@ -44,7 +49,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
   const { products: comparisonProducts, addProduct, removeProduct } = useComparisonStore();
   const isSelected = comparisonProducts.some(p => p.id === product.id);
 
-  const handleCompareToggle = () => {
+  // OPTIMIZED: Memoize callback to prevent recreation on every render
+  const handleCompareToggle = useCallback(() => {
     if (isSelected) {
       removeProduct(product.id);
     } else {
@@ -54,7 +60,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
       }
       addProduct(product);
     }
-  };
+  }, [isSelected, removeProduct, addProduct, product, comparisonProducts]);
+
+  // OPTIMIZED: Memoize callbacks
+  const handleToggleProjectMenu = useCallback(() => {
+    setShowProjectMenu(prev => !prev);
+  }, []);
+
+  const handleOpenCreateModal = useCallback(() => {
+    setShowProjectMenu(false);
+    setShowCreateModal(true);
+  }, []);
+
+  const handleCloseCreateModal = useCallback(() => {
+    setShowCreateModal(false);
+  }, []);
+
+  const handleRequestQuote = useCallback(() => {
+    if (onRequestQuote) {
+      onRequestQuote(product.id.toString());
+    }
+  }, [onRequestQuote, product.id]);
 
   return (
     <>
@@ -109,7 +135,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
 
         <div className="p-4 pt-0 relative">
           <button
-            onClick={() => setShowProjectMenu(!showProjectMenu)}
+            onClick={handleToggleProjectMenu}
             className="w-full px-4 py-2 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary/5"
           >
             + Add to Project
@@ -138,10 +164,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
               </div>
 
               <button
-                onClick={() => {
-                  setShowProjectMenu(false);
-                  setShowCreateModal(true);
-                }}
+                onClick={handleOpenCreateModal}
                 className="w-full text-left px-4 py-3 border-t border-gray-200 hover:bg-gray-50 flex items-center gap-3 text-primary font-medium"
               >
                 <span className="text-xl">+ </span>
@@ -154,7 +177,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
         {onRequestQuote && (
           <div className="p-4 pt-0">
             <button
-              onClick={() => onRequestQuote(product.id.toString())}
+              onClick={handleRequestQuote}
               className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 transition-colors"
             >
               Request Quote
@@ -163,9 +186,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, supplierName, onRequ
         )}
       </div>
 
-      {showCreateModal && <CreateProjectModal onClose={() => setShowCreateModal(false)} />}
+      {showCreateModal && <CreateProjectModal onClose={handleCloseCreateModal} />}
     </>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;

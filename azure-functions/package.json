@@ -1,0 +1,21 @@
+{
+    "name": "greenchainz-functions",
+    "version": "1.0.0",
+    "description": "Azure Functions for GreenChainz scheduled jobs",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "prestart": "npm run build",
+        "start": "func start",
+        "test": "echo \"No tests yet\""
+    },
+    "dependencies": {
+        "mongoose": "^8.0.0"
+    },
+    "devDependencies": {
+        "@azure/functions": "^4.0.0",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0"
+    }
+}

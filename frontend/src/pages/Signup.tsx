@@ -34,9 +34,8 @@ const Input = ({ id, label, error, ...props }: InputProps) => (
             id={id}
             name={id}
             {...props}
-            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                error ? 'border-destructive ring-destructive' : 'border-border focus:ring-primary'
-            }`}
+            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition ${error ? 'border-destructive ring-destructive' : 'border-border focus:ring-primary'
+                }`}
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-error` : undefined}
         />
@@ -127,22 +126,61 @@ export default function Signup() {
 
         setLoading(true);
         try {
-            const { error: signUpError } = await supabase.auth.signUp({
+            // Determine final role
+            const finalRole = isAdmin ? 'admin' : formData.role;
+
+            // Sign up with Supabase Auth - the profile will be created by trigger
+            const { data, error: signUpError } = await supabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
-                options: { data: { company_name: formData.companyName, role: isAdmin ? 'admin' : formData.role, ...(formData.role === 'buyer' && { project_type: formData.projectType }), ...(formData.role === 'supplier' && { product_category: formData.productCategory }) } }
+                options: {
+                    data: {
+                        company_name: formData.companyName,
+                        role: finalRole,
+                        full_name: formData.companyName, // Use company name as initial name
+                        ...(formData.role === 'buyer' && { project_type: formData.projectType }),
+                        ...(formData.role === 'supplier' && { product_category: formData.productCategory })
+                    }
+                }
             });
 
             if (signUpError) throw signUpError;
 
-            if (formData.role === 'buyer') navigate('/dashboard');
-            else if (formData.role === 'supplier') navigate('/supplier/pending-approval');
+            // Update the profile with the role (in case trigger doesn't set it)
+            if (data.user) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert({
+                        id: data.user.id,
+                        email: formData.email,
+                        role: finalRole,
+                        company_name: formData.companyName,
+                        full_name: formData.companyName,
+                        verification_status: 'pending',
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'id' });
+
+                if (profileError) {
+                    console.error('Error creating profile:', profileError);
+                    // Continue anyway - profile trigger might have created it
+                }
+            }
+
+            // Redirect based on role
+            if (finalRole === 'admin') {
+                navigate('/admin');
+            } else if (finalRole === 'buyer') {
+                navigate('/dashboard/buyer');
+            } else if (finalRole === 'supplier') {
+                // Suppliers go to onboarding first
+                navigate('/dashboard/supplier/onboarding');
+            }
 
         } catch (err) {
             const errorMessage = (err as Error).message.includes('already exists')
                 ? "This email is already registered. Please log in."
                 : "An unexpected error occurred. Please try again.";
-            setErrors(prev => ({...prev, form: errorMessage}));
+            setErrors(prev => ({ ...prev, form: errorMessage }));
         } finally {
             setLoading(false);
         }
@@ -171,23 +209,21 @@ export default function Signup() {
                 </div>
 
                 <div className="flex gap-3 bg-slate-800/50 p-2 rounded-xl border border-slate-700/50">
-                    <button 
-                        onClick={() => setFormData(prev => ({ ...prev, role: 'buyer' }))} 
-                        className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all ${
-                            formData.role === 'buyer' 
-                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30' 
+                    <button
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'buyer' }))}
+                        className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all ${formData.role === 'buyer'
+                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30'
                                 : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
-                        }`}
+                            }`}
                     >
                         🏗️ I'm a Buyer/Architect
                     </button>
-                    <button 
-                        onClick={() => setFormData(prev => ({ ...prev, role: 'supplier' }))} 
-                        className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all ${
-                            formData.role === 'supplier' 
-                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
+                    <button
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'supplier' }))}
+                        className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all ${formData.role === 'supplier'
+                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30'
                                 : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
-                        }`}
+                            }`}
                     >
                         🌱 I'm a Supplier
                     </button>
@@ -214,29 +250,29 @@ export default function Signup() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
-                                <input 
-                                    id="email" 
-                                    name="email" 
-                                    type="email" 
-                                    value={formData.email} 
-                                    onChange={handleChange} 
-                                    onBlur={handleBlur} 
-                                    placeholder="you@company.com" 
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="you@company.com"
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.email ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition`}
                                 />
                                 {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
                             </div>
-                            
+
                             <div>
                                 <label htmlFor="companyName" className="block text-sm font-medium text-slate-300 mb-2">Company Name</label>
-                                <input 
-                                    id="companyName" 
-                                    name="companyName" 
-                                    type="text" 
-                                    value={formData.companyName} 
-                                    onChange={handleChange} 
-                                    onBlur={handleBlur} 
-                                    placeholder="Your Company, Inc." 
+                                <input
+                                    id="companyName"
+                                    name="companyName"
+                                    type="text"
+                                    value={formData.companyName}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Your Company, Inc."
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.companyName ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition`}
                                 />
                                 {errors.companyName && <p className="mt-1 text-sm text-red-400">{errors.companyName}</p>}
@@ -245,10 +281,10 @@ export default function Signup() {
                             {formData.role === 'buyer' ? (
                                 <div>
                                     <label htmlFor="projectType" className="block text-sm font-medium text-slate-300 mb-2">Project Type</label>
-                                    <select 
-                                        id="projectType" 
-                                        name="projectType" 
-                                        value={formData.projectType} 
+                                    <select
+                                        id="projectType"
+                                        name="projectType"
+                                        value={formData.projectType}
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
                                     >
@@ -260,10 +296,10 @@ export default function Signup() {
                             ) : (
                                 <div>
                                     <label htmlFor="productCategory" className="block text-sm font-medium text-slate-300 mb-2">Product Category</label>
-                                    <select 
-                                        id="productCategory" 
-                                        name="productCategory" 
-                                        value={formData.productCategory} 
+                                    <select
+                                        id="productCategory"
+                                        name="productCategory"
+                                        value={formData.productCategory}
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                                     >
@@ -277,56 +313,56 @@ export default function Signup() {
 
                             <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">Password</label>
-                                <input 
-                                    id="password" 
-                                    name="password" 
-                                    type="password" 
-                                    value={formData.password} 
-                                    onChange={handleChange} 
-                                    onBlur={handleBlur} 
-                                    placeholder="••••••••" 
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="••••••••"
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.password ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition`}
                                 />
                                 {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
                             </div>
-                            
+
                             <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">Confirm Password</label>
-                                <input 
-                                    id="confirmPassword" 
-                                    name="confirmPassword" 
-                                    type="password" 
-                                    value={formData.confirmPassword} 
-                                    onChange={handleChange} 
-                                    onBlur={handleBlur} 
-                                    placeholder="••••••••" 
+                                <input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="••••••••"
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.confirmPassword ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition`}
                                 />
                                 {errors.confirmPassword && <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>}
                             </div>
-                    </div>
-
-                    {import.meta.env.DEV && (
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={isAdmin}
-                                onChange={(e) => setIsAdmin(e.target.checked)}
-                                id="admin-checkbox"
-                            />
-                            <label htmlFor="admin-checkbox" className="text-sm text-red-600">
-                                Create as Admin (Dev Only)
-                            </label>
                         </div>
-                    )}
+
+                        {import.meta.env.DEV && (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={isAdmin}
+                                    onChange={(e) => setIsAdmin(e.target.checked)}
+                                    id="admin-checkbox"
+                                />
+                                <label htmlFor="admin-checkbox" className="text-sm text-red-600">
+                                    Create as Admin (Dev Only)
+                                </label>
+                            </div>
+                        )}
 
                         <div className="flex items-start gap-3 p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
-                            <input 
-                                id="agreedToTerms" 
-                                name="agreedToTerms" 
-                                type="checkbox" 
-                                checked={formData.agreedToTerms} 
-                                onChange={handleChange} 
+                            <input
+                                id="agreedToTerms"
+                                name="agreedToTerms"
+                                type="checkbox"
+                                checked={formData.agreedToTerms}
+                                onChange={handleChange}
                                 className="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-600 rounded bg-slate-700"
                             />
                             <label htmlFor="agreedToTerms" className="text-sm text-slate-400">
@@ -342,9 +378,9 @@ export default function Signup() {
                         </div>
                         {errors.agreedToTerms && <p className="text-sm text-red-400" role="alert">{errors.agreedToTerms}</p>}
 
-                        <button 
-                            type="submit" 
-                            disabled={loading} 
+                        <button
+                            type="submit"
+                            disabled={loading}
                             className="w-full py-4 px-6 bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-600 hover:from-amber-500 hover:via-yellow-500 hover:to-amber-500 text-white font-black text-lg rounded-lg shadow-xl shadow-amber-500/40 hover:shadow-amber-500/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
                         >
                             {loading ? (

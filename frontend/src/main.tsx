@@ -4,12 +4,15 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { IntercomProvider } from './context/IntercomProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <IntercomProvider>
+          <App />
+        </IntercomProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

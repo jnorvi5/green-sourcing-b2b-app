@@ -28,6 +28,17 @@ export interface RFQ {
   created_at: string;
 }
 
+// RFQData for submitting new RFQs
+export interface RFQData {
+  product_id: number;
+  quantity: string;
+  message: string;
+  project_details?: string;
+  buyer_company?: string;
+  buyer_name?: string;
+  buyer_email?: string;
+}
+
 export interface Quote {
   id: number;
   rfq_id: number;
