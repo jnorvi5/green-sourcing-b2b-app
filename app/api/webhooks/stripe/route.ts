@@ -9,11 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
 // Disable body parsing for webhooks - we need raw body
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
+
 
 interface PaymentMetadata {
     orderId?: string;
