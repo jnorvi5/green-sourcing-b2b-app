@@ -114,6 +114,7 @@ const supplierNavItems: NavItem[] = [
 const adminNavItems: NavItem[] = [
     { label: 'Dashboard', icon: <Home className="w-5 h-5" />, path: '/admin' },
     { label: 'Analytics', icon: <BarChart2 className="w-5 h-5" />, path: '/admin/analytics' },
+    { label: 'Outreach', icon: <MessageSquare className="w-5 h-5" />, path: '/outreach' },
     { label: 'Users', icon: <Users className="w-5 h-5" />, path: '/admin/users' },
     { label: 'Suppliers', icon: <Factory className="w-5 h-5" />, path: '/admin/suppliers' },
     { label: 'Products', icon: <Package className="w-5 h-5" />, path: '/admin/products' },
@@ -216,8 +217,8 @@ export default function DashboardSidebar({
                             key={item.path}
                             to={item.path}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive(item.path)
-                                    ? 'bg-green-50 text-green-700'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                ? 'bg-green-50 text-green-700'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 } ${isCollapsed ? 'justify-center' : ''}`}
                             title={isCollapsed ? item.label : undefined}
                         >
@@ -254,8 +255,8 @@ export default function DashboardSidebar({
                             key={item.path}
                             to={item.path}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive(item.path)
-                                    ? 'bg-green-50 text-green-700'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                ? 'bg-green-50 text-green-700'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 } ${isCollapsed ? 'justify-center' : ''}`}
                             title={isCollapsed ? item.label : undefined}
                         >

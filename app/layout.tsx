@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-// IMPORT THE NEW HEADER HERE
-import Header from "@/components/Header"; 
+// FIX: Use relative path for CSS (Current folder)
+import "./globals.css"; 
+// FIX: Use relative path for Header (Up one folder -> components)
+import Header from "../components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "GreenChainz | Verified Sustainable Sourcing",
-  description: "The Tesla of environmental sourcing.",
+  description: "The B2B marketplace for verified sustainable building materials.",
 };
 
 export default function RootLayout({
@@ -19,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} bg-background text-foreground`}>
-        {/* GLOBAL BACKGROUND SHAPES (From your layout.css) */}
+        {/* GLOBAL BACKGROUND SHAPES */}
         <div className="bg-shapes">
             <div className="shape shape-1"></div>
             <div className="shape shape-2"></div>

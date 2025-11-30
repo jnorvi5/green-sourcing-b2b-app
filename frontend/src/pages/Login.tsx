@@ -1,7 +1,13 @@
 import { useState, type FormEvent, type FocusEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useNotify } from '../hooks/useNotify';
+import type { UserRole } from '../context/AuthContext';
+
+// --- Location State Type ---
+interface LocationState {
+    from?: string;
+}
 
 // --- Validation Utilities ---
 const validateEmail = (email: string) => {
@@ -9,6 +15,22 @@ const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return "Please enter a valid email address.";
     return "";
+};
+
+/**
+ * Get the appropriate dashboard redirect based on user role
+ */
+const getRoleBasedRedirect = (role: UserRole | undefined): string => {
+    switch (role) {
+        case 'supplier':
+            return '/dashboard/supplier';
+        case 'buyer':
+            return '/dashboard/buyer';
+        case 'admin':
+            return '/admin';
+        default:
+            return '/dashboard';
+    }
 };
 
 // --- Reusable Input Component with Error Handling ---
@@ -27,9 +49,8 @@ const Input = ({ id, label, error, ...props }: InputProps) => (
             id={id}
             name={id}
             {...props}
-            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition ${
-                error ? 'border-destructive ring-destructive' : 'border-border focus:ring-primary'
-            }`}
+            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition ${error ? 'border-destructive ring-destructive' : 'border-border focus:ring-primary'
+                }`}
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-error` : undefined}
         />
@@ -39,10 +60,15 @@ const Input = ({ id, label, error, ...props }: InputProps) => (
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({ email: '', password: '', form: '' });
     const [loading, setLoading] = useState(false);
+
+    // Get the original URL the user was trying to access (if redirected from ProtectedRoute)
+    const locationState = location.state as LocationState | undefined;
+    const from = locationState?.from;
 
     const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -72,16 +98,39 @@ export default function Login() {
 
         setLoading(true);
         try {
-            const { error: signInError } = await supabase.auth.signInWithPassword({
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
             if (signInError) throw signInError;
+
             notifySuccess('Successfully logged in!');
-            navigate('/dashboard');
+
+            // If we have a "from" path, redirect back there
+            if (from) {
+                navigate(from, { replace: true });
+                return;
+            }
+
+            // Otherwise, redirect based on user role from profile
+            // First check if profile exists in metadata, then fetch from DB if needed
+            const userId = data.user?.id;
+            if (userId) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', userId)
+                    .single();
+
+                const redirectPath = getRoleBasedRedirect(profile?.role as UserRole);
+                navigate(redirectPath, { replace: true });
+            } else {
+                // Fallback to generic dashboard
+                navigate('/dashboard', { replace: true });
+            }
         } catch (_err) {
             const errorMessage = 'Invalid email or password.';
-            setErrors(prev => ({...prev, form: errorMessage}));
+            setErrors(prev => ({ ...prev, form: errorMessage }));
             notifyError(errorMessage);
         } finally {
             setLoading(false);
@@ -118,14 +167,14 @@ export default function Login() {
                                 <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
                                     Email Address
                                 </label>
-                                <input 
-                                    id="email" 
-                                    name="email" 
-                                    type="email" 
-                                    value={email} 
-                                    onChange={e => setEmail(e.target.value)} 
-                                    onBlur={handleBlur} 
-                                    placeholder="you@company.com" 
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    onBlur={handleBlur}
+                                    placeholder="you@company.com"
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.email ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition`}
                                 />
                                 {errors.email && <p className="mt-1 text-sm text-red-400" role="alert">{errors.email}</p>}
@@ -138,23 +187,23 @@ export default function Login() {
                                         Forgot Password?
                                     </Link>
                                 </div>
-                                <input 
-                                    id="password" 
-                                    name="password" 
-                                    type="password" 
-                                    value={password} 
-                                    onChange={e => setPassword(e.target.value)} 
-                                    onBlur={handleBlur} 
-                                    placeholder="••••••••" 
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    onBlur={handleBlur}
+                                    placeholder="••••••••"
                                     className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.password ? 'border-red-500' : 'border-slate-700'} rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition`}
                                 />
                                 {errors.password && <p className="mt-1 text-sm text-red-400" role="alert">{errors.password}</p>}
                             </div>
                         </div>
 
-                        <button 
-                            type="submit" 
-                            disabled={loading} 
+                        <button
+                            type="submit"
+                            disabled={loading}
                             className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
                         >
                             {loading ? (

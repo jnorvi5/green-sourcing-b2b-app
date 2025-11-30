@@ -5,7 +5,7 @@
  * and marketing campaigns via MailerLite API
  */
 
-import { connectToDatabase } from './mongodb';
+import { connect } from 'http2';
 
 // MailerLite API Configuration
 const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY;
@@ -68,15 +68,6 @@ async function makeMailerLiteRequest(
  */
 export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-        // Log email to database for tracking
-        const { db } = await connectToDatabase();
-        await db.collection('email_logs').insertOne({
-            to: options.to,
-            subject: options.subject,
-            status: 'sending',
-            createdAt: new Date(),
-        });
-
         // For development/testing without API key
         if (!MAILERLITE_API_KEY) {
             console.log('[DEV] Email would be sent:', {
@@ -97,12 +88,6 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
                 html: options.html,
             },
         });
-
-        // Update log
-        await db.collection('email_logs').updateOne(
-            { to: options.to, subject: options.subject, status: 'sending' },
-            { $set: { status: 'sent', messageId: result.data?.id, sentAt: new Date() } }
-        );
 
         return { success: true, messageId: result.data?.id };
     } catch (error) {

@@ -337,7 +337,7 @@ export default function OutreachPage() {
                       type="text"
                       required
                       value={createForm.companyName}
-                      onChange={(e) => setCreateForm({ ...createForm, companyName: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, companyName: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -347,7 +347,7 @@ export default function OutreachPage() {
                       type="text"
                       required
                       value={createForm.contactName}
-                      onChange={(e) => setCreateForm({ ...createForm, contactName: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, contactName: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -360,7 +360,7 @@ export default function OutreachPage() {
                       type="email"
                       required
                       value={createForm.email}
-                      onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, email: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -370,7 +370,7 @@ export default function OutreachPage() {
                       type="text"
                       required
                       value={createForm.role}
-                      onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, role: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -382,7 +382,7 @@ export default function OutreachPage() {
                     <input
                       type="tel"
                       value={createForm.phone}
-                      onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, phone: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -391,7 +391,7 @@ export default function OutreachPage() {
                     <input
                       type="url"
                       value={createForm.website}
-                      onChange={(e) => setCreateForm({ ...createForm, website: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, website: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -403,7 +403,7 @@ export default function OutreachPage() {
                     <select
                       required
                       value={createForm.leadType}
-                      onChange={(e) => setCreateForm({ ...createForm, leadType: e.target.value as LeadType })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, leadType: e.target.value as LeadType })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     >
                       {Object.values(LeadType).map((type) => (
@@ -420,7 +420,7 @@ export default function OutreachPage() {
                       required
                       placeholder="LinkedIn, Referral, etc."
                       value={createForm.source}
-                      onChange={(e) => setCreateForm({ ...createForm, source: e.target.value })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, source: e.target.value })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -428,7 +428,7 @@ export default function OutreachPage() {
                     <label className="text-sm text-gray-400 block mb-1">Priority</label>
                     <select
                       value={createForm.priority}
-                      onChange={(e) => setCreateForm({ ...createForm, priority: e.target.value as LeadPriority })}
+                      onChange={(e: any) => setCreateForm({ ...createForm, priority: e.target.value as LeadPriority })}
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     >
                       {Object.values(LeadPriority).map((priority) => (
@@ -444,7 +444,7 @@ export default function OutreachPage() {
                   <label className="text-sm text-gray-400 block mb-1">Company Description (for AI)</label>
                   <textarea
                     value={createForm.companyDescription}
-                    onChange={(e) => setCreateForm({ ...createForm, companyDescription: e.target.value })}
+                    onChange={(e: any) => setCreateForm({ ...createForm, companyDescription: e.target.value })}
                     rows={2}
                     placeholder="Brief description for personalized emails..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -455,7 +455,7 @@ export default function OutreachPage() {
                   <label className="text-sm text-gray-400 block mb-1">Custom Hook (why reaching out)</label>
                   <textarea
                     value={createForm.customHook}
-                    onChange={(e) => setCreateForm({ ...createForm, customHook: e.target.value })}
+                    onChange={(e: any) => setCreateForm({ ...createForm, customHook: e.target.value })}
                     rows={2}
                     placeholder="Reason for reaching out to this specific lead..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -466,7 +466,7 @@ export default function OutreachPage() {
                   <label className="text-sm text-gray-400 block mb-1">Notes</label>
                   <textarea
                     value={createForm.notes}
-                    onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
+                    onChange={(e: any) => setCreateForm({ ...createForm, notes: e.target.value })}
                     rows={2}
                     placeholder="Internal notes..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"

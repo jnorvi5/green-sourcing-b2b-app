@@ -8,6 +8,18 @@ import { useCallback } from 'react';
 import { useIntercom } from '../context/IntercomProvider';
 
 /**
+ * Combined hook that exports all tracking functionality
+ */
+export function useIntercomTracking() {
+    const { trackEvent, update } = useIntercom();
+
+    return {
+        trackEvent,
+        update,
+    };
+}
+
+/**
  * Hook for tracking product-related events
  */
 export function useProductTracking() {

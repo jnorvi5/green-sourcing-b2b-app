@@ -4,10 +4,35 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 /**
+ * Check if auth should be skipped (evaluated at runtime)
+ */
+function shouldSkipAuth() {
+    const skip = process.env.SKIP_AUTH === 'true' || process.env.NODE_ENV === 'development';
+    // Debug: log on first call
+    if (shouldSkipAuth._firstCall !== false) {
+        console.log('[Auth] Skip auth check:', { SKIP_AUTH: process.env.SKIP_AUTH, NODE_ENV: process.env.NODE_ENV, skip });
+        shouldSkipAuth._firstCall = false;
+    }
+    return skip;
+}
+
+/**
  * Middleware to authenticate JWT token from Authorization header
  * Sets req.user with decoded token payload
+ * In development mode (SKIP_AUTH=true), allows unauthenticated access with mock user
  */
 function authenticateToken(req, res, next) {
+    // Skip auth in development mode
+    if (shouldSkipAuth()) {
+        req.user = {
+            userId: 1,
+            email: 'dev@greenchainz.com',
+            role: 'Admin',
+            companyId: 1
+        };
+        return next();
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
