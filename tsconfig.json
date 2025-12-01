@@ -13,7 +13,7 @@
     "module": "NodeNext",
     "target": "ESNext",
     "types": ["node"],
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
