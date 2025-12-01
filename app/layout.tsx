@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 // FIX: Use relative path for CSS (Current folder)
 import "./globals.css"; 
-// FIX: Use relative path for Header (Up one folder -> components)
-import Header from "../components/Header";
 
 export const metadata: Metadata = {
   title: "GreenChainz | Verified Sustainable Sourcing",
@@ -16,22 +14,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`font-sans bg-background text-foreground`}>
-        {/* GLOBAL BACKGROUND SHAPES */}
-        <div className="bg-shapes">
-            <div className="shape shape-1"></div>
-            <div className="shape shape-2"></div>
-            <div className="shape shape-3"></div>
-        </div>
-
-        {/* MOUNT THE HEADER */}
-        <Header />
-
-        {/* MAIN CONTENT */}
-        <main className="min-h-screen pt-20">
-          {children}
-        </main>
-        
+      <body className="font-sans">
+        {children}
       </body>
     </html>
   );
