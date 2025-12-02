@@ -47,7 +47,8 @@
     "redis": "^5.10.0",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.18.3",
-    "yaml": "^2.5.1"
+    "yaml": "^2.5.1",
+    "lusca": "^1.7.0"
   },
   "devDependencies": {
     "eslint": "^9.39.1",

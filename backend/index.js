@@ -8,6 +8,7 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
+const lusca = require('lusca');
 const passport = require('./config/passport');
 const { authenticateToken, authorizeRoles, JWT_SECRET } = require('./middleware/auth');
 const crypto = require('crypto');
@@ -121,6 +122,9 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
 }));
+
+// CSRF protection middleware
+app.use(lusca.csrf());
 
 // Initialize Passport
 app.use(passport.initialize());
