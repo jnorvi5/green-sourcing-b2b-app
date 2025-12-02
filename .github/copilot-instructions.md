@@ -560,7 +560,12 @@ export async function analyzeEPD(epdContent: string) {
     response_format: { type: 'json_object' },
   });
   
-  return JSON.parse(response.choices[0].message.content!);
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response content from Azure OpenAI');
+  }
+  
+  return JSON.parse(content);
 }
 ```
 
