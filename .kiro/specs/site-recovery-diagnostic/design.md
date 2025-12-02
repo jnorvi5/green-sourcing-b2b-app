@@ -10,7 +10,7 @@ The system is designed as a CLI tool that can be invoked manually during inciden
 
 ### High-Level Architecture
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────────────┐
 │                    Recovery CLI Interface                    │
 │                  (scripts/recovery-cli.ts)                   │
@@ -361,7 +361,7 @@ After analyzing all acceptance criteria, I've identified several opportunities t
 
 The consolidated properties below eliminate this redundancy while maintaining complete coverage of all requirements.
 
-### Correctness Properties
+### Consolidated Correctness Properties
 
 **Property 1: Commit retrieval count accuracy**
 _For any_ repository, when retrieving recent commits with a specified count N, the returned array SHALL contain exactly N commits or fewer if the repository has fewer than N total commits
