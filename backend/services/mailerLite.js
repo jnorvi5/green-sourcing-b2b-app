@@ -64,7 +64,7 @@ class MailerLiteService {
    * Mock responses for development/testing
    */
   mockResponse(endpoint, method, body) {
-    console.log(`[MailerLite Mock] ${method} ${endpoint}`, body);
+    console.log('[MailerLite Mock] %s %s', method, endpoint, body);
 
     if (endpoint.includes('/subscribers')) {
       return {
