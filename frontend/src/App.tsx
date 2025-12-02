@@ -369,8 +369,6 @@ function App() {
             </Routes>
           </Suspense>
         </ProjectProvider>
-        <Toaster />
-        <HelpButton variant="floating" />
       </HelmetProvider>
     </ErrorBoundary >
   );
