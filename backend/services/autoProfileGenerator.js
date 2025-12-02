@@ -599,7 +599,6 @@ Didn't request this? Ignore this email.
     async verifyClaim(claimToken, verificationCode, userData) {
         const profiles = getCollection('unclaimed_profiles');
         const suppliers = getCollection('suppliers');
-        const { ObjectId } = require('mongodb');
         
         const profile = await profiles.findOne({ 
             claimToken,
