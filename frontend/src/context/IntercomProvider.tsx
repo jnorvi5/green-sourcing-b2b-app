@@ -66,6 +66,11 @@ export function IntercomProvider({ children }: IntercomProviderProps) {
             bootIntercom();
         }
     }, [user]);
+
+    const show = useCallback(() => {
+        showIntercom();
+    }, []);
+
     const hide = useCallback(() => {
         hideIntercom();
     }, []);

@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { HelmetProvider } from 'react-helmet-async';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Toaster } from './components/ui/sonner';
+import { HelpButton } from './components/HelpButton';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
@@ -36,6 +38,8 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
+            <Toaster />
+            <HelpButton />
           </div>
         </Router>
       </HelmetProvider>
