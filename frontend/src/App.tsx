@@ -4,7 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ProjectProvider } from './context/ProjectContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Header from './components/Header';
+import Header from './pages/Header';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy load pages
