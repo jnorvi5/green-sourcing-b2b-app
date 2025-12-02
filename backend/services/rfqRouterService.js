@@ -148,7 +148,9 @@ class RFQRouterService {
   calculateMockDistance(origin, destination) {
     const str = String(origin) + String(destination);
     let hash = 0;
-    for (let i = 0; i < str.length; i++) {
+    const MAX_STR_LEN = 1024;
+    const boundedLength = Math.min(str.length, MAX_STR_LEN);
+    for (let i = 0; i < boundedLength; i++) {
       hash = ((hash << 5) - hash) + str.charCodeAt(i);
       hash |= 0;
     }
