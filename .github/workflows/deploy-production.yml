@@ -1,9 +1,9 @@
   name: Deploy Production
 
 on:
-push:
+  push:
     branches: [main]
-  pull_request:
+    pull_request:
     branches: [main]
 
 # Restrict permissions to the minimum required
