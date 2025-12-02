@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Header from './pages/Header';
+import Header from '../components/Header';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
