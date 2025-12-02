@@ -1,5 +1,6 @@
 // backend/services/rfqRouterService.js
 const { pool } = require('../db');
+const crypto = require('crypto');
 
 class RFQRouterService {
   
@@ -58,17 +59,20 @@ class RFQRouterService {
     const scoredCandidates = candidates.map(candidate => {
       // Mock Data for Ranking
       const distanceKm = this.calculateMockDistance(location, candidate.Address || 'Unknown');
-      const winRate = Math.random() * 0.4 + 0.5; // 50-90%
-      const responseTime = Math.floor(Math.random() * 24) + 1; // 1-24 hours
-      const quoteAccuracy = Math.floor(Math.random() * 10) + 90; // 90-100%
+      // Secure Win Rate: 0.5-0.9
+      const winRate = (crypto.randomInt(0, 4000000001)/10000000000) + 0.5; // 0-0.4, then +0.5
+      // Secure Response Time: 1-24
+      const responseTime = crypto.randomInt(1, 25); // 1-24 hours
+      // Secure Quote Accuracy: 90-99 (inclusive)
+      const quoteAccuracy = crypto.randomInt(90, 100); // 90-99%
       
       // Filter: Distance > 500km (Soft filter, just lower score)
       let score = 100;
       if (distanceKm > 500) score -= 20;
       
-      // Filter: Certifications (Mock check)
+      // Filter: Certifications (Secure mock check)
       // Assume 80% chance they have it for demo
-      const hasCerts = Math.random() > 0.2;
+      const hasCerts = (crypto.randomInt(0, 100001) / 100000) > 0.2;
       if (!hasCerts) score -= 30;
 
       // Rank by Win Rate
