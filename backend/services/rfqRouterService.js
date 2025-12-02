@@ -146,7 +146,7 @@ class RFQRouterService {
 
   // Helper: Mock Distance
   calculateMockDistance(origin, destination) {
-    const str = origin + destination;
+    const str = String(origin) + String(destination);
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = ((hash << 5) - hash) + str.charCodeAt(i);
