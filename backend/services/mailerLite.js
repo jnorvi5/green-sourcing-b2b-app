@@ -238,7 +238,7 @@ class MailerLiteService {
     try {
       // MailerLite automations are triggered by adding to groups or updating fields
       // The actual automation is set up in MailerLite dashboard
-      console.log(`[MailerLite] Would trigger automation ${automationId} for ${email}`);
+      console.log(`[MailerLite] Would trigger automation ${automationId} for [REDACTED EMAIL]`);
       return { triggered: true, automationId };
     } catch (error) {
       console.error(`[MailerLite] Failed to trigger automation:`, error.message);
