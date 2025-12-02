@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/sync-mailerlite",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/generate-quarterly-reports",
+      "schedule": "0 0 1 1,4,7,10 *"
     }
   ],
   "headers": [
