@@ -876,7 +876,7 @@ Didn't request this? Ignore this email.
 
             return data;
         } catch (err) {
-            console.error(`[AutoProfileGen] Scraping failed for ${url}:`, err.message);
+            console.error('[AutoProfileGen] Scraping failed for %s:', url, err.message);
             throw err;
         }
     }
