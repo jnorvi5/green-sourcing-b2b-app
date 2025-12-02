@@ -60,6 +60,7 @@
     "lib/azure-ai.ts",
     "lib/zoho-smtp.ts",
     "lib/supabase/**/*.ts",
+    "lib/email/**/*.ts",
     "models/**/*.ts",
     "scripts/**/*.ts",
     "app/**/*.ts",
@@ -70,7 +71,6 @@
   "exclude": [
     "node_modules",
     "frontend",
-    "src",
     "lib/s3-upload.ts"
   ]
 }
