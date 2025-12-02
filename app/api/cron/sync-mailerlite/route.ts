@@ -204,9 +204,33 @@ async function syncUsersToMailerLite(): Promise<SyncStats> {
     if (!users || users.length === 0) break;
 
     for (const user of users as UserProfile[]) {
-      // Skip users who opted out of marketing emails
       const prefs = user.email_preferences;
+      
+      // Handle users who opted out of marketing emails
       if (prefs?.marketing_emails === false) {
+        // If they were previously synced, remove them from MailerLite
+        if (user.mailerlite_subscriber_id) {
+          try {
+            const deleteResult = await mailerLite.deleteSubscriber(user.email);
+            if (deleteResult.success) {
+              stats.usersRemoved++;
+              // Clear the subscriber ID in the database
+              await supabase
+                .from('profiles')
+                .update({
+                  mailerlite_subscriber_id: null,
+                  mailerlite_synced_at: new Date().toISOString(),
+                })
+                .eq('id', user.id);
+            }
+          } catch (error) {
+            stats.errorsCount++;
+            stats.errors.push({
+              email: user.email,
+              error: `Failed to remove opted-out user: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            });
+          }
+        }
         stats.usersProcessed++;
         continue;
       }

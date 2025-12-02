@@ -272,7 +272,8 @@ RETURNS TABLE (
   emails_sent BIGINT,
   emails_opened BIGINT,
   emails_clicked BIGINT,
-  emails_bounced BIGINT
+  emails_bounced BIGINT,
+  emails_delivered BIGINT
 )
 LANGUAGE plpgsql
 SECURITY DEFINER AS $$
@@ -280,10 +281,13 @@ BEGIN
   RETURN QUERY
   SELECT 
     COUNT(*)::BIGINT as total_emails,
-    COUNT(*) FILTER (WHERE status = 'sent' OR status = 'delivered')::BIGINT as emails_sent,
-    COUNT(*) FILTER (WHERE status = 'opened')::BIGINT as emails_opened,
+    -- emails_sent counts all emails that were successfully sent (sent or delivered status)
+    COUNT(*) FILTER (WHERE status IN ('sent', 'delivered', 'opened', 'clicked'))::BIGINT as emails_sent,
+    COUNT(*) FILTER (WHERE status = 'opened' OR status = 'clicked')::BIGINT as emails_opened,
     COUNT(*) FILTER (WHERE status = 'clicked')::BIGINT as emails_clicked,
-    COUNT(*) FILTER (WHERE status = 'bounced')::BIGINT as emails_bounced
+    COUNT(*) FILTER (WHERE status = 'bounced')::BIGINT as emails_bounced,
+    -- emails_delivered specifically tracks confirmed deliveries
+    COUNT(*) FILTER (WHERE status IN ('delivered', 'opened', 'clicked'))::BIGINT as emails_delivered
   FROM public.email_logs
   WHERE recipient_id = user_id;
 END;

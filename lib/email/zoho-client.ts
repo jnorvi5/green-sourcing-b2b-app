@@ -5,8 +5,8 @@
  * Includes automatic token refresh and caching.
  */
 
-import * as nodemailer from 'nodemailer';
-import type { Transporter } from 'nodemailer';
+import nodemailer from 'nodemailer';
+import type { Transporter, SendMailOptions } from 'nodemailer';
 import { z } from 'zod';
 import {
   ZohoOAuthTokenSchema,
@@ -205,7 +205,7 @@ export class ZohoMailClient {
   }): Promise<{ messageId: string }> {
     const transport = this.getTransporter();
 
-    const mailOptions: nodemailer.SendMailOptions = {
+    const mailOptions: SendMailOptions = {
       from: `"${ZOHO_CONFIG.fromName}" <${ZOHO_CONFIG.fromEmail}>`,
       to: options.to,
       subject: options.subject,

@@ -335,8 +335,8 @@ export function generateAccountVerificationEmail(data: {
       Verify Email Address →
     </a>
 
-    <div style="${STYLES.card}; margin-top: 24px;">
-      <p style="${STYLES.textSmall}; margin: 0;">
+    <div style="${STYLES.card} margin-top: 24px;">
+      <p style="${STYLES.textSmall} margin: 0;">
         <strong style="color: #ffffff;">Security Note:</strong> This link will expire in 24 hours.
         If you didn't create an account, you can safely ignore this email.
       </p>
@@ -384,12 +384,12 @@ export function generatePasswordResetEmail(data: {
       Reset Password →
     </a>
 
-    <div style="${STYLES.alertWarning}; margin-top: 24px;">
+    <div style="${STYLES.alertWarning} margin-top: 24px;">
       <span style="color: #fed7aa; font-size: 14px;">⏰ This link expires in ${data.expiresIn}</span>
     </div>
 
-    <div style="${STYLES.card}; margin-top: 24px;">
-      <p style="${STYLES.textSmall}; margin: 0;">
+    <div style="${STYLES.card} margin-top: 24px;">
+      <p style="${STYLES.textSmall} margin: 0;">
         <strong style="color: #ffffff;">Didn't request this?</strong><br>
         If you didn't request a password reset, please ignore this email or 
         <a href="https://greenchainz.com/support" style="${STYLES.link}">contact support</a>
