@@ -1,0 +1,422 @@
+/**
+ * Email Templates
+ *
+ * HTML email templates for transactional emails with GreenChainz branding.
+ * Features a green gradient header and dark theme consistent with the platform.
+ */
+
+import type {
+  RfqNotificationData,
+  RfqConfirmationData,
+  SupplierApprovalData,
+  SupplierRejectionData,
+} from './types';
+
+// =============================================================================
+// Shared Styles
+// =============================================================================
+
+const STYLES = {
+  body: `margin: 0; padding: 0; background-color: #111827; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;`,
+  container: `max-width: 600px; margin: 0 auto; padding: 40px 20px;`,
+  header: `background: linear-gradient(135deg, #065f46, #10b981); border-radius: 16px 16px 0 0; padding: 32px; text-align: center;`,
+  logo: `height: 40px;`,
+  content: `background-color: #1f2937; border-radius: 0 0 16px 16px; padding: 32px; border: 1px solid #374151; border-top: none;`,
+  h1: `color: #ffffff; margin: 0 0 16px 0; font-size: 24px;`,
+  h2: `color: #ffffff; margin: 0 0 12px 0; font-size: 18px;`,
+  text: `color: #d1d5db; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;`,
+  textSmall: `color: #9ca3af; font-size: 14px; line-height: 1.5;`,
+  card: `background-color: #111827; border-radius: 12px; padding: 20px; margin-bottom: 24px;`,
+  button: `display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px;`,
+  buttonBlock: `display: block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px; text-align: center;`,
+  badge: `display: inline-block; background-color: #065f46; color: #10b981; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;`,
+  alertSuccess: `background-color: #065f46; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; text-align: center;`,
+  alertWarning: `background-color: #7c2d12; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; text-align: center;`,
+  alertInfo: `background-color: #1e3a5f; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; text-align: center;`,
+  footer: `text-align: center; margin-top: 32px; color: #6b7280; font-size: 14px;`,
+  link: `color: #10b981; text-decoration: none;`,
+  tableRow: `color: #9ca3af; font-size: 14px; padding: 8px 0;`,
+  tableValue: `color: #ffffff; font-size: 14px; padding: 8px 0; text-align: right;`,
+} as const;
+
+// =============================================================================
+// Base Template Wrapper
+// =============================================================================
+
+function wrapTemplate(content: string, showHeaderLogo = true): string {
+  const currentYear = new Date().getFullYear();
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="${STYLES.body}">
+  <div style="${STYLES.container}">
+    <!-- Header with Gradient -->
+    <div style="${STYLES.header}">
+      ${showHeaderLogo ? `<img src="https://greenchainz.com/logo-white.png" alt="GreenChainz" style="${STYLES.logo}" />` : ''}
+      <div style="margin-top: 16px;">
+        <span style="color: #a7f3d0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+          B2B Green Sourcing Marketplace
+        </span>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div style="${STYLES.content}">
+      ${content}
+    </div>
+
+    <!-- Footer -->
+    <div style="${STYLES.footer}">
+      <p style="margin: 0 0 8px 0;">
+        <a href="https://greenchainz.com/support" style="${STYLES.link}">Contact Support</a> |
+        <a href="https://greenchainz.com/settings/notifications" style="${STYLES.link}">Email Preferences</a>
+      </p>
+      <p style="margin: 0;">
+        © ${currentYear} GreenChainz. All rights reserved.
+      </p>
+      <p style="margin: 8px 0 0 0; color: #4b5563; font-size: 12px;">
+        Connecting sustainable suppliers with eco-conscious buyers.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+}
+
+// =============================================================================
+// RFQ Notification Email (To Supplier)
+// =============================================================================
+
+export function generateRfqNotificationEmail(data: RfqNotificationData): string {
+  const content = `
+    <!-- Alert Banner -->
+    <div style="${STYLES.alertSuccess}">
+      <span style="color: #6ee7b7; font-size: 14px; font-weight: 600;">📬 NEW RFQ REQUEST</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Hi ${data.supplierName},
+    </h1>
+    
+    <p style="${STYLES.text}">
+      You've received a new quote request for <strong style="color: #10b981;">${data.productName}</strong>
+    </p>
+
+    <!-- RFQ Details Card -->
+    <div style="${STYLES.card}">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #374151;">
+        <span style="color: #9ca3af; font-size: 14px;">RFQ Number</span>
+        <span style="color: #ffffff; font-weight: 600;">${data.rfqNumber}</span>
+      </div>
+      
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="${STYLES.tableRow}">Quantity</td>
+          <td style="${STYLES.tableValue}">${data.quantity.toLocaleString()} ${data.unit}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Buyer</td>
+          <td style="${STYLES.tableValue}">${data.buyerCompany}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Project</td>
+          <td style="${STYLES.tableValue}">${data.projectName}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Delivery Location</td>
+          <td style="${STYLES.tableValue}">${data.deliveryLocation}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Delivery Date</td>
+          <td style="${STYLES.tableValue}">${data.deliveryDate}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Urgency Notice -->
+    <div style="${STYLES.alertWarning}">
+      <span style="color: #fed7aa; font-size: 14px;">⏰ Quote expires on <strong>${data.expiresAt}</strong></span>
+    </div>
+
+    <a href="${data.viewUrl}" style="${STYLES.buttonBlock}">
+      View RFQ & Submit Quote →
+    </a>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// RFQ Confirmation Email (To Buyer/Architect)
+// =============================================================================
+
+export function generateRfqConfirmationEmail(data: RfqConfirmationData): string {
+  const content = `
+    <!-- Alert Banner -->
+    <div style="${STYLES.alertInfo}">
+      <span style="color: #93c5fd; font-size: 14px; font-weight: 600;">✅ RFQ SUBMITTED</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Hi ${data.buyerName},
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Your request for quote has been submitted successfully to <strong style="color: #10b981;">${data.supplierName}</strong>.
+    </p>
+
+    <!-- RFQ Details Card -->
+    <div style="${STYLES.card}">
+      <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #374151;">
+        <span style="color: #9ca3af; font-size: 12px; text-transform: uppercase;">Product</span>
+        <div style="color: #ffffff; font-size: 18px; font-weight: 600; margin-top: 4px;">${data.productName}</div>
+        <div style="color: #6b7280; font-size: 14px;">${data.rfqNumber}</div>
+      </div>
+      
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="${STYLES.tableRow}">Quantity</td>
+          <td style="${STYLES.tableValue}">${data.quantity.toLocaleString()} ${data.unit}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Supplier</td>
+          <td style="${STYLES.tableValue}">${data.supplierName}</td>
+        </tr>
+        <tr>
+          <td style="${STYLES.tableRow}">Expected Response</td>
+          <td style="${STYLES.tableValue}">${data.expectedResponseDate}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="${STYLES.textSmall}">
+      You'll receive an email notification when the supplier responds with a quote.
+    </p>
+
+    <a href="${data.viewUrl}" style="${STYLES.buttonBlock}">
+      View RFQ Details →
+    </a>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Supplier Approval Email
+// =============================================================================
+
+export function generateSupplierApprovalEmail(data: SupplierApprovalData): string {
+  const nextSteps = data.nextSteps ?? [
+    'Complete your company profile with logo and description',
+    'Add your products with EPD documentation',
+    'Set up your notification preferences',
+    'Start receiving quote requests from architects',
+  ];
+
+  const content = `
+    <!-- Success Banner -->
+    <div style="${STYLES.alertSuccess}">
+      <span style="color: #6ee7b7; font-size: 14px; font-weight: 600;">🎉 ACCOUNT APPROVED</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Congratulations, ${data.supplierName}! 🌱
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Your GreenChainz supplier account for <strong style="color: #10b981;">${data.companyName}</strong> has been verified and approved.
+    </p>
+
+    <p style="${STYLES.text}">
+      You now have full access to the GreenChainz marketplace where you can connect with eco-conscious architects and contractors looking for sustainable building materials.
+    </p>
+
+    <!-- Next Steps Card -->
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">🚀 Get Started</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        ${nextSteps.map((step) => `<li>${step}</li>`).join('')}
+      </ul>
+    </div>
+
+    <a href="${data.dashboardUrl}" style="${STYLES.buttonBlock}">
+      Go to Supplier Dashboard →
+    </a>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Need help getting started? Check out our 
+        <a href="https://greenchainz.com/docs/supplier-guide" style="${STYLES.link}">Supplier Guide</a>
+        or <a href="https://greenchainz.com/support" style="${STYLES.link}">contact support</a>.
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Supplier Rejection Email
+// =============================================================================
+
+export function generateSupplierRejectionEmail(data: SupplierRejectionData): string {
+  const content = `
+    <h1 style="${STYLES.h1}">
+      Application Status Update
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Hi ${data.supplierName},
+    </p>
+
+    <p style="${STYLES.text}">
+      Thank you for your interest in joining the GreenChainz marketplace. After careful review, we were unable to approve your supplier application for <strong>${data.companyName}</strong> at this time.
+    </p>
+
+    <!-- Reason Card -->
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">Reason</h2>
+      <p style="color: #d1d5db; margin: 0; line-height: 1.6;">
+        ${data.reason}
+      </p>
+    </div>
+
+    ${
+      data.canReapply
+        ? `
+    <p style="${STYLES.text}">
+      You're welcome to address these concerns and reapply in the future.
+    </p>
+
+    ${data.reapplyUrl ? `<a href="${data.reapplyUrl}" style="${STYLES.buttonBlock}">Submit New Application →</a>` : ''}
+    `
+        : ''
+    }
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        If you have questions about this decision, please contact us at 
+        <a href="mailto:${data.contactEmail}" style="${STYLES.link}">${data.contactEmail}</a>.
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Account Verification Email
+// =============================================================================
+
+export function generateAccountVerificationEmail(data: {
+  userName: string;
+  verificationUrl: string;
+}): string {
+  const content = `
+    <h1 style="${STYLES.h1}">
+      Verify Your Email Address
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Hi ${data.userName},
+    </p>
+
+    <p style="${STYLES.text}">
+      Welcome to GreenChainz! Please verify your email address to complete your account setup.
+    </p>
+
+    <a href="${data.verificationUrl}" style="${STYLES.buttonBlock}">
+      Verify Email Address →
+    </a>
+
+    <div style="${STYLES.card}; margin-top: 24px;">
+      <p style="${STYLES.textSmall}; margin: 0;">
+        <strong style="color: #ffffff;">Security Note:</strong> This link will expire in 24 hours.
+        If you didn't create an account, you can safely ignore this email.
+      </p>
+    </div>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Can't click the button? Copy and paste this link into your browser:<br>
+        <span style="color: #6b7280; word-break: break-all; font-size: 12px;">${data.verificationUrl}</span>
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Password Reset Email
+// =============================================================================
+
+export function generatePasswordResetEmail(data: {
+  userName: string;
+  resetUrl: string;
+  expiresIn: string;
+}): string {
+  const content = `
+    <!-- Alert Banner -->
+    <div style="${STYLES.alertInfo}">
+      <span style="color: #93c5fd; font-size: 14px; font-weight: 600;">🔐 PASSWORD RESET</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Reset Your Password
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Hi ${data.userName},
+    </p>
+
+    <p style="${STYLES.text}">
+      We received a request to reset your GreenChainz password. Click the button below to create a new password.
+    </p>
+
+    <a href="${data.resetUrl}" style="${STYLES.buttonBlock}">
+      Reset Password →
+    </a>
+
+    <div style="${STYLES.alertWarning}; margin-top: 24px;">
+      <span style="color: #fed7aa; font-size: 14px;">⏰ This link expires in ${data.expiresIn}</span>
+    </div>
+
+    <div style="${STYLES.card}; margin-top: 24px;">
+      <p style="${STYLES.textSmall}; margin: 0;">
+        <strong style="color: #ffffff;">Didn't request this?</strong><br>
+        If you didn't request a password reset, please ignore this email or 
+        <a href="https://greenchainz.com/support" style="${STYLES.link}">contact support</a>
+        if you're concerned about your account security.
+      </p>
+    </div>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Can't click the button? Copy and paste this link into your browser:<br>
+        <span style="color: #6b7280; word-break: break-all; font-size: 12px;">${data.resetUrl}</span>
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Export All Templates
+// =============================================================================
+
+export default {
+  generateRfqNotificationEmail,
+  generateRfqConfirmationEmail,
+  generateSupplierApprovalEmail,
+  generateSupplierRejectionEmail,
+  generateAccountVerificationEmail,
+  generatePasswordResetEmail,
+};

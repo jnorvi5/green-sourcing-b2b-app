@@ -1,0 +1,74 @@
+# =====================================================
+# CLOUDFLARE DNS RECORDS FOR GREENCHAINZ.COM
+# =====================================================
+# 
+# Instructions:
+# 1. Log in to Cloudflare Dashboard (https://dash.cloudflare.com)
+# 2. Select greenchainz.com domain
+# 3. Go to DNS > Records
+# 4. Add each record below with the specified Type, Name, and Content
+#
+# Note: Replace placeholder values (<YOUR_...>) with actual values from
+# Zoho Admin Console and MailerLite Domain Settings.
+# =====================================================
+
+# --- SPF Record (Merged) ---
+# Purpose: Authorizes Zoho and MailerLite to send emails on behalf of greenchainz.com
+# Type: TXT | Name: @ | TTL: Auto
+v=spf1 a mx include:zoho.com include:spf.mlsend.com ~all
+
+# --- DKIM for Zoho Mail ---
+# Purpose: Cryptographically signs emails sent via Zoho Mail
+# Type: TXT | Name: zmail._domainkey | TTL: Auto
+# (Get actual value from Zoho Admin Console > Email > Domain Settings > DKIM)
+v=DKIM1; k=rsa; p=<YOUR_ZOHO_DKIM_PUBLIC_KEY>
+
+# --- DKIM for MailerLite ---
+# Purpose: Cryptographically signs emails sent via MailerLite
+# Type: TXT | Name: ml._domainkey | TTL: Auto
+# (Get actual value from MailerLite > Domains > Authenticate)
+v=DKIM1; k=rsa; p=<YOUR_MAILERLITE_DKIM_PUBLIC_KEY>
+
+# --- DMARC Policy ---
+# Purpose: Specifies how to handle emails that fail SPF/DKIM checks
+# Type: TXT | Name: _dmarc | TTL: Auto
+v=DMARC1; p=quarantine; rua=mailto:dmarc@greenchainz.com; ruf=mailto:dmarc@greenchainz.com; fo=1; adkim=r; aspf=r; pct=100
+
+# --- Zoho MX Records (if using Zoho for receiving) ---
+# Purpose: Route incoming emails to Zoho Mail servers
+# Type: MX | Name: @ | Priority: 10 | TTL: Auto
+mx.zoho.com
+# Type: MX | Name: @ | Priority: 20 | TTL: Auto
+mx2.zoho.com
+# Type: MX | Name: @ | Priority: 50 | TTL: Auto
+mx3.zoho.com
+
+# --- Zoho Domain Verification ---
+# Purpose: Verify domain ownership with Zoho
+# Type: TXT | Name: @ | TTL: Auto
+zoho-verification=<YOUR_ZOHO_VERIFICATION_CODE>
+
+# --- MailerLite Domain Verification ---
+# Purpose: Verify domain ownership with MailerLite
+# Type: TXT | Name: @ | TTL: Auto
+mailerlite-verification=<YOUR_MAILERLITE_VERIFICATION_CODE>
+
+# =====================================================
+# VERIFICATION STEPS
+# =====================================================
+#
+# 1. After adding all records, wait 15-30 minutes for DNS propagation
+#
+# 2. Verify Zoho Mail:
+#    - Go to Zoho Admin Console > Email > Domain Settings
+#    - Click "Verify Domain" and "Verify DKIM"
+#
+# 3. Verify MailerLite:
+#    - Go to MailerLite Dashboard > Domains
+#    - Click "Authenticate" and verify each record
+#
+# 4. Test email deliverability:
+#    - Use https://www.mail-tester.com/ to test SPF/DKIM/DMARC
+#    - Send test emails to Gmail, Outlook, and Yahoo accounts
+#
+# =====================================================
