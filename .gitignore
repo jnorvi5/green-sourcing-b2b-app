@@ -62,3 +62,4 @@ __pycache__/
 
 # Azure Functions
 local.settings.json
+.vercel
