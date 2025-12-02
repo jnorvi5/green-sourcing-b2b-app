@@ -6,8 +6,6 @@
     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
     working-directory: frontend/  # ← ADD THIS LINE
     vercel-args: '--prod'
-name: Deploy Production
-
 on:
   push:
     branches: [main]
