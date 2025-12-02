@@ -106,7 +106,7 @@ class MailerLiteService {
       console.log(`[MailerLite] Subscriber ${email} added/updated`);
       return { success: true, subscriber: result.data };
     } catch (error) {
-      console.error(`[MailerLite] Failed to upsert subscriber ${email}:`, error.message);
+      console.error('[MailerLite] Failed to upsert subscriber %s:', email, error.message);
       return { success: false, error: error.message };
     }
   }
