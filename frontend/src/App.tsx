@@ -3,7 +3,6 @@ import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
-<<<<<<< HEAD
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AuthCallback from './pages/AuthCallback';
@@ -74,14 +73,13 @@ import Shipments from './pages/Shipments';
 import Budgets from './pages/Budgets';
 import SupplierQualification from './pages/SupplierQualification';
 import OutreachDashboard from './pages/OutreachDashboard';
-=======
+
 import { ProjectProvider } from './context/ProjectContext';
->>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
 import { Toaster } from './components/ui/sonner';
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, trackPageView } from './lib/analytics';
 
-<<<<<<< HEAD
+
 // Import ProtectedRoute with role guard variants
 import ProtectedRoute, {
   SupplierRoute,
@@ -92,7 +90,7 @@ import ProtectedRoute, {
   BuyerOrAdminRoute
 } from './components/ProtectedRoute';
 
-=======
+
 // OPTIMIZED: Code splitting with React.lazy for route-based chunking
 // Core pages that are always needed (keep as regular imports)
 import Layout from './components/Layout';
@@ -190,7 +188,7 @@ const SupplierQualification = lazy(() => import('./pages/SupplierQualification')
 const ArchitectSurvey = lazy(() => import('./components/ArchitectSurvey').then(m => ({ default: m.ArchitectSurvey })));
 const Charter175 = lazy(() => import('./pages/Charter175'));
 const S3Test = lazy(() => import('./pages/S3Test'));
->>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
+
 
 
 function App() {
@@ -210,7 +208,7 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <ProjectProvider>
-<<<<<<< HEAD
+
           <Routes>
             {/* Routes with the main Layout (Header, Footer, etc.) */}
             <Route path="/" element={<Layout />}>
@@ -240,7 +238,7 @@ function App() {
             {/* Dashboard Routes - All Public */}
             <Route path="dashboard" element={<BuyerDashboard />} />
             <Route path="/search" element={<SearchPage />} />
-=======
+
           {/* OPTIMIZED: Wrap Routes with Suspense for lazy-loaded components */}
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -278,7 +276,7 @@ function App() {
                 }
               />
               <Route path="/search" element={<SearchPage />} />
->>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
+
 
               {/* Supplier Dashboard Routes */}
               <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
@@ -291,7 +289,7 @@ function App() {
               <Route path="/team" element={<TeamManagement />} />
               <Route path="/integrations" element={<ApiIntegrations />} />
 
-<<<<<<< HEAD
+
             {/* Buyer Dashboard Routes */}
             <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
             <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
@@ -321,7 +319,7 @@ function App() {
             <Route path="/budgets" element={<Budgets />} />
             <Route path="/supplier-qualification" element={<SupplierQualification />} />
             <Route path="/outreach" element={<OutreachDashboard />} />
-=======
+
               {/* Buyer Dashboard */}
               <Route path="/dashboard/buyer" element={<BuyerDashboard />} />
               <Route path="/dashboard/buyer/saved" element={<SavedMaterials />} />
@@ -350,7 +348,7 @@ function App() {
               <Route path="/shipments" element={<Shipments />} />
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/supplier-qualification" element={<SupplierQualification />} />
->>>>>>> 2c33f886418b712f805be96dba93afdc6bc1346b
+
 
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />}>
