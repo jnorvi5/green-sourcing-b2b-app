@@ -37,7 +37,10 @@ const nextConfig = {
     ],
   },
 
-  // Security headers (also configured in vercel.json for redundancy)
+  // Security headers
+  // Note: Also configured in vercel.json. Having both ensures headers are applied
+  // regardless of deployment method (Vercel CLI vs. Git push). Vercel deduplicates
+  // identical headers automatically.
   async headers() {
     return [
       {
