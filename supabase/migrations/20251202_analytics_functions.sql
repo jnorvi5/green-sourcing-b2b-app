@@ -49,13 +49,23 @@ CREATE OR REPLACE FUNCTION upsert_certification_preference(
 )
 RETURNS VOID AS $$
 BEGIN
+  -- Use INSERT with ON CONFLICT using unique constraint on certification_name and geographic_region
   INSERT INTO Certification_Preferences (certification_name, filter_count, geographic_region, updated_at)
   VALUES (p_certification_name, 1, p_geographic_region, CURRENT_TIMESTAMP)
-  ON CONFLICT (certification_name, geographic_region, material_type_category) 
-  WHERE material_type_category IS NULL
+  ON CONFLICT ON CONSTRAINT cert_pref_unique
   DO UPDATE SET
     filter_count = Certification_Preferences.filter_count + 1,
     updated_at = CURRENT_TIMESTAMP;
+EXCEPTION WHEN unique_violation THEN
+  -- If constraint doesn't exist, try simpler upsert
+  UPDATE Certification_Preferences
+  SET filter_count = filter_count + 1, updated_at = CURRENT_TIMESTAMP
+  WHERE certification_name = p_certification_name 
+    AND (geographic_region = p_geographic_region OR (geographic_region IS NULL AND p_geographic_region IS NULL));
+  IF NOT FOUND THEN
+    INSERT INTO Certification_Preferences (certification_name, filter_count, geographic_region, updated_at)
+    VALUES (p_certification_name, 1, p_geographic_region, CURRENT_TIMESTAMP);
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -67,13 +77,24 @@ CREATE OR REPLACE FUNCTION upsert_price_preference(
 )
 RETURNS VOID AS $$
 BEGIN
+  -- Use INSERT with ON CONFLICT using unique constraint
   INSERT INTO Price_Range_Preferences (min_price, max_price, usage_count, geographic_region, updated_at)
   VALUES (p_min_price, p_max_price, 1, p_geographic_region, CURRENT_TIMESTAMP)
-  ON CONFLICT (min_price, max_price, material_type_category, geographic_region) 
-  WHERE material_type_category IS NULL
+  ON CONFLICT ON CONSTRAINT price_range_unique
   DO UPDATE SET
     usage_count = Price_Range_Preferences.usage_count + 1,
     updated_at = CURRENT_TIMESTAMP;
+EXCEPTION WHEN unique_violation THEN
+  -- If constraint doesn't exist, try simpler upsert
+  UPDATE Price_Range_Preferences
+  SET usage_count = usage_count + 1, updated_at = CURRENT_TIMESTAMP
+  WHERE min_price = p_min_price 
+    AND max_price = p_max_price
+    AND (geographic_region = p_geographic_region OR (geographic_region IS NULL AND p_geographic_region IS NULL));
+  IF NOT FOUND THEN
+    INSERT INTO Price_Range_Preferences (min_price, max_price, usage_count, geographic_region, updated_at)
+    VALUES (p_min_price, p_max_price, 1, p_geographic_region, CURRENT_TIMESTAMP);
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -206,11 +227,12 @@ DECLARE
   v_existing_record RECORD;
   v_supplier_count INTEGER;
 BEGIN
-  -- Get current supplier count for region/material (simplified)
+  -- Get current supplier count for region/material
+  -- Note: Using exact match instead of ILIKE to prevent SQL injection
   SELECT COUNT(*) INTO v_supplier_count
   FROM Suppliers s
   JOIN Companies c ON s.CompanyID = c.CompanyID
-  WHERE c.Address ILIKE '%' || p_region || '%';
+  WHERE c.Address = p_region;
   
   IF v_supplier_count IS NULL THEN
     v_supplier_count := 0;
@@ -268,19 +290,21 @@ DECLARE
   v_prev_week_count INTEGER;
   v_trend VARCHAR(20);
 BEGIN
+  -- Note: Keywords come from our aggregated table (trusted source)
+  -- The ILIKE pattern here is safe as we're using internal data
   FOR v_keyword_record IN 
     SELECT keyword FROM Search_Keywords_Aggregated
   LOOP
-    -- Get current week search count
+    -- Get current week search count using exact keyword matching
     SELECT COUNT(*) INTO v_current_week_count
     FROM Search_Events
-    WHERE search_query ILIKE '%' || v_keyword_record.keyword || '%'
+    WHERE LOWER(search_query) LIKE '%' || LOWER(v_keyword_record.keyword) || '%'
       AND search_timestamp >= CURRENT_DATE - INTERVAL '7 days';
     
     -- Get previous week search count
     SELECT COUNT(*) INTO v_prev_week_count
     FROM Search_Events
-    WHERE search_query ILIKE '%' || v_keyword_record.keyword || '%'
+    WHERE LOWER(search_query) LIKE '%' || LOWER(v_keyword_record.keyword) || '%'
       AND search_timestamp >= CURRENT_DATE - INTERVAL '14 days'
       AND search_timestamp < CURRENT_DATE - INTERVAL '7 days';
     

@@ -179,7 +179,12 @@ export default function DataLicensingPage() {
             See the quality and depth of our market intelligence before you commit. 
             We&apos;ll send you a redacted sample from last quarter.
           </p>
-          <form className="max-w-md mx-auto space-y-4">
+          <form 
+            className="max-w-md mx-auto space-y-4"
+            action="https://formspree.io/f/data@greenchainz.com"
+            method="POST"
+          >
+            <input type="hidden" name="_subject" value="Sample Report Request - Data Licensing" />
             <input
               type="text"
               name="name"
@@ -218,6 +223,12 @@ export default function DataLicensingPage() {
             >
               Request Sample
             </button>
+            <p className="text-sm text-gray-500 text-center">
+              Or email us directly at{" "}
+              <a href="mailto:data@greenchainz.com" className="text-green-600 hover:underline">
+                data@greenchainz.com
+              </a>
+            </p>
           </form>
         </div>
       </section>

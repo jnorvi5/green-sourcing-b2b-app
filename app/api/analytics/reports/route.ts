@@ -134,12 +134,13 @@ export async function GET(request: NextRequest) {
       ...(quarter >= 1 && quarter <= 4 ? { quarter, year } : {}),
     };
 
-    // Log access
+    // Log access (reportId -1 indicates general API access, not a specific report)
     const forwardedFor = request.headers.get('x-forwarded-for');
     const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
     
     if (customerId) {
-      await logDataAccess(customerId, 0, 'API', ipAddress);
+      // Use -1 to indicate this is a general API access, not a specific report download
+      await logDataAccess(customerId, -1, 'API', ipAddress);
     }
 
     return NextResponse.json(reportData);
