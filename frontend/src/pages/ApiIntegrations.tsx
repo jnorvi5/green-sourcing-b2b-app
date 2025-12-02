@@ -19,7 +19,6 @@ import {
     CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 
-interface ApiKey {
     id: string;
     name: string;
     key: string;
@@ -217,7 +216,7 @@ export function ApiIntegrations() {
             url: newWebhookUrl,
             events: newWebhookEvents,
             status: 'active',
-            secret: `whsec_${Math.random().toString(36).substring(2, 14)}`,
+            secret: generateSecureSecret(),
             createdAt: new Date().toISOString().split('T')[0],
             failureCount: 0,
         };
