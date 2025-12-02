@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>GreenChainz - Data Provider Partnership</title>
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+
+        <!-- Custom styles for GreenChainz branding -->
+        <style>
+            :root {
+                --gc-green: #2d6a4f;
+                --gc-dark: #1a2e1a;
+                --gc-light: #f7fafc;
+                --gc-accent: #ffc107;
+            }
+            .reveal .controls { color: var(--gc-green); }
+            .reveal .progress { color: var(--gc-green); }
+            .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+                color: var(--gc-dark);
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                text-transform: none;
+            }
+            .reveal h1 { font-weight: 700; }
+            .reveal h2 { color: var(--gc-green); }
+            .reveal p, .reveal li {
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                color: #4a5568;
+                font-size: 32px;
+                line-height: 1.5;
+            }
+            .reveal ul { display: block; }
+            .reveal li { margin-bottom: 15px; }
+            .highlight-box {
+                background: rgba(45, 106, 79, 0.1);
+                border-left: 5px solid var(--gc-green);
+                padding: 20px;
+                margin: 20px 0;
+                text-align: left;
+            }
+            .stat-number {
+                font-size: 2.5em;
+                font-weight: bold;
+                color: var(--gc-green);
+                display: block;
+            }
+            .stat-label {
+                font-size: 0.6em;
+                color: #718096;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .split-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 40px;
+            }
+            .split-left { text-align: left; flex: 1; }
+            .split-right { flex: 1; }
+            .logo-placeholder {
+                background: #eee;
+                color: #999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 150px;
+                border-radius: 8px;
+                font-weight: bold;
+                border: 2px dashed #ccc;
+            }
+            .btn-primary {
+                display: inline-block;
+                background-color: var(--gc-green);
+                color: white !important;
+                padding: 15px 30px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+            /* Clean B2B Background */
+            .reveal-viewport {
+                background: #fdfdfd;
+                background-image:
+                    radial-gradient(#e2e8f0 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+        </style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+                <!-- Title Slide (Implicit, but let's stick to the 10 requested slides) -->
+                <!-- Slide 1: Problem -->
+				<section>
+                    <h2>The Problem</h2>
+                    <h3>Fragmented Sustainability Data</h3>
+                    <div style="text-align: left; margin-top: 40px;">
+                        <p><strong>The Current State:</strong></p>
+                        <ul>
+                            <li>Data lives in silos (PDFs, disparate databases, proprietary tools).</li>
+                            <li>Architects spend 20-30% of project time just <em>finding</em> verifiable data.</li>
+                            <li>Small contractors are completely shut out of green procurement due to complexity.</li>
+                        </ul>
+                        <div class="highlight-box">
+                            "The data exists, but it's not where the decisions are being made."
+                        </div>
+                    </div>
+				</section>
+
+                <!-- Slide 2: Solution -->
+				<section>
+                    <h2>The Solution</h2>
+                    <h3>GreenChainz</h3>
+                    <div style="text-align: left;">
+                        <p>We are the <strong>Aggregation & Distribution Layer</strong>.</p>
+                        <div class="split-container">
+                            <div class="split-left">
+                                <ul>
+                                    <li><strong>Centralized Hub:</strong> One search bar for all certified materials.</li>
+                                    <li><strong>Actionable Data:</strong> We turn static EPDs into filterable, comparable metrics.</li>
+                                    <li><strong>Democratized Access:</strong> Making high-end data accessible to every contractor.</li>
+                                </ul>
+                            </div>
+                            <div class="split-right">
+                                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                    <div style="font-size: 0.8em; color: #aaa; margin-bottom: 10px;">Platform Preview</div>
+                                    <div style="height: 10px; background: #eee; margin-bottom: 10px; width: 60%;"></div>
+                                    <div style="height: 10px; background: #eee; margin-bottom: 20px; width: 80%;"></div>
+                                    <div style="display:flex; gap:10px;">
+                                        <div style="flex:1; height: 80px; background: #e2e8f0;"></div>
+                                        <div style="flex:1; height: 80px; background: #e2e8f0;"></div>
+                                        <div style="flex:1; height: 80px; background: #e2e8f0;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</section>
+
+                <!-- Slide 3: Market Opportunity -->
+				<section>
+                    <h2>Market Opportunity</h2>
+                    <div class="split-container" style="margin-top: 50px;">
+                        <div>
+                            <span class="stat-number">$471B</span>
+                            <span class="stat-label">Current Green Building Market</span>
+                        </div>
+                        <div style="font-size: 50px; color: #ccc;">&rarr;</div>
+                        <div>
+                            <span class="stat-number">$1 Trillion</span>
+                            <span class="stat-label">Projected by 2027</span>
+                        </div>
+                    </div>
+                    <div style="text-align: left; margin-top: 60px;">
+                        <h4>Regulatory Tailwinds:</h4>
+                        <ul>
+                            <li><strong>EU Taxonomy & Green Deal:</strong> Mandating lifecycle assessment.</li>
+                            <li><strong>US Buy Clean Acts:</strong> State-level requirements for low-carbon materials.</li>
+                            <li><strong>Scope 3 Reporting:</strong> Corporations demanding supply chain transparency.</li>
+                        </ul>
+                    </div>
+				</section>
+
+                <!-- Slide 4: Why We Need You -->
+				<section>
+                    <h2>Why We Need You</h2>
+                    <h3>Your Data is Our Moat</h3>
+                    <div style="text-align: left; margin-top: 40px;">
+                        <p>We aren't trying to recreate your database. We want to <strong>amplify</strong> it.</p>
+                        <ul>
+                            <li><strong>Validity:</strong> Your certification marks are the gold standard of trust.</li>
+                            <li><strong>Completeness:</strong> We need the depth of EPD International, Building Transparency, and others to offer a complete picture.</li>
+                            <li><strong>Standardization:</strong> Your data structure allows us to build apples-to-apples comparisons.</li>
+                        </ul>
+                    </div>
+				</section>
+
+                <!-- Slide 5: What's In It For You -->
+				<section>
+                    <h2>What's In It For You?</h2>
+                    <h3>Expanding Your Addressable Market</h3>
+                    <div class="highlight-box">
+                        We bring your data to the <strong>90% of the market</strong> that isn't using enterprise sustainability tools.
+                    </div>
+                    <ul style="text-align: left;">
+                        <li><strong>Reach Small Contractors:</strong> They don't read EPDs, but they will use GreenChainz to find "verified green insulation".</li>
+                        <li><strong>Drive Certification Demand:</strong> As suppliers see sales linked to your badges, they are incentivized to renew/acquire certifications.</li>
+                        <li><strong>Zero Channel Conflict:</strong> We don't sell certifications; we drive value to them.</li>
+                    </ul>
+				</section>
+
+                <!-- Slide 6: Pilot Model -->
+				<section>
+                    <h2>The Pilot Model</h2>
+                    <h3>30 Days. Zero Risk.</h3>
+                    <div style="display: flex; justify-content: space-around; margin-top: 40px;">
+                        <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 30%;">
+                            <h4>Duration</h4>
+                            <p style="font-size: 1.2em; color: var(--gc-green); font-weight: bold;">30 Days</p>
+                        </div>
+                        <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 30%;">
+                            <h4>Audience</h4>
+                            <p style="font-size: 1.2em; color: var(--gc-green); font-weight: bold;">20 Contractors</p>
+                        </div>
+                        <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 30%;">
+                            <h4>Cost to You</h4>
+                            <p style="font-size: 1.2em; color: var(--gc-green); font-weight: bold;">$0.00</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 40px; font-size: 0.8em;">We prove that surfacing your data drives engagement before we talk long-term integration.</p>
+				</section>
+
+                <!-- Slide 7: Revenue Share -->
+				<section>
+                    <h2>Revenue Model</h2>
+                    <h3>Shared Success</h3>
+                    <div style="text-align: left; margin-top: 30px;">
+                        <p>We monetize through supplier subscriptions and transaction fees. <strong>You participate in that upside.</strong></p>
+                        <div class="highlight-box" style="text-align: center;">
+                            <span class="stat-number">15-20%</span>
+                            <p>of subscription fees from suppliers we certify using your data.</p>
+                        </div>
+                        <ul>
+                            <li><strong>Recurring Revenue Stream:</strong> A new monetization channel for your existing data assets.</li>
+                            <li><strong>Attribution:</strong> Transparent reporting on which suppliers are converting due to your verification.</li>
+                        </ul>
+                    </div>
+				</section>
+
+                <!-- Slide 8: Traction -->
+				<section>
+                    <h2>Early Traction</h2>
+                    <h3>Demand is Building</h3>
+                    <div class="split-container" style="margin-top: 40px;">
+                        <div style="flex: 1;">
+                            <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                                <span class="stat-number">50+</span>
+                                <span class="stat-label">Suppliers on Waitlist</span>
+                            </div>
+                            <div style="background: #f0fdf4; padding: 20px; border-radius: 10px;">
+                                <span class="stat-number">200+</span>
+                                <span class="stat-label">Architects Pre-registered</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1; text-align: left; padding-left: 20px;">
+                            <p><strong>Pipeline Momentum:</strong></p>
+                            <ul>
+                                <li>Partnership discussions initiated with regional green building councils.</li>
+                                <li>Beta launch scheduled for Q4 2025.</li>
+                                <li>High engagement on "Founding Member" interstitials.</li>
+                            </ul>
+                        </div>
+                    </div>
+				</section>
+
+                <!-- Slide 9: Team -->
+				<section>
+                    <h2>The Team</h2>
+                    <h3>Discipline + Expertise + Execution</h3>
+                    <div style="display: flex; gap: 20px; margin-top: 40px;">
+                        <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h4>Leadership</h4>
+                            <p style="font-size: 0.7em; color: #666;">Military Discipline</p>
+                            <p style="font-size: 0.8em;">Proven track record of operational excellence and mission-critical execution.</p>
+                        </div>
+                        <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h4>Domain</h4>
+                            <p style="font-size: 0.7em; color: #666;">Construction Expertise</p>
+                            <p style="font-size: 0.8em;">Deep understanding of the procurement pain points and contractor workflows.</p>
+                        </div>
+                        <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h4>Tech</h4>
+                            <p style="font-size: 0.7em; color: #666;">Technical Execution</p>
+                            <p style="font-size: 0.8em;">Agile development, modern stack, rapid iteration capabilities.</p>
+                        </div>
+                    </div>
+				</section>
+
+                <!-- Slide 10: Ask -->
+				<section>
+                    <h2>The Ask</h2>
+                    <h3>Let's Build the Standard Together</h3>
+                    <div style="text-align: left; margin-top: 40px;">
+                        <ol>
+                            <li><strong>API Access / Data Dump:</strong> To populate our MVP with your verifiable data.</li>
+                            <li><strong>Co-Marketing:</strong> Announce the partnership to your network (we handle the collateral).</li>
+                            <li><strong>Advisory Role:</strong> Join our quarterly product council to ensure we represent your data accurately.</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 60px;">
+                        <a href="mailto:partners@greenchainz.com" class="btn-primary">Become a Founding Data Partner</a>
+                    </div>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+                controls: true,
+                progress: true,
+                center: true,
+                transition: 'slide' // none/fade/slide/convex/concave/zoom
+			});
+		</script>
+	</body>
+</html>
