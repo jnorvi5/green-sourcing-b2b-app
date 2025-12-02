@@ -170,7 +170,11 @@ class MatchmakerService {
   // Helper: Mock Distance
   calculateMockDistance(origin, destination) {
     // Deterministic hash for demo consistency
-    const str = origin + destination;
+    const MAX_STR_LEN = 256;  // Reasonable upper limit for location strings
+    let str = String(origin) + String(destination);
+    if (str.length > MAX_STR_LEN) {
+      str = str.slice(0, MAX_STR_LEN);
+    }
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = ((hash << 5) - hash) + str.charCodeAt(i);
