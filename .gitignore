@@ -59,3 +59,6 @@ __pycache__/
 \n# Python build artifacts\n__pycache__/\n.pytest_cache/
 # Python
 __pycache__/
+
+# Azure Functions
+local.settings.json

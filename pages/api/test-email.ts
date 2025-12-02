@@ -1,6 +1,10 @@
-import { EmailAgent } from '@/lib/azure/emailer';
+import { EmailAgent } from '../../lib/azure/emailer';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
     const agent = new EmailAgent();
     

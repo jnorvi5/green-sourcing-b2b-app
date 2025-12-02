@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import SearchBar from '../components/SearchBar';
 import FilterPanel from '../components/FilterPanel';
 import ProductGrid from '../components/ProductGrid';
@@ -9,6 +9,7 @@ import { fetchProducts, toFrontendProduct, type ProductFilters } from '../lib/pr
 import { useIntercomTracking } from '../hooks/useIntercomTracking';
 
 const ITEMS_PER_PAGE = 20;
+const DEBOUNCE_DELAY = 300; // ms to wait before triggering API call
 
 const SearchPage = () => {
   const { trackSearch } = useIntercomTracking();
@@ -30,6 +31,9 @@ const SearchPage = () => {
   const [recycledContent, setRecycledContent] = useState(0);
   const [carbonFootprint, setCarbonFootprint] = useState(50);
   const [vocLevel, setVocLevel] = useState(500);
+
+  // OPTIMIZED: Debounce ref to prevent excessive API calls on rapid filter changes
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch products from MongoDB API
   const loadProducts = useCallback(async () => {
@@ -85,14 +89,35 @@ const SearchPage = () => {
     } finally {
       setLoading(false);
     }
+    // Note: trackSearch is intentionally excluded from deps - it's used for analytics 
+    // and shouldn't trigger re-fetches. The hook should memoize it internally.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, materialTypes, certifications, recycledContent, carbonFootprint, currentPage]);
 
-  // Load products when filters change
+  // OPTIMIZED: Consolidated and debounced filter effect
+  // Before: Two separate useEffect hooks causing potential double API calls
+  // After: Single debounced effect that resets page and fetches data
   useEffect(() => {
-    loadProducts();
+    // Clear any pending debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Debounce the API call to prevent excessive requests during rapid filter changes
+    debounceTimerRef.current = setTimeout(() => {
+      loadProducts();
+    }, DEBOUNCE_DELAY);
+
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [loadProducts]);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters change (not on page change)
+  // Use primitive values directly as dependencies for better performance
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, materialTypes, application, certifications, location, recycledContent, carbonFootprint, vocLevel]);

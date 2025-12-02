@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Filter by target reduction if specified
-        let alternatives = result.alternatives;
+        let alternatives: any[] = result.alternatives;
         if (targetReduction) {
             alternatives = alternatives.filter(
                 (alt: { reduction?: number }) => (alt.reduction || 0) >= targetReduction

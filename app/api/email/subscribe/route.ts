@@ -1,93 +1,53 @@
-/**
- * Email Subscribers API
- * 
- * POST /api/email/subscribe - Add subscriber
- * DELETE /api/email/subscribe - Remove subscriber
- * GET /api/email/subscribe - Get groups
- */
-import { NextRequest, NextResponse } from 'next/server';
-import { addSubscriber, removeSubscriber, getGroups } from '../../../../lib/mailerlite';
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/client';
 
-export async function GET() {
+export async function POST(request: Request) {
     try {
-        const groups = await getGroups();
-        return NextResponse.json({ groups });
-    } catch (error) {
-        console.error('Get groups error:', error);
-        return NextResponse.json(
-            { error: 'Failed to get groups' },
-            { status: 500 }
-        );
-    }
-}
+        const { email } = await request.json();
 
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json() as {
-            email: string;
-            fields?: {
-                name?: string;
-                company?: string;
-                role?: string;
-            };
-            groups?: string[];
-        };
-
-        if (!body.email) {
+        if (!email || !email.includes('@')) {
             return NextResponse.json(
-                { error: 'Email is required' },
+                { error: 'Valid email is required' },
                 { status: 400 }
             );
         }
 
-        const result = await addSubscriber(body);
+        const supabase = createClient();
 
-        if (!result.success) {
+        // Insert email into subscribers table
+        const { data, error } = await supabase
+            .from('subscribers')
+            .insert([
+                {
+                    email,
+                    subscribed_at: new Date().toISOString(),
+                    source: 'landing_page',
+                    status: 'active'
+                }
+            ])
+            .select();
+
+        if (error) {
+            // Check if it's a duplicate email error
+            if (error.code === '23505') {
+                return NextResponse.json(
+                    { message: 'You are already subscribed!' },
+                    { status: 200 }
+                );
+            }
+            console.error('Supabase error:', error);
             return NextResponse.json(
-                { error: result.error || 'Failed to add subscriber' },
+                { error: 'Failed to subscribe' },
                 { status: 500 }
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            subscriberId: result.subscriberId,
-        });
-
-    } catch (error) {
-        console.error('Add subscriber error:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
+            { message: 'Successfully subscribed!', data },
+            { status: 200 }
         );
-    }
-}
-
-export async function DELETE(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const email = searchParams.get('email');
-
-        if (!email) {
-            return NextResponse.json(
-                { error: 'Email is required' },
-                { status: 400 }
-            );
-        }
-
-        const result = await removeSubscriber(email);
-
-        if (!result.success) {
-            return NextResponse.json(
-                { error: result.error || 'Failed to remove subscriber' },
-                { status: 500 }
-            );
-        }
-
-        return NextResponse.json({ success: true });
-
     } catch (error) {
-        console.error('Remove subscriber error:', error);
+        console.error('Subscribe error:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

@@ -1590,15 +1590,19 @@ app.get('/api/v1/buyers/rfqs', authenticateToken, authorizeRoles('Buyer'), async
     }
     const buyerId = buyerResult.rows[0].buyerid;
 
+    // OPTIMIZED: Replaced correlated subquery with LEFT JOIN + GROUP BY
+    // Before: (SELECT COUNT(*) FROM RFQ_Responses WHERE RFQID = r.RFQID) - O(n) queries
+    // After: Single query with aggregation - O(1) query
     let query = `
       SELECT 
         r.RFQID, r.SupplierID, r.ProductID, r.ProjectName, r.Message,
         r.QuantityNeeded, r.Unit, r.BudgetRange, r.DeadlineDate, r.Status, r.CreatedAt,
         c.CompanyName AS SupplierCompany,
-        (SELECT COUNT(*) FROM RFQ_Responses WHERE RFQID = r.RFQID) AS ResponseCount
+        COUNT(rr.ResponseID) AS ResponseCount
       FROM RFQs r
       JOIN Suppliers s ON r.SupplierID = s.SupplierID
       LEFT JOIN Companies c ON s.COMPANYID = c.COMPANYID
+      LEFT JOIN RFQ_Responses rr ON r.RFQID = rr.RFQID
       WHERE r.BuyerID = $1
     `;
     const params = [buyerId];
@@ -1608,6 +1612,7 @@ app.get('/api/v1/buyers/rfqs', authenticateToken, authorizeRoles('Buyer'), async
       params.push(status);
     }
 
+    query += ' GROUP BY r.RFQID, r.SupplierID, r.ProductID, r.ProjectName, r.Message, r.QuantityNeeded, r.Unit, r.BudgetRange, r.DeadlineDate, r.Status, r.CreatedAt, c.CompanyName';
     query += ' ORDER BY r.CreatedAt DESC';
 
     const result = await pool.query(query, params);
@@ -1676,8 +1681,10 @@ app.get('/api/v1/suppliers/:id/certifications', async (req, res) => {
       return res.status(400).json({ error: 'Invalid supplier ID' });
     }
 
-    // Internal certifications
-    const internalRes = await pool.query(`
+    // OPTIMIZED: Combined two sequential queries into single UNION ALL query
+    // Before: 2 round trips to database
+    // After: 1 round trip with UNION ALL
+    const combinedRes = await pool.query(`
       SELECT sc.SupplierCertificationID AS id,
              c.Name AS name,
              c.CertifyingBody AS body,
@@ -1692,31 +1699,28 @@ app.get('/api/v1/suppliers/:id/certifications', async (req, res) => {
       FROM Supplier_Certifications sc
       JOIN Certifications c ON sc.CertificationID = c.CertificationID
       WHERE sc.SupplierID = $1
-    `, [supplierId]);
-
-    // FSC certifications
-    const fscRes = await pool.query(`
+      
+      UNION ALL
+      
       SELECT f.FSCCertID AS id,
+             'FSC Certification' AS name,
+             f.CertifyingBody AS body,
              f.CertificateNumber AS number,
-             f.CertificateType AS certificateType,
              f.CertificateStatus AS status,
              f.IssueDate AS issueDate,
              f.ExpiryDate AS expiryDate,
-             f.CertifyingBody AS body,
-             'FSC Certification' AS name,
              'fsc' AS source,
              NULL AS scope,
-             NULL AS products
+             NULL AS products,
+             f.CertificateType AS certificateType
       FROM FSC_Certifications f
       WHERE f.SupplierID = $1
     `, [supplierId]);
 
-    const combined = [...internalRes.rows, ...fscRes.rows];
-
     res.json({
       supplierId,
-      total: combined.length,
-      certifications: combined
+      total: combinedRes.rows.length,
+      certifications: combinedRes.rows
     });
   } catch (e) {
     console.error('❌ Unified certifications error:', e);
@@ -1743,59 +1747,65 @@ app.get('/api/v1/suppliers/:id/analytics', authenticateToken, async (req, res) =
       }
     }
 
-    // RFQ statistics
-    const rfqStats = await pool.query(`
-      SELECT 
-        COUNT(*) as total_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Pending') as pending_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Responded') as responded_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_rfqs,
-        COUNT(*) FILTER (WHERE Status = 'Cancelled') as cancelled_rfqs
-      FROM RFQs WHERE SupplierID = $1
-    `, [supplierId]);
+    // OPTIMIZED: Run all independent queries in parallel with Promise.all
+    // Before: 5 sequential queries (~500ms total if each takes 100ms)
+    // After: All queries run in parallel (~100ms total)
+    const [rfqStats, responseStats, recentRFQs, notifications, scoreData] = await Promise.all([
+      // RFQ statistics
+      pool.query(`
+        SELECT 
+          COUNT(*) as total_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Pending') as pending_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Responded') as responded_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_rfqs,
+          COUNT(*) FILTER (WHERE Status = 'Cancelled') as cancelled_rfqs
+        FROM RFQs WHERE SupplierID = $1
+      `, [supplierId]),
 
-    // Response statistics
-    const responseStats = await pool.query(`
-      SELECT 
-        COUNT(*) as total_responses,
-        COUNT(*) FILTER (WHERE Status = 'Pending') as pending_responses,
-        COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_responses,
-        COUNT(*) FILTER (WHERE Status = 'Declined') as declined_responses,
-        AVG(QuotedPrice) as avg_quoted_price,
-        AVG(LeadTimeDays) as avg_lead_time
-      FROM RFQ_Responses WHERE SupplierID = $1
-    `, [supplierId]);
+      // Response statistics
+      pool.query(`
+        SELECT 
+          COUNT(*) as total_responses,
+          COUNT(*) FILTER (WHERE Status = 'Pending') as pending_responses,
+          COUNT(*) FILTER (WHERE Status = 'Accepted') as accepted_responses,
+          COUNT(*) FILTER (WHERE Status = 'Declined') as declined_responses,
+          AVG(QuotedPrice) as avg_quoted_price,
+          AVG(LeadTimeDays) as avg_lead_time
+        FROM RFQ_Responses WHERE SupplierID = $1
+      `, [supplierId]),
 
-    // Recent RFQs
-    const recentRFQs = await pool.query(`
-      SELECT 
-        r.RFQID, r.ProjectName, r.Message, r.Status, r.CreatedAt,
-        r.QuantityNeeded, r.Unit, r.BudgetRange,
-        c.CompanyName as BuyerCompany,
-        (SELECT Status FROM RFQ_Responses WHERE RFQID = r.RFQID AND SupplierID = $1 LIMIT 1) as ResponseStatus
-      FROM RFQs r
-      LEFT JOIN Buyers b ON r.BuyerID = b.BuyerID
-      LEFT JOIN Companies c ON b.CompanyID = c.CompanyID
-      WHERE r.SupplierID = $1
-      ORDER BY r.CreatedAt DESC
-      LIMIT 10
-    `, [supplierId]);
+      // Recent RFQs - OPTIMIZED: Replaced correlated subquery with LEFT JOIN
+      pool.query(`
+        SELECT 
+          r.RFQID, r.ProjectName, r.Message, r.Status, r.CreatedAt,
+          r.QuantityNeeded, r.Unit, r.BudgetRange,
+          c.CompanyName as BuyerCompany,
+          rr.Status as ResponseStatus
+        FROM RFQs r
+        LEFT JOIN Buyers b ON r.BuyerID = b.BuyerID
+        LEFT JOIN Companies c ON b.CompanyID = c.CompanyID
+        LEFT JOIN RFQ_Responses rr ON r.RFQID = rr.RFQID AND rr.SupplierID = $1
+        WHERE r.SupplierID = $1
+        ORDER BY r.CreatedAt DESC
+        LIMIT 10
+      `, [supplierId]),
 
-    // Notification history for this supplier
-    const notifications = await pool.query(`
-      SELECT NotificationID, NotificationType, Subject, Status, CreatedAt
-      FROM Notification_Log
-      WHERE Recipient IN (
-        SELECT u.Email FROM Users u
-        JOIN Suppliers s ON u.CompanyID = s.COMPANYID
-        WHERE s.SupplierID = $1
-      )
-      ORDER BY CreatedAt DESC
-      LIMIT 20
-    `, [supplierId]);
+      // Notification history for this supplier
+      pool.query(`
+        SELECT NotificationID, NotificationType, Subject, Status, CreatedAt
+        FROM Notification_Log
+        WHERE Recipient IN (
+          SELECT u.Email FROM Users u
+          JOIN Suppliers s ON u.CompanyID = s.COMPANYID
+          WHERE s.SupplierID = $1
+        )
+        ORDER BY CreatedAt DESC
+        LIMIT 20
+      `, [supplierId]),
 
-    // Verification score
-    const scoreData = await getPersistedOrLiveScore(pool, supplierId);
+      // Verification score
+      getPersistedOrLiveScore(pool, supplierId)
+    ]);
 
     res.json({
       supplierId,

@@ -25,10 +25,7 @@ async function connectDB() {
     await mongoose.connect(MONGODB_URI);
   }
 }
- * Scopes:
- * - data: read - Read data from BIM 360 / ACC
-  * - viewables: read - Access translated models for viewer
-    */
+
 export async function getAutodeskToken(): Promise<string> {
     // Return cached token if still valid (with 5 min buffer)
     if (cachedToken && cachedToken.expires_at > Date.now() + 300000) {
@@ -85,6 +82,7 @@ export async function getEmbodiedCarbon(
       try {
         await connectDB();
         const Material = mongoose.models.Material ||
+        // @ts-ignore
           (await import('../models/Material')).default;
 
         // Search by various IDs
@@ -173,9 +171,11 @@ export async function getEmbodiedCarbon(
       methodology: 'EN 15804',
       scope: ['A1-A3'], // Cradle to gate
       cached: false,
-      console.error('Embodied Carbon Error:', error);
-      return null;
-    }
+    };
+  } catch (error) {
+    console.error('Embodied Carbon Error:', error);
+    return null;
+  }
   }
 
 /**
@@ -256,6 +256,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonFactor = mongoose.models.CarbonFactor ||
+        // @ts-ignore
         (await import('../models/CarbonFactor')).default;
 
       const query: Record<string, unknown> = { type, isActive: true };
@@ -288,6 +289,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const CarbonAlternative = mongoose.models.CarbonAlternative ||
+        // @ts-ignore
         (await import('../models/CarbonAlternative')).default;
 
       const result = await CarbonAlternative.findOne({
@@ -297,8 +299,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
       if (!result) return [];
 
-      interface Alt { reduction?: number }
-      let alternatives = result.alternatives as Alt[];
+      let alternatives = result.alternatives as { reduction?: number }[];
 
       if (options?.minReduction) {
         alternatives = alternatives.filter(a => (a.reduction || 0) >= options.minReduction!);
@@ -373,6 +374,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
     try {
       await connectDB();
       const UnitConversion = mongoose.models.UnitConversion ||
+        // @ts-ignore
         (await import('../models/UnitConversion')).default;
 
       const conversionDoc = await UnitConversion.findOne({

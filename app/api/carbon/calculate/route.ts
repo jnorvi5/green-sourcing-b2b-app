@@ -222,9 +222,9 @@ export async function POST(request: NextRequest) {
             if (includeBenchmarks && material.benchmarks) {
                 const b = material.benchmarks;
                 benchmarks = {
-                    percentile: b.percentile,
-                    vsIndustryAvg: Math.round(((material.gwp - b.industryAvg) / b.industryAvg) * 100),
-                    vsBestInClass: Math.round(((material.gwp - b.bestInClass) / b.bestInClass) * 100),
+                    percentile: b.percentile || 0,
+                    vsIndustryAvg: Math.round(((material.gwp - (b.industryAvg || 1)) / (b.industryAvg || 1)) * 100),
+                    vsBestInClass: Math.round(((material.gwp - (b.bestInClass || 1)) / (b.bestInClass || 1)) * 100),
                 };
             }
 

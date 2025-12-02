@@ -94,9 +94,11 @@ if (!usingMockPool) {
     });
 }
 
+// OPTIMIZED: Store interval reference for proper cleanup
 // Log pool statistics periodically for monitoring (development only)
+let statsInterval = null;
 if (process.env.NODE_ENV !== 'production') {
-    setInterval(() => {
+    statsInterval = setInterval(() => {
         console.log('Pool stats:', {
             total: pool.totalCount,
             idle: pool.idleCount,
@@ -104,5 +106,18 @@ if (process.env.NODE_ENV !== 'production') {
         });
     }, 60000); // Log every minute
 }
+
+// OPTIMIZED: Clean up interval on process exit to prevent memory leaks
+const cleanup = () => {
+    if (statsInterval) {
+        clearInterval(statsInterval);
+        statsInterval = null;
+    }
+    pool.end().catch(err => console.error('Error closing pool:', err));
+};
+
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
+process.on('exit', cleanup);
 
 module.exports = { pool, usingMockPool };
