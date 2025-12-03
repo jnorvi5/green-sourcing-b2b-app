@@ -493,7 +493,7 @@ Not interested? Remove your profile: ${claimUrl}?action=remove
         const profiles = getCollection('unclaimed_profiles');
         
         await profiles.updateOne(
-            { slug },
+            { slug: { $eq: slug } },
             { $inc: { claimClickCount: 1 } }
         );
     }
