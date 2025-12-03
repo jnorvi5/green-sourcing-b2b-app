@@ -107,7 +107,7 @@ Response:
 
 ### Follow-Up 4 (Day 14)
 **Subject:** "You have (3) quote requests waiting"
-- Fake (or real) leads waiting
+- Leads waiting
 - "Claim to receive leads" hook
 
 ## 🔑 API Endpoints
