@@ -1,10 +1,8 @@
 /**
- * MongoDB Singleton Connection
- * 
- * Uses global caching to maintain connection across hot reloads
- * in serverless environments (e.g., Vercel, Azure Static Web Apps).
+ * MongoDB Native Driver Connection
+ * Optimized for serverless environments
  */
-import mongoose, { Mongoose } from 'mongoose';
+import { MongoClient, Db } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -14,63 +12,58 @@ if (!MONGODB_URI) {
   );
 }
 
-/**
- * Global type declaration for caching the mongoose connection
- */
-interface MongooseCache {
-  conn: Mongoose | null;
-  promise: Promise<Mongoose> | null;
+interface MongoClientCache {
+  client: MongoClient | null;
+  promise: Promise<MongoClient> | null;
 }
 
 declare global {
   // eslint-disable-next-line no-var
-  var mongooseCache: MongooseCache | undefined;
+  var mongoClientCache: MongoClientCache | undefined;
 }
 
-/**
- * Cached connection object
- */
-let cached: MongooseCache = global.mongooseCache ?? { conn: null, promise: null };
+let cached: MongoClientCache = global.mongoClientCache ?? { client: null, promise: null };
 
-if (!global.mongooseCache) {
-  global.mongooseCache = cached;
+if (!global.mongoClientCache) {
+  global.mongoClientCache = cached;
 }
 
-/**
- * Connect to MongoDB using Mongoose with serverless-optimized settings.
- * 
- * This function uses a singleton pattern to ensure only one connection
- * is established across multiple serverless function invocations.
- * 
- * @returns Promise resolving to the mongoose instance
- */
-async function dbConnect(): Promise<Mongoose> {
-  if (cached.conn) {
-    return cached.conn;
+async function getMongoClient(): Promise<MongoClient> {
+  if (cached.client) {
+    return cached.client;
   }
 
   if (!cached.promise) {
-    const opts: mongoose.ConnectOptions = {
-      bufferCommands: false,        // Disable buffering for serverless
-      maxPoolSize: 10,              // Maximum connection pool size
-      serverSelectionTimeoutMS: 5000, // Timeout for server selection
-      socketTimeoutMS: 45000,       // Socket timeout
+    const opts = {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongooseInstance) => {
+    cached.promise = MongoClient.connect(MONGODB_URI!, opts).then((client) => {
       console.log('✅ MongoDB connected successfully');
-      return mongooseInstance;
+      return client;
     });
   }
 
   try {
-    cached.conn = await cached.promise;
+    cached.client = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    console.error('❌ MongoDB connection failed:', e);
     throw e;
   }
 
-  return cached.conn;
+  return cached.client;
 }
 
-export default dbConnect;
+/**
+ * Get MongoDB database instance
+ */
+export async function connectMongoDB(): Promise<Db> {
+  const client = await getMongoClient();
+  return client.db('greenchainz');
+}
+
+export default connectMongoDB;
+
