@@ -1,0 +1,416 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS SES configuration for GreenChainz transactional emails'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - production
+      - staging
+    Description: Deployment environment
+
+  DomainName:
+    Type: String
+    Default: greenchainz.com
+    Description: Domain name for email sending
+
+  AdminEmail:
+    Type: String
+    Default: founder@greenchainz.com
+    Description: Admin email for bounce/complaint notifications
+
+Resources:
+  # ============================================
+  # SES Domain Identity
+  # ============================================
+  SESDomainIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref DomainName
+      DkimAttributes:
+        SigningEnabled: true
+      MailFromAttributes:
+        MailFromDomain: !Sub 'mail.${DomainName}'
+        BehaviorOnMxFailure: USE_DEFAULT_VALUE
+
+  # ============================================
+  # SES Configuration Set for Tracking
+  # ============================================
+  SESConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: greenchainz-transactional
+      DeliveryOptions:
+        SendingPoolName: !Ref SESSendingPool
+        TlsPolicy: REQUIRE
+      ReputationOptions:
+        ReputationMetricsEnabled: true
+      SendingOptions:
+        SendingEnabled: true
+      SuppressionOptions:
+        SuppressedReasons:
+          - BOUNCE
+          - COMPLAINT
+      TrackingOptions:
+        CustomRedirectDomain: !Sub 'track.${DomainName}'
+
+  # ============================================
+  # SES Sending Pool
+  # ============================================
+  SESSendingPool:
+    Type: AWS::SES::DedicatedIpPool
+    Properties:
+      PoolName: greenchainz-dedicated-pool
+      ScalingMode: STANDARD
+
+  # ============================================
+  # SNS Topic for Bounce Notifications
+  # ============================================
+  BounceNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: greenchainz-ses-bounces
+      DisplayName: GreenChainz Email Bounces
+      Tags:
+        - Key: project
+          Value: greenchainz
+        - Key: environment
+          Value: !Ref Environment
+
+  BounceNotificationSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref BounceNotificationTopic
+      Protocol: email
+      Endpoint: !Ref AdminEmail
+
+  # ============================================
+  # SNS Topic for Complaint Notifications
+  # ============================================
+  ComplaintNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: greenchainz-ses-complaints
+      DisplayName: GreenChainz Email Complaints
+      Tags:
+        - Key: project
+          Value: greenchainz
+        - Key: environment
+          Value: !Ref Environment
+
+  ComplaintNotificationSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref ComplaintNotificationTopic
+      Protocol: email
+      Endpoint: !Ref AdminEmail
+
+  # ============================================
+  # Configuration Set Event Destination - Bounces
+  # ============================================
+  BounceEventDestination:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    Properties:
+      ConfigurationSetName: !Ref SESConfigurationSet
+      EventDestination:
+        Name: bounce-notifications
+        Enabled: true
+        MatchingEventTypes:
+          - bounce
+          - reject
+        SnsDestination:
+          TopicARN: !Ref BounceNotificationTopic
+
+  # ============================================
+  # Configuration Set Event Destination - Complaints
+  # ============================================
+  ComplaintEventDestination:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    Properties:
+      ConfigurationSetName: !Ref SESConfigurationSet
+      EventDestination:
+        Name: complaint-notifications
+        Enabled: true
+        MatchingEventTypes:
+          - complaint
+        SnsDestination:
+          TopicARN: !Ref ComplaintNotificationTopic
+
+  # ============================================
+  # IAM User for SES SMTP
+  # ============================================
+  SESSmtpUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: greenchainz-ses-smtp
+      Tags:
+        - Key: project
+          Value: greenchainz
+        - Key: environment
+          Value: !Ref Environment
+
+  SESSmtpUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref SESSmtpUser
+
+  SESSmtpPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GreenChainzSESSendPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+              - ses:SendTemplatedEmail
+              - ses:SendBulkTemplatedEmail
+            Resource: '*'
+            Condition:
+              StringEquals:
+                ses:FromAddress: !Sub 'noreply@${DomainName}'
+          - Effect: Allow
+            Action:
+              - ses:GetSendQuota
+              - ses:GetSendStatistics
+            Resource: '*'
+      Users:
+        - !Ref SESSmtpUser
+
+  # ============================================
+  # Email Templates
+  # ============================================
+  RFQNotificationTemplate:
+    Type: AWS::SES::Template
+    Properties:
+      Template:
+        TemplateName: greenchainz-rfq-notification
+        SubjectPart: 'New RFQ Request: {{productName}}'
+        TextPart: |
+          Hello {{supplierName}},
+
+          You have received a new Request for Quote (RFQ) on GreenChainz.
+
+          Product: {{productName}}
+          Quantity: {{quantity}}
+          Deadline: {{deadline}}
+
+          Message from buyer:
+          {{buyerMessage}}
+
+          Please log in to your dashboard to respond:
+          https://greenchainz.com/dashboard/supplier/rfqs
+
+          Best regards,
+          The GreenChainz Team
+        HtmlPart: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: #10B981; color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; background: #f9fafb; }
+              .cta { display: inline-block; background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+              .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>New RFQ Request</h1>
+              </div>
+              <div class="content">
+                <p>Hello {{supplierName}},</p>
+                <p>You have received a new Request for Quote (RFQ) on GreenChainz.</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Product:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{{productName}}</td></tr>
+                  <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Quantity:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{{quantity}}</td></tr>
+                  <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Deadline:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{{deadline}}</td></tr>
+                </table>
+                <p><strong>Message from buyer:</strong></p>
+                <p style="background: white; padding: 15px; border-left: 4px solid #10B981;">{{buyerMessage}}</p>
+                <a href="https://greenchainz.com/dashboard/supplier/rfqs" class="cta">View RFQ Details</a>
+              </div>
+              <div class="footer">
+                <p>&copy; 2024 GreenChainz. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+
+  SupplierVerificationTemplate:
+    Type: AWS::SES::Template
+    Properties:
+      Template:
+        TemplateName: greenchainz-supplier-verification
+        SubjectPart: 'Congratulations! Your GreenChainz Supplier Account is Verified'
+        TextPart: |
+          Hello {{supplierName}},
+
+          Great news! Your supplier account on GreenChainz has been verified.
+
+          Company: {{companyName}}
+          Verified Certifications: {{certifications}}
+
+          You can now:
+          - List products in the marketplace
+          - Receive RFQs from verified buyers
+          - Access our sustainability analytics
+
+          Get started by logging into your dashboard:
+          https://greenchainz.com/dashboard/supplier
+
+          Welcome to the GreenChainz community!
+
+          Best regards,
+          The GreenChainz Team
+        HtmlPart: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: #10B981; color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; background: #f9fafb; }
+              .badge { display: inline-block; background: #10B981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; margin: 2px; }
+              .cta { display: inline-block; background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+              .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>✓ Verification Complete!</h1>
+              </div>
+              <div class="content">
+                <p>Hello {{supplierName}},</p>
+                <p>Great news! Your supplier account on GreenChainz has been <strong>verified</strong>.</p>
+                <p><strong>Company:</strong> {{companyName}}</p>
+                <p><strong>Verified Certifications:</strong></p>
+                <p>{{certifications}}</p>
+                <h3>You can now:</h3>
+                <ul>
+                  <li>List products in the marketplace</li>
+                  <li>Receive RFQs from verified buyers</li>
+                  <li>Access our sustainability analytics</li>
+                </ul>
+                <a href="https://greenchainz.com/dashboard/supplier" class="cta">Go to Dashboard</a>
+              </div>
+              <div class="footer">
+                <p>Welcome to the GreenChainz community!</p>
+                <p>&copy; 2024 GreenChainz. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+
+  GreenAuditReportTemplate:
+    Type: AWS::SES::Template
+    Properties:
+      Template:
+        TemplateName: greenchainz-green-audit-report
+        SubjectPart: 'Your Green Audit Report is Ready - {{projectName}}'
+        TextPart: |
+          Hello {{userName}},
+
+          Your Green Audit report for "{{projectName}}" has been generated.
+
+          Summary:
+          - Total Carbon Footprint: {{totalCarbon}} kg CO2e
+          - Materials Analyzed: {{materialsCount}}
+          - Sustainability Score: {{sustainabilityScore}}/100
+
+          Key Recommendations:
+          {{recommendations}}
+
+          View your full report:
+          https://greenchainz.com/dashboard/buyer/audits/{{auditId}}
+
+          Best regards,
+          The GreenChainz Team
+        HtmlPart: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; background: #f9fafb; }
+              .metric { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+              .metric-value { font-size: 24px; font-weight: bold; color: #10B981; }
+              .score { display: inline-block; width: 60px; height: 60px; line-height: 60px; text-align: center; background: #10B981; color: white; border-radius: 50%; font-size: 20px; font-weight: bold; }
+              .cta { display: inline-block; background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+              .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🌱 Green Audit Report</h1>
+                <p>{{projectName}}</p>
+              </div>
+              <div class="content">
+                <p>Hello {{userName}},</p>
+                <p>Your Green Audit report has been generated and is ready for review.</p>
+                <div class="metric">
+                  <p>Total Carbon Footprint</p>
+                  <p class="metric-value">{{totalCarbon}} kg CO2e</p>
+                </div>
+                <div class="metric">
+                  <p>Materials Analyzed</p>
+                  <p class="metric-value">{{materialsCount}}</p>
+                </div>
+                <div class="metric">
+                  <p>Sustainability Score</p>
+                  <span class="score">{{sustainabilityScore}}</span>
+                </div>
+                <h3>Key Recommendations:</h3>
+                <p>{{recommendations}}</p>
+                <a href="https://greenchainz.com/dashboard/buyer/audits/{{auditId}}" class="cta">View Full Report</a>
+              </div>
+              <div class="footer">
+                <p>&copy; 2024 GreenChainz. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+
+Outputs:
+  SESDomainIdentity:
+    Description: SES Domain Identity ARN
+    Value: !Ref SESDomainIdentity
+    Export:
+      Name: !Sub '${AWS::StackName}-SESDomainIdentity'
+
+  SESConfigurationSet:
+    Description: SES Configuration Set Name
+    Value: !Ref SESConfigurationSet
+    Export:
+      Name: !Sub '${AWS::StackName}-SESConfigurationSet'
+
+  SESSmtpAccessKeyId:
+    Description: SMTP Access Key ID
+    Value: !Ref SESSmtpUserAccessKey
+
+  SESSmtpSecretAccessKey:
+    Description: SMTP Secret Access Key (use to generate SMTP password)
+    Value: !GetAtt SESSmtpUserAccessKey.SecretAccessKey
+
+  BounceNotificationTopicArn:
+    Description: SNS Topic ARN for bounce notifications
+    Value: !Ref BounceNotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-BounceNotificationTopic'
+
+  ComplaintNotificationTopicArn:
+    Description: SNS Topic ARN for complaint notifications
+    Value: !Ref ComplaintNotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-ComplaintNotificationTopic'

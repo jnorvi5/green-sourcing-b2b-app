@@ -1,0 +1,366 @@
+name: Deploy AWS Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'aws/**'
+      - 'lambda/**'
+      - 'terraform/aws/**'
+      - '.github/workflows/deploy-aws.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'aws/**'
+      - 'lambda/**'
+      - 'terraform/aws/**'
+      - '.github/workflows/deploy-aws.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      apply:
+        description: 'Apply Terraform changes'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '18'
+  TERRAFORM_VERSION: '1.6.0'
+  AWS_REGION: 'us-east-1'
+
+jobs:
+  lint-and-test-lambda:
+    name: Lint & Test Lambda Functions
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        lambda:
+          - ec3-sync
+          - epd-sync
+          - supabase-backup
+          - cost-monitor
+    
+    defaults:
+      run:
+        working-directory: lambda/${{ matrix.lambda }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: lambda/${{ matrix.lambda }}/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+        continue-on-error: true
+      
+      - name: Install dependencies (fallback)
+        if: failure()
+        run: npm install
+      
+      - name: Run TypeScript check
+        run: npm run build
+        continue-on-error: true
+      
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+
+  build-lambda-packages:
+    name: Build Lambda Packages
+    runs-on: ubuntu-latest
+    needs: lint-and-test-lambda
+    
+    strategy:
+      matrix:
+        lambda:
+          - ec3-sync
+          - epd-sync
+          - supabase-backup
+          - cost-monitor
+    
+    defaults:
+      run:
+        working-directory: lambda/${{ matrix.lambda }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci || npm install
+      
+      - name: Build TypeScript
+        run: npm run build
+      
+      - name: Create deployment package
+        run: |
+          mkdir -p dist
+          cp -r node_modules dist/
+          cd dist && zip -r ../function.zip .
+      
+      - name: Upload Lambda package
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-${{ matrix.lambda }}
+          path: lambda/${{ matrix.lambda }}/function.zip
+          retention-days: 7
+
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: build-lambda-packages
+    
+    defaults:
+      run:
+        working-directory: terraform/aws
+    
+    outputs:
+      plan_exit_code: ${{ steps.plan.outputs.exitcode }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download Lambda packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: lambda-*
+          path: lambda/
+          merge-multiple: false
+      
+      - name: Move Lambda packages
+        run: |
+          for lambda in ec3-sync epd-sync supabase-backup cost-monitor; do
+            if [ -f "../../lambda/lambda-${lambda}/function.zip" ]; then
+              mv "../../lambda/lambda-${lambda}/function.zip" "../../lambda/${lambda}/function.zip"
+            fi
+          done
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+        continue-on-error: true
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend=false
+        continue-on-error: true
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        continue-on-error: true
+      
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+            -var="ec3_api_key=${{ secrets.EC3_API_KEY || 'placeholder' }}" \
+            -var="epd_api_key=${{ secrets.EPD_INTERNATIONAL_API_KEY || 'placeholder' }}" \
+            -var="mongodb_uri=${{ secrets.MONGODB_URI || 'placeholder' }}" \
+            -var="supabase_access_token=${{ secrets.SUPABASE_ACCESS_TOKEN || 'placeholder' }}" \
+            -var="supabase_project_ref=${{ secrets.SUPABASE_PROJECT_REF || 'placeholder' }}" \
+            -no-color \
+            -out=tfplan
+        continue-on-error: true
+      
+      - name: Comment PR with Plan
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `#### Terraform Plan 📝
+            
+            | Step | Status |
+            |------|--------|
+            | Init | ${{ steps.init.outcome == 'success' && '✅' || '❌' }} |
+            | Validate | ${{ steps.validate.outcome == 'success' && '✅' || '❌' }} |
+            | Plan | ${{ steps.plan.outcome == 'success' && '✅' || '❌' }} |
+            
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+        continue-on-error: true
+      
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: terraform/aws/tfplan
+          retention-days: 7
+        if: steps.plan.outcome == 'success'
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true')
+    environment: production
+    
+    defaults:
+      run:
+        working-directory: terraform/aws
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download Lambda packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: lambda-*
+          path: lambda/
+          merge-multiple: false
+      
+      - name: Move Lambda packages
+        run: |
+          for lambda in ec3-sync epd-sync supabase-backup cost-monitor; do
+            if [ -f "../../lambda/lambda-${lambda}/function.zip" ]; then
+              mv "../../lambda/lambda-${lambda}/function.zip" "../../lambda/${lambda}/function.zip"
+            fi
+          done
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Apply
+        run: |
+          terraform apply \
+            -var="ec3_api_key=${{ secrets.EC3_API_KEY }}" \
+            -var="epd_api_key=${{ secrets.EPD_INTERNATIONAL_API_KEY }}" \
+            -var="mongodb_uri=${{ secrets.MONGODB_URI }}" \
+            -var="supabase_access_token=${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
+            -var="supabase_project_ref=${{ secrets.SUPABASE_PROJECT_REF }}" \
+            -auto-approve
+
+  deploy-lambda:
+    name: Deploy Lambda Functions
+    runs-on: ubuntu-latest
+    needs: terraform-apply
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true')
+    
+    strategy:
+      matrix:
+        lambda:
+          - name: ec3-sync
+            function: gc-ec3-sync
+          - name: epd-sync
+            function: gc-epd-sync
+          - name: supabase-backup
+            function: gc-supabase-backup
+          - name: cost-monitor
+            function: gc-cost-monitor
+    
+    steps:
+      - name: Download Lambda package
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-${{ matrix.lambda.name }}
+          path: .
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Deploy Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ matrix.lambda.function }} \
+            --zip-file fileb://function.zip \
+            --publish
+
+  invalidate-cloudfront:
+    name: Invalidate CloudFront Cache
+    runs-on: ubuntu-latest
+    needs: deploy-lambda
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true')
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Invalidate CloudFront cache
+        run: |
+          if [ -n "${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            aws cloudfront create-invalidation \
+              --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
+              --paths "/*"
+          else
+            echo "CloudFront distribution ID not configured, skipping invalidation"
+          fi
+        continue-on-error: true
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-lambda, invalidate-cloudfront]
+    if: always()
+    
+    steps:
+      - name: Deployment Status
+        run: |
+          if [ "${{ needs.deploy-lambda.result }}" == "success" ]; then
+            echo "✅ AWS Infrastructure deployment completed successfully!"
+          else
+            echo "❌ AWS Infrastructure deployment failed"
+            exit 1
+          fi

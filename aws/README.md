@@ -1,120 +1,207 @@
-# AWS Infrastructure Setup
+# AWS Infrastructure for GreenChainz
 
-This directory contains AWS CloudFormation templates for GreenChainz infrastructure.
+This directory contains AWS infrastructure configuration for the GreenChainz B2B sustainable building materials marketplace.
 
-## S3 Public Bucket Setup
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           GreenChainz AWS Architecture                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐        │
+│  │  CloudFront CDN │────▶│  S3: Product    │     │  S3: EPD        │        │
+│  │  (cdn.green...) │     │  Images (Public)│     │  Documents      │        │
+│  └─────────────────┘     └─────────────────┘     │  (Private)      │        │
+│                                                   └─────────────────┘        │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                        EventBridge Scheduler                         │    │
+│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌────────────┐  │    │
+│  │  │ EC3 Sync     │ │ EPD Sync     │ │ Supabase     │ │ Cost       │  │    │
+│  │  │ (Daily 2AM)  │ │ (Weekly Sun) │ │ Backup (4AM) │ │ Check (6AM)│  │    │
+│  │  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘ └──────┬─────┘  │    │
+│  └─────────┼────────────────┼────────────────┼────────────────┼────────┘    │
+│            ▼                ▼                ▼                ▼             │
+│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ ┌────────────┐ │
+│  │  Lambda: EC3    │ │  Lambda: EPD    │ │  Lambda: Backup │ │ Lambda:    │ │
+│  │  Data Sync      │ │  International  │ │  Supabase → S3  │ │ Cost Mon.  │ │
+│  └────────┬────────┘ └────────┬────────┘ └────────┬────────┘ └─────┬──────┘ │
+│           │                   │                   │                 │        │
+│           ▼                   ▼                   ▼                 ▼        │
+│  ┌─────────────────────────────────────┐  ┌─────────────────┐  ┌──────────┐ │
+│  │         MongoDB Atlas               │  │  S3: Backups    │  │ SNS/CW   │ │
+│  │  (ec3_materials, epd_products)      │  │  (→ Glacier)    │  │ Alerts   │ │
+│  └─────────────────────────────────────┘  └─────────────────┘  └──────────┘ │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                        Secrets Manager                               │    │
+│  │  EC3_API_KEY | EPD_API_KEY | MONGODB_URI | SUPABASE_ACCESS_TOKEN   │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                        AWS SES (Transactional Email)                 │    │
+│  │  Templates: RFQ Notification | Supplier Verification | Green Audit  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Directory Structure
+
+```
+aws/
+├── README.md                    # This file
+├── DEPLOYMENT.md                # Step-by-step deployment guide
+├── COST-OPTIMIZATION.md         # Cost management best practices
+├── IAM_ROLES_AND_POLICIES.md    # IAM configuration reference
+├── cloudformation/
+│   ├── s3-buckets.yaml          # S3 bucket configurations
+│   └── ses-configuration.yaml   # SES email setup
+├── eventbridge/
+│   └── scheduled-rules.json     # Scheduled job configurations
+└── s3-public-bucket.yaml        # Legacy public bucket template
+```
+
+## S3 Buckets
+
+| Bucket | Purpose | Access | Lifecycle |
+|--------|---------|--------|-----------|
+| `gc-product-images-prod` | Product images & logos | CloudFront CDN | → IA after 90 days |
+| `gc-epd-documents-prod` | EPD PDFs & certificates | Signed URLs only | 7-year retention |
+| `gc-data-backups-prod` | Supabase backups | Private | → Glacier 30d, delete 365d |
+
+## Lambda Functions
+
+| Function | Trigger | Purpose | Timeout | Memory |
+|----------|---------|---------|---------|--------|
+| `gc-ec3-sync` | Daily 2 AM UTC | Sync EC3 carbon data | 5 min | 512 MB |
+| `gc-epd-sync` | Weekly Sun 3 AM | Sync EPD International | 10 min | 1024 MB |
+| `gc-supabase-backup` | Daily 4 AM UTC | Backup Supabase → S3 | 15 min | 256 MB |
+| `gc-cost-monitor` | Daily 6 AM UTC | Cost alerts & metrics | 2 min | 256 MB |
+
+## Quick Start
 
 ### Prerequisites
 
-- AWS CLI installed and configured
-- AWS account with appropriate permissions to create S3 buckets and IAM users
+- AWS CLI v2 installed and configured
+- Terraform v1.5+
+- Node.js v18+
+- AWS account with admin permissions
 
-### Deploy the S3 Bucket
+### Deploy with Terraform
 
 ```bash
-# Deploy the CloudFormation stack
+# Navigate to Terraform directory
+cd terraform/aws
+
+# Initialize Terraform
+terraform init
+
+# Review the plan
+terraform plan \
+  -var="ec3_api_key=$EC3_API_KEY" \
+  -var="epd_api_key=$EPD_API_KEY" \
+  -var="mongodb_uri=$MONGODB_URI" \
+  -var="supabase_access_token=$SUPABASE_ACCESS_TOKEN" \
+  -var="supabase_project_ref=$SUPABASE_PROJECT_REF"
+
+# Apply changes
+terraform apply
+```
+
+### Deploy with CloudFormation
+
+```bash
+# Deploy S3 buckets
 aws cloudformation create-stack \
-  --stack-name greenchainz-s3-bucket \
-  --template-body file://s3-public-bucket.yaml \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --parameters ParameterKey=BucketName,ParameterValue=greenchainz-public-assets
+  --stack-name gc-s3-buckets \
+  --template-body file://cloudformation/s3-buckets.yaml \
+  --capabilities CAPABILITY_NAMED_IAM
 
-# Check deployment status
-aws cloudformation describe-stacks \
-  --stack-name greenchainz-s3-bucket \
-  --query 'Stacks[0].StackStatus'
-
-# Get the outputs (including access keys)
-aws cloudformation describe-stacks \
-  --stack-name greenchainz-s3-bucket \
-  --query 'Stacks[0].Outputs'
-```
-
-### Update Backend Environment Variables
-
-After deployment, add these to your backend `.env` file:
-
-```env
-# AWS S3 Configuration
-AWS_REGION=us-east-1  # or your preferred region
-AWS_ACCESS_KEY_ID=<AccessKeyId from outputs>
-AWS_SECRET_ACCESS_KEY=<SecretAccessKey from outputs>
-AWS_S3_BUCKET_NAME=greenchainz-public-assets
-AWS_S3_BUCKET_URL=<BucketURL from outputs>
-```
-
-### What This Creates
-
-1. **S3 Bucket** (`greenchainz-public-assets`)
-   - Public read access for all files
-   - CORS enabled for browser uploads
-   - Versioning enabled for file history
-
-2. **IAM User** (`greenchainz-backend-service`)
-   - Dedicated service account for your backend
-   - Access keys for programmatic access
-
-3. **IAM Policy**
-   - PutObject: Upload new files
-   - DeleteObject: Remove files
-   - GetObject: Retrieve files
-   - ListBucket: List bucket contents
-
-### Usage in Backend Code
-
-```javascript
-// Example Node.js code to upload a file
-const AWS = require("aws-sdk");
-
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-
-async function uploadFile(fileBuffer, fileName) {
-  const params = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: fileName,
-    Body: fileBuffer,
-    ContentType: "application/pdf", // adjust based on file type
-    ACL: "public-read",
-  };
-
-  const result = await s3.upload(params).promise();
-  return result.Location; // Public URL of the uploaded file
-}
-```
-
-### Security Notes
-
-⚠️ **IMPORTANT:**
-
-- Never commit the access keys to git
-- Store them securely in environment variables or secret management
-- The secret access key is only shown once during stack creation
-- Rotate access keys periodically for security
-
-### Update the Stack
-
-To update the infrastructure:
-
-```bash
-aws cloudformation update-stack \
-  --stack-name greenchainz-s3-bucket \
-  --template-body file://s3-public-bucket.yaml \
+# Deploy SES configuration
+aws cloudformation create-stack \
+  --stack-name gc-ses \
+  --template-body file://cloudformation/ses-configuration.yaml \
   --capabilities CAPABILITY_NAMED_IAM
 ```
 
-### Delete the Stack
+## Environment Variables
 
-To remove all resources:
+Add these to your `.env` file after deployment:
 
-```bash
-# First, empty the bucket
-aws s3 rm s3://greenchainz-public-assets --recursive
+```env
+# AWS Production
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=<from Terraform outputs>
+AWS_SECRET_ACCESS_KEY=<from Terraform outputs>
+AWS_CLOUDFRONT_DISTRIBUTION_ID=<from Terraform outputs>
+AWS_CLOUDFRONT_DOMAIN=cdn.greenchainz.com
+AWS_BACKUP_BUCKET=gc-data-backups-prod
+AWS_EPD_BUCKET=gc-epd-documents-prod
+AWS_IMAGES_BUCKET=gc-product-images-prod
 
-# Then delete the stack
-aws cloudformation delete-stack \
-  --stack-name greenchainz-s3-bucket
+# AWS SES
+AWS_SES_REGION=us-east-1
+AWS_SES_FROM_EMAIL=noreply@greenchainz.com
+AWS_SES_CONFIGURATION_SET=gc-transactional
+
+# Data Provider API Keys
+EC3_API_KEY=your-ec3-bearer-token
+EPD_INTERNATIONAL_API_KEY=your-epd-api-key
+
+# Supabase Backup
+SUPABASE_ACCESS_TOKEN=your-supabase-access-token
+SUPABASE_PROJECT_REF=your-project-ref
 ```
+
+## Cost Monitoring
+
+- **Monthly Budget:** $100
+- **Warning Alert:** 80% ($80)
+- **Critical Alert:** 100% ($100)
+
+Alerts are sent to `founder@greenchainz.com` via SNS.
+
+## Next.js Integration
+
+```typescript
+import { 
+  uploadProductImage, 
+  getCDNUrl, 
+  sendRFQNotification 
+} from '@/lib/aws';
+
+// Upload a product image
+const result = await uploadProductImage(imageBuffer, {
+  supplierId: 'supplier-123',
+  productId: 'product-456',
+});
+
+// Get CDN URL
+const cdnUrl = getCDNUrl(result.key);
+
+// Send RFQ notification email
+await sendRFQNotification('supplier@example.com', {
+  supplierName: 'Green Materials Co',
+  productName: 'Recycled Steel',
+  quantity: '500 kg',
+  deadline: '2024-02-15',
+  buyerMessage: 'Need quote for construction project',
+});
+```
+
+## Security
+
+- All secrets stored in AWS Secrets Manager
+- S3 buckets have server-side encryption (AES-256)
+- EPD documents accessible only via signed URLs
+- Lambda functions use least-privilege IAM roles
+- All API keys rotated quarterly
+
+## Related Documentation
+
+- [Deployment Guide](./DEPLOYMENT.md)
+- [Cost Optimization](./COST-OPTIMIZATION.md)
+- [Lambda Functions](../lambda/README.md)
+- [Terraform Configuration](../terraform/aws/)
