@@ -17,10 +17,13 @@ export async function GET(request: Request) {
     // STEP 1: Query MongoDB for products (flexible schemas)
     const db = await connectMongoDB();
     
-    const mongoQuery: any = {};
-    if (query) mongoQuery.$text = { $search: query };
-    if (category) mongoQuery.category = category;
-    mongoQuery.status = 'active';
+const mongoQuery: any = {};
+if (query) mongoQuery.$text = { $search: query };
+if (category) mongoQuery.category = category;
+// Removed status filter - not all materials have this field
+
+const products = await db.collection('materials')
+
 
     const products = await db.collection('materials')
       .find(mongoQuery)
