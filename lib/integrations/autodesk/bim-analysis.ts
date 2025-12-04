@@ -23,14 +23,15 @@ const MODEL_DERIVATIVE_API = 'https://developer.api.autodesk.com/modelderivative
  * Zod schema for validating Autodesk URN (URL-safe Base64 format)
  * Autodesk URNs are Base64-encoded and must only contain URL-safe characters.
  * This prevents SSRF attacks via path traversal or URL manipulation.
+ * Note: URL-safe Base64 may include '=' padding characters at the end.
  */
 export const autodeskUrnSchema = z
   .string()
   .min(1, 'Model URN is required')
   .max(1000, 'Model URN exceeds maximum length')
   .regex(
-    /^[A-Za-z0-9_-]+$/,
-    'Model URN must contain only URL-safe Base64 characters (A-Za-z0-9_-)'
+    /^[A-Za-z0-9_-]+=*$/,
+    'Model URN must contain only URL-safe Base64 characters (A-Za-z0-9_-=)'
   )
   .refine(
     (urn) => !urn.includes('..') && !urn.includes('//') && !urn.includes('#'),
@@ -45,20 +46,40 @@ export const viewableGuidSchema = z
   .uuid('Viewable GUID must be a valid UUID');
 
 /**
+ * Zod schema for validating API path segments
+ * Prevents path traversal and URL injection through the path parameter.
+ */
+const apiPathSchema = z
+  .string()
+  .min(1, 'API path is required')
+  .max(500, 'API path exceeds maximum length')
+  .refine(
+    (path) => !path.includes('..') && !path.startsWith('/') && !path.includes('//'),
+    'API path must not contain path traversal patterns'
+  )
+  .refine(
+    (path) => !path.includes('#') && !path.includes('?'),
+    'API path must not contain URL fragment or query parameters'
+  );
+
+/**
  * Builds a validated Model Derivative API URL
  * @param modelUrn - The Base64-encoded model URN
  * @param path - Additional path segments (e.g., 'manifest' or 'metadata/{guid}/properties')
  * @returns The complete API URL
- * @throws ZodError if the URN validation fails
+ * @throws ZodError if the URN or path validation fails
  */
 export function buildModelDerivativeUrl(modelUrn: string, path: string): string {
   // Validate the URN to prevent SSRF attacks
   const validatedUrn = autodeskUrnSchema.parse(modelUrn);
   
+  // Validate the path to prevent path traversal
+  const validatedPath = apiPathSchema.parse(path);
+  
   // URL-encode the validated URN to ensure safe usage in the URL path
   const encodedUrn = encodeURIComponent(validatedUrn);
   
-  return `${MODEL_DERIVATIVE_API}/designdata/${encodedUrn}/${path}`;
+  return `${MODEL_DERIVATIVE_API}/designdata/${encodedUrn}/${validatedPath}`;
 }
 
 /**

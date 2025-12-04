@@ -27,6 +27,16 @@ describe('autodeskUrnSchema', () => {
       const validUrn = 'ABC123xyz456';
       expect(() => autodeskUrnSchema.parse(validUrn)).not.toThrow();
     });
+
+    it('should accept URN with Base64 padding (=)', () => {
+      const validUrn = 'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZm=';
+      expect(() => autodeskUrnSchema.parse(validUrn)).not.toThrow();
+    });
+
+    it('should accept URN with double Base64 padding (==)', () => {
+      const validUrn = 'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxl==';
+      expect(() => autodeskUrnSchema.parse(validUrn)).not.toThrow();
+    });
   });
 
   describe('SSRF attack prevention', () => {
@@ -157,6 +167,13 @@ describe('buildModelDerivativeUrl', () => {
       
       expect(url).toContain(encodeURIComponent(urn));
     });
+
+    it('should accept URN with Base64 padding in URL construction', () => {
+      const urn = 'validBase64Urn==';
+      const url = buildModelDerivativeUrl(urn, 'manifest');
+      
+      expect(url).toContain(encodeURIComponent(urn));
+    });
   });
 
   describe('SSRF prevention in URL building', () => {
@@ -173,6 +190,49 @@ describe('buildModelDerivativeUrl', () => {
     it('should reject URN that tries to break out of the path', () => {
       const maliciousUrn = 'valid%2F..%2F..%2Finternal';
       expect(() => buildModelDerivativeUrl(maliciousUrn, 'manifest')).toThrow(ZodError);
+    });
+  });
+
+  describe('path parameter validation', () => {
+    it('should reject path with path traversal (..)', () => {
+      const validUrn = 'validUrn123';
+      const maliciousPath = '../../../etc/passwd';
+      expect(() => buildModelDerivativeUrl(validUrn, maliciousPath)).toThrow(ZodError);
+    });
+
+    it('should reject path starting with forward slash', () => {
+      const validUrn = 'validUrn123';
+      const maliciousPath = '/internal-endpoint';
+      expect(() => buildModelDerivativeUrl(validUrn, maliciousPath)).toThrow(ZodError);
+    });
+
+    it('should reject path with double slashes', () => {
+      const validUrn = 'validUrn123';
+      const maliciousPath = 'metadata//properties';
+      expect(() => buildModelDerivativeUrl(validUrn, maliciousPath)).toThrow(ZodError);
+    });
+
+    it('should reject path with hash fragment', () => {
+      const validUrn = 'validUrn123';
+      const maliciousPath = 'manifest#fragment';
+      expect(() => buildModelDerivativeUrl(validUrn, maliciousPath)).toThrow(ZodError);
+    });
+
+    it('should reject path with query parameters', () => {
+      const validUrn = 'validUrn123';
+      const maliciousPath = 'manifest?malicious=true';
+      expect(() => buildModelDerivativeUrl(validUrn, maliciousPath)).toThrow(ZodError);
+    });
+
+    it('should reject empty path', () => {
+      const validUrn = 'validUrn123';
+      expect(() => buildModelDerivativeUrl(validUrn, '')).toThrow(ZodError);
+    });
+
+    it('should accept valid path with single forward slash', () => {
+      const validUrn = 'validUrn123';
+      const validPath = 'metadata/guid/properties';
+      expect(() => buildModelDerivativeUrl(validUrn, validPath)).not.toThrow();
     });
   });
 });
