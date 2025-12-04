@@ -176,7 +176,6 @@ export async function getEmbodiedCarbon(
     console.error('Embodied Carbon Error:', error);
     return null;
   }
-  }
 
 /**
  * Translate a model file to SVF2 format for viewing

@@ -1,6 +1,7 @@
 # Supplier Dashboard QA Script
 
 ## Steps
+
 1. Login as a test supplier account.
 2. Check if company profile loads correctly.
 3. Add a new product (name, description, image upload, sustainability data).
@@ -11,6 +12,7 @@
 8. Check analytics section (view count, RFQ count).
 
 ## Test Cases
+
 | Feature                  | Working/Broken | Notes/Screenshot |
 |--------------------------|----------------|------------------|
 | Company profile loads    |                |                  |
@@ -22,6 +24,7 @@
 | Analytics section        |                |                  |
 
 ## Checks
+
 - Image upload: file size, S3/Supabase Storage config
 - Form submission errors
 - Permissions (RLS policies)
