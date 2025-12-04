@@ -42,6 +42,7 @@
         "@types/react": "^18.2.61",
         "@types/uuid": "^9.0.8",
         "autoprefixer": "^10.4.22",
+        "supabase": "^2.65.5",
         "tailwindcss": "^4.1.17",
         "typescript": "^5.3.3"
     }
