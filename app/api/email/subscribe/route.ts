@@ -1,56 +1,34 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-export async function POST(request: Request) {
-    try {
-        const { email } = await request.json();
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-        if (!email || !email.includes('@')) {
-            return NextResponse.json(
-                { error: 'Valid email is required' },
-                { status: 400 }
-            );
-        }
-
-        const supabase = createClient();
-
-        // Insert email into subscribers table
-        const { data, error } = await supabase
-            .from('subscribers')
-            .insert([
-                {
-                    email,
-                    subscribed_at: new Date().toISOString(),
-                    source: 'landing_page',
-                    status: 'active'
-                }
-            ])
-            .select();
-
-        if (error) {
-            // Check if it's a duplicate email error
-            if (error.code === '23505') {
-                return NextResponse.json(
-                    { message: 'You are already subscribed!' },
-                    { status: 200 }
-                );
-            }
-            console.error('Supabase error:', error);
-            return NextResponse.json(
-                { error: 'Failed to subscribe' },
-                { status: 500 }
-            );
-        }
-
-        return NextResponse.json(
-            { message: 'Successfully subscribed!', data },
-            { status: 200 }
-        );
-    } catch (error) {
-        console.error('Subscribe error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+export async function POST(req: NextRequest) {
+  try {
+    const { email, source } = await req.json();
+    
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    const { error } = await supabase
+      .from('email_subscribers')
+      .insert({ 
+        email, 
+        source: source || 'homepage',
+        subscribed_at: new Date().toISOString() 
+      });
+
+    if (error && error.code !== '23505') { // Ignore duplicate email errors
+      throw error;
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error('Email subscribe error:', error);
+    return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 });
+  }
 }
