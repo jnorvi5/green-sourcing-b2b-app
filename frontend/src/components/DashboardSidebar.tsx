@@ -172,9 +172,7 @@ export default function DashboardSidebar({
             <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
                 {!isCollapsed ? (
                     <Logo variant="main" showText={true} height={32} />
-                ) : (
-                    <div className="hidden"></div>
-                )}
+                ) : null}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className={`p-2 rounded-lg hover:bg-gray-100 ${isCollapsed ? 'mx-auto' : ''}`}
