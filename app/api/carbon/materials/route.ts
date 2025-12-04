@@ -14,21 +14,17 @@ export async function GET(request: Request) {
   const category = searchParams.get('category');
 
   try {
-    // STEP 1: Query MongoDB for products (flexible schemas)
     const db = await connectMongoDB();
     
-const mongoQuery: any = {};
-if (query) mongoQuery.$text = { $search: query };
-if (category) mongoQuery.category = category;
-// Removed status filter - not all materials have this field
-
-const products = await db.collection('materials')
-
-
+    // TEMPORARY: Get all materials to see the data
     const products = await db.collection('materials')
-      .find(mongoQuery)
+      .find({})  // Empty query = get everything
       .limit(50)
       .toArray();
+
+    console.log('Found materials:', products.length);
+    console.log('First material:', products[0]);
+
 
     // STEP 2: Enrich with Supabase supplier data
     const enrichedProducts = await Promise.all(
