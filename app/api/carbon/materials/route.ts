@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     if (category) mongoQuery.category = category;
     mongoQuery.status = 'active';
 
-    const products = await db.collection('products')
+    const products = await db.collection('materials')
       .find(mongoQuery)
       .limit(50)
       .toArray();
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     }
 
     // Insert into MongoDB (flexible schema)
-    const result = await db.collection('products').insertOne({
+    const result = await db.collection('materials').insertOne({
       name: body.name,
       category: body.category,
       description: body.description,
