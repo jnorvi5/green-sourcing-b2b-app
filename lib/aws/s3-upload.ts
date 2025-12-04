@@ -13,7 +13,7 @@ import {
   HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 // Environment configuration
 const AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
@@ -100,7 +100,7 @@ function generateUniqueKey(
   originalFilename?: string
 ): string {
   const timestamp = Date.now();
-  const uniqueId = uuidv4();
+  const uniqueId = randomUUID();
   const extension = originalFilename 
     ? `.${originalFilename.split('.').pop()}`
     : getExtensionFromContentType(contentType);

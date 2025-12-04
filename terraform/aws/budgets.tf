@@ -57,7 +57,8 @@ resource "aws_budgets_budget" "monthly" {
   cost_filter {
     name = "TagKeyValue"
     values = [
-      "user:project$greenchainz"
+      "user:project$greenchainz",
+      "user:environment$production"
     ]
   }
 
