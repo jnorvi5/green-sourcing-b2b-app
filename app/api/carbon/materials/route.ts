@@ -39,8 +39,9 @@ function extractPrice(product: Record<string, unknown>): number | null {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q') || '';
-  const category = searchParams.get('category');
+  // Query parameters for future filtering functionality (currently unused)
+  const _query = searchParams.get('q') || '';
+  const _category = searchParams.get('category');
 
   try {
     const db = await connectMongoDB();
