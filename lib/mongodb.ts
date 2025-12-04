@@ -4,14 +4,6 @@
  */
 import { MongoClient, Db } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
-
 interface MongoClientCache {
   client: MongoClient | null;
   promise: Promise<MongoClient> | null;
@@ -28,6 +20,16 @@ if (!global.mongoClientCache) {
   global.mongoClientCache = cached;
 }
 
+function getMongoUri(): string {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error(
+      'Please define the MONGODB_URI environment variable inside .env.local'
+    );
+  }
+  return uri;
+}
+
 async function getMongoClient(): Promise<MongoClient> {
   if (cached.client) {
     return cached.client;
@@ -40,7 +42,7 @@ async function getMongoClient(): Promise<MongoClient> {
       socketTimeoutMS: 45000,
     };
 
-    cached.promise = MongoClient.connect(MONGODB_URI!, opts).then((client) => {
+    cached.promise = MongoClient.connect(getMongoUri(), opts).then((client) => {
       console.log('✅ MongoDB connected successfully');
       return client;
     });

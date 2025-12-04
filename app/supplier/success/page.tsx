@@ -5,10 +5,10 @@
  * Displayed after successful Stripe Checkout
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SuccessPage() {
+function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
@@ -73,5 +73,27 @@ export default function SuccessPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="animate-pulse">
+          <div className="mx-auto w-16 h-16 bg-gray-200 rounded-full mb-6" />
+          <div className="h-6 bg-gray-200 rounded mb-4" />
+          <div className="h-4 bg-gray-200 rounded mb-6" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SuccessContent />
+    </Suspense>
   );
 }
