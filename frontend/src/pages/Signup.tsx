@@ -212,7 +212,7 @@ export default function Signup() {
                     <button
                         onClick={() => setFormData(prev => ({ ...prev, role: 'buyer' }))}
                         className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all ${formData.role === 'buyer'
-                                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30'
+                                ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-500/30'
                                 : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
                             }`}
                     >

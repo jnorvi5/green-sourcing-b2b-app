@@ -62,7 +62,7 @@ const FEATURED_SUPPLIERS = [
         rating: 4.7,
         verified: true,
         products: 28,
-        image: 'bg-gradient-to-br from-emerald-500 to-teal-600'
+        image: 'bg-gradient-to-br from-green-500 to-green-400'
     },
     {
         id: '4',

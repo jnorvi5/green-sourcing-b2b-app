@@ -8,17 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // GreenChainz Brand Colors - Updated for premium feel
+        // GreenChainz Brand Colors - Vibrant Green from Logo
         primary: {
-          DEFAULT: '#10b981', // Emerald-500 - Main brand green
-          hover: '#059669',   // Emerald-600 - Darker on hover
-          light: '#34d399',   // Emerald-400 - Lighter variant
-          dark: '#047857',    // Emerald-700 - Dark variant
+          DEFAULT: '#4CAF50', // Vibrant leaf green - Main brand
+          hover: '#388E3C',   // Medium green - Darker on hover
+          light: '#81C784',   // Light green - Lighter variant
+          dark: '#2E7D32',    // Dark forest green - Dark variant
+          lighter: '#A5D6A7', // Pale green accent
         },
         // Secondary accent colors
         accent: {
-          emerald: '#10b981',
-          teal: '#14b8a6',
+          green: '#4CAF50',
+          lightGreen: '#81C784',
           amber: '#f59e0b',
           purple: '#a855f7',
         },
@@ -100,7 +101,7 @@ export default {
         'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-        'primary': '0 0 20px rgba(33, 128, 141, 0.3)',
+        'primary': '0 0 20px rgba(76, 175, 80, 0.3)',
         'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
         'none': 'none',
       },
