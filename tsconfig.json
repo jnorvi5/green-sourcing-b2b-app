@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0", // Suppresses warnings for deprecated options in TypeScript 6.x
+    "ignoreDeprecations": "5.0",
     "paths": {
       "@/*": ["./*"]
     },
