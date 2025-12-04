@@ -17,12 +17,6 @@ export default function Home() {
             <span className="text-xl font-semibold">GREENCHAINZ</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/agents" className="px-4 py-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400 hover:bg-teal-500/20 transition text-sm font-medium">
-              🤖 AI Agents
-            </Link>
-            <Link href="/admin/outreach" className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-gray-300">
-              Admin
-            </Link>
             <Link href="/data-licensing" className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-gray-300">
               Data Licensing
             </Link>
