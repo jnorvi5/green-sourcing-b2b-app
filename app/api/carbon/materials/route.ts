@@ -157,10 +157,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate materialId if not provided
-    const materialId = body.materialId || body.name.toLowerCase().replace(/\s+/g, '-');
+    // Generate materialId if not provided (sanitize to valid slug)
+    const materialId = body.materialId || body.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')  // Replace special chars with hyphens
+      .replace(/^-+|-+$/g, '');      // Remove leading/trailing hyphens
+
+    // Check for duplicate materialId
+    const existingMaterial = await db.collection('materials').findOne({ materialId });
+    if (existingMaterial) {
+      return NextResponse.json(
+        { success: false, error: `Material with ID '${materialId}' already exists` },
+        { status: 409 }
+      );
+    }
 
     // Insert into MongoDB with correct schema
+    // Note: Default gwpUnit and declaredUnit are common values that can be overridden
     const result = await db.collection('materials').insertOne({
       materialId,
       name: body.name,
@@ -168,8 +182,8 @@ export async function POST(request: Request) {
       subcategory: body.subcategory,
       masterFormat: body.masterFormat,
       gwp: body.gwp,
-      gwpUnit: body.gwpUnit || 'kg CO2e/m²',
-      declaredUnit: body.declaredUnit || '1 m²',
+      gwpUnit: body.gwpUnit || 'kg CO2e/unit',
+      declaredUnit: body.declaredUnit || '1 unit',
       lifecycleStages: body.lifecycleStages,
       benchmarks: body.benchmarks,
       source: body.source || 'User Submitted',
