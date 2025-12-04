@@ -40,8 +40,8 @@ export default function Logo({ height = 40, showText = true, variant = 'main', c
           style={{
             width: height,
             height: height,
-            background: 'linear-gradient(135deg, #4C7D5D 0%, #7FA884 100%)',
-            boxShadow: '0 0 20px rgba(76, 125, 93, 0.3)',
+            background: 'linear-gradient(135deg, #2d6a4f 0%, #7FA884 100%)',
+            boxShadow: '0 0 20px rgba(45, 106, 79, 0.3)',
           }}
           aria-hidden
         />

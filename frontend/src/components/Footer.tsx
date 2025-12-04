@@ -1,6 +1,7 @@
 // frontend/src/components/Footer.tsx
 import { Link } from 'react-router-dom';
-import { Leaf, Youtube } from 'lucide-react';
+import { Youtube } from 'lucide-react';
+import Logo from './Logo';
 import '../glassmorphism.css';
 
 export default function Footer() {
@@ -10,11 +11,8 @@ export default function Footer() {
                 <div className="grid md:grid-cols-5 gap-8">
                     {/* Brand Section */}
                     <div className="md:col-span-2">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
-                                <Leaf className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="font-bold text-white text-lg">GreenChainz</span>
+                        <div className="mb-4">
+                            <Logo variant="white" showText={true} />
                         </div>
                         <p className="text-slate-400 text-sm mb-2">
                             Global Trust Layer for Sustainable Commerce
