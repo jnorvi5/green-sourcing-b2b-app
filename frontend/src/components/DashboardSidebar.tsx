@@ -5,6 +5,7 @@
  */
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import Logo from './Logo';
 import {
     Home,
     Search,
@@ -17,7 +18,6 @@ import {
     ChevronLeft,
     ChevronRight,
     BarChart2,
-    Leaf,
     Heart,
     Users,
     Inbox,
@@ -170,13 +170,10 @@ export default function DashboardSidebar({
         >
             {/* Logo/Brand */}
             <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
-                {!isCollapsed && (
-                    <Link to="/" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                            <Leaf className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-bold text-gray-900">GreenChainz</span>
-                    </Link>
+                {!isCollapsed ? (
+                    <Logo variant="main" showText={true} height={32} />
+                ) : (
+                    <div className="hidden"></div>
                 )}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}

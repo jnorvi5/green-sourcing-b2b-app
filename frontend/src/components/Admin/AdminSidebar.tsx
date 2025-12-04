@@ -7,6 +7,7 @@ import {
   ChartBarIcon
 } from '@heroicons/react/24/outline';
 import { Menu } from 'lucide-react';
+import Logo from '../Logo';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '../ui/sheet';
 
 export default function AdminSidebar() {
@@ -57,8 +58,10 @@ export default function AdminSidebar() {
         </SheetTrigger>
         <SheetContent side="left" className="w-[280px] sm:w-[320px]">
           <SheetHeader className="mb-6">
-            <SheetTitle className="text-lg font-bold">Admin Panel</SheetTitle>
-            <p className="text-sm text-muted-foreground">Content Moderation</p>
+            <SheetTitle className="flex flex-col gap-2">
+              <Logo height={32} showText={true} />
+              <span className="text-sm font-normal text-muted-foreground">Admin Panel</span>
+            </SheetTitle>
           </SheetHeader>
           <NavLinks />
         </SheetContent>
@@ -67,8 +70,13 @@ export default function AdminSidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:block w-64 bg-muted border-r border-border flex-shrink-0">
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-2">Admin Panel</h2>
-          <p className="text-sm text-muted-foreground mb-6">Content Moderation</p>
+          <div className="mb-6">
+            <Logo height={40} showText={true} />
+            <div className="mt-2 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">Admin Panel</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">Content Moderation</p>
+          </div>
           <NavLinks />
         </div>
       </aside>

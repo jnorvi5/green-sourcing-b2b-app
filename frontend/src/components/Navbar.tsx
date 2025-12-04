@@ -1,8 +1,9 @@
 // frontend/src/components/Navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Leaf, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import Logo from './Logo';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import '../glassmorphism.css';
 
@@ -56,14 +57,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-2 group" onClick={closeMenu}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center group-hover:shadow-emerald-500/50 group-hover:shadow-lg transition-shadow">
-              <Leaf className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
-              GreenChainz
-            </span>
-          </Link>
+          <div onClick={closeMenu}>
+            <Logo variant="white" showText={true} />
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
