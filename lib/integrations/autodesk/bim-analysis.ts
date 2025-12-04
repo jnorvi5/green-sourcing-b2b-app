@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 import { getValidAccessToken } from './oauth';
 import { batchMatchMaterials, getLowCarbonAlternatives } from './material-matcher';
 import type {
@@ -17,6 +18,48 @@ import type {
 } from '@/types/autodesk';
 
 const MODEL_DERIVATIVE_API = 'https://developer.api.autodesk.com/modelderivative/v2';
+
+/**
+ * Zod schema for validating Autodesk URN (URL-safe Base64 format)
+ * Autodesk URNs are Base64-encoded and must only contain URL-safe characters.
+ * This prevents SSRF attacks via path traversal or URL manipulation.
+ */
+export const autodeskUrnSchema = z
+  .string()
+  .min(1, 'Model URN is required')
+  .max(1000, 'Model URN exceeds maximum length')
+  .regex(
+    /^[A-Za-z0-9_-]+$/,
+    'Model URN must contain only URL-safe Base64 characters (A-Za-z0-9_-)'
+  )
+  .refine(
+    (urn) => !urn.includes('..') && !urn.includes('//') && !urn.includes('#'),
+    'Model URN must not contain path traversal patterns'
+  );
+
+/**
+ * Zod schema for validating Autodesk viewable GUID
+ */
+export const viewableGuidSchema = z
+  .string()
+  .uuid('Viewable GUID must be a valid UUID');
+
+/**
+ * Builds a validated Model Derivative API URL
+ * @param modelUrn - The Base64-encoded model URN
+ * @param path - Additional path segments (e.g., 'manifest' or 'metadata/{guid}/properties')
+ * @returns The complete API URL
+ * @throws ZodError if the URN validation fails
+ */
+export function buildModelDerivativeUrl(modelUrn: string, path: string): string {
+  // Validate the URN to prevent SSRF attacks
+  const validatedUrn = autodeskUrnSchema.parse(modelUrn);
+  
+  // URL-encode the validated URN to ensure safe usage in the URL path
+  const encodedUrn = encodeURIComponent(validatedUrn);
+  
+  return `${MODEL_DERIVATIVE_API}/designdata/${encodedUrn}/${path}`;
+}
 
 /**
  * Analyze BIM model for embodied carbon
@@ -225,15 +268,17 @@ async function extractMaterialsFromModel(
     unit: string;
   }>
 > {
-  // Get model manifest
-  const manifestResponse = await fetch(
-    `${MODEL_DERIVATIVE_API}/designdata/${modelUrn}/manifest`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  // Validate modelUrn before using it in any API calls (SSRF prevention)
+  // This will throw a ZodError with a clear message if validation fails
+  autodeskUrnSchema.parse(modelUrn);
+
+  // Get model manifest using validated URL builder
+  const manifestUrl = buildModelDerivativeUrl(modelUrn, 'manifest');
+  const manifestResponse = await fetch(manifestUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (!manifestResponse.ok) {
     throw new Error(`Failed to get model manifest: ${manifestResponse.status}`);
@@ -249,15 +294,19 @@ async function extractMaterialsFromModel(
     throw new Error('No 3D viewable found in model');
   }
 
-  // Get model properties
-  const propertiesResponse = await fetch(
-    `${MODEL_DERIVATIVE_API}/designdata/${modelUrn}/metadata/${viewable.guid}/properties`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+  // Validate the viewable GUID before using it in the URL
+  const validatedGuid = viewableGuidSchema.parse(viewable.guid);
+
+  // Get model properties using validated URL builder
+  const propertiesUrl = buildModelDerivativeUrl(
+    modelUrn,
+    `metadata/${encodeURIComponent(validatedGuid)}/properties`
   );
+  const propertiesResponse = await fetch(propertiesUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (!propertiesResponse.ok) {
     throw new Error(`Failed to get model properties: ${propertiesResponse.status}`);
