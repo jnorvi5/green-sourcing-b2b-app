@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "ignoreDeprecations": "6.0", // Suppresses warnings for deprecated options in TypeScript 6.x
     "paths": {
       "@/*": ["./*"]
     },
@@ -47,6 +47,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "incremental": true,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"
