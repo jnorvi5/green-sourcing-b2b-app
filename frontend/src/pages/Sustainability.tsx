@@ -47,7 +47,7 @@ export default function Sustainability() {
                         </div>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
                             Zero Greenwashing.{' '}
-                            <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">
                                 Total Transparency.
                             </span>
                         </h1>
@@ -94,7 +94,7 @@ export default function Sustainability() {
                                 icon: BarChart3,
                                 title: 'Carbon Analysis',
                                 description: 'Real-time carbon footprint calculations using ISO 14040/14044 lifecycle assessment standards.',
-                                color: 'teal'
+                                color: 'green'
                             },
                             {
                                 icon: Shield,
@@ -156,14 +156,14 @@ export default function Sustainability() {
                             </ul>
                         </div>
                         <div className="relative">
-                            <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl p-8 border border-emerald-500/20">
+                            <div className="bg-gradient-to-br from-green-500/20 to-green-400/20 rounded-2xl p-8 border border-green-500/20">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="text-center">
-                                        <div className="text-4xl font-bold text-emerald-400 mb-2">500+</div>
+                                        <div className="text-4xl font-bold text-green-400 mb-2">500+</div>
                                         <div className="text-gray-400 text-sm">Verified EPDs</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-4xl font-bold text-teal-400 mb-2">150+</div>
+                                        <div className="text-4xl font-bold text-green-400 mb-2">150+</div>
                                         <div className="text-gray-400 text-sm">Certified Suppliers</div>
                                     </div>
                                     <div className="text-center">
@@ -194,16 +194,16 @@ export default function Sustainability() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        <div className="bg-gradient-to-br from-emerald-500/10 to-transparent rounded-2xl p-8 border border-emerald-500/20 text-center">
-                            <TreePine className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+                        <div className="bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl p-8 border border-green-500/20 text-center">
+                            <TreePine className="w-12 h-12 text-green-400 mx-auto mb-4" />
                             <div className="text-5xl font-bold text-white mb-2">2.4M</div>
-                            <div className="text-emerald-400 font-medium mb-2">Tons CO₂ Avoided</div>
+                            <div className="text-green-400 font-medium mb-2">Tons CO₂ Avoided</div>
                             <p className="text-gray-400 text-sm">Through verified low-carbon product sourcing</p>
                         </div>
-                        <div className="bg-gradient-to-br from-teal-500/10 to-transparent rounded-2xl p-8 border border-teal-500/20 text-center">
-                            <Globe className="w-12 h-12 text-teal-400 mx-auto mb-4" />
+                        <div className="bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl p-8 border border-green-500/20 text-center">
+                            <Globe className="w-12 h-12 text-green-400 mx-auto mb-4" />
                             <div className="text-5xl font-bold text-white mb-2">45</div>
-                            <div className="text-teal-400 font-medium mb-2">Countries</div>
+                            <div className="text-green-400 font-medium mb-2">Countries</div>
                             <p className="text-gray-400 text-sm">Global network of sustainable suppliers</p>
                         </div>
                         <div className="bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl p-8 border border-blue-500/20 text-center">
@@ -254,7 +254,7 @@ export default function Sustainability() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-r from-emerald-600/20 to-teal-600/20">
+            <section className="py-20 bg-gradient-to-r from-green-600/20 to-green-500/20">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                         Start Sourcing Sustainably Today
@@ -265,7 +265,7 @@ export default function Sustainability() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
                             to="/search"
-                            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-all hover:scale-105"
+                            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-all hover:scale-105"
                         >
                             Browse Products
                             <ArrowRight className="w-5 h-5" />

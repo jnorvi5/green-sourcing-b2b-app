@@ -197,8 +197,8 @@ export default function Investors() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8 mb-12">
-                        <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl p-8 border border-emerald-500/20 text-center">
-                            <div className="text-5xl font-bold text-emerald-400 mb-2">$2.4M</div>
+                        <div className="bg-gradient-to-br from-green-500/20 to-green-400/20 rounded-2xl p-8 border border-green-500/20 text-center">
+                            <div className="text-5xl font-bold text-green-400 mb-2">$2.4M</div>
                             <div className="text-white font-medium mb-2">GMV Pipeline</div>
                             <p className="text-gray-400 text-sm">Active RFQs from enterprise buyers</p>
                         </div>
@@ -285,9 +285,9 @@ export default function Investors() {
                             { name: 'CSO Name', role: 'Chief Sustainability Officer', bio: '15+ years in green building certification' }
                         ].map((member, index) => (
                             <div key={index} className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 text-center">
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 mx-auto mb-4" />
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-green-400 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-white">{member.name}</h3>
-                                <p className="text-emerald-400 text-sm mb-2">{member.role}</p>
+                                <p className="text-green-400 text-sm mb-2">{member.role}</p>
                                 <p className="text-gray-400 text-sm">{member.bio}</p>
                             </div>
                         ))}

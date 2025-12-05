@@ -8,13 +8,13 @@ export default function Header() {
                 <div className="flex items-center justify-between">
                     <Logo height={40} showText={true} />
                     <nav className="hidden md:flex items-center gap-8">
-                        <Link to="/features" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Features</Link>
-                        <Link to="/survey/architect" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Free Assessment</Link>
+                        <Link to="/features" className="text-slate-300 hover:text-green-400 transition-colors font-medium">Features</Link>
+                        <Link to="/survey/architect" className="text-slate-300 hover:text-green-400 transition-colors font-medium">Free Assessment</Link>
                         <a href="mailto:careers@greenchainz.com" className="text-slate-300 hover:text-purple-400 transition-colors font-medium">Careers</a>
                         <Link to="/login" className="text-slate-300 hover:text-white transition-colors font-medium">Sign In</Link>
                         <Link
                             to="/signup"
-                            className="px-6 py-3 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105"
+                            className="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold transition-all shadow-lg shadow-green-500/20 hover:shadow-green-500/40 hover:scale-105"
                         >
                             👑 Join as Founder
                         </Link>

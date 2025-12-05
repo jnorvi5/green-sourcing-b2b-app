@@ -7,6 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const rateLimit = require('express-rate-limit');
 
 /**
  * Initialize outreach service from app.locals
@@ -710,11 +711,19 @@ router.post('/contacts/smart-import', authenticateToken, authorizeRoles('Admin')
     }
 });
 
+
+// Rate limiter for the check-duplicates endpoint
+const checkDuplicatesLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // limit each IP/user to 10 requests per windowMs
+    message: "Too many duplicate checks from this IP, please try again later."
+});
+
 /**
  * POST /api/v1/outreach/contacts/check-duplicates
  * Check for duplicate emails before import
  */
-router.post('/contacts/check-duplicates', authenticateToken, async (req, res) => {
+router.post('/contacts/check-duplicates', authenticateToken, checkDuplicatesLimiter, async (req, res) => {
     try {
         const { emails } = req.body;
 

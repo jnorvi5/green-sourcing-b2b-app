@@ -8,7 +8,7 @@ const ProductDemoPage: React.FC = () => {
     {
       id: 'prod-001',
       name: 'Eco-Friendly Insulation',
-      image: 'https://via.placeholder.com/300x225/2d6a4f/ffffff?text=Eco+Insulation',
+      image: 'https://via.placeholder.com/300x225/4CAF50/ffffff?text=Eco+Insulation',
       supplier: 'GreenBuild Supplies',
       certifications: ['FSC', 'LEED'],
       sustainability_data: {

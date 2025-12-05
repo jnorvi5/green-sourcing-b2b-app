@@ -1,12 +1,80 @@
 import { NextResponse } from 'next/server';
 import { connectMongoDB } from '@/lib/mongodb';
-import { createClient } from '@supabase/supabase-js';
+import { ObjectId, Filter, Document } from 'mongodb';
 
-// Supabase client (for user/supplier data)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+/**
+ * MongoDB Material document schema
+ * Reference materials for carbon footprint calculations
+ */
+interface MongoMaterial {
+  _id: ObjectId;
+  materialId: string;
+  name: string;
+  category: string;
+  subcategory?: string;
+  masterFormat?: string;
+  gwp: number;
+  gwpUnit?: string;
+  declaredUnit?: string;
+  lifecycleStages?: Record<string, unknown>;
+  benchmarks?: Record<string, unknown>;
+  source?: string;
+  dataQuality?: string;
+  region?: string;
+  tags?: string[];
+  alternatives?: string[];
+  lastUpdated?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+/**
+ * API response material format
+ */
+interface MaterialResponse {
+  id: string;
+  materialId: string;
+  name: string;
+  category: string;
+  subcategory?: string;
+  masterFormat?: string;
+  carbon_footprint: number;
+  gwpUnit?: string;
+  declaredUnit?: string;
+  lifecycleStages?: Record<string, unknown>;
+  benchmarks?: Record<string, unknown>;
+  source?: string;
+  dataQuality?: string;
+  region?: string;
+  tags?: string[];
+  alternatives?: string[];
+  data_source: string;
+}
+
+/**
+ * Transform a MongoDB material document to the API response format
+ */
+function transformMaterial(material: MongoMaterial): MaterialResponse {
+  return {
+    id: material._id.toString(),
+    materialId: material.materialId,
+    name: material.name,
+    category: material.category,
+    subcategory: material.subcategory,
+    masterFormat: material.masterFormat,
+    carbon_footprint: material.gwp,
+    gwpUnit: material.gwpUnit,
+    declaredUnit: material.declaredUnit,
+    lifecycleStages: material.lifecycleStages,
+    benchmarks: material.benchmarks,
+    source: material.source,
+    dataQuality: material.dataQuality,
+    region: material.region,
+    tags: material.tags,
+    alternatives: material.alternatives,
+    data_source: 'GreenChainz'
+  };
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -14,61 +82,56 @@ export async function GET(request: Request) {
   const category = searchParams.get('category');
 
   try {
-    // STEP 1: Query MongoDB for products (flexible schemas)
     const db = await connectMongoDB();
     
-    const mongoQuery: any = {};
-    if (query) mongoQuery.$text = { $search: query };
-    if (category) mongoQuery.category = category;
-    mongoQuery.status = 'active';
-
-    const products = await db.collection('products')
-      .find(mongoQuery)
-      .limit(50)
+    // Build filter based on query parameters
+    const filter: Filter<Document> = {};
+    
+    // Text search on name field
+    if (query) {
+      filter.name = { $regex: query, $options: 'i' };
+    }
+    
+    // Category filter (case-insensitive)
+    if (category) {
+      filter.category = { $regex: `^${category}$`, $options: 'i' };
+    }
+    
+    // Fetch materials from MongoDB with filters
+    const materials = await db.collection<MongoMaterial>('materials')
+      .find(filter)
+      .limit(100)
       .toArray();
 
-    // STEP 2: Enrich with Supabase supplier data
-    const enrichedProducts = await Promise.all(
-      products.map(async (product) => {
-        // Get supplier verification status from Supabase
-        const { data: supplier } = await supabase
-          .from('profiles')
-          .select('company_name, email, verified')
-          .eq('id', product.supplier_id)
-          .single();
+    console.log('[Materials API] Found materials in MongoDB:', materials.length);
+    
+    // Log first document structure for debugging (only in development)
+    if (materials.length > 0 && process.env.NODE_ENV === 'development') {
+      console.log('[Materials API] Sample document structure:', JSON.stringify(materials[0], null, 2));
+    }
 
-        return {
-          id: product._id.toString(),
-          name: product.name,
-          category: product.category,
-          description: product.description,
-          carbon_footprint: product.carbon_footprint_kg_co2,
-          unit_price: product.unit_price,
-          image_url: product.image_url,
-          
-          // Flexible MongoDB data
-          epd: product.epd || null,
-          certifications: product.certifications || [],
-          
-          // Supabase relational data
-          supplier: {
-            name: supplier?.company_name || 'Unknown',
-            verified: supplier?.verified || false
-          },
-          
-          data_source: 'GreenChainz'
-        };
-      })
-    );
+    // If no materials found, return early with helpful message
+    if (materials.length === 0) {
+      console.warn('[Materials API] No materials found in MongoDB collection');
+      return NextResponse.json({
+        success: true,
+        count: 0,
+        materials: [],
+        message: 'No materials found in database'
+      });
+    }
+
+    // Transform materials to API response format
+    const transformedMaterials = materials.map(transformMaterial);
 
     return NextResponse.json({
       success: true,
-      count: enrichedProducts.length,
-      materials: enrichedProducts
+      count: transformedMaterials.length,
+      materials: transformedMaterials
     });
 
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('[Materials API] Critical error:', error);
     return NextResponse.json(
       { 
         success: false, 
@@ -86,37 +149,50 @@ export async function POST(request: Request) {
     const body = await request.json();
     const db = await connectMongoDB();
 
-    // Validate supplier exists in Supabase
-    const { data: supplier } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', body.supplier_id)
-      .single();
-
-    if (!supplier) {
+    // Validate required fields
+    if (!body.name || !body.category || typeof body.gwp !== 'number') {
       return NextResponse.json(
-        { success: false, error: 'Invalid supplier ID' },
+        { success: false, error: 'Missing required fields: name, category, gwp' },
         { status: 400 }
       );
     }
 
-    // Insert into MongoDB (flexible schema)
-    const result = await db.collection('products').insertOne({
+    // Generate materialId if not provided (sanitize to valid slug)
+    const materialId = body.materialId || body.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')  // Replace special chars with hyphens
+      .replace(/^-+|-+$/g, '');      // Remove leading/trailing hyphens
+
+    // Check for duplicate materialId
+    const existingMaterial = await db.collection('materials').findOne({ materialId });
+    if (existingMaterial) {
+      return NextResponse.json(
+        { success: false, error: `Material with ID '${materialId}' already exists` },
+        { status: 409 }
+      );
+    }
+
+    // Insert into MongoDB with correct schema
+    // Note: Default gwpUnit and declaredUnit are common values that can be overridden
+    const result = await db.collection('materials').insertOne({
+      materialId,
       name: body.name,
       category: body.category,
-      description: body.description,
-      unit_price: body.unit_price,
-      carbon_footprint_kg_co2: body.carbon_footprint,
-      supplier_id: body.supplier_id,
-      
-      // Flexible EPD data
-      epd: body.epd || {},
-      certifications: body.certifications || [],
-      
-      image_url: body.image_url,
-      status: 'active',
-      created_at: new Date(),
-      updated_at: new Date()
+      subcategory: body.subcategory,
+      masterFormat: body.masterFormat,
+      gwp: body.gwp,
+      gwpUnit: body.gwpUnit || 'kg CO2e/unit',
+      declaredUnit: body.declaredUnit || '1 unit',
+      lifecycleStages: body.lifecycleStages,
+      benchmarks: body.benchmarks,
+      source: body.source || 'User Submitted',
+      dataQuality: body.dataQuality || 'user-submitted',
+      region: body.region,
+      tags: body.tags || [],
+      alternatives: body.alternatives || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     return NextResponse.json({
@@ -125,7 +201,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Insert Error:', error);
+    console.error('[Materials API] POST Error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create material' },
       { status: 500 }

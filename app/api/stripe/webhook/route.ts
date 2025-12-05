@@ -73,10 +73,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Disable body parsing for webhook signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

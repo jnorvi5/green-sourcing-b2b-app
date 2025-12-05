@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0", // Suppresses warnings for deprecated options in TypeScript 6.x
+    "ignoreDeprecations": "5.0",
     "paths": {
       "@/*": ["./*"]
     },
@@ -62,6 +62,7 @@
     "lib/zoho-smtp.ts",
     "lib/supabase/**/*.ts",
     "lib/email/**/*.ts",
+    "lib/aws/**/*.ts",
     "models/**/*.ts",
     "scripts/**/*.ts",
     "app/**/*.ts",
@@ -72,6 +73,7 @@
   "exclude": [
     "node_modules",
     "frontend",
-    "lib/s3-upload.ts"
+    "lib/s3-upload.ts",
+    "lambda/**/*"
   ]
 }
