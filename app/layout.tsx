@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import Footer from '@/components/Footer';
+import CookieConsent from '@/components/CookieConsent';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://greenchainz.com'),
@@ -51,9 +52,6 @@ export const metadata: Metadata = {
     icon: '/logos/favicon.ico',
     apple: '/logos/logo-icon.jpg',
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
 };
 
 export default function RootLayout({
@@ -70,6 +68,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <main className="flex-grow">{children}</main>
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   );
