@@ -15,21 +15,18 @@ export async function POST(request: NextRequest) {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      console.log('[AUTH] Missing env: URL=' + !!supabaseUrl + ' Key=' + !!supabaseKey);
+      console.log('[AUTH] Missing env');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
     console.log('[AUTH] Attempt for:', email);
 
-    // Supabase expects grant_type in the body, not URL
     const tokenUrl = `${supabaseUrl}/auth/v1/token`;
     const authBody = {
       email,
       password,
       grant_type: 'password',
     };
-
-    console.log('[AUTH] POST to:', tokenUrl);
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -41,32 +38,37 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await response.json();
-    console.log('[AUTH] Response status:', response.status);
-    console.log('[AUTH] Has access_token:', !!data.access_token);
-    console.log('[AUTH] Error field:', data.error || 'none');
+    console.log('[AUTH] Status:', response.status, 'Keys:', Object.keys(data).join(','));
 
-    // Supabase returns 200 even on some errors, check for token
-    if (!data.access_token) {
-      console.log('[AUTH] No token. Full response keys:', Object.keys(data));
-      const errorMsg = data.error_description || data.error || 'Authentication failed';
-      return NextResponse.json(
-        { error: errorMsg, details: data },
-        { status: 401 }
-      );
+    // Log the actual error message
+    if (data.msg) console.log('[AUTH] Message:', data.msg);
+    if (data.error_code) console.log('[AUTH] Error code:', data.error_code);
+    if (data.code) console.log('[AUTH] Code:', data.code);
+    if (data.error) console.log('[AUTH] Error field:', data.error);
+
+    // Check for success
+    if (data.access_token) {
+      console.log('[AUTH] SUCCESS');
+      return NextResponse.json({
+        token: data.access_token,
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          user_type: 'architect',
+        },
+      });
     }
 
-    console.log('[AUTH] SUCCESS for:', email);
-    return NextResponse.json({
-      token: data.access_token,
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        user_type: 'architect',
-      },
-    });
+    // Handle error response
+    const errorMsg = data.msg || data.error || data.error_code || 'Authentication failed';
+    console.log('[AUTH] FAILED:', errorMsg);
+    return NextResponse.json(
+      { error: errorMsg, details: data },
+      { status: 401 }
+    );
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.log('[AUTH] EXCEPTION:', msg.substring(0, 100));
-    return NextResponse.json({ error: 'Server error: ' + msg }, { status: 500 });
+    console.log('[AUTH] EXCEPTION:', msg.substring(0, 80));
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
