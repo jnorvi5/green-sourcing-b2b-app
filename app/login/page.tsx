@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [debugMode, setDebugMode] = useState(false);
+  const [useTestLogin, setUseTestLogin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('auth-token');
@@ -28,11 +29,14 @@ export default function LoginPage() {
     setError('');
 
     if (debugMode) {
-      console.log('🔍 Login attempt:', { email: formData.email, pass_len: formData.password.length });
+      console.log('🔍 Login attempt:', { email: formData.email, pass_len: formData.password.length, testMode: useTestLogin });
     }
 
     try {
-      const response = await fetch('/api/auth/login', {
+      // Use test endpoint if toggled, otherwise production auth
+      const endpoint = useTestLogin ? '/api/auth/test-login' : '/api/auth/login';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -55,10 +59,8 @@ export default function LoginPage() {
           router.push('/architect/dashboard');
         }
       } else {
-        // Show detailed error
         let errorMsg = data.error || 'Login failed';
         if (data.details) {
-          // Try to extract meaningful error from Supabase response
           if (data.details.msg) errorMsg = data.details.msg;
           if (data.details.error) errorMsg = data.details.error;
           if (data.details.error_code) errorMsg += ` (${data.details.error_code})`;
@@ -103,6 +105,13 @@ export default function LoginPage() {
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-700 text-sm font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Test Mode Banner */}
+        {useTestLogin && (
+          <div className="mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-800 text-xs font-medium">⚠️ Test Mode Active (Bypassing Supabase)</p>
           </div>
         )}
 
@@ -214,14 +223,21 @@ export default function LoginPage() {
           <p className="text-xs text-gray-400 text-center mt-2">demo123</p>
         </div>
 
-        {/* Debug Toggle */}
-        <div className="mt-6 text-center">
+        {/* Debug & Test Mode Toggles */}
+        <div className="mt-6 flex items-center justify-between text-center gap-2">
           <button
             type="button"
             onClick={() => setDebugMode(!debugMode)}
-            className="text-xs text-gray-400 hover:text-gray-600"
+            className="text-xs text-gray-400 hover:text-gray-600 flex-1"
           >
             {debugMode ? '🔍 Debug ON' : '🔍 Debug'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setUseTestLogin(!useTestLogin)}
+            className="text-xs text-blue-400 hover:text-blue-600 flex-1"
+          >
+            {useTestLogin ? '✅ Test Mode' : '⚪ Test'}
           </button>
         </div>
       </div>
