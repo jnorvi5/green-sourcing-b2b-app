@@ -2,34 +2,34 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('[AUTH] Request method:', request.method);
-    console.log('[AUTH] Content-Type:', request.headers.get('content-type'));
+    const body = await request.json();
+    const email = body.email?.trim();
+    const password = body.password;
 
-    let email, password;
-    try {
-      const body = await request.json();
-      email = body.email;
-      password = body.password;
-      console.log('[AUTH] Parsed body OK');
-    } catch (parseErr) {
-      console.log('[AUTH] JSON parse failed:', parseErr instanceof Error ? parseErr.message : String(parseErr));
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    if (!email || !password) {
+      console.log('[AUTH] Missing credentials');
+      return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
-
-    console.log('[AUTH] Email:', email, 'Pass length:', password?.length || 0);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    console.log('[AUTH] Env - URL:', supabaseUrl ? 'SET' : 'MISSING', 'Key:', supabaseKey ? 'SET' : 'MISSING');
-
     if (!supabaseUrl || !supabaseKey) {
-      console.log('[AUTH] FAIL: Missing env vars');
-      return NextResponse.json({ error: 'Missing config' }, { status: 500 });
+      console.log('[AUTH] Missing env: URL=' + !!supabaseUrl + ' Key=' + !!supabaseKey);
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    const tokenUrl = `${supabaseUrl}/auth/v1/token?grant_type=password`;
-    console.log('[AUTH] Calling:', tokenUrl);
+    console.log('[AUTH] Attempt for:', email);
+
+    // Supabase expects grant_type in the body, not URL
+    const tokenUrl = `${supabaseUrl}/auth/v1/token`;
+    const authBody = {
+      email,
+      password,
+      grant_type: 'password',
+    };
+
+    console.log('[AUTH] POST to:', tokenUrl);
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -37,31 +37,25 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'apikey': supabaseKey,
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(authBody),
     });
 
-    console.log('[AUTH] Fetch status:', response.status);
+    const data = await response.json();
+    console.log('[AUTH] Response status:', response.status);
+    console.log('[AUTH] Has access_token:', !!data.access_token);
+    console.log('[AUTH] Error field:', data.error || 'none');
 
-    let data;
-    try {
-      data = await response.json();
-    } catch (jsonErr) {
-      console.log('[AUTH] Response parse failed:', jsonErr instanceof Error ? jsonErr.message : String(jsonErr));
-      const text = await response.text();
-      console.log('[AUTH] Response text:', text.substring(0, 100));
-      return NextResponse.json({ error: 'Supabase error', details: text }, { status: response.status });
-    }
-
-    console.log('[AUTH] Supabase error:', data.error || 'none', 'Has token:', !!data.access_token);
-
-    if (!response.ok) {
+    // Supabase returns 200 even on some errors, check for token
+    if (!data.access_token) {
+      console.log('[AUTH] No token. Full response keys:', Object.keys(data));
+      const errorMsg = data.error_description || data.error || 'Authentication failed';
       return NextResponse.json(
-        { error: data.error || 'Auth failed', details: data },
-        { status: response.status }
+        { error: errorMsg, details: data },
+        { status: 401 }
       );
     }
 
-    console.log('[AUTH] SUCCESS');
+    console.log('[AUTH] SUCCESS for:', email);
     return NextResponse.json({
       token: data.access_token,
       user: {
@@ -72,7 +66,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.log('[AUTH] EXCEPTION:', msg);
-    return NextResponse.json({ error: msg, type: 'exception' }, { status: 500 });
+    console.log('[AUTH] EXCEPTION:', msg.substring(0, 100));
+    return NextResponse.json({ error: 'Server error: ' + msg }, { status: 500 });
   }
 }
