@@ -1,36 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email and password required' },
+        { status: 400 }
+      );
+    }
+
+    // Call Supabase Auth API directly
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase env vars');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     // Authenticate with Supabase
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const authResponse = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supabaseKey,
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
     });
 
-    if (authError) {
+    const authData = await authResponse.json();
+
+    if (!authResponse.ok) {
+      console.error('Supabase auth error:', authData);
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Get user profile
-    const { data: profile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authData.user.id)
-      .single();
+    // Get user profile from public.users
+    const userResponse = await fetch(
+      `${supabaseUrl}/rest/v1/users?email=eq.${encodeURIComponent(email)}`,
+      {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${authData.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-    if (profileError) {
+    const users = await userResponse.json();
+    const userProfile = users[0];
+
+    if (!userProfile) {
+      console.error('User profile not found for:', email);
       return NextResponse.json(
         { error: 'User profile not found' },
         { status: 404 }
@@ -38,12 +70,14 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      token: authData.session.access_token,
+      token: authData.access_token,
+      refresh_token: authData.refresh_token,
       user: {
-        id: profile.id,
-        email: profile.email,
-        user_type: profile.user_type,
-        company_name: profile.company_name,
+        id: authData.user.id,
+        email: authData.user.email,
+        user_type: userProfile.user_type,
+        company_name: userProfile.company_name,
+        full_name: userProfile.full_name,
       },
     });
   } catch (error) {
