@@ -16,7 +16,6 @@ export default function LoginPage() {
   const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in
     const token = localStorage.getItem('auth-token');
     if (token) {
       router.push('/architect/dashboard');
@@ -29,7 +28,7 @@ export default function LoginPage() {
     setError('');
 
     if (debugMode) {
-      console.log('Login attempt:', { email: formData.email, password: '***' });
+      console.log('🔍 Login attempt:', { email: formData.email, pass_len: formData.password.length });
     }
 
     try {
@@ -42,26 +41,36 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (debugMode) {
-        console.log('Response:', { status: response.status, data });
+        console.log('🔍 Response status:', response.status);
+        console.log('🔍 Response body:', data);
       }
 
       if (response.ok) {
-        // Store auth token
         localStorage.setItem('auth-token', data.token);
         localStorage.setItem('user-type', data.user.user_type);
         
-        // Redirect based on user type
         if (data.user.user_type === 'supplier') {
           router.push('/supplier/dashboard');
         } else {
           router.push('/architect/dashboard');
         }
       } else {
-        setError(data.error || 'Login failed. Please check your credentials.');
+        // Show detailed error
+        let errorMsg = data.error || 'Login failed';
+        if (data.details) {
+          // Try to extract meaningful error from Supabase response
+          if (data.details.msg) errorMsg = data.details.msg;
+          if (data.details.error) errorMsg = data.details.error;
+          if (data.details.error_code) errorMsg += ` (${data.details.error_code})`;
+        }
+        setError(errorMsg);
+        if (debugMode) {
+          console.log('🔍 Error details:', data.details);
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Network error. Please check your connection and try again.');
+      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -202,7 +211,7 @@ export default function LoginPage() {
               🏭 Supplier
             </button>
           </div>
-          <p className="text-xs text-gray-400 text-center mt-2">Both: password is demo123</p>
+          <p className="text-xs text-gray-400 text-center mt-2">demo123</p>
         </div>
 
         {/* Debug Toggle */}
