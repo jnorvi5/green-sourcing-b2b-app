@@ -11,6 +11,7 @@ export default function ArchitectDashboard() {
   const [savedSuppliers, setSavedSuppliers] = useState<any[]>([])
   const [sentRFQs, setSentRFQs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isTestMode, setIsTestMode] = useState(false)
 
   const supabase = createClient()
   const router = useRouter()
@@ -21,6 +22,37 @@ export default function ArchitectDashboard() {
 
   async function loadDashboard() {
     try {
+      // Check if using test token
+      const token = localStorage.getItem('auth-token')
+      const isTest = token?.startsWith('test_')
+      setIsTestMode(isTest || false)
+
+      if (isTest) {
+        // Demo data for test mode
+        const userType = localStorage.getItem('user-type')
+        setUser({
+          id: 'test-user',
+          email: userType === 'supplier' ? 'demo@supplier.com' : 'demo@architect.com',
+        })
+        setProfile({
+          id: 'test-user',
+          full_name: userType === 'supplier' ? 'Demo Supplier' : 'Demo Architect',
+          role: 'architect',
+        })
+        setSentRFQs([
+          {
+            id: '1',
+            created_at: new Date().toISOString(),
+            message: 'This is a demo RFQ in test mode',
+            status: 'Pending',
+            profiles: { company_name: 'Demo Supplier' },
+          },
+        ])
+        setLoading(false)
+        return
+      }
+
+      // Production: Use real Supabase
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push('/login')
@@ -60,8 +92,12 @@ export default function ArchitectDashboard() {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push('/')
+    localStorage.removeItem('auth-token')
+    localStorage.removeItem('user-type')
+    if (!isTestMode) {
+      await supabase.auth.signOut()
+    }
+    router.push('/login')
   }
 
   if (loading) {
@@ -78,6 +114,13 @@ export default function ArchitectDashboard() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-8">
+        {/* Test Mode Banner */}
+        {isTestMode && (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-400 text-sm">
+            ⚠️ Test Mode Active - Using demo data (not real Supabase)
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
