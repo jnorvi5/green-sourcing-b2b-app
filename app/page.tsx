@@ -18,7 +18,7 @@ export default function Home() {
       {/* GIANT FADED BACKGROUND LOGO WATERMARK */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] z-0">
         <Image 
-          src="/logos/logo-icon.jpg" 
+          src="/logos/logo-icon.png" 
           alt="" 
           width={1200} 
           height={1200}
@@ -45,7 +45,7 @@ export default function Home() {
           <div className="container mx-auto px-6 py-3 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group">
               <Image 
-                src="/logos/logo-icon.jpg" 
+                src="/logos/greenchainz-logo-icon.png" 
                 alt="GreenChainz" 
                 width={48} 
                 height={48}
@@ -79,7 +79,7 @@ export default function Home() {
             {/* PROMINENT LOGO ABOVE HEADLINE */}
             <div className="mb-8 flex justify-center">
               <Image 
-                src="/logos/logo-main.jpg" 
+                src="/logos/greenchainz-logo-full.png" 
                 alt="GreenChainz" 
                 width={400} 
                 height={200}
@@ -129,14 +129,14 @@ export default function Home() {
               <p className="text-sm text-gray-500 mb-6">TRUSTED PARTNERS</p>
               <div className="flex items-center justify-center gap-12 flex-wrap">
                 <Image 
-                  src="/logos/wap_logo.jpg" 
+                  src="/logos/wap_logo.svg" 
                   alt="WAP Sustainability" 
                   width={120} 
                   height={60}
-                  className="opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
+                  className="opacity-60 hover:opacity-100 transition-opacity"
                 />
                 <Image 
-                  src="/logos/usgbc_logo.jpg" 
+                  src="/logos/usgbc_logo.png" 
                   alt="USGBC LEED" 
                   width={100} 
                   height={100}
@@ -301,7 +301,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Image 
-                src="/logos/logo-icon.jpg" 
+                src="/logos/greenchainz-logo-icon.png" 
                 alt="GreenChainz" 
                 width={32} 
                 height={32}
@@ -335,4 +335,3 @@ export default function Home() {
     </main>
   );
 }
-// Force rebuild Fri Dec  5 21:44:59 EST 2025
