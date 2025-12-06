@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-// FIX: Use relative path for CSS (Current folder)
-import "./globals.css"; 
+import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "GreenChainz | Verified Sustainable Sourcing",
-  description: "The B2B marketplace for verified sustainable building materials.",
-};
+  title: 'GreenChainz - Verified Sustainable Sourcing',
+  description: 'B2B Marketplace for Verified Sustainable Materials',
+  icons: {
+    icon: '/logos/favicon.ico',
+  },
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="font-sans">
-        {children}
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
