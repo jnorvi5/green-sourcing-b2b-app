@@ -1,60 +1,27 @@
 {
-    "name": "greenchainz-api",
-    "version": "1.0.0",
-    "private": true,
-    "description": "GreenChainz Next.js API Routes",
-    "scripts": {
-        "dev": "next dev --port 3001",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint",
-        "type-check": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@aws-sdk/client-cloudfront": "^3.943.0",
-        "@aws-sdk/client-s3": "^3.937.0",
-        "@aws-sdk/client-ses": "^3.943.0",
-        "@aws-sdk/s3-request-presigner": "^3.937.0",
-        "@supabase/ssr": "^0.8.0",
-        "@supabase/supabase-js": "^2.86.0",
-        "@types/pdfkit": "^0.17.4",
-        "clsx": "^2.1.1",
-        "dotenv": "^17.2.3",
-        "forge-apis": "^0.9.11",
-        "fuse.js": "^7.1.0",
-        "mongodb": "^7.0.0",
-        "mongoose": "^8.2.0",
-        "next": "14.2.32",
-        "nodemailer": "^7.0.11",
-        "openai": "^6.9.1",
-        "pdfkit": "^0.17.2",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "recharts": "^3.5.1",
-        "resend": "^6.4.2",
-        "stripe": "^20.0.0",
-        "tailwind-merge": "^3.4.0",
-        "uuid": "^9.0.0",
-        "zod": "^3.25.76"
-    },
-    "devDependencies": {
-        "@playwright/test": "^1.57.0",
-        "@tailwindcss/postcss": "^4.1.17",
-        "@types/jest": "^30.0.0",
-        "@types/node": "^20.11.24",
-        "@types/nodemailer": "^7.0.4",
-        "@types/react": "^18.2.61",
-        "@types/uuid": "^9.0.8",
-        "autoprefixer": "^10.4.22",
-<<<<<<< HEAD
-        "supabase": "^2.65.5",
-=======
-        "eslint": "^8.57.1",
-        "eslint-config-next": "^16.0.7",
-        "jest": "^30.2.0",
->>>>>>> origin/main
-        "tailwindcss": "^4.1.17",
-        "ts-jest": "^29.4.6",
-        "typescript": "^5.3.3"
-    }
+  "name": "green-sourcing-b2b-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3"
+  }
 }
