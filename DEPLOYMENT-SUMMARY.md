@@ -296,9 +296,8 @@ Form URL: https://docs.google.com/forms/d/e/1FAIpQLSc8hWbzRyoJ0vcCW5GvzLr7FrvXFJ
 ### Documentation
 - [Cloudflare Landing Deploy](cloudflare-landing/DEPLOY.md)
 - [Vercel Frontend Deploy](VERCEL-DEPLOY.md)
-- [Supabase Quick Start](docs/VERCEL-SUPABASE-QUICKSTART.md)
-- [Cloud Strategy](docs/CLOUD-STRATEGY.md)
-- [Action Checklist](ACTION-CHECKLIST.md)
+- [Deployment Verification Guide](DEPLOYMENT-VERIFICATION-GUIDE.md)
+- [Cloud Deployment Guide](CLOUD-DEPLOYMENT.md)
 
 ### External Resources
 - Cloudflare Pages: https://developers.cloudflare.com/pages/
