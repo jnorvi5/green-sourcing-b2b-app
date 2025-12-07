@@ -285,13 +285,13 @@ async function sendQuoteNotificationToArchitect(
     const quoteUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/admin/my-rfqs`;
 
     // Generate email HTML
-    const emailHtml = newQuoteEmail({
+    const emailHtml = newQuoteEmail(
       architectName,
-      rfqName: rfq.project_name,
+      rfq.project_name,
       supplierName,
       quoteUrl,
-      quotePreview: `$${quoteAmount.toFixed(2)} - ${leadTimeDays} days lead time`,
-    });
+      `$${quoteAmount.toFixed(2)} - ${leadTimeDays} days lead time`
+    );
 
     // Send email
     const resend = new Resend(process.env.RESEND_API_KEY);

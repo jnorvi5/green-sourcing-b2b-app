@@ -6,12 +6,18 @@
 
 import { Resend } from 'resend';
 
+// Memoized Resend client to avoid creating new instances on every call
+let resendClient: Resend | null = null;
+
 // Lazy initialize Resend client to avoid errors during build
 function getResendClient(): Resend | null {
   if (!process.env.RESEND_API_KEY) {
     return null;
   }
-  return new Resend(process.env.RESEND_API_KEY);
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
 }
 
 export interface RfqNotificationEmailData {

@@ -70,24 +70,30 @@ export default function MyRfqsPage() {
         return;
       }
 
-      // Fetch quote counts for each RFQ
+      // Fetch all quote counts in a single query using aggregation
       const rfqIds = (rfqsData || []).map((rfq: Rfq) => rfq.id);
-      
-      const rfqsWithCounts: RfqWithQuoteCount[] = [];
+      const quoteCounts: Record<string, number> = {};
       
       if (rfqIds.length > 0) {
-        for (const rfq of rfqsData || []) {
-          const { count, error: countError } = await supabase
-            .from('rfq_responses')
-            .select('*', { count: 'exact', head: true })
-            .eq('rfq_id', rfq.id);
+        // Get all responses for these RFQs
+        const { data: responsesData, error: responsesError } = await supabase
+          .from('rfq_responses')
+          .select('rfq_id')
+          .in('rfq_id', rfqIds);
 
-          rfqsWithCounts.push({
-            ...rfq,
-            quote_count: count || 0,
+        if (!responsesError && responsesData) {
+          // Count responses per RFQ
+          responsesData.forEach((response) => {
+            quoteCounts[response.rfq_id] = (quoteCounts[response.rfq_id] || 0) + 1;
           });
         }
       }
+
+      // Combine RFQs with their quote counts
+      const rfqsWithCounts: RfqWithQuoteCount[] = (rfqsData || []).map((rfq: Rfq) => ({
+        ...rfq,
+        quote_count: quoteCounts[rfq.id] || 0,
+      }));
 
       setRfqs(rfqsWithCounts);
       setLoading(false);
