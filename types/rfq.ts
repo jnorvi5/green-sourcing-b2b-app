@@ -1,4 +1,8 @@
 /**
+ * TypeScript types for RFQ and Quote data structures
+ */
+
+export interface RFQ {
  * TypeScript types for RFQ (Request for Quote) system
  */
 
@@ -71,6 +75,10 @@ export interface Rfq {
   project_name: string;
   project_location: string;
   material_specs: {
+    quantity?: number;
+    unit?: string;
+    material_type?: string;
+    [key: string]: unknown;
     quantity: number;
     unit: string;
     material_type?: string;
@@ -94,6 +102,26 @@ export interface Rfq {
   updated_at: string;
 }
 
+export interface Supplier {
+  id: string;
+  user_id: string;
+  company_name: string;
+  tier: 'free' | 'standard' | 'verified';
+  certifications: Array<{
+    type: string;
+    cert_number?: string;
+    expiry?: string;
+    [key: string]: unknown;
+  }>;
+  geographic_coverage: string[];
+  total_rfqs_received: number;
+  total_rfqs_won: number;
+  avg_response_time_hours: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Quote {
 export interface RFQWithArchitect extends RFQ {
   architect: {
     id: string;
@@ -123,6 +151,16 @@ export interface RfqResponse {
   message: string | null;
   status: 'submitted' | 'accepted' | 'rejected';
   responded_at: string;
+  supplier?: Supplier;
+  pdf_url?: string | null;
+}
+
+export interface QuoteWithSupplier extends Quote {
+  supplier: Supplier;
+}
+
+export interface RFQWithQuotes extends RFQ {
+  quotes: QuoteWithSupplier[];
   attachment_url?: string;
 }
 
