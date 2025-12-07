@@ -9,6 +9,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { QuoteApiRequestSchema } from '@/types/rfq';
+import { newQuoteEmail } from '@/lib/email/rfqTemplates';
+import { Resend } from 'resend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,10 +53,17 @@ export async function POST(request: NextRequest) {
 
     const { rfq_id, price, lead_time, notes, pdf_url } = validationResult.data;
 
-    // Verify supplier is matched to this RFQ
+    // Verify supplier is matched to this RFQ and fetch architect info
     const { data: rfq, error: rfqError } = await supabase
       .from('rfqs')
-      .select('id, matched_suppliers, status')
+      .select(`
+        id, 
+        matched_suppliers, 
+        status, 
+        project_name,
+        architect_id,
+        users!rfqs_architect_id_fkey(id, email, full_name)
+      `)
       .eq('id', rfq_id)
       .single();
 
@@ -182,6 +191,14 @@ export async function POST(request: NextRequest) {
         .update({ status: 'responded', updated_at: new Date().toISOString() })
         .eq('id', rfq_id);
 
+      // Send notification email to architect
+      await sendQuoteNotificationToArchitect(
+        rfq,
+        supplier.id,
+        price,
+        lead_time_days
+      );
+
       return NextResponse.json({
         success: true,
         message: 'Quote submitted successfully',
@@ -225,4 +242,73 @@ function parseLeadTimeToDays(leadTime: string): number {
 
   // Default: assume days
   return Math.round(avgNum);
+}
+
+/**
+ * Send notification email to architect when a quote is received
+ */
+async function sendQuoteNotificationToArchitect(
+  rfq: {
+    id: string;
+    project_name: string;
+    architect_id: string;
+    users?: { id: string; email: string; full_name: string | null } | null;
+  },
+  supplierId: string,
+  quoteAmount: number,
+  leadTimeDays: number
+): Promise<void> {
+  try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.log('[DEV] Would send quote notification email to architect');
+      return;
+    }
+
+    const architectEmail = rfq.users?.email;
+    const architectName = rfq.users?.full_name || 'Architect';
+
+    if (!architectEmail) {
+      console.error('[Quote] Architect email not found for RFQ:', rfq.id);
+      return;
+    }
+
+    // Get supplier details
+    const supabase = await createClient();
+    const { data: supplierData } = await supabase
+      .from('suppliers')
+      .select('company_name')
+      .eq('id', supplierId)
+      .single();
+
+    const supplierName = supplierData?.company_name || 'A supplier';
+    const quoteUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/admin/my-rfqs`;
+
+    // Generate email HTML
+    const emailHtml = newQuoteEmail({
+      architectName,
+      rfqName: rfq.project_name,
+      supplierName,
+      quoteUrl,
+      quotePreview: `$${quoteAmount.toFixed(2)} - ${leadTimeDays} days lead time`,
+    });
+
+    // Send email
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const result = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
+      to: architectEmail,
+      subject: `New Quote Received for "${rfq.project_name}"`,
+      html: emailHtml,
+    });
+
+    if (result.error) {
+      console.error('[Quote] Email notification error:', result.error);
+    } else {
+      console.log('[Quote] Notification sent to architect:', architectEmail);
+    }
+  } catch (error) {
+    console.error('[Quote] Failed to send architect notification:', error);
+    // Don't throw - email failure shouldn't break quote submission
+  }
 }
