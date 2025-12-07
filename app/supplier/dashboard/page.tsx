@@ -1,12 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { DashboardStats, IncomingRfq, SupplierQuote, SupplierProfile, Product } from '@/types/supplier-dashboard'
+import { DashboardErrorBoundary } from '@/components/DashboardErrorBoundary'
+import { DashboardLoadingSkeleton } from '@/components/DashboardLoadingSkeleton'
 
-export default function SupplierDashboard() {
+// Safe error logging helper - only logs in development
+function logError(message: string, error: unknown): void {
+  if (process.env.NODE_ENV === 'development') {
+    console.error(message, error)
+  }
+}
+
+function DashboardContent() {
   const [userId, setUserId] = useState<string | null>(null)
   const [profile, setProfile] = useState<SupplierProfile | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
@@ -19,6 +28,7 @@ export default function SupplierDashboard() {
   const [myQuotes, setMyQuotes] = useState<SupplierQuote[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const supabase = createClient()
@@ -29,8 +39,11 @@ export default function SupplierDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function loadDashboard() {
+  async function loadDashboard(isRefresh = false) {
     try {
+      if (isRefresh) {
+        setRefreshing(true)
+      }
       setError(null)
 
       // Check auth
@@ -51,6 +64,7 @@ export default function SupplierDashboard() {
       if (supplierError) {
         setError('Failed to load supplier profile. Please ensure your account is set up correctly.')
         setLoading(false)
+        setRefreshing(false)
         return
       }
 
@@ -63,7 +77,7 @@ export default function SupplierDashboard() {
         .eq('supplier_id', supplierData.id)
 
       if (productsError) {
-        console.error('Error loading products:', productsError)
+        logError('Error loading products:', productsError)
       }
 
       setProducts(productsData || [])
@@ -88,7 +102,7 @@ export default function SupplierDashboard() {
         .order('created_at', { ascending: false })
 
       if (rfqsError) {
-        console.error('Error loading RFQs:', rfqsError)
+        logError('Error loading RFQs:', rfqsError)
       }
 
       // Filter out RFQs that already have responses from this supplier
@@ -98,7 +112,7 @@ export default function SupplierDashboard() {
         .eq('supplier_id', supplierData.id)
 
       if (responsesError) {
-        console.error('Error loading responses:', responsesError)
+        logError('Error loading responses:', responsesError)
       }
 
       const respondedRfqIds = new Set(existingResponses?.map(r => r.rfq_id) || [])
@@ -135,7 +149,7 @@ export default function SupplierDashboard() {
         .order('responded_at', { ascending: false })
 
       if (quotesError) {
-        console.error('Error loading quotes:', quotesError)
+        logError('Error loading quotes:', quotesError)
       }
 
       const transformedQuotes: SupplierQuote[] = (quotesData || []).map(quote => ({
@@ -163,11 +177,16 @@ export default function SupplierDashboard() {
       })
 
     } catch (err) {
-      console.error('Dashboard error:', err)
+      logError('Dashboard error:', err)
       setError('An unexpected error occurred while loading the dashboard.')
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
+  }
+
+  async function handleRefresh() {
+    await loadDashboard(true)
   }
 
   function calculateProfileCompleteness(
@@ -239,28 +258,53 @@ export default function SupplierDashboard() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-gray-400">Loading dashboard...</p>
-        </div>
-      </div>
-    )
+    return <DashboardLoadingSkeleton />
   }
 
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex items-center justify-center p-4">
-        <div className="max-w-md w-full p-6 rounded-xl bg-red-500/10 border border-red-500/20">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error Loading Dashboard</h2>
-          <p className="text-gray-300 mb-4">{error}</p>
-          <button
-            onClick={() => loadDashboard()}
-            className="px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-medium transition"
-          >
-            Retry
-          </button>
+        <div className="max-w-md w-full">
+          <div className="p-6 sm:p-8 rounded-xl bg-red-500/10 backdrop-blur-sm border border-red-500/20">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-red-400 mb-3 text-center">
+              Error Loading Dashboard
+            </h2>
+            <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">{error}</p>
+            <button
+              onClick={() => loadDashboard()}
+              disabled={refreshing}
+              className="w-full px-4 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 disabled:bg-teal-500/50 disabled:cursor-not-allowed text-black font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center justify-center gap-2"
+            >
+              {refreshing ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  <span>Retrying...</span>
+                </>
+              ) : (
+                'Try Again'
+              )}
+            </button>
+          </div>
+          <p className="mt-4 text-center text-sm text-gray-500">
+            If the problem persists, please contact support
+          </p>
         </div>
       </div>
     )
@@ -276,6 +320,27 @@ export default function SupplierDashboard() {
             <p className="text-gray-400 mt-1">Welcome back, {profile?.company_name || 'Supplier'}</p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:cursor-not-allowed transition text-sm sm:text-base flex items-center gap-2"
+              title="Refresh dashboard data"
+            >
+              <svg
+                className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              <span className="hidden sm:inline">{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+            </button>
             <Link 
               href="/search" 
               className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm sm:text-base"
@@ -545,5 +610,15 @@ export default function SupplierDashboard() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function SupplierDashboard() {
+  return (
+    <DashboardErrorBoundary onReset={() => window.location.reload()}>
+      <Suspense fallback={<DashboardLoadingSkeleton />}>
+        <DashboardContent />
+      </Suspense>
+    </DashboardErrorBoundary>
   )
 }
