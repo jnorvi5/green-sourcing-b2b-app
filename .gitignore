@@ -40,6 +40,9 @@ out/
 .cache/
 *.tsbuildinfo
 
+# Link checker cache
+.lycheecache
+
 # Vite
 .vite/
 

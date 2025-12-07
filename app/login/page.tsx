@@ -14,9 +14,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [debugMode, setDebugMode] = useState(false);
+  const [useTestLogin, setUseTestLogin] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in
     const token = localStorage.getItem('auth-token');
     if (token) {
       router.push('/architect/dashboard');
@@ -29,11 +29,14 @@ export default function LoginPage() {
     setError('');
 
     if (debugMode) {
-      console.log('Login attempt:', { email: formData.email, password: '***' });
+      console.log('🔍 Login attempt:', { testMode: useTestLogin });
     }
 
     try {
-      const response = await fetch('/api/auth/login', {
+      // Use test endpoint if toggled, otherwise production auth
+      const endpoint = useTestLogin ? '/api/auth/test-login' : '/api/auth/login';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -42,26 +45,34 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (debugMode) {
-        console.log('Response:', { status: response.status, data });
+        console.log('🔍 Response status:', response.status);
+        console.log('🔍 Response body:', data);
       }
 
       if (response.ok) {
-        // Store auth token
         localStorage.setItem('auth-token', data.token);
         localStorage.setItem('user-type', data.user.user_type);
         
-        // Redirect based on user type
         if (data.user.user_type === 'supplier') {
           router.push('/supplier/dashboard');
         } else {
           router.push('/architect/dashboard');
         }
       } else {
-        setError(data.error || 'Login failed. Please check your credentials.');
+        let errorMsg = data.error || 'Login failed';
+        if (data.details) {
+          if (data.details.msg) errorMsg = data.details.msg;
+          if (data.details.error) errorMsg = data.details.error;
+          if (data.details.error_code) errorMsg += ` (${data.details.error_code})`;
+        }
+        setError(errorMsg);
+        if (debugMode) {
+          console.log('🔍 Error details:', data.details);
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Network error. Please check your connection and try again.');
+      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -94,6 +105,13 @@ export default function LoginPage() {
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-700 text-sm font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Test Mode Banner */}
+        {useTestLogin && (
+          <div className="mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-800 text-xs font-medium">⚠️ Test Mode Active (Bypassing Supabase)</p>
           </div>
         )}
 
@@ -202,17 +220,24 @@ export default function LoginPage() {
               🏭 Supplier
             </button>
           </div>
-          <p className="text-xs text-gray-400 text-center mt-2">Both: password is demo123</p>
+          <p className="text-xs text-gray-400 text-center mt-2">demo123</p>
         </div>
 
-        {/* Debug Toggle */}
-        <div className="mt-6 text-center">
+        {/* Debug & Test Mode Toggles */}
+        <div className="mt-6 flex items-center justify-between text-center gap-2">
           <button
             type="button"
             onClick={() => setDebugMode(!debugMode)}
-            className="text-xs text-gray-400 hover:text-gray-600"
+            className="text-xs text-gray-400 hover:text-gray-600 flex-1"
           >
             {debugMode ? '🔍 Debug ON' : '🔍 Debug'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setUseTestLogin(!useTestLogin)}
+            className="text-xs text-blue-400 hover:text-blue-600 flex-1"
+          >
+            {useTestLogin ? '✅ Test Mode' : '⚪ Test'}
           </button>
         </div>
       </div>

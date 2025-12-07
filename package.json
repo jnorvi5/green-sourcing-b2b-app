@@ -6,33 +6,52 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'",
+    "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.478.0",
     "@aws-sdk/s3-request-presigner": "^3.478.0",
+<<<<<<< HEAD
     "@sentry/nextjs": "^10.29.0",
+=======
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+>>>>>>> e9b837ba7d63025b9d5266db0e2ea10ec0565f47
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.39.0",
     "autoprefixer": "^10.4.16",
     "fuse.js": "^7.0.0",
     "iconv-lite": "^0.7.0",
+<<<<<<< HEAD
     "mongodb": "^6.21.0",
     "mongoose": "^8.20.2",
     "next": "^14.2.33",
+=======
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.0.3",
+    "next": "14.2.32",
+>>>>>>> e9b837ba7d63025b9d5266db0e2ea10ec0565f47
     "openai": "^4.20.1",
     "pdfkit": "^0.14.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+<<<<<<< HEAD
     "react-icons": "^5.5.0",
+=======
+    "react-hook-form": "^7.68.0",
+    "react-icons": "^5.0.1",
+>>>>>>> e9b837ba7d63025b9d5266db0e2ea10ec0565f47
     "recharts": "^2.10.3",
+    "resend": "^6.5.2",
     "stripe": "^14.9.0",
     "tailwindcss": "^3.4.0",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.10.6",
     "@types/pdfkit": "^0.13.4",
     "@types/react": "^18.2.46",
@@ -40,6 +59,8 @@
     "@types/uuid": "^9.0.7",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.3.3"
   }
 }

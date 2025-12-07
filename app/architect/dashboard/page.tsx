@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function ArchitectDashboard() {
@@ -11,16 +11,57 @@ export default function ArchitectDashboard() {
   const [savedSuppliers, setSavedSuppliers] = useState<any[]>([])
   const [sentRFQs, setSentRFQs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isTestMode, setIsTestMode] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     loadDashboard()
+    
+    // Check for success message
+    if (searchParams.get('rfq') === 'created') {
+      setShowSuccessMessage(true)
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000)
+    }
   }, [])
 
   async function loadDashboard() {
     try {
+      // Check if using test token
+      const token = localStorage.getItem('auth-token')
+      const isTest = token?.startsWith('test_')
+      setIsTestMode(isTest || false)
+
+      if (isTest) {
+        // Demo data for test mode
+        const userType = localStorage.getItem('user-type')
+        setUser({
+          id: 'test-user',
+          email: userType === 'supplier' ? 'demo@supplier.com' : 'demo@architect.com',
+        })
+        setProfile({
+          id: 'test-user',
+          full_name: userType === 'supplier' ? 'Demo Supplier' : 'Demo Architect',
+          role: 'architect',
+        })
+        setSentRFQs([
+          {
+            id: '1',
+            created_at: new Date().toISOString(),
+            message: 'This is a demo RFQ in test mode',
+            status: 'Pending',
+            profiles: { company_name: 'Demo Supplier' },
+          },
+        ])
+        setLoading(false)
+        return
+      }
+
+      // Production: Use real Supabase
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push('/login')
@@ -60,8 +101,12 @@ export default function ArchitectDashboard() {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push('/')
+    localStorage.removeItem('auth-token')
+    localStorage.removeItem('user-type')
+    if (!isTestMode) {
+      await supabase.auth.signOut()
+    }
+    router.push('/login')
   }
 
   if (loading) {
@@ -78,6 +123,23 @@ export default function ArchitectDashboard() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-8">
+        {/* Test Mode Banner */}
+        {isTestMode && (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-400 text-sm">
+            ⚠️ Test Mode Active - Using demo data (not real Supabase)
+          </div>
+        )}
+
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <div className="mb-6 p-4 bg-teal-500/10 border border-teal-500/30 rounded-lg text-teal-400 flex items-center gap-3">
+            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>RFQ created successfully! Suppliers will be notified and can respond with quotes.</span>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -85,6 +147,9 @@ export default function ArchitectDashboard() {
             <p className="text-gray-400 mt-1">Welcome back, {profile?.full_name}</p>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/architect/rfq/new" className="px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition">
+              Create RFQ
+            </Link>
             <Link href="/search" className="px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold transition">
               Search Suppliers
             </Link>

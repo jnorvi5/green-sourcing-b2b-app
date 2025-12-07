@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     description: 'Connect with verified suppliers of sustainable building materials. EPD-certified, FSC-approved, low-carbon options.',
     images: [
       {
-        url: '/logos/logo-main.jpg',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'GreenChainz Logo',
+        alt: 'GreenChainz - Sustainable Materials Marketplace',
       },
     ],
   },
@@ -45,12 +45,18 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'GreenChainz | Verified Sustainable Materials',
     description: 'B2B marketplace for sustainable building materials',
-    images: ['/logos/logo-main.jpg'],
+    images: ['/og-image.jpg'],
     creator: '@greenchainz',
   },
   icons: {
     icon: '/logos/favicon.ico',
     apple: '/logos/logo-icon.jpg',
+  },
+  verification: {
+    google: 'your-google-site-verification-code-here',
+  },
+  alternates: {
+    canonical: 'https://greenchainz.com',
   },
 };
 
@@ -61,10 +67,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="canonical" href="https://greenchainz.com" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
       <body className="min-h-screen flex flex-col">
         <main className="flex-grow">{children}</main>
         <Footer />

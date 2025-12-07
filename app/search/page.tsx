@@ -12,6 +12,13 @@ interface Supplier {
   certifications: string[]
   products_count: number
   avg_carbon_footprint: number
+  epd_verified: boolean
+  fsc_verified: boolean
+  bcorp_verified: boolean
+  leed_verified: boolean
+  verification_source: string | null
+  epd_number: string | null
+  carbon_footprint_a1a3: number | null
 }
 
 export default function SearchPage() {
@@ -28,6 +35,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     loadSuppliers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
   async function loadSuppliers() {
@@ -40,7 +48,14 @@ export default function SearchPage() {
           company_name,
           description,
           location,
-          certifications
+          certifications,
+          epd_verified,
+          fsc_verified,
+          bcorp_verified,
+          leed_verified,
+          verification_source,
+          epd_number,
+          carbon_footprint_a1a3
         `)
         .eq('role', 'supplier')
         .eq('is_verified', true)
@@ -171,6 +186,53 @@ export default function SearchPage() {
                   </svg>
                   {supplier.location || 'Location not provided'}
                 </div>
+
+                {/* Verification Badges */}
+                {(supplier.epd_verified || supplier.fsc_verified || supplier.bcorp_verified || supplier.leed_verified) && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {supplier.epd_verified && (
+                      <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        EPD
+                      </span>
+                    )}
+                    {supplier.fsc_verified && (
+                      <span className="px-2 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        FSC
+                      </span>
+                    )}
+                    {supplier.bcorp_verified && (
+                      <span className="px-2 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        B Corp
+                      </span>
+                    )}
+                    {supplier.leed_verified && (
+                      <span className="px-2 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        LEED
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Verification Source Chip */}
+                {supplier.verification_source && (
+                  <div className="mb-3">
+                    <span className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs">
+                      Source: {supplier.verification_source}
+                    </span>
+                  </div>
+                )}
 
                 {supplier.certifications && supplier.certifications.length > 0 && (
                   <div className="flex flex-wrap gap-2">

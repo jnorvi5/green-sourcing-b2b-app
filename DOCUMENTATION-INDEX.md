@@ -32,6 +32,9 @@ GreenChainz Deployment Analysis
 ├── FIXES-APPLIED.md
 │   └── Changelog of all code changes
 │
+├── LINK_CHECK_GUIDE.md
+│   └── Link checking system documentation
+│
 └── deployment-diagnostic.js
     └── Automated checking tool
 ```
