@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'"
+    "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'",
     "test": "jest"
   },
   "dependencies": {
