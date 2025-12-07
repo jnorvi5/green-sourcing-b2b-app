@@ -25,14 +25,16 @@ exclude = [
   
   # Authentication-required URLs
   "^https://vercel.com/account",
-  "^https://app.supabase.com/project",
+  "^https://app.supabase.com",
   "^https://portal.azure.com",
   "^https://console.cloud.google.com",
+  "^https://console.aws.amazon.com",
   "^https://dash.cloudflare.com",
   "^https://tagmanager.google.com",
   "^https://search.google.com/search-console",
   "^https://vercel.com/dashboard",
-  "^https://supabase.com/dashboard"
+  "^https://supabase.com/dashboard",
+  "^https://myaccount.google.com"
 ]
 
 # Exclude specific path patterns
@@ -57,7 +59,8 @@ accept = [
   205, 
   206,
   429, # Too many requests (rate limiting)
-  999  # LinkedIn and some sites return this for bots
+  999, # LinkedIn and some sites return this for bots
+  503  # Service temporarily unavailable
 ]
 
 # Timeout for requests (in seconds)

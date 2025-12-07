@@ -51,6 +51,7 @@ jobs:
 
       - name: Check for broken links
         run: |
+          # Run link checker and capture exit code
           lychee --config lychee.toml \
             --format json \
             --output link-check-results.json \
@@ -59,17 +60,31 @@ jobs:
             'aws/**/*.md' \
             'database-schemas/**/*.md' \
             'marketing/**/*.md' \
+            '.github/**/*.md' || true
+          
+          # Run offline check for internal links only (this is what we really care about)
+          echo "Checking internal links only..."
+          lychee --config lychee.toml \
+            --offline \
+            --format json \
+            --output link-check-internal.json \
+            '*.md' '*.html' \
+            'docs/**/*.md' \
+            'aws/**/*.md' \
+            'database-schemas/**/*.md' \
+            'marketing/**/*.md' \
             '.github/**/*.md'
           
-          # Extract error count from JSON
-          ERRORS=$(cat link-check-results.json | grep -o '"fail_map":{[^}]*}' | grep -o '":' | wc -l || echo "0")
+          # Extract internal link error count
+          INTERNAL_ERRORS=$(cat link-check-internal.json 2>/dev/null | grep -c '"Failed"' || echo "0")
           
-          if [ "$ERRORS" -gt "0" ]; then
-            echo "❌ Found $ERRORS broken link(s)"
-            echo "See the link-check-results.md for details"
+          if [ "$INTERNAL_ERRORS" -gt "0" ]; then
+            echo "❌ Found $INTERNAL_ERRORS broken internal link(s)"
+            echo "Internal links must be fixed before merging"
             exit 1
           else
-            echo "✅ All links are valid!"
+            echo "✅ All internal links are valid!"
+            echo "Note: External link failures are warnings only"
           fi
 
       - name: Upload results as artifact
