@@ -11,6 +11,7 @@
  */
 
 import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { RFQWithArchitect, RFQResponse } from '@/types/rfq';
 import { createClient } from '@/lib/supabase/client';
 
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Props) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(!existingQuote);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,12 +63,16 @@ export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Pr
           throw new Error(`Failed to upload PDF: ${uploadError.message}`);
         }
 
-        // Get public URL
-        const { data: urlData } = supabase.storage
+        // Get signed URL (for private bucket) - valid for 1 hour
+        const { data: urlData, error: signedUrlError } = await supabase.storage
           .from('quotes')
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, 3600);
 
-        pdfUrl = urlData.publicUrl;
+        if (signedUrlError) {
+          throw new Error(`Failed to get signed URL: ${signedUrlError.message}`);
+        }
+
+        pdfUrl = urlData.signedUrl;
       }
 
       // Submit quote to API
@@ -93,9 +99,9 @@ export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Pr
       setSuccess(data.message || 'Quote submitted successfully!');
       setIsEditing(false);
       
-      // Reload page after 2 seconds to show updated quote
+      // Refresh the page data after 2 seconds to show updated quote
       setTimeout(() => {
-        window.location.reload();
+        router.refresh();
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -310,6 +316,33 @@ export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Pr
               <div className="mt-6 pt-6 border-t border-gray-800">
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Notes</h3>
                 <p className="text-white whitespace-pre-wrap">{existingQuote.message}</p>
+              </div>
+            )}
+
+            {existingQuote.attachment_url && (
+              <div className="mt-6 pt-6 border-t border-gray-800">
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Attachment</h3>
+                <a
+                  href={existingQuote.attachment_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                >
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Download Quote PDF
+                </a>
               </div>
             )}
 

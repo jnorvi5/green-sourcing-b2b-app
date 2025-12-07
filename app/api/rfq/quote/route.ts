@@ -92,14 +92,27 @@ export async function POST(request: NextRequest) {
 
     if (existingQuote) {
       // Update existing quote
+      const updateData: {
+        quote_amount: number;
+        lead_time_days: number;
+        message: string | null;
+        responded_at: string;
+        attachment_url?: string;
+      } = {
+        quote_amount: price,
+        lead_time_days,
+        message: notes || null,
+        responded_at: new Date().toISOString(),
+      };
+
+      // Add attachment URL if provided
+      if (pdf_url) {
+        updateData.attachment_url = pdf_url;
+      }
+
       const { data: updatedQuote, error: updateError } = await supabase
         .from('rfq_responses')
-        .update({
-          quote_amount: price,
-          lead_time_days,
-          message: notes || null,
-          responded_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', existingQuote.id)
         .select()
         .single();
@@ -127,16 +140,31 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Insert new quote
+      const insertData: {
+        rfq_id: string;
+        supplier_id: string;
+        quote_amount: number;
+        lead_time_days: number;
+        message: string | null;
+        status: string;
+        attachment_url?: string;
+      } = {
+        rfq_id,
+        supplier_id: supplier.id,
+        quote_amount: price,
+        lead_time_days,
+        message: notes || null,
+        status: 'submitted',
+      };
+
+      // Add attachment URL if provided
+      if (pdf_url) {
+        insertData.attachment_url = pdf_url;
+      }
+
       const { data: newQuote, error: insertError } = await supabase
         .from('rfq_responses')
-        .insert({
-          rfq_id,
-          supplier_id: supplier.id,
-          quote_amount: price,
-          lead_time_days,
-          message: notes || null,
-          status: 'submitted',
-        })
+        .insert(insertData)
         .select()
         .single();
 
