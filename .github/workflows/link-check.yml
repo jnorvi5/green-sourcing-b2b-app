@@ -64,23 +64,24 @@ jobs:
           
           # Run offline check for internal links only (this is what we really care about)
           echo "Checking internal links only..."
+          EXIT_CODE=0
           lychee --config lychee.toml \
             --offline \
-            --format json \
-            --output link-check-internal.json \
             '*.md' '*.html' \
             'docs/**/*.md' \
             'aws/**/*.md' \
             'database-schemas/**/*.md' \
             'marketing/**/*.md' \
-            '.github/**/*.md'
+            '.github/**/*.md' || EXIT_CODE=$?
           
-          # Extract internal link error count
-          INTERNAL_ERRORS=$(cat link-check-internal.json 2>/dev/null | grep -c '"Failed"' || echo "0")
-          
-          if [ "$INTERNAL_ERRORS" -gt "0" ]; then
-            echo "❌ Found $INTERNAL_ERRORS broken internal link(s)"
+          # Lychee returns 2 if there are broken links, 0 if all OK
+          if [ "$EXIT_CODE" -eq "2" ]; then
+            echo "❌ Found broken internal link(s)"
             echo "Internal links must be fixed before merging"
+            echo "Run 'npm run check:links -- --offline' locally to identify issues"
+            exit 1
+          elif [ "$EXIT_CODE" -ne "0" ]; then
+            echo "⚠️ Link checker encountered an error (exit code: $EXIT_CODE)"
             exit 1
           else
             echo "✅ All internal links are valid!"
