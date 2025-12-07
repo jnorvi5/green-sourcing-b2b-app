@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getRFQWithQuotes, acceptQuote, exportQuotesToCSV } from '@/app/actions/quotes';
+import { getRFQWithQuotes, acceptQuote } from '@/app/actions/quotes';
+import { exportQuotesToCSV } from '@/lib/utils/formatters';
 import { RFQWithQuotes, QuoteWithSupplier } from '@/types/rfq';
 
 type SortField = 'price' | 'leadTime' | null;

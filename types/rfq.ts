@@ -1,20 +1,11 @@
 /**
- * TypeScript types for RFQ and Quote data structures
- */
-
-export interface RFQ {
- * TypeScript types for RFQ (Request for Quote) system
- */
-
-import { z } from 'zod';
-
-// Database types (matching supabase_production_schema.sql)
-export interface RFQ {
  * RFQ (Request for Quote) Type Definitions
  * 
  * Types for RFQ data structures used throughout the application.
  * Based on supabase_production_schema.sql
  */
+
+import { z } from 'zod';
 
 /**
  * RFQ status enum matching database type
@@ -74,23 +65,6 @@ export interface Rfq {
   product_id: string | null;
   project_name: string;
   project_location: string;
-  material_specs: {
-    quantity?: number;
-    unit?: string;
-    material_type?: string;
-    [key: string]: unknown;
-    quantity: number;
-    unit: string;
-    material_type?: string;
-    material_category?: string;
-    project_description?: string;
-  };
-  budget_range: string | null;
-  delivery_deadline: string | null;
-  required_certifications: string[];
-  message: string | null;
-  status: 'pending' | 'responded' | 'closed' | 'expired';
-  matched_suppliers: string[];
   material_specs: MaterialSpecs;
   budget_range: string | null;
   delivery_deadline: string | null; // ISO date string
@@ -121,8 +95,32 @@ export interface Supplier {
   updated_at: string;
 }
 
+/**
+ * Quote/Response with supplier details
+ */
 export interface Quote {
-export interface RFQWithArchitect extends RFQ {
+  id: string;
+  rfq_id: string;
+  supplier_id: string;
+  quote_amount: number;
+  lead_time_days: number;
+  message: string | null;
+  status: RfqResponseStatus;
+  responded_at: string;
+  attachment_url?: string;
+}
+
+/**
+ * Quote with supplier information for architect view
+ */
+export interface QuoteWithSupplier extends Quote {
+  supplier: Supplier;
+}
+
+/**
+ * RFQ with architect information
+ */
+export interface RFQWithArchitect extends Rfq {
   architect: {
     id: string;
     email: string;
@@ -131,16 +129,22 @@ export interface RFQWithArchitect extends RFQ {
   };
 }
 
-export interface RFQResponse {
 /**
- * RFQ with joined user profile data
+ * RFQ with quotes for comparison view
  */
-export interface RfqWithArchitect extends Rfq {
+export interface RFQWithQuotes extends Rfq {
+  quotes: QuoteWithSupplier[];
+}
+
+/**
+ * RFQ with joined user profile data (alternative format)
+ */
+export interface RfqWithArchitectProfile extends Rfq {
   users: UserProfile | null;
 }
 
 /**
- * RFQ response data
+ * RFQ response data (detailed format)
  */
 export interface RfqResponse {
   id: string;
@@ -149,20 +153,16 @@ export interface RfqResponse {
   quote_amount: number;
   lead_time_days: number;
   message: string | null;
-  status: 'submitted' | 'accepted' | 'rejected';
+  status: RfqResponseStatus;
   responded_at: string;
   supplier?: Supplier;
-  pdf_url?: string | null;
+  attachment_url?: string | null;
 }
 
-export interface QuoteWithSupplier extends Quote {
-  supplier: Supplier;
-}
-
-export interface RFQWithQuotes extends RFQ {
-  quotes: QuoteWithSupplier[];
-  attachment_url?: string;
-}
+/**
+ * RFQ response data (alias for backward compatibility)
+ */
+export type RFQResponse = RfqResponse;
 
 // Zod validation schemas
 export const QuoteSubmissionSchema = z.object({
@@ -184,14 +184,11 @@ export const QuoteApiRequestSchema = z.object({
 });
 
 export type QuoteApiRequest = z.infer<typeof QuoteApiRequestSchema>;
-  status: RfqResponseStatus;
-  responded_at: string;
-}
 
 /**
  * Extended RFQ data with response information for supplier view
  */
-export interface RfqWithResponse extends RfqWithArchitect {
+export interface RfqWithResponse extends RfqWithArchitectProfile {
   rfq_response: RfqResponse | null;
   is_new: boolean;
   match_score?: number;
@@ -206,7 +203,9 @@ export type RfqFilter = 'all' | 'new' | 'quoted' | 'closed';
  * Sort options for RFQ list
  */
 export type RfqSort = 'newest' | 'deadline' | 'match_score';
- * Type definitions for RFQ (Request for Quote) system
+
+/**
+ * Form-specific types
  */
 
 export type MaterialCategory = 
