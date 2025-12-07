@@ -1,0 +1,76 @@
+# Lychee Link Checker Configuration
+# https://lychee.cli.rs/#/usage/config
+
+# Maximum number of concurrent network requests
+max_concurrency = 10
+
+# Exclude file patterns and URLs
+exclude = [
+  # Localhost URLs (development only)
+  "^http://localhost",
+  "^https://localhost",
+  
+  # Example/placeholder URLs
+  "^https://your-backend-domain",
+  "^https://vercel.com/your-project",
+  "^https://greenchainz-landing.pages.dev",
+  "^https://greenchainz-app.vercel.app",
+  "^https://www.greenchainz.com",
+  "^http://www.greenchainz.com",
+  "^https://support.greenchainz.com",
+  "^https://docs.greenchainz.com",
+  
+  # Unsplash image URLs (may have rate limiting)
+  "^https://images.unsplash.com",
+  
+  # Authentication-required URLs
+  "^https://vercel.com/account",
+  "^https://app.supabase.com/project",
+  "^https://portal.azure.com",
+  "^https://console.cloud.google.com",
+  "^https://dash.cloudflare.com",
+  "^https://tagmanager.google.com",
+  "^https://search.google.com/search-console",
+  "^https://vercel.com/dashboard",
+  "^https://supabase.com/dashboard"
+]
+
+# Exclude specific path patterns
+exclude_path = [
+  "node_modules",
+  ".git",
+  "dist",
+  "build",
+  ".next"
+]
+
+# URLs to exclude from checking
+exclude_link_local = true
+
+# Accept various HTTP status codes as valid
+accept = [
+  200, 
+  201, 
+  202, 
+  203, 
+  204, 
+  205, 
+  206,
+  429, # Too many requests (rate limiting)
+  999  # LinkedIn and some sites return this for bots
+]
+
+# Timeout for requests (in seconds)
+timeout = 20
+
+# Number of retries for failed requests
+max_retries = 3
+
+# User agent string
+user_agent = "Mozilla/5.0 (compatible; GreenChainzLinkChecker/1.0)"
+
+# Show verbose output
+verbose = "warn"
+
+# Cache results to speed up consecutive runs
+cache = true

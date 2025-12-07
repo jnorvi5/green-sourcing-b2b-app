@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.478.0",

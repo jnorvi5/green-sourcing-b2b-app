@@ -1,0 +1,127 @@
+name: Link Checker
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - '**.md'
+      - '**.html'
+      - 'lychee.toml'
+      - '.github/workflows/link-check.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - '**.md'
+      - '**.html'
+      - 'lychee.toml'
+  workflow_dispatch:
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install lychee
+        run: |
+          curl -sSL https://github.com/lycheeverse/lychee/releases/download/v0.15.1/lychee-v0.15.1-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          sudo mv lychee /usr/local/bin/
+          lychee --version
+
+      - name: Run link checker
+        run: |
+          lychee --config lychee.toml \
+            --format markdown \
+            --output link-check-results.md \
+            '*.md' '*.html' \
+            'docs/**/*.md' \
+            'aws/**/*.md' \
+            'database-schemas/**/*.md' \
+            'marketing/**/*.md' \
+            '.github/**/*.md' || true
+
+      - name: Display results
+        if: always()
+        run: |
+          if [ -f link-check-results.md ]; then
+            echo "## Link Check Results"
+            cat link-check-results.md
+          fi
+
+      - name: Check for broken links
+        run: |
+          lychee --config lychee.toml \
+            --format json \
+            --output link-check-results.json \
+            '*.md' '*.html' \
+            'docs/**/*.md' \
+            'aws/**/*.md' \
+            'database-schemas/**/*.md' \
+            'marketing/**/*.md' \
+            '.github/**/*.md'
+          
+          # Extract error count from JSON
+          ERRORS=$(cat link-check-results.json | grep -o '"fail_map":{[^}]*}' | grep -o '":' | wc -l || echo "0")
+          
+          if [ "$ERRORS" -gt "0" ]; then
+            echo "❌ Found $ERRORS broken link(s)"
+            echo "See the link-check-results.md for details"
+            exit 1
+          else
+            echo "✅ All links are valid!"
+          fi
+
+      - name: Upload results as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-check-results
+          path: |
+            link-check-results.md
+            link-check-results.json
+          retention-days: 7
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '## 🔗 Link Check Results\n\n';
+            
+            try {
+              const results = fs.readFileSync('link-check-results.md', 'utf8');
+              comment += results;
+            } catch (error) {
+              comment += '✅ All links are valid!\n';
+            }
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🔗 Link Check Results')
+            );
+            
+            // Update or create comment
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
