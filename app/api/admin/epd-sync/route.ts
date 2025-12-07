@@ -119,7 +119,6 @@ export async function POST(request: NextRequest) {
     const normalizedEPDs: NormalizedEPD[] = [];
     
     for (const apiEPD of apiEPDs) {
-      console.log('[EPD Sync] Processing EPD:', JSON.stringify(apiEPD).substring(0, 200));
       const normalized = normalizeEPD(apiEPD);
       if (normalized) {
         normalizedEPDs.push(normalized);

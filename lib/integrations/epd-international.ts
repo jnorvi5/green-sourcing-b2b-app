@@ -269,8 +269,6 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
       || apiResponse.registration_number 
       || apiResponse.uuid;
     
-    console.log('[EPD Normalize] epd_number:', epd_number);
-    
     if (!epd_number) {
       console.warn('[EPD Normalize] Missing EPD number');
       return null;
@@ -280,8 +278,6 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
     const product_name = apiResponse.product_name 
       || apiResponse.productName 
       || apiResponse.name;
-    
-    console.log('[EPD Normalize] product_name:', product_name);
     
     if (!product_name) {
       console.warn('[EPD Normalize] Missing product name');
