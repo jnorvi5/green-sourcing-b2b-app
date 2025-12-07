@@ -409,6 +409,231 @@ export function generatePasswordResetEmail(data: {
 }
 
 // =============================================================================
+// Supplier Welcome Email
+// =============================================================================
+
+export function generateSupplierWelcomeEmail(data: {
+  name: string;
+  dashboardUrl: string;
+}): string {
+  const content = `
+    <!-- Welcome Banner -->
+    <div style="${STYLES.alertSuccess}">
+      <span style="color: #6ee7b7; font-size: 14px; font-weight: 600;">🎉 WELCOME TO GREENCHAINZ</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Welcome, ${data.name}! 🌱
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Thank you for joining GreenChainz, the leading B2B marketplace connecting sustainable building material suppliers with eco-conscious architects and contractors.
+    </p>
+
+    <p style="${STYLES.text}">
+      To start receiving quote requests and connecting with buyers, you'll need to complete your supplier profile.
+    </p>
+
+    <!-- Getting Started Steps -->
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">🚀 Get Verified in 3 Steps</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li><strong style="color: #ffffff;">Upload Your Certifications</strong> - Add EPDs, FSC, LEED, or other sustainability certifications</li>
+        <li><strong style="color: #ffffff;">Add Your Products</strong> - List your sustainable building materials with specifications</li>
+        <li><strong style="color: #ffffff;">Get Verified</strong> - Our team will review and verify your account within 48 hours</li>
+      </ul>
+    </div>
+
+    <a href="${data.dashboardUrl}" style="${STYLES.buttonBlock}">
+      Complete Your Profile →
+    </a>
+
+    <div style="margin-top: 24px;">
+      <p style="${STYLES.text}">
+        <strong style="color: #ffffff;">Why Get Verified?</strong>
+      </p>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.6; font-size: 14px;">
+        <li>Stand out with a verified badge</li>
+        <li>Receive more RFQ opportunities</li>
+        <li>Build trust with architects and contractors</li>
+        <li>Access premium marketplace features</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Need help? Check out our 
+        <a href="https://greenchainz.com/docs/supplier-guide" style="${STYLES.link}">Supplier Guide</a>
+        or <a href="https://greenchainz.com/support" style="${STYLES.link}">contact support</a>.
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Architect Welcome Email
+// =============================================================================
+
+export function generateArchitectWelcomeEmail(data: {
+  name: string;
+  createRfqUrl: string;
+}): string {
+  const content = `
+    <!-- Welcome Banner -->
+    <div style="${STYLES.alertSuccess}">
+      <span style="color: #6ee7b7; font-size: 14px; font-weight: 600;">🎉 WELCOME TO GREENCHAINZ</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Welcome, ${data.name}! 🏗️
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Welcome to GreenChainz! You now have access to a curated network of <strong style="color: #10b981;">verified sustainable suppliers</strong> ready to provide materials for your next project.
+    </p>
+
+    <p style="${STYLES.text}">
+      Finding green building materials has never been easier. Here's how it works:
+    </p>
+
+    <!-- How It Works -->
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">🔍 How to Find Suppliers</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li><strong style="color: #ffffff;">Browse Products</strong> - Search our catalog of sustainable materials with EPD data</li>
+        <li><strong style="color: #ffffff;">Create an RFQ</strong> - Send quote requests to verified suppliers</li>
+        <li><strong style="color: #ffffff;">Compare Options</strong> - Evaluate quotes based on price, carbon footprint, and certifications</li>
+        <li><strong style="color: #ffffff;">Close the Deal</strong> - Connect directly with suppliers to finalize your order</li>
+      </ul>
+    </div>
+
+    <a href="${data.createRfqUrl}" style="${STYLES.buttonBlock}">
+      Create Your First RFQ →
+    </a>
+
+    <div style="margin-top: 24px;">
+      <p style="${STYLES.text}">
+        <strong style="color: #ffffff;">Why Choose GreenChainz?</strong>
+      </p>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.6; font-size: 14px;">
+        <li>All suppliers are verified for sustainability credentials</li>
+        <li>Access comprehensive EPD and carbon data for every product</li>
+        <li>Compare materials based on environmental impact</li>
+        <li>Streamline your green procurement process</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Questions? Visit our 
+        <a href="https://greenchainz.com/docs/buyer-guide" style="${STYLES.link}">Buyer Guide</a>
+        or <a href="https://greenchainz.com/support" style="${STYLES.link}">reach out to support</a>.
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Supplier Follow-up Email - Day 2
+// =============================================================================
+
+export function generateSupplierFollowUpDay2Email(data: {
+  name: string;
+  dashboardUrl: string;
+}): string {
+  const content = `
+    <h1 style="${STYLES.h1}">
+      Don't forget to upload your certifications 📄
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Hi ${data.name},
+    </p>
+
+    <p style="${STYLES.text}">
+      We noticed you haven't uploaded your sustainability certifications yet. Adding your EPDs, FSC, LEED, or other green certifications is crucial for getting verified and attracting buyers.
+    </p>
+
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">✅ Why Certifications Matter</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li>Verified suppliers receive <strong style="color: #10b981;">3x more RFQ requests</strong></li>
+        <li>Build trust and credibility with architects</li>
+        <li>Stand out with a verified badge on your profile</li>
+        <li>Get matched with high-value projects</li>
+      </ul>
+    </div>
+
+    <a href="${data.dashboardUrl}" style="${STYLES.buttonBlock}">
+      Upload Certifications Now →
+    </a>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        Need help? Our team can assist with document formatting and verification.
+        <a href="https://greenchainz.com/support" style="${STYLES.link}">Contact support</a>
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
+// Supplier Follow-up Email - Day 7
+// =============================================================================
+
+export function generateSupplierFollowUpDay7Email(data: {
+  name: string;
+  dashboardUrl: string;
+}): string {
+  const content = `
+    <h1 style="${STYLES.h1}">
+      Tips for getting your first RFQ match 🎯
+    </h1>
+    
+    <p style="${STYLES.text}">
+      Hi ${data.name},
+    </p>
+
+    <p style="${STYLES.text}">
+      Ready to start receiving quote requests? Here are proven strategies to increase your visibility and win more business on GreenChainz.
+    </p>
+
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">🚀 Top Tips from Successful Suppliers</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li><strong style="color: #ffffff;">Complete Your Profile</strong> - Add a logo, company description, and contact details</li>
+        <li><strong style="color: #ffffff;">List Multiple Products</strong> - The more products you have, the more opportunities to match</li>
+        <li><strong style="color: #ffffff;">Include Detailed Specs</strong> - Add technical specs, pricing tiers, and lead times</li>
+        <li><strong style="color: #ffffff;">Upload EPD Data</strong> - Products with carbon data get 2x more views</li>
+        <li><strong style="color: #ffffff;">Respond Quickly</strong> - Aim to respond to RFQs within 24 hours</li>
+      </ul>
+    </div>
+
+    <a href="${data.dashboardUrl}" style="${STYLES.buttonBlock}">
+      Optimize Your Profile →
+    </a>
+
+    <div style="margin-top: 24px;">
+      <p style="${STYLES.text}">
+        <strong style="color: #ffffff;">Need Personalized Advice?</strong>
+      </p>
+      <p style="${STYLES.textSmall}">
+        Our team offers free onboarding consultations to help you maximize your success on the platform.
+        <a href="https://greenchainz.com/suppliers/consultation" style="${STYLES.link}">Schedule a call</a>
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
 // Export All Templates
 // =============================================================================
 
@@ -419,4 +644,8 @@ export default {
   generateSupplierRejectionEmail,
   generateAccountVerificationEmail,
   generatePasswordResetEmail,
+  generateSupplierWelcomeEmail,
+  generateArchitectWelcomeEmail,
+  generateSupplierFollowUpDay2Email,
+  generateSupplierFollowUpDay7Email,
 };
