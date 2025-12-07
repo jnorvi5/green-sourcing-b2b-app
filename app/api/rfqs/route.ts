@@ -148,17 +148,33 @@ export async function POST(request: NextRequest) {
       // Continue even if matching fails - RFQ is already created
     }
 
+    // Type for matched product with nested supplier data
+    type MatchedProduct = {
+      id: string;
+      supplier_id: string;
+      material_type: string;
+      suppliers: {
+        id: string;
+        company_name: string;
+        user_id: string;
+        users: {
+          id: string;
+          email: string;
+        };
+      };
+    };
+
     // Deduplicate suppliers (one supplier may have multiple products)
     const uniqueSuppliers = matchingProducts
       ? Array.from(
           new Map(
-            matchingProducts.map(p => [
+            (matchingProducts as MatchedProduct[]).map(p => [
               p.supplier_id,
               {
                 supplier_id: p.supplier_id,
-                company_name: (p.suppliers as any).company_name,
-                user_id: (p.suppliers as any).user_id,
-                email: (p.suppliers as any).users?.email,
+                company_name: p.suppliers.company_name,
+                user_id: p.suppliers.user_id,
+                email: p.suppliers.users.email,
               }
             ])
           ).values()
