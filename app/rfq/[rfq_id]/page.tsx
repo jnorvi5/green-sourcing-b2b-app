@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { RfqWithResponse, Rfq, UserProfile, RfqResponse } from '@/types/rfq'
-import { formatMaterialType, formatDate } from '@/lib/utils/formatters'
+import { formatMaterialType, formatDate, getStatusColor } from '@/lib/utils/formatters'
 
 export default function RfqDetailPage() {
   const [rfq, setRfq] = useState<RfqWithResponse | null>(null)
@@ -104,23 +104,6 @@ export default function RfqDetailPage() {
       setError('Failed to load RFQ details')
     } finally {
       setLoading(false)
-    }
-  }
-
-
-
-  function getStatusColor(status: string): string {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-      case 'responded':
-        return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-      case 'closed':
-        return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
-      case 'expired':
-        return 'bg-red-500/10 text-red-400 border-red-500/20'
-      default:
-        return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
     }
   }
 

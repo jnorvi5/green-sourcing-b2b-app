@@ -45,3 +45,21 @@ export function formatShortDate(dateString: string | null): string {
     year: 'numeric' 
   });
 }
+
+/**
+ * Gets the Tailwind CSS classes for RFQ status badge styling
+ */
+export function getStatusColor(status: string): string {
+  switch (status) {
+    case 'pending':
+      return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+    case 'responded':
+      return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+    case 'closed':
+      return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    case 'expired':
+      return 'bg-red-500/10 text-red-400 border-red-500/20';
+    default:
+      return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+  }
+}
