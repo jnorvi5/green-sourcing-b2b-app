@@ -61,7 +61,7 @@ export default function NewRFQPage() {
       }
 
       // Success - redirect to dashboard with success message
-      router.push('/dashboard/architect?rfq=created');
+      router.push('/architect/dashboard?rfq=created');
     } catch (error) {
       console.error('Error submitting RFQ:', error);
       setErrorMessage('An unexpected error occurred. Please try again.');
