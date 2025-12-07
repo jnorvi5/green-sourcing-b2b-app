@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { RfqWithResponse, RfqFilter, RfqSort, Rfq, UserProfile, RfqResponse } from '@/types/rfq'
+import { formatMaterialType, formatShortDate } from '@/lib/utils/formatters'
 
 export default function SupplierRfqsPage() {
   const [user, setUser] = useState<{ id: string } | null>(null)
@@ -170,11 +171,7 @@ export default function SupplierRfqsPage() {
     setFilteredRfqs(filtered)
   }
 
-  function formatDate(dateString: string | null): string {
-    if (!dateString) return 'No deadline'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  }
+
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -316,8 +313,8 @@ export default function SupplierRfqsPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
                       <div>
                         <p className="text-gray-500 mb-1">Material</p>
-                        <p className="text-white font-medium capitalize">
-                          {rfq.material_specs.material_type.replace('_', ' ')}
+                        <p className="text-white font-medium">
+                          {formatMaterialType(rfq.material_specs.material_type)}
                         </p>
                       </div>
                       <div>
@@ -329,7 +326,7 @@ export default function SupplierRfqsPage() {
                       <div>
                         <p className="text-gray-500 mb-1">Deadline</p>
                         <p className="text-white font-medium">
-                          {formatDate(rfq.delivery_deadline)}
+                          {formatShortDate(rfq.delivery_deadline)}
                         </p>
                       </div>
                       <div>
@@ -374,7 +371,7 @@ export default function SupplierRfqsPage() {
                         </p>
                         <p className="text-gray-400">
                           Lead time: {rfq.rfq_response.lead_time_days} days • 
-                          Submitted {formatDate(rfq.rfq_response.responded_at)}
+                          Submitted {formatShortDate(rfq.rfq_response.responded_at)}
                         </p>
                       </div>
                     )}

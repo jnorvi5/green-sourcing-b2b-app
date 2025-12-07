@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { RfqWithResponse, Rfq, UserProfile, RfqResponse } from '@/types/rfq'
+import { formatMaterialType, formatDate } from '@/lib/utils/formatters'
 
 export default function RfqDetailPage() {
   const [rfq, setRfq] = useState<RfqWithResponse | null>(null)
@@ -106,15 +107,7 @@ export default function RfqDetailPage() {
     }
   }
 
-  function formatDate(dateString: string | null): string {
-    if (!dateString) return 'No deadline'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    })
-  }
+
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -221,8 +214,8 @@ export default function RfqDetailPage() {
             <dl className="space-y-3">
               <div>
                 <dt className="text-sm text-gray-500">Material Type</dt>
-                <dd className="text-lg font-semibold capitalize">
-                  {rfq.material_specs.material_type.replace('_', ' ')}
+                <dd className="text-lg font-semibold">
+                  {formatMaterialType(rfq.material_specs.material_type)}
                 </dd>
               </div>
               <div>
