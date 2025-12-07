@@ -54,19 +54,13 @@ Our platform aggregates verified sustainability data from authoritative sources 
 We serve the Architecture, Engineering, and Construction (AEC) industry where sustainability certifications and environmental product declarations (EPDs) are increasingly required by government mandates and corporate ESG policies. Our platform helps businesses meet LEED certification requirements and embodied carbon reporting mandates.
 
 Let me know if you need any refinements to this response or if you'd like me to address specific concerns Stripe might have!
-<span style="display:none">[^1_1][^1_2][^1_3][^1_4][^1_5]</span>
+<span style="display:none">[^1_1][^1_2]</span>
 
 <div align="center">⁂</div>
 
-[^1_1]: Solo-Tech-Business-Launch-Strategy.pdf
+[^1_1]: BUSINESS-PLAN.md
 
-[^1_2]: greenchainz-go-over-these-book-cKqasTXcRyiS_q0rGgIOMQ.md
-
-[^1_3]: Greenchainz-B2B-Marketplace-Research-Plan-1.md
-
-[^1_4]: Strategic-Assessment-of-the-GreenChainz-Project.txt
-
-[^1_5]: giuve-me-anm-emial-to-write-to-CaDLWlU.QViB2fImdKuBwg.md
+[^1_2]: DOCUMENTATION-INDEX.md
 
 
 ---

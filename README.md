@@ -81,6 +81,27 @@
 
 ---
 
+## **Development & Quality**
+
+### Build Commands
+```bash
+npm install          # Install dependencies
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run lint         # Run ESLint
+npm run check:links  # Check all links in documentation
+```
+
+### Link Checking
+This repository uses [lychee](https://github.com/lycheeverse/lychee) for automated link checking:
+- **Manual check**: `npm run check:links`
+- **Offline check**: `npm run check:links -- --offline` (faster, checks only internal links)
+- **CI check**: Automated link checking runs on PRs via GitHub Actions
+
+Configuration is in `lychee.toml`.
+
+---
+
 ## **Compliance & Standards**
 
 Our platform aligns with:
