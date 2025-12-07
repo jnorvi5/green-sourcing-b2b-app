@@ -221,7 +221,7 @@ export async function acceptQuote(input: z.infer<typeof acceptQuoteSchema>): Pro
 /**
  * Export quotes data to CSV format
  */
-export function exportQuotesToCSV(quotes: Quote[]): string {
+export async function exportQuotesToCSV(quotes: Quote[]): Promise<string> {
   const headers = [
     'Supplier Name',
     'Quote Amount',

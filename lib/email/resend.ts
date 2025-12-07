@@ -6,8 +6,19 @@
 
 import { Resend } from 'resend';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-initialize Resend client to avoid build-time errors
+let resendInstance: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendInstance) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    resendInstance = new Resend(apiKey);
+  }
+  return resendInstance;
+}
 
 export interface RfqNotificationEmailData {
   supplierName: string;
@@ -156,6 +167,7 @@ export async function sendRfqNotificationEmail(
 </html>
     `.trim();
 
+    const resend = getResendClient();
     const result = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
       to: data.supplierEmail,
