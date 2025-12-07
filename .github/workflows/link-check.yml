@@ -16,6 +16,9 @@ on:
       - 'lychee.toml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   link-check:
     runs-on: ubuntu-latest
