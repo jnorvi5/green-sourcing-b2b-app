@@ -25,9 +25,11 @@ const IMAGES_BUCKET = process.env.AWS_IMAGES_BUCKET ?? 'gc-product-images-prod';
 const EPD_BUCKET = process.env.AWS_EPD_BUCKET ?? 'gc-epd-documents-prod';
 const BACKUP_BUCKET = process.env.AWS_BACKUP_BUCKET ?? 'gc-data-backups-prod';
 
-// Validate credentials
-if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
-  console.warn('AWS credentials not configured. S3 operations will fail.');
+// Validate credentials (fail fast when functions are invoked)
+function assertAwsCredentials() {
+  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+    throw new Error('AWS credentials not configured. Set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and bucket env vars.');
+  }
 }
 
 // Initialize S3 client
@@ -121,6 +123,7 @@ export async function uploadToS3(
     metadata?: Record<string, string>;
   }
 ): Promise<UploadResult> {
+  assertAwsCredentials();
   const bucket = getBucketName(bucketType);
   const key = generateUniqueKey(
     options.prefix ?? bucketType,
@@ -167,6 +170,7 @@ export async function getPresignedUploadUrl(
     expiresIn?: number; // seconds, default 1 hour
   }
 ): Promise<PresignedUploadResult> {
+  assertAwsCredentials();
   const bucket = getBucketName(bucketType);
   const key = generateUniqueKey(
     options.prefix ?? bucketType,
@@ -271,6 +275,7 @@ export async function deleteFromS3(
   key: string
 ): Promise<void> {
   const bucket = getBucketName(bucketType);
+  assertAwsCredentials();
 
   await s3Client.send(new DeleteObjectCommand({
     Bucket: bucket,
