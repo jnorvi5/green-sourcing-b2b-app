@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { FcGoogle } from 'react-icons/fc'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 
@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   async function signInWithEmail(e: React.FormEvent) {
     e.preventDefault()
