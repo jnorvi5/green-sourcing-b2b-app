@@ -24,6 +24,7 @@ export default function QuoteComparisonPage() {
 
   useEffect(() => {
     loadRFQData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rfqId]);
 
   async function loadRFQData() {
@@ -237,7 +238,7 @@ export default function QuoteComparisonPage() {
             <div className="text-gray-500 text-6xl mb-4">📭</div>
             <h3 className="text-xl font-semibold mb-2">No quotes yet</h3>
             <p className="text-gray-400">
-              Suppliers haven't responded to this RFQ yet. Check back later!
+              Suppliers haven&apos;t responded to this RFQ yet. Check back later!
             </p>
           </div>
         ) : (
