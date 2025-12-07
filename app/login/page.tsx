@@ -29,7 +29,7 @@ export default function LoginPage() {
     setError('');
 
     if (debugMode) {
-      console.log('🔍 Login attempt:', { email: formData.email, pass_len: formData.password.length, testMode: useTestLogin });
+      console.log('🔍 Login attempt:', { testMode: useTestLogin });
     }
 
     try {
