@@ -18,7 +18,7 @@
     "iconv-lite": "^0.7.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.3",
-    "next": "14.0.4",
+    "next": "14.2.32",
     "openai": "^4.20.1",
     "pdfkit": "^0.14.0",
     "postcss": "^8.4.32",
