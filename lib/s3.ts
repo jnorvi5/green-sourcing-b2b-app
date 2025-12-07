@@ -19,8 +19,10 @@ const region = process.env.AWS_REGION || 'us-east-1';
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-if (!accessKeyId || !secretAccessKey) {
-  console.warn('AWS credentials not configured. S3 operations will fail.');
+function assertAwsCredentials() {
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('AWS credentials not configured. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.');
+  }
 }
 
 export const s3Client = new S3Client({
@@ -56,6 +58,7 @@ export async function uploadFileToS3(
   path: string,
   contentType: string
 ): Promise<UploadResult> {
+  assertAwsCredentials();
   // Generate unique key with UUID and timestamp
   const timestamp = Date.now();
   const uniqueId = uuidv4();
@@ -92,6 +95,7 @@ export async function uploadFileToS3(
  * @returns Promise that resolves when deletion is complete
  */
 export async function deleteFileFromS3(key: string): Promise<void> {
+  assertAwsCredentials();
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -116,6 +120,7 @@ export async function getPresignedUploadUrl(
   contentType: string,
   expiresIn: number = 3600
 ): Promise<string> {
+  assertAwsCredentials();
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
