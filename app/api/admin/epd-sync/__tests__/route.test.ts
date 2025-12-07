@@ -238,10 +238,12 @@ describe('POST /api/admin/epd-sync', () => {
     });
 
     it('should insert new EPDs', async () => {
+      // Complete mock EPD data with all required fields for normalization
       const mockEPDs = [
         {
           epd_number: 'EPD-001',
           product_name: 'Test Product',
+          name: 'Test Product',
           manufacturer: 'Test Manufacturer',
           gwp_fossil_a1a3: 10.5,
           recycled_content_pct: 30,
@@ -295,8 +297,11 @@ describe('POST /api/admin/epd-sync', () => {
       const response = await POST(request);
       const data = await response.json();
 
+      console.log('[TEST] Response data:', JSON.stringify(data, null, 2));
+
       expect(response.status).toBe(200);
       expect(data.total_fetched).toBe(1);
+      expect(data.errors.length).toBe(0); // Check for errors first
       expect(data.new_inserts).toBe(1);
       expect(data.updates).toBe(0);
       expect(mockEpdDatabaseQuery.insert).toHaveBeenCalled();
@@ -307,6 +312,7 @@ describe('POST /api/admin/epd-sync', () => {
         {
           epd_number: 'EPD-001',
           product_name: 'Test Product Updated',
+          name: 'Test Product Updated',
           manufacturer: 'Test Manufacturer',
           gwp_fossil_a1a3: 12.5, // Changed
           recycled_content_pct: 35, // Changed
@@ -380,6 +386,7 @@ describe('POST /api/admin/epd-sync', () => {
         {
           epd_number: 'EPD-001',
           product_name: 'Test Product',
+          name: 'Test Product',
           manufacturer: 'Test Manufacturer',
           gwp_fossil_a1a3: 10.5,
           recycled_content_pct: 30,
