@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function ArchitectDashboard() {
@@ -12,12 +12,21 @@ export default function ArchitectDashboard() {
   const [sentRFQs, setSentRFQs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isTestMode, setIsTestMode] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     loadDashboard()
+    
+    // Check for success message
+    if (searchParams.get('rfq') === 'created') {
+      setShowSuccessMessage(true)
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000)
+    }
   }, [])
 
   async function loadDashboard() {
@@ -121,6 +130,16 @@ export default function ArchitectDashboard() {
           </div>
         )}
 
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <div className="mb-6 p-4 bg-teal-500/10 border border-teal-500/30 rounded-lg text-teal-400 flex items-center gap-3">
+            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>RFQ created successfully! Suppliers will be notified and can respond with quotes.</span>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -128,6 +147,9 @@ export default function ArchitectDashboard() {
             <p className="text-gray-400 mt-1">Welcome back, {profile?.full_name}</p>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/architect/rfq/new" className="px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition">
+              Create RFQ
+            </Link>
             <Link href="/search" className="px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold transition">
               Search Suppliers
             </Link>
