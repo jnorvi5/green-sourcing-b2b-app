@@ -22,25 +22,19 @@ export default function AdminDashboard() {
   }, []);
 
   const loadDashboardData = async () => {
-    const supabase = createClient();
-    
     try {
-      // Fetch stats
-      const [users, suppliers, buyers, rfqs] = await Promise.all([
-        supabase.from('users').select('count'),
-        supabase.from('suppliers').select('count'),
-        supabase.from('buyers').select('count'),
-        supabase.from('rfqs').select('count')
-      ]);
-
-      setStats({
-        totalUsers: users.count || 0,
-        totalSuppliers: suppliers.count || 0,
-        totalBuyers: buyers.count || 0,
-        totalRFQs: rfqs.count || 0,
-        pendingApprovals: 0,
-        recentActivity: []
-      });
+      const response = await fetch('/api/admin/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats({
+          totalUsers: data.totalUsers,
+          totalSuppliers: data.totalSuppliers,
+          totalBuyers: data.totalBuyers,
+          totalRFQs: data.totalRFQs,
+          pendingApprovals: data.pendingRFQs,
+          recentActivity: data.recentActivity
+        });
+      }
     } catch (error) {
       console.error('Error loading dashboard:', error);
     } finally {

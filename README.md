@@ -12,6 +12,7 @@
 | --------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | **Frontend**          | Vercel (Next.js/React)                 | Headless, API-first UI with automatic deployments from GitHub                                                                  |
 | **Backend**           | Supabase (PostgreSQL + Edge Functions) | Managed database (SQL for transactions) + instant REST/GraphQL APIs                                                            |
+| **Authentication**    | Supabase Auth + OAuth 2.0              | Multi-provider authentication (Google, LinkedIn, GitHub) with role-based access control                                        |
 | **Database Strategy** | Hybrid SQL + NoSQL                     | SQL (Supabase) for transactional data (users, orders); NoSQL (MongoDB/Supabase JSONB) for flexible product/sustainability data |
 | **Security & CDN**    | Cloudflare                             | DDoS protection, WAF, SSL/TLS, global CDN for performance                                                                      |
 | **Version Control**   | GitHub (Student Developer Pack)        | CI/CD pipeline via Vercel integration                                                                                          |
@@ -111,11 +112,30 @@ Configuration is in `lychee.toml`.
 
 ---
 
-## **Admin Features**
+## **Platform Access**
 
-### Admin Dashboard
+### Homepage (`/`)
 
-Access the admin dashboard at `/admin/dashboard` to manage platform operations.
+Simple status page showing:
+
+- Platform overview with links to buyer, supplier, and admin sections
+- System health indicators (API, Database, Automation, Support)
+- Quick navigation to key platform areas
+
+### Authentication (`/login`)
+
+Multi-provider authentication system:
+
+- **OAuth Providers**: Google, LinkedIn, GitHub
+- **Email/Password**: Traditional authentication
+- **Demo Accounts**: Quick-fill for testing (architect/supplier)
+- **Role-Based Routing**: Automatic redirect to appropriate dashboard after login
+
+See `/docs/OAUTH_SETUP.md` and `VERCEL-AUTH-SETUP.md` for OAuth configuration.
+
+### Admin Dashboard (`/admin/dashboard`)
+
+Full-featured admin interface for platform management.
 
 **Features:**
 
@@ -140,6 +160,15 @@ Access the admin dashboard at `/admin/dashboard` to manage platform operations.
 
 - `POST /api/admin/automation/{type}` - Run automation tasks
 - Backend automation routes in `/backend/routes/automation.js`
+
+### Marketing Landing Pages
+
+Full marketing pages are available in `/cloudflare-landing/` for static deployment:
+
+- Main landing: `cloudflare-landing/index.html`
+- Architect-focused: `cloudflare-landing/architects/`
+- Supplier-focused: `cloudflare-landing/suppliers/`
+- Data provider-focused: `cloudflare-landing/data-providers/`
 
 ---
 

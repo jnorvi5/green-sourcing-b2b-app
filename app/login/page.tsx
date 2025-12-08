@@ -3,9 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { FcGoogle } from 'react-icons/fc';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 export default function LoginPage() {
   const router = useRouter();
+  const supabase = createClient();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -92,6 +96,40 @@ export default function LoginPage() {
     }
   };
 
+  async function signInWithGoogle() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    });
+    if (error) setError(error.message);
+  }
+
+  async function signInWithGitHub() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+    if (error) setError(error.message);
+  }
+
+  async function signInWithLinkedIn() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'linkedin_oidc',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+    if (error) setError(error.message);
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
@@ -114,6 +152,46 @@ export default function LoginPage() {
             <p className="text-yellow-800 text-xs font-medium">⚠️ Test Mode Active (Bypassing Supabase)</p>
           </div>
         )}
+
+        {/* OAuth Buttons */}
+        <div className="space-y-3 mb-6">
+          <button
+            type="button"
+            onClick={signInWithGoogle}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition"
+          >
+            <FcGoogle className="h-5 w-5" />
+            Continue with Google
+          </button>
+
+          <button
+            type="button"
+            onClick={signInWithLinkedIn}
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#0A66C2] px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#004182] transition"
+          >
+            <FaLinkedin className="h-5 w-5" />
+            Continue with LinkedIn
+          </button>
+
+          <button
+            type="button"
+            onClick={signInWithGitHub}
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 transition"
+          >
+            <FaGithub className="h-5 w-5" />
+            Continue with GitHub
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+          </div>
+        </div>
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -192,7 +270,7 @@ export default function LoginPage() {
         {/* Signup Link */}
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-green-600 hover:text-green-700 font-medium">
               Sign up
             </Link>

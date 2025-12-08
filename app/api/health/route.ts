@@ -1,107 +1,51 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import { createClient } from '@/lib/supabase/server';
 
-interface HealthResponse {
-  status: 'ok' | 'degraded' | 'error';
-  timestamp: string;
-  database: 'connected' | 'disconnected' | 'unknown';
-  version: string;
-  uptime: number;
-}
-
-// Prevent caching of health checks
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-/**
- * Health check endpoint for production monitoring.
- * Returns system status including database connectivity.
- * 
- * @returns JSON response with health status
- */
-export async function GET(): Promise<NextResponse<HealthResponse>> {
-  const startTime = Date.now();
-  
-  let dbStatus: 'connected' | 'disconnected' | 'unknown' = 'unknown';
-  let overallStatus: 'ok' | 'degraded' | 'error' = 'ok';
-  
-  // Check database connectivity
+export async function GET() {
   try {
-    const mongoUri = process.env.MONGODB_URI;
+    // Check Supabase connection
+    const supabase = await createClient();
+    const { error: dbError } = await supabase.from('users').select('count').limit(1);
     
-    if (!mongoUri) {
-      dbStatus = 'disconnected';
-      overallStatus = 'degraded';
-    } else {
-      // Check if mongoose is already connected
-      if (mongoose.connection.readyState === 1) {
-        // Already connected - perform lightweight ping
-        const db = mongoose.connection.db;
-        if (db) {
-          await Promise.race([
-            db.admin().ping(),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Database ping timeout')), 3000)
-            )
-          ]);
-          dbStatus = 'connected';
-        } else {
-          dbStatus = 'disconnected';
-          overallStatus = 'degraded';
-        }
-      } else {
-        // Not connected - attempt quick connection with timeout
-        try {
-          await Promise.race([
-            mongoose.connect(mongoUri, {
-              serverSelectionTimeoutMS: 3000,
-              socketTimeoutMS: 3000,
-            }),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Connection timeout')), 3000)
-            )
-          ]);
-          
-          const db = mongoose.connection.db;
-          if (db) {
-            await db.admin().ping();
-            dbStatus = 'connected';
-          } else {
-            dbStatus = 'disconnected';
-            overallStatus = 'degraded';
-          }
-        } catch {
-          dbStatus = 'disconnected';
-          overallStatus = 'degraded';
-        }
+    // Check MongoDB connection
+    let mongoStatus = 'not configured';
+    if (process.env.MONGODB_URI) {
+      try {
+        const { MongoClient } = require('mongodb');
+        const client = new MongoClient(process.env.MONGODB_URI);
+        await client.connect();
+        await client.db().admin().ping();
+        await client.close();
+        mongoStatus = 'connected';
+      } catch (error) {
+        mongoStatus = 'error';
       }
     }
-  } catch {
-    dbStatus = 'disconnected';
-    overallStatus = 'degraded';
+
+    const health = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {
+        api: 'operational',
+        database: dbError ? 'error' : 'connected',
+        mongodb: mongoStatus,
+        intercom: process.env.NEXT_PUBLIC_INTERCOM_APP_ID ? 'configured' : 'not configured',
+        email: process.env.RESEND_API_KEY ? 'configured' : 'not configured',
+        storage: process.env.AWS_BUCKET_NAME ? 'configured' : 'not configured'
+      },
+      environment: process.env.NODE_ENV || 'development',
+      version: process.env.npm_package_version || '0.1.0'
+    };
+
+    return NextResponse.json(health);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        error: 'Health check failed',
+        timestamp: new Date().toISOString()
+      },
+      { status: 503 }
+    );
   }
-
-  // Get app version from environment or use default
-  const version = process.env.npm_package_version || '1.0.0';
-
-  const response: HealthResponse = {
-    status: overallStatus,
-    timestamp: new Date().toISOString(),
-    database: dbStatus,
-    version,
-    uptime: Math.floor(process.uptime()),
-  };
-
-  // Set appropriate HTTP status based on health
-  const httpStatus = overallStatus === 'ok' ? 200 : 503;
-
-  return NextResponse.json(response, {
-    status: httpStatus,
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'X-Response-Time': `${Date.now() - startTime}ms`,
-    },
-  });
 }

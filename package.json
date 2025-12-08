@@ -9,7 +9,9 @@
     "lint": "next lint",
     "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'",
     "test": "jest",
-    "deploy:quick": "node scripts/quick-deploy.js",
+    "deploy:vercel": "vercel --prod",
+    "deploy:preview": "vercel",
+    "vercel-build": "next build",
     "start:all": "concurrently \"npm start\" \"cd frontend && npm run dev\" \"cd backend && npm start\"",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install && cd .."
   },
