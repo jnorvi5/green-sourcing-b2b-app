@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Admin Certification Verification Dashboard
  * Dark theme with Tailwind + glassmorphism

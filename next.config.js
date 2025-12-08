@@ -9,6 +9,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Allow builds to continue even if font optimization fails
+  optimizeFonts: true,
 }
 
 module.exports = nextConfig
