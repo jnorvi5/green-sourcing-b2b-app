@@ -6,8 +6,19 @@
 
 import { Resend } from 'resend';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Memoized Resend client to avoid creating new instances on every call
+let resendClient: Resend | null = null;
+
+// Lazy initialize Resend client to avoid errors during build
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 export interface RfqNotificationEmailData {
   supplierName: string;
@@ -32,8 +43,10 @@ export async function sendRfqNotificationEmail(
   data: RfqNotificationEmailData
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
+    const resend = getResendClient();
+    
     // For development/testing without API key
-    if (!process.env.RESEND_API_KEY) {
+    if (!resend) {
       console.log('[DEV] RFQ notification email would be sent:', {
         to: data.supplierEmail,
         projectName: data.projectName,
