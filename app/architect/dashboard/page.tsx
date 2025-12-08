@@ -1,12 +1,11 @@
-export const dynamic = 'force-dynamic';
+'use client'
 
-'use client';
+export const dynamic = 'force-dynamic'
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 export default function ArchitectDashboard() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
