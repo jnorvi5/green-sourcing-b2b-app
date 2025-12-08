@@ -1,6 +1,7 @@
 'use client'
 
-<<<<<<< HEAD
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -14,22 +15,6 @@ function DashboardContent() {
   const [loading, setLoading] = useState(true)
   const [isTestMode, setIsTestMode] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-=======
-export const dynamic = 'force-dynamic'
-
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-export default function ArchitectDashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [savedSuppliers, setSavedSuppliers] = useState<any[]>([]);
-  const [sentRFQs, setSentRFQs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isTestMode, setIsTestMode] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
->>>>>>> 613ffa29fce581409478b5b69fa9b38fda3b19cb
 
   const supabase = createClient();
   const router = useRouter();

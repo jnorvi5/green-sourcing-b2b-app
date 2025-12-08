@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { FcGoogle } from 'react-icons/fc'
