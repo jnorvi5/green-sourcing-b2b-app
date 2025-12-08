@@ -19,6 +19,17 @@ export default function ArchitectDashboard() {
   const supabase = createClient()
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+'use client'
+
+export const dynamic = 'force-dynamic'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+
+// ...rest of your component code
 
   useEffect(() => {
     loadDashboard()
