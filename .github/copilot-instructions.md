@@ -67,19 +67,19 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 ├── lib/
 │   ├── supabase/             # Supabase client & queries
 │   │   ├── client.ts         # Browser client
-│   │   ├── server.ts         # Server client
-│   │   └── queries/          # Type-safe query functions
-│   ├── mongodb/              # MongoDB client & schemas
-│   │   ├── client.ts         # MongoDB connection
-│   │   └── schemas/          # Zod schemas for MongoDB documents
+│   │   └── server.ts         # Server client
+│   ├── mongodb.ts            # MongoDB connection and database client
 │   ├── azure/                # Azure AI Foundry integrations
-│   │   ├── openai.ts         # Azure OpenAI client
-│   │   └── document-intelligence.ts  # Document extraction
-│   ├── integrations/         # Third-party service clients
-│   │   ├── intercom.ts       # Intercom API
-│   │   ├── mailerlite.ts     # MailerLite API
-│   │   └── zoho-flow.ts      # Zoho Flow webhooks
+│   │   └── azure-ai.ts       # Azure OpenAI and Document Intelligence
+│   ├── integrations/         # Third-party service integrations
+│   │   ├── epd-international.ts  # EPD International API
+│   │   └── autodesk/         # Autodesk APS integration
+│   ├── intercom.ts           # Intercom customer chat API
+│   ├── mailerlite.ts         # MailerLite email marketing API
+│   ├── zoho-smtp.ts          # Zoho Mail transactional email
+│   ├── email/                # Email templates and sending
 │   ├── validations/          # Zod schemas (shared across app)
+│   ├── verification/         # Certification verification logic
 │   └── utils/                # Utility functions
 ├── supabase/
 │   ├── migrations/           # SQL migrations
@@ -198,7 +198,7 @@ Use Next.js Server Actions for all data mutations. NOT Express.js endpoints.
 'use server';
 
 import { z } from 'zod';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 const createRfqSchema = z.object({
@@ -213,7 +213,7 @@ export async function createRfq(input: z.infer<typeof createRfqSchema>) {
   // Validate input
   const validated = createRfqSchema.parse(input);
   
-  const supabase = createServerSupabaseClient();
+  const supabase = await createClient();
   
   // Get authenticated user
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -305,8 +305,8 @@ Features:
 
 import { AzureDocumentIntelligence } from '@/lib/azure/document-intelligence';
 import { uploadToS3 } from '@/lib/aws/s3';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { mongoDb } from '@/lib/mongodb/client';
+import { createClient } from '@/lib/supabase/server';
+import connectMongoDB from '@/lib/mongodb';
 
 export async function uploadAndExtractCertificate(formData: FormData) {
   const file = formData.get('certificate') as File;
@@ -320,6 +320,7 @@ export async function uploadAndExtractCertificate(formData: FormData) {
   const extractedData = await documentIntelligence.analyzeCertificate(s3Url);
   
   // 3. Store extracted data in MongoDB (flexible schema)
+  const mongoDb = await connectMongoDB();
   const mongoResult = await mongoDb.collection('certifications').insertOne({
     supabase_supplier_id: supplierId,
     s3_url: s3Url,
@@ -330,7 +331,7 @@ export async function uploadAndExtractCertificate(formData: FormData) {
   });
   
   // 4. Update Supabase with reference
-  const supabase = createServerSupabaseClient();
+  const supabase = await createClient();
   await supabase
     .from('suppliers')
     .update({
@@ -353,9 +354,9 @@ type VerificationStatus = 'pending' | 'in_review' | 'verified' | 'rejected';
 'use server';
 
 import { z } from 'zod';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { sendIntercomEvent } from '@/lib/integrations/intercom';
-import { triggerZohoFlow } from '@/lib/integrations/zoho-flow';
+import { createClient } from '@/lib/supabase/server';
+import { sendIntercomEvent } from '@/lib/intercom';
+import { triggerZohoFlow } from '@/lib/zoho-flow';
 
 const verifySupplierSchema = z.object({
   supplierId: z.string().uuid(),
@@ -366,7 +367,7 @@ const verifySupplierSchema = z.object({
 
 export async function verifySupplier(input: z.infer<typeof verifySupplierSchema>) {
   const validated = verifySupplierSchema.parse(input);
-  const supabase = createServerSupabaseClient();
+  const supabase = await createClient();
   
   // Update supplier verification status
   const { data: supplier, error } = await supabase
@@ -406,40 +407,29 @@ export async function verifySupplier(input: z.infer<typeof verifySupplierSchema>
 ### Intercom Integration (User Context)
 
 ```typescript
-// lib/integrations/intercom.ts
-import Intercom from 'intercom-client';
+// lib/intercom.ts
+// Client-side Intercom widget integration
 
-const intercom = new Intercom.Client({ tokenAuth: { token: process.env.INTERCOM_ACCESS_TOKEN! } });
-
-export async function syncUserToIntercom(user: {
-  id: string;
-  email: string;
-  name: string;
-  company?: string;
-  role: 'buyer' | 'supplier' | 'admin';
-}) {
-  await intercom.contacts.createOrUpdate({
-    role: 'user',
-    external_id: user.id,
-    email: user.email,
-    name: user.name,
-    custom_attributes: {
-      greenchainz_role: user.role,
-      company_name: user.company,
-    },
-  });
+export function initIntercom() {
+  // Initializes Intercom widget with app ID from env
+  // See lib/intercom.ts for full implementation
 }
 
-export async function sendIntercomEvent(
-  email: string,
-  eventName: string,
-  metadata: Record<string, unknown>
-) {
-  await intercom.events.create({
-    event_name: eventName,
-    email,
-    metadata,
-    created_at: Math.floor(Date.now() / 1000),
+export function updateIntercomUser(user: {
+  email?: string;
+  name?: string;
+  userId?: string;
+  userType?: 'buyer' | 'supplier' | 'admin';
+  company?: string;
+}) {
+  if (typeof window === 'undefined' || !(window as any).Intercom) return;
+
+  (window as any).Intercom('update', {
+    email: user.email,
+    name: user.name,
+    user_id: user.userId,
+    user_type: user.userType,
+    company: { name: user.company }
   });
 }
 ```
