@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -20,18 +20,7 @@ export default function ArchitectDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    loadDashboard();
-
-    // Check for success message
-    if (searchParams.get('rfq') === 'created') {
-      setShowSuccessMessage(true);
-      // Hide message after 5 seconds
-      setTimeout(() => setShowSuccessMessage(false), 5000);
-    }
-  }, []);
-
-  async function loadDashboard() {
+  const loadDashboard = useCallback(async () => {
     try {
       // Check if using test token
       const token = localStorage.getItem('auth-token');
@@ -105,7 +94,18 @@ export default function ArchitectDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [supabase, router]);
+
+  useEffect(() => {
+    loadDashboard();
+
+    // Check for success message
+    if (searchParams.get('rfq') === 'created') {
+      setShowSuccessMessage(true);
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, [loadDashboard, searchParams]);
 
   async function handleLogout() {
     localStorage.removeItem('auth-token');

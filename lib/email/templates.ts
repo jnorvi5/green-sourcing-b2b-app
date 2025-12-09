@@ -637,7 +637,7 @@ export function generateSupplierFollowUpDay7Email(data: {
 // Export All Templates
 // =============================================================================
 
-export default {
+const emailTemplates = {
   generateRfqNotificationEmail,
   generateRfqConfirmationEmail,
   generateSupplierApprovalEmail,
@@ -649,3 +649,5 @@ export default {
   generateSupplierFollowUpDay2Email,
   generateSupplierFollowUpDay7Email,
 };
+
+export default emailTemplates;

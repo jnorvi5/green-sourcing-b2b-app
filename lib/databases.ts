@@ -160,7 +160,7 @@ export async function closeAllConnections(): Promise<void> {
     console.log('✅ All database connections closed');
 }
 
-export default {
+const databaseService = {
     getDatabase,
     getMainDB,
     getBuyersDB,
@@ -171,3 +171,5 @@ export default {
     getDatabaseHealth,
     closeAllConnections,
 };
+
+export default databaseService;

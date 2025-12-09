@@ -90,8 +90,8 @@ async function getModel<T>(name: string, importPath: string): Promise<Model<T>> 
   if (mongoose.models[name]) {
     return mongoose.models[name] as Model<T>
   }
-  const module = await import(importPath)
-  return module.default as Model<T>
+  const importedModule = await import(importPath)
+  return importedModule.default as Model<T>
 }
 
 export async function getAutodeskToken(): Promise<string> {

@@ -578,7 +578,7 @@ export function generateCarbonReportEmail(data: {
 `;
 }
 
-export default {
+const mailerliteService = {
     sendEmail,
     addSubscriber,
     removeSubscriber,
@@ -589,3 +589,5 @@ export default {
     generateQuoteReceivedEmail,
     generateCarbonReportEmail,
 };
+
+export default mailerliteService;
