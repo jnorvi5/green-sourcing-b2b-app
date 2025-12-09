@@ -188,8 +188,8 @@ export default function SubscriptionPage() {
               {limits.products !== 'unlimited' && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      productsPercent >= 100 ? 'bg-red-500' : productsPercent >= 80 ? 'bg-orange-500' : 'bg-green-500'
+                    className={`progress-bar ${
+                      productsPercent >= 100 ? 'red' : productsPercent >= 80 ? 'orange' : 'green'
                     }`}
                     style={{ width: `${Math.min(productsPercent, 100)}%` }}
                   ></div>
@@ -294,7 +294,7 @@ export default function SubscriptionPage() {
         {!subscription.has_subscription && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
             <p className="text-gray-700 mb-4">
-              You're currently on the Free plan. Upgrade to unlock more features!
+              You&apos;re currently on the Free plan. Upgrade to unlock more features!
             </p>
             <button
               onClick={() => router.push('/supplier/pricing')}

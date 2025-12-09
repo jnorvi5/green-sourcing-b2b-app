@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center py-12 px-4">
         <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8 text-center">
           <h1 className="text-2xl font-bold text-green-900 mb-4">Check Your Email</h1>
-          <p className="text-gray-600 mb-6">We've sent a password reset link to {email}</p>
+          <p className="text-gray-600 mb-6">We&apos;ve sent a password reset link to {email}</p>
           <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
             Back to Login
           </Link>

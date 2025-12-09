@@ -57,7 +57,7 @@ export default function ContactPage() {
           <div className="text-center py-12">
             <div className="mb-4 text-6xl">✓</div>
             <h2 className="text-2xl font-bold text-green-800 mb-4">Message Sent!</h2>
-            <p className="text-gray-700 mb-6">We'll respond within 24 hours.</p>
+            <p className="text-gray-700 mb-6">We&apos;ll respond within 24 hours.</p>
           </div>
         )}
       </div>
