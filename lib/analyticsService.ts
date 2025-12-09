@@ -637,7 +637,7 @@ export async function logDataAccess(
     });
 }
 
-export default {
+const analyticsService = {
   generateSessionId,
   categorizeMaterialType,
   categorizeCarbonThreshold,
@@ -654,3 +654,5 @@ export default {
   validateApiKey,
   logDataAccess,
 };
+
+export default analyticsService;
