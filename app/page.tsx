@@ -8,7 +8,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       <Header />
       <Hero />
-      
+
       {/* Problem/Solution/Roadmap sections */}
       <section className="py-20 bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
