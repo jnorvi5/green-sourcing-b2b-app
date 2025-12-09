@@ -1,9 +1,16 @@
-
-module.exports = {
+﻿module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  modulePathIgnorePatterns: ['<rootDir>/frontend/'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
-  },
+  roots: ['<rootDir>'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  collectCoverageFrom: [
+    'app/**/*.{ts,tsx}',
+    'lib/**/*.{ts,tsx}',
+    'components/**/*.{ts,tsx}',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/.next/**'
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'json-summary']
 };
