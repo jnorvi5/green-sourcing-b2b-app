@@ -88,6 +88,15 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 └── package.json
 ```
 
+**TypeScript Path Mappings:**
+The project uses TypeScript path aliases for cleaner imports:
+- `@/app/*` → `app/*`
+- `@/components/*` → `components/*`
+- `@/lib/*` → `lib/*`
+- `@/types/*` → `types/*` (for type imports, resolved via @/lib/* mapping)
+
+Example: `import { createClient } from '@/lib/supabase/client'`
+
 ---
 
 ## Build, Test, and Run Commands
@@ -97,21 +106,25 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 npm install
 
 # Development
-npm run dev              # Start Next.js dev server
+npm run dev              # Start Next.js dev server (port 3001)
 
 # Production
 npm run build            # Build for production
-npm run start            # Start production server
+npm run start            # Start production server (port 3001)
 
 # Quality
 npm run lint             # Run ESLint
 npm run type-check       # Run TypeScript compiler check
 npm run test             # Run Jest tests
+npm run test:watch       # Run Jest tests in watch mode
+npm run check:links      # Check all documentation links
 
 # Database
-npm run db:migrate       # Run Supabase migrations
-npm run db:seed          # Seed database
-npm run db:types         # Generate TypeScript types from Supabase schema
+# Note: Database migrations are managed manually via Supabase CLI or SQL files
+# - Migration files: supabase/migrations/*.sql
+# - Seed data: supabase/seed.ts and supabase/seed-demo-users.sql
+# - Schema: supabase/schema.sql
+# - RLS Policies: supabase/rls-policies.sql
 ```
 
 ---
