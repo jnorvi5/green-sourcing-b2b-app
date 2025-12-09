@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for fetch and processing
 
 const EPD_API_URL = 'https://epd-apim.developer.azure-api.net/api/epds';
-const API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +19,8 @@ export async function POST(request: NextRequest) {
         },
       }
     );
+
+    const API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
     // 1. Check Authentication & Admin Role
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
