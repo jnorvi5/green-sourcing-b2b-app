@@ -217,35 +217,3 @@ export async function acceptQuote(input: z.infer<typeof acceptQuoteSchema>): Pro
     };
   }
 }
-
-/**
- * Export quotes data to CSV format
- */
-export async function exportQuotesToCSV(quotes: Quote[]): Promise<string> {
-  const headers = [
-    'Supplier Name',
-    'Quote Amount',
-    'Lead Time (Days)',
-    'Status',
-    'Message',
-    'Responded At',
-  ];
-
-  const rows = quotes.map((quote) => [
-    quote.supplier?.company_name || 'Unknown',
-    quote.quote_amount.toFixed(2),
-    quote.lead_time_days.toString(),
-    quote.status,
-    quote.message || '',
-    new Date(quote.responded_at).toLocaleDateString(),
-  ]);
-
-  const csvContent = [
-    headers.join(','),
-    ...rows.map((row) =>
-      row.map((cell) => `"${cell.toString().replace(/"/g, '""')}"`).join(',')
-    ),
-  ].join('\n');
-
-  return csvContent;
-}

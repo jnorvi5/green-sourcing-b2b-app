@@ -40,8 +40,6 @@ export interface MaterialSpecs {
   quantity: number;
   unit: string;
   material_type: MaterialType;
-  material_category?: string;
-  project_description?: string;
   [key: string]: unknown; // Allow additional custom fields
 }
 
@@ -78,9 +76,6 @@ export interface Rfq {
   updated_at: string;
 }
 
-/**
- * Supplier data
- */
 export interface Supplier {
   id: string;
   user_id: string;
@@ -101,14 +96,55 @@ export interface Supplier {
 }
 
 /**
- * RFQ with joined user profile data
+ * Quote/Response with supplier details
  */
-export interface RfqWithArchitect extends Rfq {
+export interface Quote {
+  id: string;
+  rfq_id: string;
+  supplier_id: string;
+  quote_amount: number;
+  lead_time_days: number;
+  message: string | null;
+  status: RfqResponseStatus;
+  responded_at: string;
+  attachment_url?: string;
+}
+
+/**
+ * Quote with supplier information for architect view
+ */
+export interface QuoteWithSupplier extends Quote {
+  supplier: Supplier;
+}
+
+/**
+ * RFQ with architect information
+ */
+export interface RFQWithArchitect extends Rfq {
+  architect: {
+    id: string;
+    email: string;
+    full_name: string | null;
+    company_name: string | null;
+  };
+}
+
+/**
+ * RFQ with quotes for comparison view
+ */
+export interface RFQWithQuotes extends Rfq {
+  quotes: QuoteWithSupplier[];
+}
+
+/**
+ * RFQ with joined user profile data (alternative format)
+ */
+export interface RfqWithArchitectProfile extends Rfq {
   users: UserProfile | null;
 }
 
 /**
- * RFQ response data
+ * RFQ response data (detailed format)
  */
 export interface RfqResponse {
   id: string;
@@ -120,13 +156,39 @@ export interface RfqResponse {
   status: RfqResponseStatus;
   responded_at: string;
   supplier?: Supplier;
-  pdf_url?: string | null;
+  attachment_url?: string | null;
 }
+
+/**
+ * RFQ response data (alias for backward compatibility)
+ */
+export type RFQResponse = RfqResponse;
+
+// Zod validation schemas
+export const QuoteSubmissionSchema = z.object({
+  rfq_id: z.string().uuid('Invalid RFQ ID'),
+  price: z.coerce.number().positive('Price must be greater than 0'),
+  lead_time: z.string().min(1, 'Lead time is required'),
+  notes: z.string().max(2000, 'Notes must be less than 2000 characters').optional(),
+  pdf_file: z.instanceof(File).optional(),
+});
+
+export type QuoteSubmission = z.infer<typeof QuoteSubmissionSchema>;
+
+export const QuoteApiRequestSchema = z.object({
+  rfq_id: z.string().uuid(),
+  price: z.number().positive(),
+  lead_time: z.string().min(1),
+  notes: z.string().max(2000).optional(),
+  pdf_url: z.string().url().optional(),
+});
+
+export type QuoteApiRequest = z.infer<typeof QuoteApiRequestSchema>;
 
 /**
  * Extended RFQ data with response information for supplier view
  */
-export interface RfqWithResponse extends RfqWithArchitect {
+export interface RfqWithResponse extends RfqWithArchitectProfile {
   rfq_response: RfqResponse | null;
   is_new: boolean;
   match_score?: number;
@@ -143,35 +205,9 @@ export type RfqFilter = 'all' | 'new' | 'quoted' | 'closed';
 export type RfqSort = 'newest' | 'deadline' | 'match_score';
 
 /**
- * Types for compatibility with older code
+ * Form-specific types
  */
-export interface RFQ extends Rfq {}
 
-export interface RFQWithArchitect extends Rfq {
-  architect: {
-    id: string;
-    email: string;
-    full_name: string | null;
-    company_name: string | null;
-  };
-}
-
-export interface RFQResponse extends RfqResponse {}
-
-export interface Quote extends RfqResponse {}
-
-export interface QuoteWithSupplier extends RfqResponse {
-  supplier: Supplier;
-}
-
-export interface RFQWithQuotes extends RFQ {
-  quotes: QuoteWithSupplier[];
-  attachment_url?: string;
-}
-
-/**
- * Material category options for form
- */
 export type MaterialCategory = 
   | 'Lumber'
   | 'Insulation'
@@ -180,18 +216,12 @@ export type MaterialCategory =
   | 'Flooring'
   | 'Other';
 
-/**
- * Unit type options for form
- */
 export type UnitType = 
   | 'sqft'
   | 'linear ft'
   | 'tons'
   | 'units';
 
-/**
- * Budget range options for form
- */
 export type BudgetRange = 
   | '<$10k'
   | '$10k-50k'
@@ -221,24 +251,3 @@ export interface RFQCreateResponse {
   message?: string;
   error?: string;
 }
-
-// Zod validation schemas
-export const QuoteSubmissionSchema = z.object({
-  rfq_id: z.string().uuid('Invalid RFQ ID'),
-  price: z.coerce.number().positive('Price must be greater than 0'),
-  lead_time: z.string().min(1, 'Lead time is required'),
-  notes: z.string().max(2000, 'Notes must be less than 2000 characters').optional(),
-  pdf_file: z.instanceof(File).optional(),
-});
-
-export type QuoteSubmission = z.infer<typeof QuoteSubmissionSchema>;
-
-export const QuoteApiRequestSchema = z.object({
-  rfq_id: z.string().uuid(),
-  price: z.number().positive(),
-  lead_time: z.string().min(1),
-  notes: z.string().max(2000).optional(),
-  pdf_url: z.string().url().optional(),
-});
-
-export type QuoteApiRequest = z.infer<typeof QuoteApiRequestSchema>;

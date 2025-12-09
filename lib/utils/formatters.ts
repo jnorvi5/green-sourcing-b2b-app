@@ -63,3 +63,42 @@ export function getStatusColor(status: string): string {
       return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
   }
 }
+
+/**
+ * Export quotes data to CSV format
+ */
+export function exportQuotesToCSV(quotes: Array<{
+  supplier?: { company_name?: string };
+  quote_amount: number;
+  lead_time_days: number;
+  status: string;
+  message: string | null;
+  responded_at: string;
+}>): string {
+  const headers = [
+    'Supplier Name',
+    'Quote Amount',
+    'Lead Time (Days)',
+    'Status',
+    'Message',
+    'Responded At',
+  ];
+
+  const rows = quotes.map((quote) => [
+    quote.supplier?.company_name || 'Unknown',
+    quote.quote_amount.toFixed(2),
+    quote.lead_time_days.toString(),
+    quote.status,
+    quote.message || '',
+    new Date(quote.responded_at).toLocaleDateString(),
+  ]);
+
+  const csvContent = [
+    headers.join(','),
+    ...rows.map((row) =>
+      row.map((cell) => `"${cell.toString().replace(/"/g, '""')}"`).join(',')
+    ),
+  ].join('\n');
+
+  return csvContent;
+}
