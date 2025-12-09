@@ -4,23 +4,23 @@ import { createClient } from '@supabase/supabase-js';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for fetch and processing
 
-// Initialize Supabase Admin Client (Service Role)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
-
 const EPD_API_URL = 'https://epd-apim.developer.azure-api.net/api/epds';
-const API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize Supabase Admin Client (Service Role) inside handler to avoid build-time errors
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
+
+    const API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
     // 1. Check Authentication & Admin Role
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
