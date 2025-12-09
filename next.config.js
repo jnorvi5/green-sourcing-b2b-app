@@ -1,6 +1,5 @@
-const { withSentryConfig } = require("@sentry/nextjs");
+﻿const { withSentryConfig } = require("@sentry/nextjs");
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
     instrumentationHook: true,
@@ -15,11 +14,7 @@ const nextConfig = {
 }
 
 module.exports = withSentryConfig(nextConfig, {
-  silent: !process.env.CI,
+  silent: true,
   org: "your-org",
   project: "greenchainz-production",
-  widenClientFileUpload: true,
-  autoInstrumentServerFunctions: true,
-  hideSourceMaps: true,
-  disableLogger: true,
 });
