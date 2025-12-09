@@ -1,4 +1,29 @@
-/**
+/*export type Tier = 'free' | 'pro' | 'premium'
+
+export interface TierPrice {
+  monthlyUsd: number
+  annualUsd?: number
+}
+
+export interface TierLimits {
+  maxProducts?: number
+  maxTeamSeats?: number
+  maxRfqsPerMonth?: number
+  analytics?: boolean
+  prioritySupport?: boolean
+}
+
+export const TIER_PRICES: Record<Tier, TierPrice> = {
+  free: { monthlyUsd: 0 },
+  pro: { monthlyUsd: 199, annualUsd: 199 * 12 * 0.9 }, // adjust if your pricing differs
+  premium: { monthlyUsd: 499, annualUsd: 499 * 12 * 0.9 } // adjust if your pricing differs
+}
+
+export const TIER_LIMITS: Record<Tier, TierLimits> = {
+  free: { maxProducts: 25, maxTeamSeats: 1, maxRfqsPerMonth: 5, analytics: false, prioritySupport: false },
+  pro: { maxProducts: 250, maxTeamSeats: 5, maxRfqsPerMonth: 50, analytics: true, prioritySupport: true },
+  premium: { maxProducts: undefined, maxTeamSeats: 20, maxRfqsPerMonth: undefined, analytics: true, prioritySupport: true }
+}*
  * TypeScript types for Stripe subscription billing
  */
 
