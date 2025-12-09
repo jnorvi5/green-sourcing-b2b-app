@@ -457,22 +457,33 @@ export async function POST(req: Request) {
 
 **RIGHT:**
 ```typescript
-// USE Intercom for chat
-import { IntercomProvider } from 'react-use-intercom';
+// USE Intercom for chat (client-side widget)
+import { initIntercom, updateIntercomUser } from '@/lib/intercom';
 
-export function App({ children }) {
-  return (
-    <IntercomProvider appId={process.env.NEXT_PUBLIC_INTERCOM_APP_ID!}>
-      {children}
-    </IntercomProvider>
-  );
-}
+// Initialize in app layout or component
+useEffect(() => {
+  initIntercom();
+  
+  if (user) {
+    updateIntercomUser({
+      email: user.email,
+      name: user.name,
+      userId: user.id,
+      userType: user.role,
+      company: user.company
+    });
+  }
+}, [user]);
 
 // USE MailerLite for newsletter
-import { addSubscriber } from '@/lib/integrations/mailerlite';
+import { addSubscriber } from '@/lib/mailerlite';
 
-export async function subscribeToNewsletter(email: string) {
-  await addSubscriber(email, { group: 'sustainability_updates' });
+export async function subscribeToNewsletter(email: string, name?: string) {
+  await addSubscriber({
+    email,
+    fields: { name },
+    groups: ['sustainability_updates']
+  });
 }
 ```
 
@@ -494,6 +505,9 @@ await supabase.from('products').insert({
 **RIGHT:**
 ```typescript
 // Store flexible data in MongoDB
+import connectMongoDB from '@/lib/mongodb';
+
+const mongoDb = await connectMongoDB();
 const mongoProductSpecs = await mongoDb.collection('product_specs').insertOne({
   supabase_product_id: productId,
   epd_data: {
@@ -518,6 +532,7 @@ const mongoProductSpecs = await mongoDb.collection('product_specs').insertOne({
 });
 
 // Store reference in Supabase
+const supabase = await createClient();
 await supabase.from('products').update({
   mongo_specs_id: mongoProductSpecs.insertedId.toString(),
 }).eq('id', productId);
@@ -698,8 +713,10 @@ ALTER TABLE rfqs ENABLE ROW LEVEL SECURITY;
 
 ### MongoDB Atlas - Flex Layer
 
+**Note:** MongoDB schemas should follow this pattern when implemented. The flexible NoSQL structure allows for varying product specifications and EPD data formats.
+
 ```typescript
-// lib/mongodb/schemas/product-specs.ts
+// Example schema pattern for lib/validations/product-specs.ts
 import { z } from 'zod';
 
 // EPD data can vary significantly between products and standards
