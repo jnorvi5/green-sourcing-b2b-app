@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans">
+     <body className="bg-slate-950 text-white">
         <IntercomProvider>
           {children}
         </IntercomProvider>
