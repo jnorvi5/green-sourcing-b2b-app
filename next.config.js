@@ -15,20 +15,11 @@ const nextConfig = {
 }
 
 module.exports = withSentryConfig(nextConfig, {
-  // Sentry configuration options
   silent: !process.env.CI,
   org: "your-org",
   project: "greenchainz-production",
-  
-  // Upload source maps during build
   widenClientFileUpload: true,
-  
-  // Automatically annotate errors with build information
   autoInstrumentServerFunctions: true,
-  
-  // Hide source maps from being publicly accessible
   hideSourceMaps: true,
-  
-  // Disable automatic telemetry
   disableLogger: true,
 });
