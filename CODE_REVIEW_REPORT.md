@@ -1,1403 +1,705 @@
-# Code Review Report - GreenChainz B2B Marketplace
+# Comprehensive Code Review Report - GreenChainz B2B Marketplace
+## Branch: `copilot/refactor-dashboard-structure-again`
 
-**Date**: December 8, 2024  
-**Status**: ✅ **Build Successful** - All critical issues resolved  
+**Date**: December 9, 2024  
+**Reviewer**: GitHub Copilot Advanced Analysis  
 **Repository**: `jnorvi5/green-sourcing-b2b-app`  
+**Branch**: `copilot/refactor-dashboard-structure-again`  
+**Target PR Branch**: `main`  
 **Framework**: Next.js 14.2.33 with App Router
 
 ---
 
-## Executive Summary
+## 📋 Executive Summary
 
-This comprehensive code review analyzed the entire repository for code quality, configuration issues, deployment readiness, and potential bugs. **All critical blocking issues have been resolved**, and the application now builds successfully.
+This comprehensive review analyzed the entire GreenChainz repository for the proposed PR that includes dashboard refactoring, admin navigation, EPD sync functionality, and home page components. The review identified **critical build-blocking issues** and **deployment configuration problems** that would prevent frontend changes from appearing in production.
 
-### Key Achievements ✅
-- ✅ Fixed merge conflict blocking build
-- ✅ Resolved static rendering issues for auth-protected pages  
-- ✅ Configured offline-friendly font loading
-- ✅ Build completes without errors
-- ✅ All 62 routes properly configured
+### Overall Status: ⚠️ **REQUIRES FIXES BEFORE MERGE**
 
-### Build Status
+**Key Findings:**
+- 🔴 **3 Critical Build Errors** blocking deployment
+- 🟡 **5 Configuration Issues** preventing production deployment
+- 🟢 **All PR Features Present** and properly implemented
+- ⚠️ **TypeScript Path Resolution Issue** affecting imports
+
+---
+
+## 🎯 PR Requirements Verification
+
+### ✅ What's Present and Working
+
+| Requirement | Status | Location | Notes |
+|-------------|--------|----------|-------|
+| Refactored Dashboard Structure | ✅ Complete | `app/admin/`, `app/supplier/`, `app/architect/` | Properly aligned with Next.js 14 App Router patterns |
+| Admin Navigation Component | ✅ Complete | `app/admin/AdminNavigation.tsx` | Role-based navigation with proper routing |
+| Admin Layout Scaffolding | ✅ Complete | `app/admin/layout.tsx` | Server-side auth checks, RLS enforcement |
+| Admin Verification Route | ✅ Complete | `app/admin/verify/page.tsx` | Stub page ready for implementation |
+| EPD Sync Route | ✅ Complete | `app/api/admin/epd-sync/route.ts` | Full implementation with auth, API integration |
+| EPD Database Migration | ✅ Complete | `supabase/migrations/20251209_create_epd_database.sql` | Proper indexing and schema |
+| Tailwind Config | ✅ Complete | `tailwind.config.js` | Content paths configured correctly |
+| TypeScript Config | ⚠️ Incomplete | `tsconfig.json` | **Missing `@/types/*` path mapping** |
+| Hero Component | ✅ Complete | `components/home/Hero.tsx` | Clean, modern design |
+| Email Signup Component | ✅ Complete | `components/home/EmailSignup.tsx` | API integration ready |
+| Admin Dashboard Types | ✅ Complete | `types/admin-dashboard.ts` | Comprehensive type definitions |
+
+---
+
+## 🔴 CRITICAL ISSUES (Must Fix Before Merge)
+
+### 1. ❌ Missing TypeScript Path Mapping for `@/types/*`
+
+**Severity**: 🔴 CRITICAL - Blocks Production Build  
+**Files Affected**: 
+- `app/supplier/pricing/page.tsx`
+- `app/api/stripe/subscription/route.ts`
+
+**Error**:
 ```
-✓ Compiled successfully
-✓ Generating static pages (62/62)
-✓ Build completed - Ready for deployment
+Module not found: Can't resolve '@/types/stripe'
+```
+
+**Root Cause**:
+The `tsconfig.json` has path mappings for `@/app/*`, `@/components/*`, and `@/lib/*` but is **missing** `@/types/*`.
+
+**Current Configuration** (`tsconfig.json` lines 8-12):
+```json
+"paths": {
+  "@/app/*": ["app/*"],
+  "@/components/*": ["components/*"],
+  "@/lib/*": ["lib/*"]
+}
+```
+
+**Required Fix**:
+```diff
+"paths": {
+  "@/app/*": ["app/*"],
+  "@/components/*": ["components/*"],
+  "@/lib/*": ["lib/*"],
++ "@/types/*": ["types/*"]
+}
+```
+
+**Impact**: Without this fix, the build will fail, and the app cannot deploy to production.
+
+**Files Using `@/types/*` Import**:
+```bash
+app/supplier/pricing/page.tsx:10:import { TIER_LIMITS, TIER_PRICES } from '@/types/stripe';
+app/api/stripe/subscription/route.ts:import ... from '@/types/stripe';
+app/admin/AdminNavigation.tsx:6:import type { UserRole } from '@/types/admin-dashboard';
 ```
 
 ---
 
-## 🔴 Critical Issues Fixed
+### 2. ❌ Duplicate React Hook Imports
 
-### 1. ✅ RESOLVED: Merge Conflict in Architect Dashboard
+**Severity**: 🔴 CRITICAL - Build Fails  
 **File**: `app/architect/dashboard/page.tsx`  
-**Issue**: Unresolved git merge conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) blocking build compilation
+**Lines**: 5-6
 
-**Error Message**:
+**Error**:
 ```
-Failed to compile.
-./app/architect/dashboard/page.tsx
-Error: Merge conflict marker encountered.
+Error: the name `useState` is defined multiple times
+Error: the name `useEffect` is defined multiple times
 ```
 
-**Fix Applied**:
-Combined both branches properly by:
-- Keeping `'use client'` directive
-- Adding `export const dynamic = 'force-dynamic'`
-- Including `Suspense` import
-- Using `DashboardContent` component with Suspense wrapper
-- Preserving all functionality from both branches
-
+**Current Code**:
 ```typescript
-// ✅ FIXED
+import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'  // ❌ Duplicate!
+```
+
+**Required Fix**:
+```diff
 'use client'
+
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, Suspense } from 'react'
+- import { useState, useEffect } from 'react'
+- import { useState, useEffect, Suspense } from 'react'
++ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
-// ... proper component structure
 ```
+
+**Impact**: Syntax error preventing webpack compilation.
 
 ---
 
-### 2. ✅ RESOLVED: Google Fonts Network Error
-**Files**: `app/layout.tsx`, `tailwind.config.js`, `next.config.js`  
-**Issue**: Build failing due to network request to Google Fonts CDN in sandboxed environment
+### 3. ❌ TypeScript Errors in Legacy Frontend Files
 
-**Error Message**:
+**Severity**: 🟡 MEDIUM - Doesn't Block Next.js Build (due to `ignoreBuildErrors: true`)  
+**Files**:
+- `azure-infrastructure/azure-config.ts` (lines 18)
+- `frontend/src/pages/ApiIntegrations.tsx` (lines 27-30)
+
+**Errors**:
 ```
-FetchError: request to https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap failed
-reason: getaddrinfo ENOTFOUND fonts.googleapis.com
-app/layout.tsx
-`next/font` error: Failed to fetch `Inter` from Google Fonts.
+azure-infrastructure/azure-config.ts(18,14): error TS1109: Expression expected.
+frontend/src/pages/ApiIntegrations.tsx(27,14): error TS1109: Expression expected.
 ```
 
-**Fix Applied**:
-1. Removed `next/font/google` import from layout
-2. Configured Tailwind with system font fallbacks
-3. Updated layout to use Tailwind's font-sans class
+**Analysis**: These files are in legacy directories (`azure-infrastructure/`, `frontend/src/`) that are:
+- **Excluded from Vercel deployment** (see `.vercelignore`)
+- **Not used in the Next.js 14 app**
+- **Should be cleaned up or archived**
 
-```typescript
-// app/layout.tsx - BEFORE
-import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
-<body className={inter.className}>
+**Recommended Action**: 
+- Archive these files to `__trash__/` or remove them
+- OR fix the syntax errors if they're needed for other tooling
 
-// app/layout.tsx - AFTER ✅
-<body className="font-sans">
-
-// tailwind.config.js - ADDED ✅
-theme: {
-  extend: {
-    fontFamily: {
-      sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-    },
-  },
-}
-```
+**Impact**: Currently ignored by Next.js build config, but violates TypeScript strict mode.
 
 ---
 
-### 3. ✅ RESOLVED: Static Pre-rendering of Dynamic Pages
-**Impact**: 11 pages failing to build  
-**Issue**: Pages requiring authentication were attempting static pre-rendering, causing Supabase client errors during build
+## 🟡 DEPLOYMENT CONFIGURATION ISSUES
 
-**Error Message**:
+### 4. ⚠️ Vercel Deployment Excludes Database Migrations
+
+**Severity**: 🟡 MEDIUM - Deployment Gap  
+**File**: `.vercelignore`  
+**Line**: 61
+
+**Current Configuration**:
 ```
-Error occurred prerendering page "/search"
-Error: @supabase/ssr: Your project's URL and API key are required to create a Supabase client!
-```
-
-**Affected Pages**:
-- `/admin/certifications`
-- `/admin/my-rfqs`
-- `/admin/products`
-- `/architect/dashboard`
-- `/architect/dashboard-rfq`
-- `/auth/login`
-- `/auth/signup`
-- `/login`
-- `/search`
-- `/supplier/dashboard`
-- `/supplier/rfqs`
-
-**Fix Applied**: Added `export const dynamic = 'force-dynamic'` to all affected pages
-
-```typescript
-// ✅ PATTERN APPLIED TO ALL AUTH PAGES
-'use client'
-export const dynamic = 'force-dynamic'  // ← Added this line
-
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
-// ... component code
+# Database
+database-schemas/
+supabase/migrations/     # ⚠️ Migrations excluded!
 ```
 
-**Why This Works**:
-- Tells Next.js to always render these pages on-demand (server-side)
-- Prevents attempting to generate static HTML at build time
-- Allows Supabase auth checks to happen at runtime when env vars are available
+**Issue**: The new EPD database migration (`20251209_create_epd_database.sql`) won't be included in Vercel deployments.
+
+**Why This Matters**: 
+- Supabase migrations must be applied manually or via CI/CD
+- Frontend code depends on `epd_database` table existing
+- EPD sync route will fail if table doesn't exist
+
+**Recommended Solution**:
+Add a GitHub Actions step to apply Supabase migrations on production deployments:
+
+```yaml
+# .github/workflows/vercel-deploy.yml
+- name: Apply Supabase Migrations
+  if: github.ref == 'refs/heads/main'
+  run: |
+    npx supabase db push --db-url ${{ secrets.SUPABASE_DB_URL }}
+```
+
+**Alternative**: Document manual migration process in deployment guide.
 
 ---
 
-### 4. ✅ RESOLVED: Missing Environment Variables for Build
-**File**: `.env.local` (created)  
-**Issue**: Build process required Supabase credentials even for pages it shouldn't pre-render
+### 5. ⚠️ Build Configuration Ignores TypeScript Errors
 
-**Fix Applied**: Created `.env.local` with placeholder values for sandboxed build environment
-
-```bash
-# .env.local - Created ✅
-NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...placeholder
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...placeholder
-# ... other placeholder values
-```
-
-**Note**: This file contains placeholder values for sandboxed builds only. Production deployment requires real credentials in Vercel dashboard.
-
----
-
-## 🟡 Warnings & Best Practices
-
-### 1. Console.log Statements in Production Code
-**Impact**: Medium - Performance and security concern  
-**Count**: 20+ occurrences  
-**Risk**: Information leakage, performance impact in production
-
-**Found in**:
-```typescript
-// app/api/rfqs/route.ts
-console.log('[RFQ] Created RFQ:', rfq.id);  // ❌ Avoid in production
-
-// app/api/admin/epd-sync/route.ts
-console.log('[EPD Sync] Starting sync', limit ? `with limit of ${limit}` : '(no limit)');  // ❌
-
-// app/api/stripe/webhook/route.ts
-console.log(`📨 Webhook received: ${event.type}`);  // ❌
-
-// app/api/carbon/materials/route.ts
-console.log('[Materials API] Found materials in MongoDB:', materials.length);  // ❌
-```
-
-**Recommendation**: Create centralized logging service
-
-```typescript
-// lib/logger.ts - RECOMMENDED ✅
-type LogLevel = 'debug' | 'info' | 'warn' | 'error'
-
-class Logger {
-  private shouldLog(level: LogLevel): boolean {
-    if (process.env.NODE_ENV === 'production') {
-      return level === 'warn' || level === 'error'
-    }
-    return true
-  }
-
-  info(message: string, data?: Record<string, unknown>) {
-    if (this.shouldLog('info')) {
-      console.info(`[INFO] ${message}`, data)
-    }
-  }
-
-  error(message: string, error?: unknown) {
-    if (this.shouldLog('error')) {
-      console.error(`[ERROR] ${message}`, error)
-      // In production, send to Sentry
-    }
-  }
-}
-
-export const logger = new Logger()
-
-// Usage ✅
-logger.info('RFQ created', { rfqId: rfq.id })
-```
-
-**Action Items**:
-- [ ] Create `lib/logger.ts` with environment-aware logging
-- [ ] Replace all `console.log` calls with `logger.info()`
-- [ ] Replace all `console.error` calls with `logger.error()`
-- [ ] Integrate with Sentry for production error tracking
-
----
-
-### 2. Deprecated Package in package.json
-**Package**: `@supabase/auth-helpers-nextjs@0.15.0`  
-**Status**: ⚠️ Deprecated, but not actively used in code  
-**npm Warning**:
-```
-npm warn deprecated @supabase/auth-helpers-nextjs@0.15.0: Package no longer supported.
-```
-
-**Current State**:
-- ✅ All code correctly uses `@supabase/ssr` via `lib/supabase/client.ts` and `lib/supabase/server.ts`
-- ❌ Deprecated package still listed in `dependencies`
-
-**Fix Command**:
-```bash
-npm uninstall @supabase/auth-helpers-nextjs
-npm install  # Regenerate package-lock.json
-```
-
-**Action Items**:
-- [ ] Remove package from dependencies
-- [ ] Update package-lock.json
-- [ ] Verify build still succeeds
-
----
-
-### 3. TODO Comments - Incomplete Features
-**Impact**: Low - Documentation of future work  
-**Count**: 15 TODO comments found
-
-**Categorized by Priority**:
-
-#### High Priority TODOs:
-1. **Password Reset Email** (`app/forgot-password/page.tsx:14`)
-   ```typescript
-   // TODO: Implement password reset email via Supabase
-   ```
-   
-2. **Autodesk OAuth Flow** (`app/api/autodesk/callback/route.ts:21-23`)
-   ```typescript
-   // TODO: Exchange code for access token
-   // TODO: Store token in database
-   // TODO: Redirect to dashboard
-   ```
-
-3. **Email Service Integration** (`lib/notificationService.ts:553,563,573`)
-   ```typescript
-   // TODO: Integrate with email service
-   // TODO: Integrate with push notification service
-   // TODO: Emit to WebSocket server
-   ```
-
-#### Medium Priority TODOs:
-4. **EPD International API** (`app/api/agents/data-scout/route.ts:8`)
-5. **AI Email Writer** (`app/api/agents/email-writer/route.ts:21`)
-6. **Stripe Dunning** (`lib/stripe/webhooks.ts:169`)
-7. **Scheduled Job Notifications** (`lib/scheduledJobs.ts:299`)
-
-#### Low Priority TODOs:
-8. **Autodesk Sustainability API** (`lib/autodesk.ts:160`)
-9. **Document Service S3 Deletion** (`lib/documentService.ts:516`)
-10. **PDF Generation** (`lib/documentService.ts:641`)
-
-**Recommendation**: Create GitHub Issues for tracking
-
-```bash
-# Create issues from TODOs
-gh issue create --title "Implement password reset email" --label "feature,authentication"
-gh issue create --title "Complete Autodesk OAuth integration" --label "feature,integration"
-gh issue create --title "Integrate email notification service" --label "feature,notifications"
-```
-
----
-
-### 4. Build Configuration - Type Checking Disabled
+**Severity**: 🟡 MEDIUM - Technical Debt  
 **File**: `next.config.js`  
-**Issue**: TypeScript and ESLint checks disabled during builds
+**Lines**: 8-9
 
+**Current Configuration**:
 ```javascript
-// next.config.js - CURRENT ⚠️
-{
-  eslint: {
-    ignoreDuringBuilds: true,  // ⚠️ Disabled
-  },
-  typescript: {
-    ignoreBuildErrors: true,  // ⚠️ Disabled
-  },
-}
+typescript: {
+  ignoreBuildErrors: true,  // ⚠️ Hides type errors
+},
+eslint: {
+  ignoreDuringBuilds: true,  // ⚠️ Hides linting errors
+},
 ```
 
-**Risks**:
-- Type errors only caught during development
-- Linting issues may slip into production
-- No enforcement of code quality standards in CI/CD
+**Issue**: These settings mask the critical errors found above. The build "succeeds" even with broken code.
 
-**Recommendation**: Enable for production builds
+**Why It's Dangerous**:
+- Type errors like missing imports aren't caught until runtime
+- Production deployment can include broken code
+- CI/CD pipeline shows false "success" status
 
-```javascript
-// next.config.js - RECOMMENDED ✅
-{
-  eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV !== 'production',
-  },
-  typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV !== 'production',
-  },
-}
-```
-
-**Action Items**:
-- [ ] Enable TypeScript checking in production builds
-- [ ] Enable ESLint in production builds
-- [ ] Fix any type errors that surface
-- [ ] Update CI/CD pipeline to enforce checks
+**Recommended Fix** (Staged Approach):
+1. **Phase 1** (This PR): Fix the 3 critical errors above
+2. **Phase 2** (Next PR): Remove `ignoreBuildErrors` and enforce strict TypeScript
+3. **Phase 3** (Future): Add pre-commit hooks with type checking
 
 ---
 
-## 🟢 Code Quality Assessment
+### 6. ⚠️ Missing EPD International API Key in Environment
 
-### TypeScript Configuration ✅
-**Status**: Excellent  
-**Score**: 9/10
+**Severity**: 🟡 MEDIUM - Feature Non-Functional  
+**Required For**: EPD Sync Route (`app/api/admin/epd-sync/route.ts`)
 
-**Strengths**:
-- ✅ Strict mode enabled (`"strict": true`)
-- ✅ `noUncheckedIndexedAccess: true` - Prevents array access bugs
-- ✅ `noUncheckedSideEffectImports: true` - ES module safety
-- ✅ Path aliases configured (`@/*` → root directory)
-- ✅ Proper module resolution (`NodeNext`)
-- ✅ Source maps enabled for debugging
+**Code Check** (line 88):
+```typescript
+const apiKey = process.env.EPD_INTERNATIONAL_API_KEY;
+if (!apiKey) {
+  console.error('[EPD Sync] EPD_INTERNATIONAL_API_KEY not configured');
+  return NextResponse.json(
+    { error: 'EPD API key not configured' },
+    { status: 500 }
+  );
+}
+```
 
-**Configuration**:
+**Verification Needed**:
+- [ ] Is `EPD_INTERNATIONAL_API_KEY` set in Vercel environment variables?
+- [ ] Is it documented in `.env.example`?
+
+**Found in `.env.example`**: ❌ **NOT PRESENT**
+
+**Required Action**:
+```bash
+# Add to .env.example and Vercel environment variables
+EPD_INTERNATIONAL_API_KEY=your-api-key-here
+```
+
+---
+
+### 7. ⚠️ Deprecated Supabase Auth Helpers
+
+**Severity**: 🟡 LOW - Future Breaking Change  
+**Package**: `@supabase/auth-helpers-nextjs@0.15.0`
+
+**Warning from `npm install`**:
+```
+@supabase/auth-helpers-nextjs@0.15.0: Package no longer supported.
+Contact Support at https://www.npmjs.com/support for more info.
+```
+
+**Analysis**: The codebase is already migrating to `@supabase/ssr`:
+- `lib/supabase/server.ts` uses `@supabase/ssr` ✅
+- `lib/supabase/client.ts` uses modern patterns ✅
+
+**Action Required**: Remove deprecated package from `package.json`:
+```diff
+"dependencies": {
+- "@supabase/auth-helpers-nextjs": "^0.15.0",
+  "@supabase/ssr": "^0.8.0",
+  "@supabase/supabase-js": "^2.39.0",
+}
+```
+
+---
+
+## 🟢 WHAT'S WORKING WELL
+
+### ✅ Dashboard Architecture
+
+The refactored dashboard structure follows Next.js 14 best practices:
+
+**Layout Pattern** ✅
+```typescript
+// app/admin/layout.tsx - Server Component
+- Authentication check
+- Role-based access control (RBAC)
+- Server-side data fetching
+- Proper error handling with redirects
+```
+
+**Navigation Component** ✅
+```typescript
+// app/admin/AdminNavigation.tsx - Client Component
+- 'use client' directive used correctly
+- Role-based navigation links
+- Active route highlighting
+- Logout functionality with Supabase client
+```
+
+**Route Structure** ✅
+```
+app/admin/
+├── layout.tsx           (Server - Auth/RBAC)
+├── AdminNavigation.tsx  (Client - Interactive UI)
+├── dashboard/page.tsx   (Role-specific dashboard)
+├── verify/page.tsx      (Admin certification workflow)
+├── analytics/page.tsx   (Admin analytics)
+├── products/page.tsx    (Shared products management)
+└── ...
+```
+
+---
+
+### ✅ EPD Sync Implementation
+
+**Excellent Implementation** of the EPD International API sync route:
+
+**Security** ✅
+- Admin-only authentication
+- RLS enforcement via Supabase
+- API key validation
+
+**Functionality** ✅
+- Pagination support
+- Upsert logic (insert new, update changed)
+- Error handling with summary reporting
+- Optional `?limit` parameter for testing
+
+**Code Quality** ✅
+- Comprehensive JSDoc comments
+- TypeScript strict types
+- Proper async/await patterns
+- Detailed logging
+
+**Database Schema** ✅
+```sql
+-- supabase/migrations/20251209_create_epd_database.sql
+CREATE TABLE public.epd_database (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  epd_number TEXT UNIQUE NOT NULL,
+  -- Proper indexing for fast lookups
+  -- JSONB for flexible raw data storage
+);
+```
+
+---
+
+### ✅ Home Page Components
+
+**Hero Component** (`components/home/Hero.tsx`) ✅
+- Modern gradient design
+- Clear CTAs for architects and suppliers
+- Responsive layout
+- Proper Link components for client-side navigation
+
+**Email Signup** (`components/home/EmailSignup.tsx`) ✅
+- Client component with proper `'use client'` directive
+- Form validation
+- API integration ready
+- Loading and success states
+- Error handling
+
+**Page Integration** (`app/page.tsx`) ✅
+```typescript
+import Hero from '@/components/home/Hero'
+import EmailSignup from '@/components/home/EmailSignup'
+// Properly imported and rendered
+```
+
+---
+
+## 📊 Code Quality Metrics
+
+### TypeScript Strict Mode: ✅ ENABLED
 ```json
+{
+  "strict": true,
+  "noUncheckedIndexedAccess": true,
+  "noImplicitAny": true,
+  "strictNullChecks": true,
+  // ... comprehensive strict settings
+}
+```
+
+### Test Coverage
+- ✅ EPD sync route has unit tests: `app/api/admin/epd-sync/__tests__/route.test.ts`
+- ⚠️ No tests found for dashboard components
+
+### Security
+- ✅ Row Level Security (RLS) enforced
+- ✅ Admin role checks in API routes
+- ✅ CSRF protection via Next.js
+- ✅ Proper environment variable handling
+
+---
+
+## 🔍 Why Frontend Changes May Not Appear in Production
+
+Based on this analysis, here are the **top reasons** frontend changes might not deploy:
+
+### 1. 🔴 Build Failures (MOST LIKELY)
+**Cause**: The 3 critical errors above cause the build to fail silently due to `ignoreBuildErrors: true`.
+
+**Evidence**: 
+- Build completes but with errors
+- Vercel deployment uses last successful build
+- Changes aren't included in production bundle
+
+**Fix**: Resolve the 3 critical errors listed above.
+
+---
+
+### 2. 🟡 Vercel Environment Configuration
+**Potential Issues**:
+- Missing environment variables for new features
+- Old deployment artifacts cached
+- Build cache not invalidated
+
+**Verification Commands**:
+```bash
+# Check Vercel environment variables
+vercel env ls
+
+# Force rebuild without cache
+vercel build --force
+
+# Check deployment logs
+vercel logs <deployment-url>
+```
+
+---
+
+### 3. 🟡 Git Branch State
+**Analysis**: The current branch `copilot/refactor-dashboard-structure-again` is:
+- ✅ Up to date with origin
+- ✅ Working tree clean
+- ⚠️ May need to be merged with latest `main` branch
+
+**Verification**:
+```bash
+# Check if main has new commits
+git fetch origin main
+git log HEAD..origin/main
+
+# If behind, rebase or merge
+git pull origin main --rebase
+```
+
+---
+
+### 4. 🟡 Vercel Deployment Settings
+**Check These Settings** in Vercel Dashboard:
+- [ ] Production branch is set to `main`
+- [ ] Auto-deployments are enabled
+- [ ] Build command is `npm run build` (not `vercel build`)
+- [ ] Install command is `npm install`
+- [ ] Root directory is `.` (not a subdirectory)
+
+---
+
+### 5. 🟡 Browser Cache
+**If changes appear in preview but not production**:
+```bash
+# Hard refresh in browser
+Ctrl+Shift+R (Windows/Linux)
+Cmd+Shift+R (Mac)
+
+# Or clear site data in DevTools
+Application > Storage > Clear site data
+```
+
+---
+
+## 🛠️ REQUIRED FIXES - Priority Order
+
+### Priority 1: Critical Build Fixes (Required for Merge)
+
+#### Fix #1: Add `@/types/*` Path Mapping
+```diff
+// tsconfig.json
 {
   "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleResolution": "NodeNext",
-    "paths": { "@/*": ["./*"] }
+    "paths": {
+      "@/app/*": ["app/*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"],
++     "@/types/*": ["types/*"]
+    }
   }
 }
 ```
 
-**Minor Improvement**:
-- Consider enabling `noImplicitReturns` for more type safety
-
----
-
-### Component Architecture ✅
-**Status**: Good  
-**Score**: 8/10
-
-**Strengths**:
-- ✅ Clear client/server component separation
-- ✅ Proper use of `'use client'` directive
-- ✅ Suspense boundaries for loading states
-- ✅ Error boundaries implemented (`DashboardErrorBoundary`)
-- ✅ Loading skeletons for better UX (`DashboardLoadingSkeleton`)
-
-**Component Organization**:
-```
-components/
-├── DashboardErrorBoundary.tsx     ✅ Error handling
-├── DashboardLoadingSkeleton.tsx   ✅ Loading states
-├── IntercomProvider.tsx           ✅ Third-party integration
-├── AutodeskViewer.tsx             ✅ Complex feature
-├── ExportToRevitButton.tsx        ✅ Integration component
-└── layout/                        ✅ Layout components
-```
-
-**Best Practice Example**:
-```typescript
-// app/supplier/dashboard/page.tsx ✅
+#### Fix #2: Remove Duplicate Imports
+```diff
+// app/architect/dashboard/page.tsx
 'use client'
+
 export const dynamic = 'force-dynamic'
 
-import { DashboardErrorBoundary } from '@/components/DashboardErrorBoundary'
-import { DashboardLoadingSkeleton } from '@/components/DashboardLoadingSkeleton'
-
-export default function SupplierDashboard() {
-  return (
-    <DashboardErrorBoundary>
-      <Suspense fallback={<DashboardLoadingSkeleton />}>
-        <DashboardContent />
-      </Suspense>
-    </DashboardErrorBoundary>
-  )
-}
-```
-
----
-
-### Supabase Integration ✅
-**Status**: Excellent  
-**Score**: 10/10
-
-**Strengths**:
-- ✅ Using modern `@supabase/ssr` package
-- ✅ Proper client/server separation
-- ✅ Centralized client creation
-- ✅ No deprecated package usage in code
-
-**Architecture**:
-```
-lib/supabase/
-├── client.ts   → For client components ('use client')
-└── server.ts   → For Server Components and Server Actions
-```
-
-**Client Pattern** (Client Components):
-```typescript
-// lib/supabase/client.ts ✅
-import { createBrowserClient } from '@supabase/ssr'
-
-export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
-// Usage in client component ✅
-'use client'
+- import { useState, useEffect } from 'react'
+- import { useState, useEffect, Suspense } from 'react'
++ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
-
-export default function ClientComponent() {
-  const supabase = createClient()
-  // ...
-}
 ```
 
-**Server Pattern** (Server Components/Actions):
-```typescript
-// lib/supabase/server.ts ✅
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-
-export async function createClient() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-      },
-    }
-  )
-}
-```
-
----
-
-### Security Headers ✅
-**Status**: Excellent  
-**Score**: 9/10  
-**File**: `vercel.json`
-
-**Configured Headers**:
-```json
-{
-  "X-Frame-Options": "DENY",                                    // ✅ Prevent clickjacking
-  "X-Content-Type-Options": "nosniff",                          // ✅ Prevent MIME sniffing
-  "Referrer-Policy": "strict-origin-when-cross-origin",         // ✅ Privacy protection
-  "X-XSS-Protection": "1; mode=block",                          // ✅ XSS protection
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()"  // ✅ Limit browser features
-}
-```
-
-**CORS Configuration**:
-```json
-{
-  "Access-Control-Allow-Credentials": "true",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-  "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, ..."
-}
-```
-
-**Recommendation**: Add Content Security Policy (CSP)
-```json
-{
-  "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
-}
-```
-
----
-
-## 📁 Repository Structure Analysis
-
-### Application Routes Overview
-**Total Routes**: 62  
-**Static Pages**: 43 (69%)  
-**Dynamic Pages**: 19 (31%)
-
-### Route Categories
-
-#### 🔒 Admin Routes (Protected - Admin Only)
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/admin/analytics` | Analytics dashboard | ✅ Working |
-| `/admin/certifications` | White Glove verification | ✅ Working |
-| `/admin/dashboard` | Admin overview | ✅ Working |
-| `/admin/emails` | Email management | ✅ Working |
-| `/admin/my-rfqs` | RFQ management | ✅ Working |
-| `/admin/outreach` | Outreach campaigns | ✅ Working |
-| `/admin/products` | Product management | ✅ Working |
-
-#### 🏗️ Architect Routes (Protected - Buyer Role)
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/architect/dashboard` | Main dashboard | ✅ Working |
-| `/architect/dashboard-rfq` | RFQ management | ✅ Working |
-| `/architect/rfq/new` | Create RFQ | ✅ Working |
-| `/architect/rfqs/[id]/quotes` | View quotes | ✅ Working |
-
-#### 🏭 Supplier Routes (Protected - Supplier Role)
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/supplier/dashboard` | Main dashboard | ✅ Working |
-| `/supplier/pricing` | Pricing tiers | ✅ Working |
-| `/supplier/rfqs` | Incoming RFQs | ✅ Working |
-| `/supplier/subscription` | Manage subscription | ✅ Working |
-| `/supplier/success` | Payment success | ✅ Working |
-
-#### 🔐 Authentication Routes (Public)
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/auth/login` | SSO login | ✅ Working |
-| `/auth/signup` | SSO signup | ✅ Working |
-| `/auth/callback` | OAuth callback | ✅ Working |
-| `/login` | Email/password login | ✅ Working |
-| `/signup` | Email/password signup | ✅ Working |
-| `/forgot-password` | Password reset | ⚠️ TODO |
-
-#### 🌐 Public Routes
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/` | Landing page | ✅ Working |
-| `/about` | About page | ✅ Working |
-| `/search` | Supplier search | ✅ Working |
-| `/carbon-analysis` | Carbon calculator | ✅ Working |
-| `/contact` | Contact form | ✅ Working |
-| `/privacy` | Privacy policy | ✅ Working |
-| `/terms` | Terms of service | ✅ Working |
-
----
-
-### API Routes (50+ Endpoints)
-
-#### Admin APIs
-| Endpoint | Purpose | Memory | Timeout |
-|----------|---------|---------|---------|
-| `/api/admin/analytics` | Analytics data | 1 GB | 30s |
-| `/api/admin/automation/[type]` | Automation triggers | 1 GB | 30s |
-| `/api/admin/epd-sync` | EPD data sync | 1 GB | 30s |
-| `/api/admin/stats` | Dashboard stats | 1 GB | 30s |
-
-#### RFQ APIs
-| Endpoint | Purpose | Memory | Timeout |
-|----------|---------|---------|---------|
-| `/api/rfq/create` | Create RFQ | 1 GB | 10s |
-| `/api/rfqs` | List RFQs | 1 GB | 10s |
-| `/api/rfqs/[id]/collaboration` | RFQ collaboration | 1 GB | 10s |
-
-#### Stripe APIs
-| Endpoint | Purpose | Memory | Timeout |
-|----------|---------|---------|---------|
-| `/api/stripe/create-checkout` | Payment checkout | 1 GB | 10s |
-| `/api/stripe/subscription` | Manage subscription | 1 GB | 10s |
-| `/api/stripe/webhook` | Payment webhooks | 1 GB | 10s |
-
-#### Autodesk Integration APIs
-| Endpoint | Purpose | Memory | Timeout |
-|----------|---------|---------|---------|
-| `/api/autodesk/connect` | OAuth connect | 1 GB | 10s |
-| `/api/autodesk/analyze-model` | BIM analysis | 1 GB | 10s |
-| `/api/autodesk/export-material` | Export to Revit | 1 GB | 10s |
-| `/api/autodesk/status` | Connection status | 1 GB | 10s |
-
-#### Carbon Analysis APIs
-| Endpoint | Purpose | Memory | Timeout |
-|----------|---------|---------|---------|
-| `/api/carbon/analyze` | Carbon analysis | 1 GB | 10s |
-| `/api/carbon/calculate` | Carbon calculation | 1 GB | 10s |
-| `/api/carbon/materials` | Material data | 1 GB | 10s |
-| `/api/carbon/alternatives` | Green alternatives | 1 GB | 10s |
-
----
-
-## 🎨 Assets & Branding
-
-### Logo Files ✅
-**Location**: `public/logos/`  
-**Status**: All essential logos present
-
-#### Main Brand Assets
-- ✅ `greenchainz-logo-full.png` - Full logo with text
-- ✅ `greenchainz-logo-icon.png` - Icon only
-- ✅ `greenchainz-logo.png` - Standard logo
-- ✅ `greenchainz-badge.png` - Badge variant
-- ✅ `logo-main.png` - Main logo
-- ✅ `logo-white.png` - White variant for dark backgrounds
-- ✅ `logo-icon.png` - Icon variant
-- ✅ `favicon.ico` - Browser favicon
-
-#### Certification Partner Logos
-- ✅ `breeam_logo.svg` - BREEAM certification
-- ✅ `bt_logo.svg` - Building Transparency (EC3)
-- ✅ `epd_logo.png` - EPD International
-- ✅ `fsc_logo.png` - Forest Stewardship Council
-- ✅ `usgbc_logo.png` - USGBC (LEED)
-- ✅ `wap_logo.svg` - WAP certification
-
-### Issues Found
-
-#### Unused/Test Images ⚠️
-**Count**: 15 `Imagine_*.jpg` files  
-**Size**: Unknown  
-**Issue**: Appear to be placeholder/test images from AI generation
-
-**Files**:
-```
-Imagine_3486246901513940.jpg
-Imagine_3486247514847212.jpg
-Imagine_3486248348180462.jpg
-... (12 more)
-```
-
-**Recommendation**:
+#### Fix #3: Add EPD API Key to Environment
 ```bash
-# Review and remove if unused
-cd public/logos
-ls -lh Imagine_*.jpg
-# If confirmed unused:
-rm Imagine_*.jpg
-```
+# Add to Vercel environment variables
+EPD_INTERNATIONAL_API_KEY=<your-key>
 
-**Action Items**:
-- [ ] Review usage of `Imagine_*.jpg` files
-- [ ] Remove if they're test/placeholder images
-- [ ] Document any that are intentionally kept
-
----
-
-## 🚀 Deployment Configuration
-
-### Vercel Configuration ✅
-**File**: `vercel.json`  
-**Status**: Production-ready
-
-#### Build Settings
-```json
-{
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "regions": ["iad1"]  // US East (Virginia)
-}
-```
-
-#### Cron Jobs
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/sync-mailerlite",
-      "schedule": "0 3 * * *"  // Daily at 3 AM UTC
-    },
-    {
-      "path": "/api/cron/generate-quarterly-reports",
-      "schedule": "0 0 1 1,4,7,10 *"  // Quarterly (Jan, Apr, Jul, Oct)
-    }
-  ]
-}
-```
-
-#### Function Configuration
-```json
-{
-  "functions": {
-    "app/api/**/*.ts": {
-      "memory": 1024,        // 1 GB
-      "maxDuration": 10      // 10 seconds
-    },
-    "app/api/admin/**/*.ts": {
-      "memory": 1024,        // 1 GB
-      "maxDuration": 30      // 30 seconds for admin operations
-    }
-  }
-}
-```
-
-#### API Rewrites
-```json
-{
-  "rewrites": [
-    {
-      "source": "/api/backend/:path*",
-      "destination": "/api/proxy/:path*"
-    }
-  ]
-}
+# Add to .env.example
+EPD_INTERNATIONAL_API_KEY=your-epd-international-api-key
 ```
 
 ---
 
-### Environment Variables Required
+### Priority 2: Configuration Improvements (Recommended)
 
-#### Critical (Build will fail)
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-key
-```
-
-#### Database (Features will break)
-```bash
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
-```
-
-#### Email Services
-```bash
-RESEND_API_KEY=re_your_key                    # Transactional emails
-MAILERLITE_API_KEY=your_key                   # Marketing emails
-ZOHO_SMTP_USER=noreply@greenchainz.com       # SMTP backup
-ZOHO_SMTP_PASS=your_password
-```
-
-#### AI Services
-```bash
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
-AZURE_OPENAI_KEY=your_key
-AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
-```
-
-#### File Storage
-```bash
-AWS_ACCESS_KEY_ID=AKIA...
-AWS_SECRET_ACCESS_KEY=your_secret
-AWS_REGION=us-east-1
-AWS_BUCKET_NAME=greenchainz-assets
-```
-
-#### Payment Processing
-```bash
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_STANDARD=price_...
-STRIPE_PRICE_VERIFIED=price_...
-```
-
-#### Integrations
-```bash
-NEXT_PUBLIC_INTERCOM_APP_ID=your_app_id      # Customer support
-AUTODESK_CLIENT_ID=your_client_id            # BIM integration
-AUTODESK_CLIENT_SECRET=your_secret
-NEXT_PUBLIC_BASE_URL=https://greenchainz.com
-```
-
-#### Optional (Enhanced features)
-```bash
-SENTRY_AUTH_TOKEN=your_token                  # Error tracking with source maps
-CRON_SECRET=your_secret                       # Secure cron endpoints
-```
-
----
-
-## 📊 Build Output Analysis
-
-### Build Statistics
-```
-Route (app)                              Size      First Load JS
-─────────────────────────────────────────────────────────────────
-○ Static Pages:                          43        ~205 kB avg
-ƒ Dynamic Pages:                         19        ~208 kB avg
-
-Largest Pages:
-├─ /admin/analytics                      108 kB    364 kB  ⚠️ Heavy
-├─ /admin/outreach                       7.09 kB   209 kB  ✅
-├─ /architect/rfq/new                    11.1 kB   213 kB  ✅
-└─ /supplier/dashboard                   5.71 kB   269 kB  ✅
-
-Shared Bundles:
-├─ chunks/52774a7f.js                    37 kB
-├─ chunks/5996.js                        107 kB
-├─ chunks/fd9d1056.js                    53.8 kB
-└─ other shared chunks                   3.3 kB
-────────────────────────────────────────────────────────────────
-Total First Load JS shared:              202 kB
-```
-
-### Performance Considerations
-
-#### ✅ Good
-- Proper code splitting
-- Shared chunks extracted efficiently
-- Lazy loading for dynamic routes
-- Most pages under 10 kB individual size
-
-#### ⚠️ Areas for Improvement
-
-1. **Admin Analytics Page (364 kB)**
-   - Largest page in the application
-   - Likely due to Recharts library
-   - **Recommendation**: Lazy load chart components
-   
-   ```typescript
-   // admin/analytics/page.tsx - RECOMMENDED ✅
-   import { lazy, Suspense } from 'react'
-   
-   const BarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })))
-   const LineChart = lazy(() => import('recharts').then(m => ({ default: m.LineChart })))
-   
-   function AnalyticsCharts() {
-     return (
-       <Suspense fallback={<ChartSkeleton />}>
-         <BarChart data={data} />
-         <LineChart data={data} />
-       </Suspense>
-     )
-   }
-   ```
-
-2. **Consider Dynamic Imports for Heavy Dependencies**
-   ```typescript
-   // Dynamic import example ✅
-   const PDFDocument = await import('pdfkit')
-   const { S3Client } = await import('@aws-sdk/client-s3')
-   ```
-
----
-
-## 🧪 Testing Status
-
-### Test Infrastructure ✅
-**Found**: `jest.config.js` configured  
-**Test Framework**: Jest + ts-jest
-
-### Existing Tests ✅
-```
-lib/email/__tests__/
-├── certificationTemplates.test.ts  ✅ 24 tests
-└── rfqTemplates.test.ts            ✅ 44 tests
-────────────────────────────────────────────────
-Total: 68 tests passing
-```
-
-### Test Coverage Gaps ⚠️
-
-#### Unit Tests Needed
-- [ ] `lib/supabase/client.ts` - Client creation
-- [ ] `lib/supabase/server.ts` - Server client creation
-- [ ] `lib/mongodb.ts` - MongoDB connection
-- [ ] `lib/stripe/webhooks.ts` - Webhook handlers
-- [ ] `lib/email/resend.ts` - Email sending
-- [ ] `lib/utils/formatters.ts` - Utility functions
-
-#### Integration Tests Needed
-- [ ] API routes (`app/api/`)
-  - `/api/rfqs` - RFQ CRUD operations
-  - `/api/stripe/webhook` - Payment processing
-  - `/api/admin/epd-sync` - EPD synchronization
-- [ ] Authentication flows
-  - Email/password signup/login
-  - OAuth flows (Google, GitHub, LinkedIn)
-  - Password reset
-
-#### Component Tests Needed
-- [ ] `components/DashboardErrorBoundary.tsx`
-- [ ] `components/DashboardLoadingSkeleton.tsx`
-- [ ] `components/AutodeskViewer.tsx`
-- [ ] `components/ExportToRevitButton.tsx`
-
-#### E2E Tests Needed
-- [ ] Playwright configured but no tests found
-- [ ] Critical user flows:
-  - Supplier registration → verification → dashboard
-  - Architect registration → RFQ creation → quote comparison
-  - Admin login → certification verification
-
-### Recommended Test Structure
-```
-tests/
-├── unit/
-│   ├── lib/
-│   │   ├── supabase.test.ts
-│   │   ├── mongodb.test.ts
-│   │   └── utils.test.ts
-│   └── components/
-│       └── DashboardErrorBoundary.test.tsx
-├── integration/
-│   └── api/
-│       ├── rfqs.test.ts
-│       └── stripe-webhook.test.ts
-└── e2e/
-    ├── supplier-journey.spec.ts
-    ├── architect-journey.spec.ts
-    └── admin-verification.spec.ts
-```
-
----
-
-## 🔐 Security Considerations
-
-### ✅ Strengths
-
-1. **Supabase Row Level Security (RLS)**
-   - Database-level access control
-   - User can only access their own data
-   - Role-based permissions (architect, supplier, admin)
-
-2. **Security Headers** (vercel.json)
-   - ✅ X-Frame-Options: DENY
-   - ✅ X-Content-Type-Options: nosniff
-   - ✅ X-XSS-Protection: 1; mode=block
-   - ✅ Referrer-Policy configured
-   - ✅ Permissions-Policy configured
-
-3. **Environment Variables**
-   - ✅ Sensitive data not committed to git
-   - ✅ `.env.local` in `.gitignore`
-   - ✅ `.env.example` provided for reference
-
-4. **TypeScript Strict Mode**
-   - ✅ Type safety enforced
-   - ✅ Prevents many common bugs
-
-5. **Parameterized Queries**
-   - ✅ Using Supabase client (no SQL injection risk)
-   - ✅ No raw SQL strings
-
-6. **XSS Protection in Email Templates**
-   - ✅ `escapeHtml()` function used in `lib/email/rfqTemplates.ts`
-   - ✅ All user input escaped before inserting into HTML
-
-### ⚠️ Recommendations
-
-1. **Add Content Security Policy (CSP)**
-   ```json
-   // vercel.json - ADD ✅
-   {
-     "key": "Content-Security-Policy",
-     "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.intercomcdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://*.intercom.io;"
-   }
-   ```
-
-2. **Add Rate Limiting to API Routes**
-   ```typescript
-   // lib/rateLimit.ts - CREATE ✅
-   import { RateLimiter } from 'limiter'
-   
-   const limiter = new RateLimiter({
-     tokensPerInterval: 10,
-     interval: 'minute'
-   })
-   
-   export async function rateLimit(req: Request) {
-     const remaining = await limiter.removeTokens(1)
-     if (remaining < 0) {
-       throw new Error('Rate limit exceeded')
-     }
-   }
-   ```
-
-3. **Add CSRF Protection for Mutations**
-   ```typescript
-   // middleware.ts - CREATE ✅
-   import { NextResponse } from 'next/server'
-   import type { NextRequest } from 'next/server'
-   
-   export function middleware(request: NextRequest) {
-     if (request.method !== 'GET') {
-       const token = request.headers.get('x-csrf-token')
-       if (!token || !validateToken(token)) {
-         return new NextResponse('CSRF token invalid', { status: 403 })
-       }
-     }
-     return NextResponse.next()
-   }
-   ```
-
-4. **Input Validation with Zod**
-   - Already used in email templates ✅
-   - Extend to all API routes
-   
-   ```typescript
-   // app/api/rfqs/route.ts - EXAMPLE ✅
-   import { z } from 'zod'
-   
-   const createRfqSchema = z.object({
-     project_name: z.string().min(3).max(200),
-     material_type: z.enum(['concrete', 'steel', 'wood', 'insulation']),
-     quantity: z.number().positive(),
-     delivery_date: z.string().datetime(),
-   })
-   
-   export async function POST(req: Request) {
-     const body = await req.json()
-     const validated = createRfqSchema.parse(body)  // Throws if invalid
-     // ... use validated data
-   }
-   ```
-
-5. **Implement Security Monitoring**
-   ```typescript
-   // lib/securityMonitor.ts - CREATE ✅
-   export function logSecurityEvent(event: {
-     type: 'suspicious_login' | 'rate_limit_exceeded' | 'unauthorized_access'
-     userId?: string
-     ip?: string
-     details?: Record<string, unknown>
-   }) {
-     // Log to Sentry with security tag
-     logger.warn('Security event', event)
-     // Could also send to separate security logging service
-   }
-   ```
-
----
-
-## 📋 Priority Action Items
-
-### ✅ Immediate (Completed)
-- [x] Fix merge conflict in architect dashboard
-- [x] Fix Google Fonts network error
-- [x] Add dynamic exports to auth-protected pages
-- [x] Create `.env.local` for sandboxed builds
-- [x] Update font configuration
-
-### 🟡 High Priority (This Sprint)
-
-#### 1. Remove Deprecated Package
+#### Improvement #1: Remove Deprecated Package
 ```bash
 npm uninstall @supabase/auth-helpers-nextjs
-npm install
-git add package.json package-lock.json
-git commit -m "Remove deprecated @supabase/auth-helpers-nextjs"
 ```
 
-#### 2. Create Centralized Logging
-```bash
-# Create file
-touch lib/logger.ts
+#### Improvement #2: Document Migration Process
+Create `docs/DEPLOYMENT-MIGRATIONS.md`:
+```markdown
+# Supabase Migration Deployment
 
-# Implement (see example in "Console.log" section above)
-# Then replace console.log calls across codebase
+## Applying Migrations to Production
+
+1. Connect to production database
+2. Run: npx supabase db push --db-url <production-url>
+3. Verify: Check epd_database table exists
 ```
-
-#### 3. Enable Production Build Checks
-```javascript
-// next.config.js - Update
-{
-  eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV !== 'production',
-  },
-  typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV !== 'production',
-  },
-}
-```
-
-#### 4. Clean Up Unused Assets
-```bash
-cd public/logos
-# Review Imagine_*.jpg files
-ls -lh Imagine_*.jpg
-# Remove if unused
-rm Imagine_*.jpg  # Only if confirmed unused
-```
-
-#### 5. Set Up Vercel Environment Variables
-- [ ] Log into Vercel dashboard
-- [ ] Navigate to project settings
-- [ ] Add all required environment variables from `.env.example`
-- [ ] Deploy to preview environment first
 
 ---
 
-### 🟢 Medium Priority (Next Sprint)
+### Priority 3: Technical Debt (Future Work)
 
-#### 1. Implement TODO Features (15 items)
-- [ ] Password reset email flow
-- [ ] Complete Autodesk OAuth integration
-- [ ] Connect EPD International API
-- [ ] Integrate AI email writer
-- [ ] Add notification services (email, push, WebSocket)
+#### Task #1: Enable Strict Type Checking
+Remove `ignoreBuildErrors` after fixing all type errors.
 
-#### 2. Add Unit Tests
-- [ ] Test Supabase client creation
-- [ ] Test MongoDB connection
-- [ ] Test utility functions
-- [ ] Test webhook handlers
-- [ ] Test formatters
+#### Task #2: Archive Legacy Code
+Move unused files to `__trash__/`:
+- `azure-infrastructure/`
+- `frontend/src/` (old Vite frontend)
 
-#### 3. Optimize Bundle Sizes
-- [ ] Lazy load Recharts in `/admin/analytics`
-- [ ] Dynamic imports for PDFKit
-- [ ] Dynamic imports for AWS SDK
-- [ ] Tree-shake unused Recharts components
-
-#### 4. Add Security Enhancements
-- [ ] Implement rate limiting
-- [ ] Add CSRF protection
-- [ ] Add Content Security Policy
-- [ ] Extend Zod validation to all APIs
-- [ ] Set up security event logging
-
-#### 5. Set Up Monitoring
-- [ ] Configure Sentry with auth token
-- [ ] Set up Vercel Analytics
-- [ ] Configure uptime monitoring
-- [ ] Set up error alerting
+#### Task #3: Add Dashboard Component Tests
+Create tests for:
+- `AdminNavigation.tsx`
+- `app/admin/layout.tsx`
+- Role-based rendering
 
 ---
 
-### 🔵 Low Priority (Backlog)
+## 🧪 TESTING CHECKLIST
 
-#### 1. Add E2E Tests
-- [ ] Set up Playwright tests
-- [ ] Test supplier journey
-- [ ] Test architect journey
-- [ ] Test admin verification flow
+Before merging this PR, verify:
 
-#### 2. Advanced Analytics
-- [ ] User behavior tracking
-- [ ] Conversion funnel analysis
-- [ ] A/B testing framework
-- [ ] Performance monitoring
+### Build & Deploy
+- [ ] `npm install` completes without errors
+- [ ] `npm run build` completes successfully
+- [ ] No TypeScript errors in output
+- [ ] Vercel preview deployment works
+- [ ] Production deployment succeeds
 
-#### 3. Performance Optimization
-- [ ] Image optimization (already configured)
-- [ ] Implement ISR for product pages
-- [ ] Add Redis caching for EPD data
-- [ ] Optimize database queries
+### Functionality
+- [ ] Admin dashboard loads for admin users
+- [ ] Supplier dashboard loads for suppliers
+- [ ] Architect dashboard loads for architects
+- [ ] Navigation switches based on role
+- [ ] EPD sync route is accessible (admin only)
+- [ ] Hero and EmailSignup render on homepage
 
-#### 4. Documentation
-- [ ] API documentation (OpenAPI/Swagger)
-- [ ] Component documentation (Storybook)
-- [ ] Deployment runbook
-- [ ] Troubleshooting guide
+### Security
+- [ ] Non-authenticated users are redirected to `/login`
+- [ ] Wrong role users can't access admin routes
+- [ ] EPD sync route requires admin role
+- [ ] RLS policies are enforced
+
+### Performance
+- [ ] Page load times are acceptable
+- [ ] No console errors in browser
+- [ ] Images load properly
+- [ ] Navigation is smooth
 
 ---
 
-## 🛠️ Terminal Commands Reference
+## 📝 DEPLOYMENT COMMANDS
 
-### Build & Development
+### Testing Locally
 ```bash
 # Install dependencies
 npm install
 
-# Run development server (port 3001)
-npm run dev
-
-# Build for production
+# Apply fixes above, then build
 npm run build
 
-# Start production server
-npm start
+# Start production server locally
+npm run start
 
-# Run linter
-npm run lint
-
-# Run tests
-npm run test
-
-# Type check
-npx tsc --noEmit
+# Test the app at http://localhost:3001
 ```
 
-### Deployment
+### Testing on Vercel Preview
 ```bash
-# Deploy to Vercel production
-npm run deploy:vercel
+# Push branch with fixes
+git add .
+git commit -m "fix: resolve build errors and add types path"
+git push origin copilot/refactor-dashboard-structure-again
 
-# Deploy to Vercel preview
-npm run deploy:preview
-
-# Vercel CLI commands
-vercel --prod                    # Deploy to production
-vercel --prod --force           # Force new deployment
-vercel env pull .env.local      # Pull env vars from Vercel
+# Wait for Vercel preview deployment
+# Check GitHub PR for preview URL
 ```
 
-### Database
+### Deploying to Production
 ```bash
-# Supabase CLI (if using local dev)
-supabase start                   # Start local Supabase
-supabase db reset               # Reset database
-supabase db push                # Push migrations
-supabase gen types typescript --local > types/supabase.ts
-```
+# After PR is approved and merged to main
+git checkout main
+git pull origin main
 
-### Cleanup
-```bash
-# Remove deprecated packages
-npm uninstall @supabase/auth-helpers-nextjs
+# Vercel auto-deploys main branch
+# Monitor at: https://vercel.com/dashboard
 
-# Clean build artifacts
-rm -rf .next
-rm -rf node_modules
-npm install
-
-# Clean test images
-cd public/logos
-rm Imagine_*.jpg
-```
-
----
-
-## 📈 Deployment Readiness Checklist
-
-### Pre-Deployment ✅
-- [x] Build succeeds locally
-- [x] No merge conflicts
-- [x] No TypeScript errors (with `ignoreBuildErrors`)
-- [x] Environment variables documented
-- [x] Security headers configured
-- [x] API routes configured with timeouts
-- [x] Vercel configuration validated
-
-### Deployment Configuration ✅
-- [x] `vercel.json` present and valid
-- [x] Cron jobs configured
-- [x] Function memory limits set
-- [x] Regions specified
-- [x] Rewrites configured
-- [ ] Environment variables set in Vercel dashboard ⚠️
-- [ ] Sentry auth token configured (optional)
-
-### Post-Deployment Verification
-- [ ] All routes accessible
-- [ ] Authentication flows work (email/password, OAuth)
-- [ ] RFQ creation and matching works
-- [ ] Email sending works (Resend, MailerLite)
-- [ ] Stripe payments work
-- [ ] Supabase connection stable
-- [ ] MongoDB connection stable
-- [ ] Cron jobs execute successfully
-- [ ] Error tracking working (Sentry)
-- [ ] Performance acceptable (Core Web Vitals)
-
-### Monitoring Setup
-- [ ] Vercel Analytics enabled
-- [ ] Sentry error tracking configured
-- [ ] Uptime monitoring (Vercel Monitoring or external)
-- [ ] Log aggregation (if needed)
-- [ ] Alert notifications configured
-
----
-
-## 📊 Success Metrics
-
-### Build Metrics ✅
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Build Success | 100% | 100% | ✅ |
-| Build Time | < 3 min | ~2 min | ✅ |
-| Total Routes | - | 62 | ✅ |
-| Type Errors | 0 | 0* | ✅ |
-| Lint Errors | 0 | 0* | ✅ |
-
-*with `ignoreBuildErrors` enabled
-
-### Bundle Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| First Load JS | < 250 kB | 202 kB | ✅ |
-| Largest Page | < 300 kB | 364 kB | ⚠️ |
-| Avg Page Size | < 10 kB | ~5 kB | ✅ |
-
-### Code Quality Metrics
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| TypeScript Strict | Yes | Yes | ✅ |
-| Test Coverage | > 50% | ~10% | ⚠️ |
-| Deprecated Deps | 0 | 1 | ⚠️ |
-| Security Headers | All | All | ✅ |
-
----
-
-## 📝 Summary
-
-### What Was Fixed ✅
-1. **Merge conflict** in `app/architect/dashboard/page.tsx`
-2. **Google Fonts** network dependency for offline builds
-3. **Static pre-rendering** issues for 11 auth-protected pages
-4. **Missing environment** variables for build process
-
-### Current State
-- ✅ **Build Status**: Successful
-- ✅ **All Routes**: 62 routes configured and working
-- ✅ **Security**: Comprehensive headers configured
-- ✅ **Deployment**: Ready for Vercel with proper env vars
-
-### Remaining Work by Priority
-
-#### High Priority ⚠️
-1. Remove deprecated `@supabase/auth-helpers-nextjs` package
-2. Replace `console.log` with structured logging
-3. Enable TypeScript/ESLint checks in production builds
-4. Clean up unused image assets
-
-#### Medium Priority
-1. Implement TODO features (15 items)
-2. Expand test coverage
-3. Optimize large bundle sizes
-4. Add security enhancements (rate limiting, CSRF, CSP)
-
-#### Low Priority
-1. Add E2E tests
-2. Advanced analytics
-3. Performance optimization
-4. Comprehensive documentation
-
----
-
-## 🎯 Next Steps
-
-### 1. Immediate Deployment
-```bash
-# 1. Set environment variables in Vercel
-vercel env add NEXT_PUBLIC_SUPABASE_URL
-vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
-vercel env add SUPABASE_SERVICE_ROLE_KEY
-# ... add all required env vars
-
-# 2. Deploy to preview
-vercel
-
-# 3. Test preview deployment
-# Visit provided URL and test critical flows
-
-# 4. Deploy to production
+# If manual deployment needed:
 vercel --prod
 ```
 
-### 2. Post-Deployment Validation
-- [ ] Visit production URL
-- [ ] Test user registration
-- [ ] Test RFQ creation
-- [ ] Verify email sending
-- [ ] Check error tracking
-- [ ] Monitor performance
+---
 
-### 3. Implement High-Priority Fixes
-1. Remove deprecated package
-2. Set up centralized logging
-3. Enable build checks for production
-4. Clean up assets
+## 📋 PR DESCRIPTION (Suggested)
+
+```markdown
+## Dashboard Refactoring & EPD Sync Implementation
+
+### Changes
+- ✅ Refactored dashboard structure for admin/supplier/architect roles
+- ✅ Added shared admin navigation component with role-based routing
+- ✅ Implemented EPD International API sync route with admin auth
+- ✅ Created EPD database migration for certification workflow
+- ✅ Added Hero and EmailSignup components to homepage
+- ✅ Updated TypeScript configuration for `@/types/*` path resolution
+- 🔧 Fixed duplicate React imports in architect dashboard
+- 🔧 Configured Tailwind content paths
+
+### Database Changes
+- New table: `epd_database` for caching EPD data from external API
+- Indexes on `epd_number` and `manufacturer` for fast lookups
+
+### API Routes
+- `POST /api/admin/epd-sync` - Sync EPD data (admin only)
+- Requires `EPD_INTERNATIONAL_API_KEY` environment variable
+
+### Testing
+- [ ] Build succeeds locally
+- [ ] All dashboards load for correct roles
+- [ ] EPD sync route works (with API key)
+- [ ] Homepage renders Hero and EmailSignup
+
+### Deployment Notes
+⚠️ **Before merging**: Add `EPD_INTERNATIONAL_API_KEY` to Vercel environment variables
+⚠️ **After merging**: Apply Supabase migration `20251209_create_epd_database.sql`
+
+### Breaking Changes
+None
+
+### Screenshots
+[Add screenshots of admin dashboard, verification page, homepage]
+```
 
 ---
 
-## 📞 Support & Resources
+## 🎯 CONCLUSION
 
-### Documentation
-- **Next.js**: https://nextjs.org/docs
-- **Supabase**: https://supabase.com/docs
-- **Vercel**: https://vercel.com/docs
-- **Tailwind CSS**: https://tailwindcss.com/docs
+### Summary
 
-### Internal Documentation
-- `README.md` - Project overview
-- `.env.example` - Environment variable reference
-- `DEPLOYMENT-GUIDE.md` - Deployment instructions (if exists)
-- This report - `CODE_REVIEW_REPORT.md`
+This PR introduces significant value:
+- **Strong architecture** following Next.js 14 best practices
+- **Complete feature set** as described in PR requirements
+- **Good security** with RLS and role-based access
+- **Production-ready** EPD sync implementation
+
+However, it has **3 critical build errors** that must be fixed before merging to prevent deployment failures.
+
+### Recommendation: ⚠️ **CONDITIONAL APPROVAL**
+
+**Approve and merge AFTER**:
+1. ✅ Fixing the 3 critical errors (15 minutes)
+2. ✅ Adding `EPD_INTERNATIONAL_API_KEY` to Vercel
+3. ✅ Verifying build succeeds
+4. ✅ Testing preview deployment
+
+**Estimated Fix Time**: 20-30 minutes
 
 ---
 
-**Report Completed**: December 8, 2024  
-**Next Review Recommended**: After implementing high-priority items  
-**Status**: ✅ Ready for Production Deployment (with environment variables configured)
+## 📧 Contact
 
----
+For questions about this review, contact the repository maintainer or create an issue.
 
-*This report should be reviewed before production deployment. Address high-priority items for optimal production readiness.*
+**Review completed by**: GitHub Copilot Advanced Code Analysis  
+**Date**: December 9, 2024  
+**Next Review**: After fixes are applied
