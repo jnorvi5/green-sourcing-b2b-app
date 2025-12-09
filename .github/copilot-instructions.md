@@ -68,7 +68,7 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 │   ├── supabase/             # Supabase client & queries
 │   │   ├── client.ts         # Browser client
 │   │   └── server.ts         # Server client
-│   ├── mongodb.ts            # MongoDB connection and database client
+│   ├── mongodb.ts            # MongoDB connection utility (exports connectMongoDB)
 │   ├── azure-ai.ts           # Azure OpenAI and Document Intelligence
 │   ├── azure/                # Azure utilities (emailer, etc.)
 │   ├── integrations/         # Third-party service integrations
@@ -355,7 +355,7 @@ type VerificationStatus = 'pending' | 'in_review' | 'verified' | 'rejected';
 
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-// Note: Email notifications would be sent via lib/email/ or lib/zoho-smtp.ts
+// Note: Email notifications would be sent via lib/email/templates.ts or lib/zoho-smtp.ts
 
 const verifySupplierSchema = z.object({
   supplierId: z.string().uuid(),
@@ -386,7 +386,7 @@ export async function verifySupplier(input: z.infer<typeof verifySupplierSchema>
   // Trigger downstream workflows (e.g., welcome email)
   if (validated.status === 'verified') {
     // Send welcome email or trigger other notifications
-    // Implementation would use lib/email/ or lib/zoho-smtp.ts
+    // Implementation would use lib/email/templates.ts or lib/email/email-service.ts
   }
   
   return { success: true, supplier };
