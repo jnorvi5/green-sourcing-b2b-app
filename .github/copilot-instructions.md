@@ -69,8 +69,8 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 │   │   ├── client.ts         # Browser client
 │   │   └── server.ts         # Server client
 │   ├── mongodb.ts            # MongoDB connection and database client
-│   ├── azure/                # Azure AI Foundry integrations
-│   │   └── azure-ai.ts       # Azure OpenAI and Document Intelligence
+│   ├── azure-ai.ts           # Azure OpenAI and Document Intelligence
+│   ├── azure/                # Azure utilities (emailer, etc.)
 │   ├── integrations/         # Third-party service integrations
 │   │   ├── epd-international.ts  # EPD International API
 │   │   └── autodesk/         # Autodesk APS integration
@@ -355,8 +355,7 @@ type VerificationStatus = 'pending' | 'in_review' | 'verified' | 'rejected';
 
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { sendIntercomEvent } from '@/lib/intercom';
-import { triggerZohoFlow } from '@/lib/zoho-flow';
+// Note: Email notifications would be sent via lib/email/ or lib/zoho-smtp.ts
 
 const verifySupplierSchema = z.object({
   supplierId: z.string().uuid(),
@@ -384,20 +383,10 @@ export async function verifySupplier(input: z.infer<typeof verifySupplierSchema>
   
   if (error) throw error;
   
-  // Trigger downstream workflows
+  // Trigger downstream workflows (e.g., welcome email)
   if (validated.status === 'verified') {
-    // Send Intercom event for onboarding
-    await sendIntercomEvent(supplier.users.email, 'supplier_verified', {
-      supplier_id: supplier.id,
-      company_name: supplier.company_name,
-    });
-    
-    // Trigger Zoho Flow for welcome sequence
-    await triggerZohoFlow('supplier_onboarding', {
-      email: supplier.users.email,
-      name: supplier.users.full_name,
-      company: supplier.company_name,
-    });
+    // Send welcome email or trigger other notifications
+    // Implementation would use lib/email/ or lib/zoho-smtp.ts
   }
   
   return { success: true, supplier };
@@ -458,6 +447,7 @@ export async function POST(req: Request) {
 **RIGHT:**
 ```typescript
 // USE Intercom for chat (client-side widget)
+import { useEffect } from 'react';
 import { initIntercom, updateIntercomUser } from '@/lib/intercom';
 
 // Initialize in app layout or component
