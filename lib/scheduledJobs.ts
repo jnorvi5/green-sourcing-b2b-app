@@ -491,7 +491,7 @@ export async function runJob(jobName: JobName): Promise<{ success: boolean; dura
     }
 }
 
-export default {
+const scheduledJobsService = {
     runHourlyKPISnapshot,
     runDailyKPISnapshot,
     runWeeklyRollup,
@@ -503,3 +503,5 @@ export default {
     runJob,
     SCHEDULED_JOBS,
 };
+
+export default scheduledJobsService;

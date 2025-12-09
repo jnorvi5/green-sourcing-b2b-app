@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 // Temporary local implementation to avoid a missing module error for
 // '@/lib/s3-upload'. This stub returns a local object URL for preview
 // and can be replaced with the real uploadToS3 implementation later.
@@ -92,11 +93,14 @@ export default function ImageUpload() {
             {imageUrl && (
                 <div className="mt-6 fade-in">
                     <p className="text-sm text-green-600 mb-2">✅ Upload Complete:</p>
-                    <img
-                        src={imageUrl}
-                        alt="Uploaded asset"
-                        className="w-full h-48 object-cover rounded-lg border border-green-200 shadow-lg"
-                    />
+                    <div className="relative w-full h-48">
+                        <Image
+                            src={imageUrl}
+                            alt="Uploaded asset"
+                            fill
+                            className="object-cover rounded-lg border border-green-200 shadow-lg"
+                        />
+                    </div>
                     <p className="text-xs text-gray-400 mt-2 break-all">{imageUrl}</p>
                 </div>
             )}

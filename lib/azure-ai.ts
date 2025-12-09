@@ -311,7 +311,9 @@ export async function testAzureConnection(): Promise<boolean> {
   }
 }
 
-export default {
+const azureAiService = {
   generateOutreachEmail,
   testAzureConnection,
 };
+
+export default azureAiService;

@@ -190,8 +190,10 @@ GreenChainz Team`,
   });
 }
 
-export default {
+const zohoSmtpService = {
   sendEmail,
   verifySmtpConnection,
   sendTestEmail,
 };
+
+export default zohoSmtpService;
