@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { RFQWithQuotes, Quote } from '@/types/rfq';
+import { RFQWithQuotes } from '@/types/rfq';
 
 /**
  * Fetches an RFQ with all its quotes for comparison
