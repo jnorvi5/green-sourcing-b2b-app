@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 /**
  * Admin Analytics Dashboard
  * Real-time business metrics for GreenChainz
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -19,9 +19,9 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
-import { createClient } from '@supabase/supabase-js';
+  Cell,
+} from "recharts";
+import { createClient } from "@supabase/supabase-js";
 
 // Types
 interface AnalyticsData {
@@ -52,7 +52,7 @@ interface AnalyticsData {
   };
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function AdminAnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -66,79 +66,88 @@ export default function AdminAnalyticsPage() {
   async function fetchAnalytics() {
     try {
       const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        process.env["NEXT_PUBLIC_SUPABASE_URL"]!,
+        process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"]!
       );
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
-        throw new Error('Not authenticated');
+        throw new Error("Not authenticated");
       }
 
-      const response = await fetch('/api/admin/analytics', {
+      const response = await fetch("/api/admin/analytics", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch analytics');
+        throw new Error("Failed to fetch analytics");
       }
 
       const analyticsData = await response.json();
       setData(analyticsData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
   }
 
-  if (loading) return <div className="p-8 text-center">Loading analytics...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">Error: {error}</div>;
+  if (loading)
+    return <div className="p-8 text-center">Loading analytics...</div>;
+  if (error)
+    return <div className="p-8 text-center text-red-600">Error: {error}</div>;
   if (!data) return null;
 
   // Process data for charts
-  const signupData = data.acquisition.daily_signups.map(d => ({
+  const signupData = data.acquisition.daily_signups.map((d) => ({
     ...d,
-    date: new Date(d.date).toLocaleDateString()
+    date: new Date(d.date).toLocaleDateString(),
   }));
 
-  const rfqData = data.engagement.daily_rfqs.map(d => ({
+  const rfqData = data.engagement.daily_rfqs.map((d) => ({
     ...d,
-    date: new Date(d.date).toLocaleDateString()
+    date: new Date(d.date).toLocaleDateString(),
   }));
 
-  const mrrData = data.revenue.mrr_breakdown.map(d => ({
+  const mrrData = data.revenue.mrr_breakdown.map((d) => ({
     name: d.tier,
-    value: d.total_mrr
+    value: d.total_mrr,
   }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-gray-900">GreenChainz Analytics</h1>
+        <h1 className="text-3xl font-bold mb-8 text-gray-900">
+          GreenChainz Analytics
+        </h1>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <KpiCard 
-            title="Total Users" 
-            value={data.acquisition.total_users.reduce((acc, curr) => acc + Number(curr.count), 0)}
+          <KpiCard
+            title="Total Users"
+            value={data.acquisition.total_users.reduce(
+              (acc, curr) => acc + Number(curr.count),
+              0
+            )}
             subtext={`${data.acquisition.activation_rate}% Activation Rate`}
           />
-          <KpiCard 
-            title="Total RFQs" 
+          <KpiCard
+            title="Total RFQs"
             value={data.engagement.total_rfqs}
             subtext={`${data.engagement.response_rate}% Response Rate`}
           />
-          <KpiCard 
-            title="EPD Coverage" 
+          <KpiCard
+            title="EPD Coverage"
             value={`${data.integration.epd_coverage}%`}
             subtext={`${data.integration.total_epds} Total Records`}
           />
-          <KpiCard 
-            title="Email Delivery" 
+          <KpiCard
+            title="Email Delivery"
             value={`${data.email.delivery_rate}%`}
             subtext={`${data.email.open_rate}% Open Rate`}
           />
@@ -157,7 +166,12 @@ export default function AdminAnalyticsPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" name="Signups" />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#8884d8"
+                    name="Signups"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -200,7 +214,10 @@ export default function AdminAnalyticsPage() {
                     dataKey="value"
                   >
                     {mrrData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -209,7 +226,9 @@ export default function AdminAnalyticsPage() {
               </ResponsiveContainer>
             </div>
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-500">Churn Rate: {data.revenue.churn_rate}%</p>
+              <p className="text-sm text-gray-500">
+                Churn Rate: {data.revenue.churn_rate}%
+              </p>
             </div>
           </div>
 
@@ -218,20 +237,34 @@ export default function AdminAnalyticsPage() {
             <h3 className="text-lg font-semibold mb-4">Integration Health</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-600 font-medium">Autodesk Connections</p>
-                <p className="text-2xl font-bold text-blue-900">{data.integration.autodesk_connections}</p>
+                <p className="text-sm text-blue-600 font-medium">
+                  Autodesk Connections
+                </p>
+                <p className="text-2xl font-bold text-blue-900">
+                  {data.integration.autodesk_connections}
+                </p>
               </div>
               <div className="p-4 bg-purple-50 rounded-lg">
-                <p className="text-sm text-purple-600 font-medium">Revit Exports</p>
-                <p className="text-2xl font-bold text-purple-900">{data.integration.autodesk_exports}</p>
+                <p className="text-sm text-purple-600 font-medium">
+                  Revit Exports
+                </p>
+                <p className="text-2xl font-bold text-purple-900">
+                  {data.integration.autodesk_exports}
+                </p>
               </div>
               <div className="p-4 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-600 font-medium">Total EPDs</p>
-                <p className="text-2xl font-bold text-green-900">{data.integration.total_epds}</p>
+                <p className="text-2xl font-bold text-green-900">
+                  {data.integration.total_epds}
+                </p>
               </div>
               <div className="p-4 bg-orange-50 rounded-lg">
-                <p className="text-sm text-orange-600 font-medium">Emails Sent</p>
-                <p className="text-2xl font-bold text-orange-900">{data.email.total_sent}</p>
+                <p className="text-sm text-orange-600 font-medium">
+                  Emails Sent
+                </p>
+                <p className="text-2xl font-bold text-orange-900">
+                  {data.email.total_sent}
+                </p>
               </div>
             </div>
           </div>
@@ -241,10 +274,20 @@ export default function AdminAnalyticsPage() {
   );
 }
 
-function KpiCard({ title, value, subtext }: { title: string; value: string | number; subtext: string }) {
+function KpiCard({
+  title,
+  value,
+  subtext,
+}: {
+  title: string;
+  value: string | number;
+  subtext: string;
+}) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">{title}</h3>
+      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+        {title}
+      </h3>
       <div className="mt-2 flex items-baseline">
         <p className="text-3xl font-semibold text-gray-900">{value}</p>
       </div>
