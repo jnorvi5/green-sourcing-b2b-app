@@ -219,14 +219,17 @@ export async function verifyCertification(
       return { success: false, error: updateError.message };
     }
     
-    // Send verification email
-    if (supplier.users && supplier.users.email) {
-      try {
-        const emailHtml = certificationVerifiedEmail(
-          supplier.users.full_name || 'Supplier',
-          supplier.company_name,
-          supplier.cert_type || 'Certification'
-        );
+    /if (supplier.users && supplier.users[0]?.email) {
+  try {
+    const emailHtml = certificationVerifiedEmail(
+      supplier.users[0]?.full_name || 'Supplier',
+      supplier.company_name,
+      supplier.cert_type || 'Certification'
+    );
+/ Send verification email
+    
+  
+
         
         // Only send email if RESEND_API_KEY is configured
         if (process.env['RESEND_API_KEY']) {
