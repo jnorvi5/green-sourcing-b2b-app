@@ -71,7 +71,7 @@ export async function fetchPendingCertifications(): Promise<{
         cert_verification_date,
         cert_rejection_reason,
         user_id,
-        users (
+        users!inner (
           email,
           full_name
         )
