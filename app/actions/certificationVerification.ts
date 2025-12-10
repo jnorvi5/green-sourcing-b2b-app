@@ -84,7 +84,8 @@ export async function fetchPendingCertifications(): Promise<{
       return { data: null, error: error.message };
     }
     
-    return { data, error: null };
+    return { data: data as CertificationPendingSupplier[], error: null };
+
   } catch (err) {
     console.error('Unexpected error in fetchPendingCertifications:', err);
     return { 
