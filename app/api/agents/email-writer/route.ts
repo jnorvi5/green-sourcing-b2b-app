@@ -5,20 +5,20 @@ export async function POST(request: NextRequest) {
     const { recipientType, purpose, context } = await request.json();
 
     // Email generation logic
-    const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Template:
-- Subject line
-- Greeting
-- Value proposition
-- Call to action
-- Sign: Jerit Norville, Founder - founder@greenchainz.com`;
+    // TODO: Connect to OpenAI/Anthropic API when ready with this prompt:
+    // const prompt = `Write a professional B2B email for GreenChainz:
+    // Recipient: ${recipientType}
+    // Purpose: ${purpose}
+    // Context: ${context}
+    // 
+    // Template:
+    // - Subject line
+    // - Greeting
+    // - Value proposition
+    // - Call to action
+    // - Sign: Jerit Norville, Founder - founder@greenchainz.com`;
 
     // For now, return structured template
-    // TODO: Connect to OpenAI/Anthropic API when ready
     const emailTemplate = {
       subject: `GreenChainz - ${purpose}`,
       body: `Hi [Name],

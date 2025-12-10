@@ -5,7 +5,10 @@ export async function POST(request: NextRequest) {
     const { platform, contentType, topic } = await request.json();
 
     // Social media content generation
-    const templates = {
+    type Platform = 'linkedin' | 'twitter';
+    type ContentType = 'announcement' | 'insight' | 'milestone' | 'thread';
+    
+    const templates: Record<Platform, Partial<Record<ContentType, string>>> = {
       linkedin: {
         announcement: `🚀 Exciting update from GreenChainz!
 
@@ -54,7 +57,8 @@ Building the Bloomberg Terminal for sustainable materials.
       }
     };
 
-    const content = templates[platform]?.[contentType] || templates.linkedin.announcement;
+    const platformTemplates = templates[platform as Platform];
+    const content = platformTemplates?.[contentType as ContentType] || templates.linkedin.announcement;
 
     return NextResponse.json({
       success: true,

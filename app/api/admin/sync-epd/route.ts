@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
   try {
     // Initialize Supabase Admin Client (Service Role) inside handler to avoid build-time errors
     const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+      process.env['SUPABASE_SERVICE_ROLE_KEY']!,
       {
         auth: {
           autoRefreshToken: false,
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    const API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
+    const API_KEY = process.env['EPD_INTERNATIONAL_API_KEY'];
     // 1. Check Authentication & Admin Role
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     if (profile?.role !== 'admin') {
       // Fallback: check app_metadata if role is stored there
-      if (user.app_metadata?.role !== 'admin') {
+      if (user.app_metadata?.['role'] !== 'admin') {
         return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });
       }
     }
