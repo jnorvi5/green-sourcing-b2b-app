@@ -301,14 +301,15 @@ export async function rejectCertification(
     }
     
     // Update certification status - set cert_pdf_url to null and add rejection reason
-    const { error: updateError } = await supabase
-      .from('suppliers')
-      .update({
-        cert_pdf_url: null,
-        cert_verified: false,
-        cert_verification_date: new Date().toISOString(),
-        cert_rejection_reason: input.reason,
-      })
+if (supplier.users && supplier.users[0]?.email) {
+  try {
+    const emailHtml = certificationRejectedEmail(
+      supplier.users[0]?.full_name || 'Supplier',
+      supplier.company_name,
+      supplier.cert_type || 'Certification',
+      input.reason
+    );
+
       .eq('id', input.supplierId);
     
     if (updateError) {
