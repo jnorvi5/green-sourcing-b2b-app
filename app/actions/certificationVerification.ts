@@ -219,28 +219,25 @@ export async function verifyCertification(
       return { success: false, error: updateError.message };
     }
     
-    /if (supplier.users && supplier.users[0]?.email) {
-  try {
-    const emailHtml = certificationVerifiedEmail(
-      supplier.users[0]?.full_name || 'Supplier',
-      supplier.company_name,
-      supplier.cert_type || 'Certification'
-    );
-/ Send verification email
-    
-  
-
+    // Send verification email
+    if (supplier.users && Array.isArray(supplier.users) && supplier.users[0]?.email) {
+      try {
+        const emailHtml = certificationVerifiedEmail(
+          supplier.users[0]?.full_name || 'Supplier',
+          supplier.company_name,
+          supplier.cert_type || 'Certification'
+        );
         
         // Only send email if RESEND_API_KEY is configured
         if (process.env['RESEND_API_KEY']) {
           await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
-            to: supplier.users.email,
+            from: process.env['RESEND_FROM_EMAIL'] || 'noreply@greenchainz.com',
+            to: supplier.users[0].email,
             subject: 'Your certification has been verified!',
             html: emailHtml,
           });
         } else {
-          console.log('[DEV] Verification email would be sent to:', supplier.users.email);
+          console.log('[DEV] Verification email would be sent to:', supplier.users[0].email);
         }
       } catch (emailError) {
         console.error('Error sending verification email:', emailError);
@@ -296,7 +293,19 @@ export async function rejectCertification(
       .eq('id', input.supplierId)
       .single();
     
-
+    if (fetchError || !supplier) {
+      return { success: false, error: 'Supplier not found' };
+    }
+    
+    // Update certification status - set cert_verified to false, clear cert_pdf_url, and store rejection reason
+    const { error: updateError } = await supabase
+      .from('suppliers')
+      .update({
+        cert_verified: false,
+        cert_pdf_url: null,
+        cert_verification_date: new Date().toISOString(),
+        cert_rejection_reason: input.reason,
+      })
       .eq('id', input.supplierId);
     
     if (updateError) {
@@ -305,10 +314,10 @@ export async function rejectCertification(
     }
     
     // Send rejection email
-    if (supplier.users && supplier.users.email) {
+    if (supplier.users && Array.isArray(supplier.users) && supplier.users[0]?.email) {
       try {
         const emailHtml = certificationRejectedEmail(
-          supplier.users.full_name || 'Supplier',
+          supplier.users[0]?.full_name || 'Supplier',
           supplier.company_name,
           supplier.cert_type || 'Certification',
           input.reason
@@ -317,13 +326,13 @@ export async function rejectCertification(
         // Only send email if RESEND_API_KEY is configured
         if (process.env['RESEND_API_KEY']) {
           await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
-            to: supplier.users.email,
+            from: process.env['RESEND_FROM_EMAIL'] || 'noreply@greenchainz.com',
+            to: supplier.users[0].email,
             subject: 'Please re-upload your certification',
             html: emailHtml,
           });
         } else {
-          console.log('[DEV] Rejection email would be sent to:', supplier.users.email);
+          console.log('[DEV] Rejection email would be sent to:', supplier.users[0].email);
         }
       } catch (emailError) {
         console.error('Error sending rejection email:', emailError);
