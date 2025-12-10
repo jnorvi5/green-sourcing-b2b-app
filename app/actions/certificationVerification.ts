@@ -16,7 +16,7 @@ import type {
   RejectInput,
 } from '@/types/certification-verification';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env['RESEND_API_KEY']);
 
 /**
  * Check if the current user is an admin
@@ -228,7 +228,7 @@ export async function verifyCertification(
         );
         
         // Only send email if RESEND_API_KEY is configured
-        if (process.env.RESEND_API_KEY) {
+        if (process.env['RESEND_API_KEY']) {
           await resend.emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
             to: supplier.users.email,
@@ -323,7 +323,7 @@ export async function rejectCertification(
         );
         
         // Only send email if RESEND_API_KEY is configured
-        if (process.env.RESEND_API_KEY) {
+        if (process.env['RESEND_API_KEY']) {
           await resend.emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
             to: supplier.users.email,
