@@ -331,7 +331,7 @@ if (supplier.users && supplier.users[0]?.email) {
         if (process.env['RESEND_API_KEY']) {
           await resend.emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
-            to: supplier.users.email,
+            to: supplier.users[0].email,
             subject: 'Please re-upload your certification',
             html: emailHtml,
           });
