@@ -296,19 +296,7 @@ export async function rejectCertification(
       .eq('id', input.supplierId)
       .single();
     
-    if (fetchError || !supplier) {
-      return { success: false, error: 'Supplier not found' };
-    }
-    
-    // Update certification status - set cert_pdf_url to null and add rejection reason
-    const { error: updateError } = await supabase
-      .from('suppliers')
-      .update({
-        cert_pdf_url: null,
-        cert_verified: false,
-        cert_verification_date: new Date().toISOString(),
-        cert_rejection_reason: input.reason,
-      })
+
       .eq('id', input.supplierId);
     
     if (updateError) {
