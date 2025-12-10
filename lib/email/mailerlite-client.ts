@@ -21,31 +21,31 @@ import {
 // =============================================================================
 
 const MAILERLITE_CONFIG = {
-  apiKey: process.env.MAILERLITE_API_KEY ?? '',
+  apiKey: process.env['MAILERLITE_API_KEY'] ?? '',
   baseUrl: 'https://connect.mailerlite.com/api',
-  fromEmail: process.env.MAILERLITE_FROM_EMAIL ?? 'newsletter@greenchainz.com',
-  fromName: process.env.MAILERLITE_FROM_NAME ?? 'GreenChainz',
+  fromEmail: process.env['MAILERLITE_FROM_EMAIL'] ?? 'newsletter@greenchainz.com',
+  fromName: process.env['MAILERLITE_FROM_NAME'] ?? 'GreenChainz',
 } as const;
 
 // Group ID mapping (these should be configured in MailerLite dashboard)
 const GROUP_IDS: Record<string, string> = {
   [MAILERLITE_GROUPS.ARCHITECTS_ACTIVE]:
-    process.env.MAILERLITE_GROUP_ARCHITECTS_ACTIVE ?? '',
+    process.env['MAILERLITE_GROUP_ARCHITECTS_ACTIVE'] ?? '',
   [MAILERLITE_GROUPS.ARCHITECTS_INACTIVE]:
-    process.env.MAILERLITE_GROUP_ARCHITECTS_INACTIVE ?? '',
+    process.env['MAILERLITE_GROUP_ARCHITECTS_INACTIVE'] ?? '',
   [MAILERLITE_GROUPS.ARCHITECTS_TRIAL]:
-    process.env.MAILERLITE_GROUP_ARCHITECTS_TRIAL ?? '',
+    process.env['MAILERLITE_GROUP_ARCHITECTS_TRIAL'] ?? '',
   [MAILERLITE_GROUPS.SUPPLIERS_VERIFIED]:
-    process.env.MAILERLITE_GROUP_SUPPLIERS_VERIFIED ?? '',
+    process.env['MAILERLITE_GROUP_SUPPLIERS_VERIFIED'] ?? '',
   [MAILERLITE_GROUPS.SUPPLIERS_PENDING]:
-    process.env.MAILERLITE_GROUP_SUPPLIERS_PENDING ?? '',
+    process.env['MAILERLITE_GROUP_SUPPLIERS_PENDING'] ?? '',
   [MAILERLITE_GROUPS.SUPPLIERS_REJECTED]:
-    process.env.MAILERLITE_GROUP_SUPPLIERS_REJECTED ?? '',
-  [MAILERLITE_GROUPS.ADMINS]: process.env.MAILERLITE_GROUP_ADMINS ?? '',
+    process.env['MAILERLITE_GROUP_SUPPLIERS_REJECTED'] ?? '',
+  [MAILERLITE_GROUPS.ADMINS]: process.env['MAILERLITE_GROUP_ADMINS'] ?? '',
   [MAILERLITE_GROUPS.NEWSLETTER_WEEKLY]:
-    process.env.MAILERLITE_GROUP_NEWSLETTER_WEEKLY ?? '',
+    process.env['MAILERLITE_GROUP_NEWSLETTER_WEEKLY'] ?? '',
   [MAILERLITE_GROUPS.NEWSLETTER_MONTHLY]:
-    process.env.MAILERLITE_GROUP_NEWSLETTER_MONTHLY ?? '',
+    process.env['MAILERLITE_GROUP_NEWSLETTER_MONTHLY'] ?? '',
 };
 
 // =============================================================================
@@ -484,8 +484,8 @@ export class MailerLiteClient {
     // Get the appropriate automation ID based on user type
     const automationId =
       userType === 'buyer'
-        ? process.env.MAILERLITE_AUTOMATION_BUYER_ONBOARDING
-        : process.env.MAILERLITE_AUTOMATION_SUPPLIER_ONBOARDING;
+        ? process.env['MAILERLITE_AUTOMATION_BUYER_ONBOARDING']
+        : process.env['MAILERLITE_AUTOMATION_SUPPLIER_ONBOARDING'];
 
     if (!automationId) {
       console.log(

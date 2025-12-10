@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import UnitConversion from '../../../../models/UnitConversion';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {

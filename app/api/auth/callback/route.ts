@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     
     if (user) {
       // Check user type from metadata or database
-      const userType = user.user_metadata?.user_type || user.user_metadata?.role;
+      const userType = user.user_metadata?.['user_type'] || user.user_metadata?.['role'];
       
       if (userType === 'supplier') {
         return NextResponse.redirect(`${requestUrl.origin}/supplier/dashboard`);

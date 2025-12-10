@@ -11,11 +11,11 @@ let resendClient: Resend | null = null;
 
 // Lazy initialize Resend client to avoid errors during build
 function getResendClient(): Resend | null {
-  if (!process.env.RESEND_API_KEY) {
+  if (!process.env['RESEND_API_KEY']) {
     return null;
   }
   if (!resendClient) {
-    resendClient = new Resend(process.env.RESEND_API_KEY);
+    resendClient = new Resend(process.env['RESEND_API_KEY']);
   }
   return resendClient;
 }
@@ -55,7 +55,7 @@ export async function sendRfqNotificationEmail(
       return { success: true, messageId: 'dev-' + Date.now() };
     }
 
-    const rfqUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/rfq/${data.rfqId}`;
+    const rfqUrl = `${process.env['NEXT_PUBLIC_BASE_URL'] || 'http://localhost:3001'}/rfq/${data.rfqId}`;
 
     // Build quantity string
     const quantityStr = data.quantity && data.unit 
@@ -161,8 +161,8 @@ export async function sendRfqNotificationEmail(
       © ${new Date().getFullYear()} GreenChainz. All rights reserved.
     </p>
     <p style="margin: 5px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'http://localhost:3001'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'http://localhost:3001'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
     </p>
   </div>
 </body>
@@ -170,7 +170,7 @@ export async function sendRfqNotificationEmail(
     `.trim();
 
     const result = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com',
+      from: process.env['RESEND_FROM_EMAIL'] || 'noreply@greenchainz.com',
       to: data.supplierEmail,
       subject: `New RFQ Match: ${data.projectName}`,
       html: emailHtml,

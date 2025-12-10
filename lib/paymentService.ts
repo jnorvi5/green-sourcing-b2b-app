@@ -283,7 +283,7 @@ export class PaymentService {
 
     constructor() {
         // Initialize Stripe
-        // this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+        // this.stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!);
     }
 
     /**

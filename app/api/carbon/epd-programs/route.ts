@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import EPDProgram from '../../../../models/EPDProgram';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {

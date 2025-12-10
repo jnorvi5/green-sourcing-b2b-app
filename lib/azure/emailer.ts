@@ -6,12 +6,12 @@ export class EmailAgent {
 
   constructor() {
     this.client = new OpenAI({
-      apiKey: process.env.AZURE_OPENAI_API_KEY,
-      baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
+      apiKey: process.env['AZURE_OPENAI_API_KEY'],
+      baseURL: `${process.env['AZURE_OPENAI_ENDPOINT']}/openai/deployments/${process.env['AZURE_OPENAI_DEPLOYMENT']}`,
       defaultQuery: { 'api-version': '2024-12-01-preview' },
-      defaultHeaders: { 'api-key': process.env.AZURE_OPENAI_API_KEY },
+      defaultHeaders: { 'api-key': process.env['AZURE_OPENAI_API_KEY'] },
     });
-    this.deployment = process.env.AZURE_OPENAI_DEPLOYMENT!;
+    this.deployment = process.env['AZURE_OPENAI_DEPLOYMENT']!;
   }
 
   async generate(company: string, points: string[]) {

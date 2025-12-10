@@ -10,10 +10,10 @@ let _stripe: Stripe | null = null;
 
 export function getStripe(): Stripe {
   if (!_stripe) {
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!process.env['STRIPE_SECRET_KEY']) {
       throw new Error('STRIPE_SECRET_KEY is not configured');
     }
-    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    _stripe = new Stripe(process.env['STRIPE_SECRET_KEY'], {
       apiVersion: '2024-11-20.acacia',
       typescript: true,
     });
@@ -32,15 +32,15 @@ export const stripe = {
 
 // Stripe Price IDs (set these from your Stripe Dashboard)
 export const STRIPE_PRICE_IDS = {
-  standard_monthly: process.env.STRIPE_PRICE_STANDARD || 'price_standard_monthly',
-  verified_monthly: process.env.STRIPE_PRICE_VERIFIED || 'price_verified_monthly',
+  standard_monthly: process.env['STRIPE_PRICE_STANDARD'] || 'price_standard_monthly',
+  verified_monthly: process.env['STRIPE_PRICE_VERIFIED'] || 'price_verified_monthly',
 } as const;
 
 // Webhook signing secret
-export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
+export const STRIPE_WEBHOOK_SECRET = process.env['STRIPE_WEBHOOK_SECRET']!;
 
 // Base URLs
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
+export const BASE_URL = process.env['NEXT_PUBLIC_BASE_URL'] || 'http://localhost:3001';
 
 // Success and cancel URLs
 export const getSuccessUrl = (sessionId: string) =>

@@ -87,7 +87,7 @@ export function certificationVerifiedEmail(
     
     <!-- CTA Button -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/supplier/dashboard" 
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/supplier/dashboard" 
          style="display: inline-block; background: #14b8a6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(20, 184, 166, 0.3);">
         View Your Dashboard
       </a>
@@ -110,8 +110,8 @@ export function certificationVerifiedEmail(
       © ${new Date().getFullYear()} GreenChainz. All rights reserved.
     </p>
     <p style="margin: 5px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
     </p>
   </div>
   
@@ -195,7 +195,7 @@ export function certificationRejectedEmail(
     
     <!-- CTA Button -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/supplier/dashboard" 
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/supplier/dashboard" 
          style="display: inline-block; background: #14b8a6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(20, 184, 166, 0.3);">
         Re-upload Certification
       </a>
@@ -218,8 +218,8 @@ export function certificationRejectedEmail(
       © ${new Date().getFullYear()} GreenChainz. All rights reserved.
     </p>
     <p style="margin: 5px 0;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/terms" style="color: #9ca3af; text-decoration: none;">Terms</a> · 
+      <a href="${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy</a>
     </p>
   </div>
   

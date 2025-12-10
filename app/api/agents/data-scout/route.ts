@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Connect to actual EPD International API
     // Register at: https://epd-apim.developer.azure-api.net
-    // const EPD_API_KEY = process.env.EPD_INTERNATIONAL_API_KEY;
+    // const EPD_API_KEY = process.env['EPD_INTERNATIONAL_API_KEY'];
 
     // Simulated EPD data structure for now
     const mockEpdData = {

@@ -11,10 +11,10 @@
  */
 import mongoose from 'mongoose';
 
-const CLIENT_ID = process.env.AUTODESK_CLIENT_ID!;
-const CLIENT_SECRET = process.env.AUTODESK_CLIENT_SECRET!;
+const CLIENT_ID = process.env['AUTODESK_CLIENT_ID']!;
+const CLIENT_SECRET = process.env['AUTODESK_CLIENT_SECRET']!;
 const AUTH_URL = 'https://developer.api.autodesk.com/authentication/v2/token';
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 // Token cache
 let cachedToken: { access_token: string; expires_at: number } | null = null;
