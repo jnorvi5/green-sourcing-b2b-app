@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     validate(payload);
 
     // Choose provider; currently mocked to avoid failures without creds.
-    const hasProvider = Boolean(process.env.SENDGRID_API_KEY || process.env.RESEND_API_KEY || process.env.AWS_SES_ACCESS_KEY_ID);
+    const hasProvider = Boolean(process.env['SENDGRID_API_KEY'] || process.env['RESEND_API_KEY'] || process.env['AWS_SES_ACCESS_KEY_ID']);
 
     const result = hasProvider
       ? await sendEmailMock(payload) // Replace with real provider integration when creds are available

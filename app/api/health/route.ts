@@ -9,10 +9,10 @@ export async function GET() {
     
     // Check MongoDB connection
     let mongoStatus = 'not configured';
-    if (process.env.MONGODB_URI) {
+    if (process.env['MONGODB_URI']) {
       try {
         const { MongoClient } = require('mongodb');
-        const client = new MongoClient(process.env.MONGODB_URI);
+        const client = new MongoClient(process.env['MONGODB_URI']);
         await client.connect();
         await client.db().admin().ping();
         await client.close();
@@ -29,12 +29,12 @@ export async function GET() {
         api: 'operational',
         database: dbError ? 'error' : 'connected',
         mongodb: mongoStatus,
-        intercom: process.env.NEXT_PUBLIC_INTERCOM_APP_ID ? 'configured' : 'not configured',
-        email: process.env.RESEND_API_KEY ? 'configured' : 'not configured',
-        storage: process.env.AWS_BUCKET_NAME ? 'configured' : 'not configured'
+        intercom: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'] ? 'configured' : 'not configured',
+        email: process.env['RESEND_API_KEY'] ? 'configured' : 'not configured',
+        storage: process.env['AWS_BUCKET_NAME'] ? 'configured' : 'not configured'
       },
-      environment: process.env.NODE_ENV || 'development',
-      version: process.env.npm_package_version || '0.1.0'
+      environment: process.env['NODE_ENV'] || 'development',
+      version: process.env['npm_package_version'] || '0.1.0'
     };
 
     return NextResponse.json(health);

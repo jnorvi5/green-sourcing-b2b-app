@@ -80,7 +80,7 @@ function getUserRole(record: SupabaseAuthWebhook['record']): UserRole {
  * Generates dashboard URL based on user role
  */
 function getDashboardUrl(role: UserRole): string {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com';
+  const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com';
 
   switch (role) {
     case 'supplier':
@@ -180,7 +180,7 @@ async function handleSupplierSignup(userId: string, email: string, name: string)
  * Sends welcome email for architect/buyer role
  */
 async function handleArchitectSignup(userId: string, email: string, name: string): Promise<void> {
-  const createRfqUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://greenchainz.com'}/search`;
+  const createRfqUrl = `${process.env['NEXT_PUBLIC_BASE_URL'] || 'https://greenchainz.com'}/search`;
 
   console.log(`📧 Sending architect welcome email to: ${email}`);
 

@@ -1,7 +1,7 @@
 // lib/shipmentService.ts
 import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || '';
+const uri = process.env['MONGODB_URI'] || '';
 
 export interface ShipmentAddress {
     name: string;
@@ -231,7 +231,7 @@ class ShipmentService {
         const query: Record<string, unknown> = { organizationId };
 
         if (filters?.status) {
-            query.status = filters.status;
+            query['status'] = filters.status;
         }
 
         if (filters?.carrier) {
@@ -239,17 +239,17 @@ class ShipmentService {
         }
 
         if (filters?.fromDate || filters?.toDate) {
-            query.createdAt = {};
+            query['createdAt'] = {};
             if (filters.fromDate) {
-                (query.createdAt as Record<string, Date>).$gte = filters.fromDate;
+                (query['createdAt'] as Record<string, Date>)['$gte'] = filters.fromDate;
             }
             if (filters.toDate) {
-                (query.createdAt as Record<string, Date>).$lte = filters.toDate;
+                (query['createdAt'] as Record<string, Date>)['$lte'] = filters.toDate;
             }
         }
 
         if (filters?.search) {
-            query.$or = [
+            query['$or'] = [
                 { shipmentId: { $regex: filters.search, $options: 'i' } },
                 { 'carrier.trackingNumber': { $regex: filters.search, $options: 'i' } },
                 { 'destination.name': { $regex: filters.search, $options: 'i' } },
@@ -309,7 +309,7 @@ class ShipmentService {
 
         // Set actual delivery date if delivered
         if (status === 'delivered') {
-            updateData.actualDelivery = new Date();
+            updateData['actualDelivery'] = new Date();
         }
 
         const result = await collection.findOneAndUpdate(

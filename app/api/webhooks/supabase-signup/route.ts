@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'welcome@greenchainz.com';
-const DASHBOARD_URL = process.env.NEXT_PUBLIC_BASE_URL
-  ? `${process.env.NEXT_PUBLIC_BASE_URL}/supplier/dashboard`
+const RESEND_API_KEY = process.env['RESEND_API_KEY'];
+const FROM_EMAIL = process.env['RESEND_FROM_EMAIL'] || 'welcome@greenchainz.com';
+const DASHBOARD_URL = process.env['NEXT_PUBLIC_BASE_URL']
+  ? `${process.env['NEXT_PUBLIC_BASE_URL']}/supplier/dashboard`
   : 'https://greenchainz.com/supplier/dashboard';
-const RFQ_URL = process.env.NEXT_PUBLIC_BASE_URL
-  ? `${process.env.NEXT_PUBLIC_BASE_URL}/architect/dashboard`
+const RFQ_URL = process.env['NEXT_PUBLIC_BASE_URL']
+  ? `${process.env['NEXT_PUBLIC_BASE_URL']}/architect/dashboard`
   : 'https://greenchainz.com/architect/dashboard';
 
 interface SupabaseUserPayload {

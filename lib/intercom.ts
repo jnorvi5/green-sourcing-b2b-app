@@ -3,7 +3,7 @@
 export function initIntercom() {
   if (typeof window === 'undefined') return;
   
-  const appId = process.env.NEXT_PUBLIC_INTERCOM_APP_ID;
+  const appId = process.env['NEXT_PUBLIC_INTERCOM_APP_ID'];
   if (!appId) {
     console.warn('Intercom app ID not configured');
     return;

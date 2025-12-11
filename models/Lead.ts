@@ -184,8 +184,8 @@ export async function getLeadModel(): Promise<Model<ILeadDocument>> {
   await dbConnect();
   
   // Check if model already exists (hot reload protection)
-  if (mongoose.models.Lead) {
-    LeadModel = mongoose.models.Lead as Model<ILeadDocument>;
+  if (mongoose.models['Lead']) {
+    LeadModel = mongoose.models['Lead'] as Model<ILeadDocument>;
     return LeadModel;
   }
   

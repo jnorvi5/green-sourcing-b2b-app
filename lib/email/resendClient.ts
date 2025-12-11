@@ -18,7 +18,7 @@ const FROM_EMAIL = 'GreenChainz <noreply@greenchainz.com>';
  * Gets the Resend API key from environment.
  */
 function getApiKey(): string {
-  return process.env.RESEND_API_KEY ?? '';
+  return process.env['RESEND_API_KEY'] ?? '';
 }
 
 /**

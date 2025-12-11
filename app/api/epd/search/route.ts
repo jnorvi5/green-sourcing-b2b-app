@@ -3,15 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const EPD_API_URL = process.env.EPD_API_URL || 'https://api.example.com/epd/search';
-const EPD_API_KEY = process.env.EPD_API_KEY;
+const EPD_API_URL = process.env['EPD_API_URL'] || 'https://api.example.com/epd/search';
+const EPD_API_KEY = process.env['EPD_API_KEY'];
 
 // Minimal Supabase client for optional persistence
 import { createClient } from '@supabase/supabase-js';
 
 function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   if (!url || !key) return null;
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
@@ -60,13 +60,13 @@ async function persistToSupabase(productId: string | null, parsed: Record<string
     .from('products')
     .update({
       sustainability_data: {
-        epd_number: parsed.epd_number,
-        gwp_fossil_a1_a3: parsed.gwp_fossil_a1_a3,
-        validity_start: parsed.validity_start,
-        validity_end: parsed.validity_end,
-        program_operator: parsed.program_operator,
+        epd_number: parsed['epd_number'],
+        gwp_fossil_a1_a3: parsed['gwp_fossil_a1_a3'],
+        validity_start: parsed['validity_start'],
+        validity_end: parsed['validity_end'],
+        program_operator: parsed['program_operator'],
         epd_source: 'epd-international',
-        raw: parsed.raw,
+        raw: parsed['raw'],
       },
     })
     .eq('id', productId);

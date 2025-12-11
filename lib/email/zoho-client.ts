@@ -20,20 +20,20 @@ import {
 
 const ZOHO_CONFIG = {
   // SMTP Configuration
-  smtpHost: process.env.ZOHO_SMTP_HOST ?? 'smtp.zoho.com',
-  smtpPort: parseInt(process.env.ZOHO_SMTP_PORT ?? '587', 10),
-  smtpUser: process.env.ZOHO_SMTP_USER ?? '',
-  smtpPass: process.env.ZOHO_SMTP_PASS ?? '',
+  smtpHost: process.env['ZOHO_SMTP_HOST'] ?? 'smtp.zoho.com',
+  smtpPort: parseInt(process.env['ZOHO_SMTP_PORT'] ?? '587', 10),
+  smtpUser: process.env['ZOHO_SMTP_USER'] ?? '',
+  smtpPass: process.env['ZOHO_SMTP_PASS'] ?? '',
 
   // OAuth2 Configuration (for API-based sending)
-  clientId: process.env.ZOHO_CLIENT_ID ?? '',
-  clientSecret: process.env.ZOHO_CLIENT_SECRET ?? '',
-  refreshToken: process.env.ZOHO_REFRESH_TOKEN ?? '',
-  accountId: process.env.ZOHO_ACCOUNT_ID ?? '',
+  clientId: process.env['ZOHO_CLIENT_ID'] ?? '',
+  clientSecret: process.env['ZOHO_CLIENT_SECRET'] ?? '',
+  refreshToken: process.env['ZOHO_REFRESH_TOKEN'] ?? '',
+  accountId: process.env['ZOHO_ACCOUNT_ID'] ?? '',
 
   // Sender Configuration
-  fromEmail: process.env.ZOHO_FROM_EMAIL ?? 'noreply@greenchainz.com',
-  fromName: process.env.ZOHO_FROM_NAME ?? 'GreenChainz',
+  fromEmail: process.env['ZOHO_FROM_EMAIL'] ?? 'noreply@greenchainz.com',
+  fromName: process.env['ZOHO_FROM_NAME'] ?? 'GreenChainz',
 
   // OAuth2 Token URL
   tokenUrl: 'https://accounts.zoho.com/oauth/v2/token',

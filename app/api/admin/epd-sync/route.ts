@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     console.log('[EPD Sync] Starting sync', limit ? `with limit of ${limit}` : '(no limit)');
 
     // 4. Check for API key
-    const apiKey = process.env.EPD_INTERNATIONAL_API_KEY;
+    const apiKey = process.env['EPD_INTERNATIONAL_API_KEY'];
     if (!apiKey) {
       console.error('[EPD Sync] EPD_INTERNATIONAL_API_KEY not configured');
       return NextResponse.json(
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // 6. Fetch EPDs from API
     console.log('[EPD Sync] Fetching EPDs from API...');
-    const apiEPDs = await epdClient.fetchAllEPDs({ limit });
+    const apiEPDs = await epdClient.fetchAllEPDs(limit !== undefined ? { limit } : {});
     total_fetched = apiEPDs.length;
     console.log(`[EPD Sync] Fetched ${total_fetched} EPDs from API`);
 

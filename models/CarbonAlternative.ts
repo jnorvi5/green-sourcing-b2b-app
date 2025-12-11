@@ -119,6 +119,6 @@ CarbonAlternativeSchema.index({ 'originalMaterial.category': 1 });
 CarbonAlternativeSchema.index({ 'originalMaterial.name': 'text' });
 
 export const CarbonAlternative: Model<ICarbonAlternative> =
-    mongoose.models.CarbonAlternative || mongoose.model<ICarbonAlternative>('CarbonAlternative', CarbonAlternativeSchema);
+    mongoose.models['CarbonAlternative'] || mongoose.model<ICarbonAlternative>('CarbonAlternative', CarbonAlternativeSchema);
 
 export default CarbonAlternative;

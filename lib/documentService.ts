@@ -333,7 +333,7 @@ export class DocumentService {
      */
     async getById(documentId: string): Promise<IDocument | null> {
         const { Document } = await getDocumentModels();
-        return Document.findById(documentId).lean();
+        return Document.findById(documentId).lean() as Promise<IDocument | null>;
     }
 
     /**
@@ -351,14 +351,14 @@ export class DocumentService {
         const { Document } = await getDocumentModels();
 
         const query: Record<string, unknown> = { ownerId: new mongoose.Types.ObjectId(ownerId) };
-        if (options?.type) query.type = options.type;
-        if (options?.status) query.status = options.status;
+        if (options?.type) query['type'] = options.type;
+        if (options?.status) query['status'] = options.status;
 
         return Document.find(query)
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 50)
-            .lean();
+            .lean() as any as IDocument[];
     }
 
     /**
@@ -368,7 +368,7 @@ export class DocumentService {
         const { Document } = await getDocumentModels();
         return Document.find({ orderId: new mongoose.Types.ObjectId(orderId) })
             .sort({ type: 1, createdAt: -1 })
-            .lean();
+            .lean() as any as IDocument[];
     }
 
     /**
@@ -378,7 +378,7 @@ export class DocumentService {
         const { Document } = await getDocumentModels();
         return Document.find({ productId: new mongoose.Types.ObjectId(productId) })
             .sort({ type: 1, createdAt: -1 })
-            .lean();
+            .lean() as any as IDocument[];
     }
 
     /**
@@ -386,7 +386,7 @@ export class DocumentService {
      */
     async updateStatus(documentId: string, status: DocumentStatus): Promise<IDocument | null> {
         const { Document } = await getDocumentModels();
-        return Document.findByIdAndUpdate(documentId, { status }, { new: true }).lean();
+        return Document.findByIdAndUpdate(documentId, { status }, { new: true }).lean() as any as IDocument | null;
     }
 
     /**
@@ -414,7 +414,7 @@ export class DocumentService {
                 accessLevel: 'shared',
             },
             { new: true }
-        ).lean();
+        ).lean() as any as IDocument | null;
     }
 
     /**
@@ -448,7 +448,7 @@ export class DocumentService {
                 status: 'signed',
             },
             { new: true }
-        ).lean();
+        ).lean() as any as IDocument | null;
     }
 
     /**
@@ -532,7 +532,7 @@ export class DocumentService {
             status: { $ne: 'expired' },
         })
             .sort({ 'metadata.expirationDate': 1 })
-            .lean();
+            .lean() as any as IDocument[];
     }
 
     /**
@@ -555,21 +555,21 @@ export class DocumentService {
         const filter: Record<string, unknown> = {};
 
         if (params.query) {
-            filter.$or = [
+            filter['$or'] = [
                 { title: { $regex: params.query, $options: 'i' } },
                 { description: { $regex: params.query, $options: 'i' } },
                 { fileName: { $regex: params.query, $options: 'i' } },
             ];
         }
-        if (params.type) filter.type = params.type;
-        if (params.status) filter.status = params.status;
-        if (params.ownerId) filter.ownerId = new mongoose.Types.ObjectId(params.ownerId);
-        if (params.companyId) filter.companyId = new mongoose.Types.ObjectId(params.companyId);
-        if (params.tags?.length) filter.tags = { $in: params.tags };
+        if (params.type) filter['type'] = params.type;
+        if (params.status) filter['status'] = params.status;
+        if (params.ownerId) filter['ownerId'] = new mongoose.Types.ObjectId(params.ownerId);
+        if (params.companyId) filter['companyId'] = new mongoose.Types.ObjectId(params.companyId);
+        if (params.tags?.length) filter['tags'] = { $in: params.tags };
         if (params.startDate || params.endDate) {
-            filter.createdAt = {};
-            if (params.startDate) (filter.createdAt as Record<string, Date>).$gte = params.startDate;
-            if (params.endDate) (filter.createdAt as Record<string, Date>).$lte = params.endDate;
+            filter['createdAt'] = {};
+            if (params.startDate) (filter['createdAt'] as Record<string, Date>)['$gte'] = params.startDate;
+            if (params.endDate) (filter['createdAt'] as Record<string, Date>)['$lte'] = params.endDate;
         }
 
         const [documents, total] = await Promise.all([
@@ -577,7 +577,7 @@ export class DocumentService {
                 .sort({ createdAt: -1 })
                 .skip(params.skip || 0)
                 .limit(params.limit || 50)
-                .lean(),
+                .lean() as any as IDocument[],
             Document.countDocuments(filter),
         ]);
 
@@ -616,9 +616,9 @@ export class DocumentService {
         const { DocumentTemplate } = await getDocumentModels();
 
         const query: Record<string, unknown> = { isActive: true };
-        if (type) query.type = type;
+        if (type) query['type'] = type;
 
-        return DocumentTemplate.find(query).sort({ usageCount: -1 }).lean();
+        return DocumentTemplate.find(query).sort({ usageCount: -1 }).lean() as any as IDocumentTemplate[];
     }
 
     /**

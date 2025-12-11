@@ -16,14 +16,14 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
 // Environment configuration
-const AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+const AWS_REGION = process.env['AWS_REGION'] ?? 'us-east-1';
+const AWS_ACCESS_KEY_ID = process.env['AWS_ACCESS_KEY_ID'];
+const AWS_SECRET_ACCESS_KEY = process.env['AWS_SECRET_ACCESS_KEY'];
 
 // Bucket names
-const IMAGES_BUCKET = process.env.AWS_IMAGES_BUCKET ?? 'gc-product-images-prod';
-const EPD_BUCKET = process.env.AWS_EPD_BUCKET ?? 'gc-epd-documents-prod';
-const BACKUP_BUCKET = process.env.AWS_BACKUP_BUCKET ?? 'gc-data-backups-prod';
+const IMAGES_BUCKET = process.env['AWS_IMAGES_BUCKET'] ?? 'gc-product-images-prod';
+const EPD_BUCKET = process.env['AWS_EPD_BUCKET'] ?? 'gc-epd-documents-prod';
+const BACKUP_BUCKET = process.env['AWS_BACKUP_BUCKET'] ?? 'gc-data-backups-prod';
 
 // Validate credentials (fail fast when functions are invoked)
 function assertAwsCredentials() {

@@ -15,9 +15,9 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * S3 Client initialized with AWS credentials from environment variables
  */
-const region = process.env.AWS_REGION || 'us-east-1';
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const region = process.env['AWS_REGION'] || 'us-east-1';
+const accessKeyId = process.env['AWS_ACCESS_KEY_ID'];
+const secretAccessKey = process.env['AWS_SECRET_ACCESS_KEY'];
 
 function assertAwsCredentials() {
   if (!accessKeyId || !secretAccessKey) {
@@ -35,7 +35,7 @@ export const s3Client = new S3Client({
   }),
 });
 
-const BUCKET_NAME = process.env.AWS_BUCKET_NAME || '';
+const BUCKET_NAME = process.env['AWS_BUCKET_NAME'] || '';
 
 /**
  * Result type for upload operations
@@ -83,7 +83,7 @@ export async function uploadFileToS3(
 
   await s3Client.send(command);
 
-  const url = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`;
+  const url = `https://${BUCKET_NAME}.s3.${process.env['AWS_REGION'] || 'us-east-1'}.amazonaws.com/${key}`;
 
   return { url, key };
 }

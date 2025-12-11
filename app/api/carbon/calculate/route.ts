@@ -11,7 +11,7 @@ import CarbonFactor from '../../../../models/CarbonFactor';
 import UnitConversion from '../../../../models/UnitConversion';
 import CarbonAlternative from '../../../../models/CarbonAlternative';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {

@@ -20,31 +20,33 @@ export {
 export type { BucketType } from './s3-upload';
 
 // CloudFront CDN Utilities
-export {
-  getCDNUrl,
-  s3ToCDNUrl,
-  cdnToS3Url,
-  extractKeyFromUrl,
-  invalidateCache,
-  invalidateProductImages,
-  invalidateSupplierImages,
-  invalidateAllCache,
-  getResponsiveImageUrls,
-  getWebPUrl,
-  cloudFrontClient,
-} from './cloudfront';
+// Temporarily disabled - requires @aws-sdk/client-cloudfront package
+// export {
+//   getCDNUrl,
+//   s3ToCDNUrl,
+//   cdnToS3Url,
+//   extractKeyFromUrl,
+//   invalidateCache,
+//   invalidateProductImages,
+//   invalidateSupplierImages,
+//   invalidateAllCache,
+//   getResponsiveImageUrls,
+//   getWebPUrl,
+//   cloudFrontClient,
+// } from './cloudfront';
 
 // SES Email Client
-export {
-  sendEmail,
-  sendTemplatedEmail,
-  sendBulkTemplatedEmail,
-  getSendQuota,
-  getSendStatistics,
-  sendRFQNotification,
-  sendSupplierVerificationEmail,
-  sendGreenAuditReport,
-  EMAIL_TEMPLATES,
-  sesClient,
-} from './ses-client';
-export type { EmailTemplate } from './ses-client';
+// Temporarily disabled - requires @aws-sdk/client-ses package
+// export {
+//   sendEmail,
+//   sendTemplatedEmail,
+//   sendBulkTemplatedEmail,
+//   getSendQuota,
+//   getSendStatistics,
+//   sendRFQNotification,
+//   sendSupplierVerificationEmail,
+//   sendGreenAuditReport,
+//   EMAIL_TEMPLATES,
+//   sesClient,
+// } from './ses-client';
+// export type { EmailTemplate } from './ses-client';

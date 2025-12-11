@@ -11,10 +11,10 @@
  */
 import mongoose from 'mongoose';
 
-const CLIENT_ID = process.env.AUTODESK_CLIENT_ID!;
-const CLIENT_SECRET = process.env.AUTODESK_CLIENT_SECRET!;
+const CLIENT_ID = process.env['AUTODESK_CLIENT_ID']!;
+const CLIENT_SECRET = process.env['AUTODESK_CLIENT_SECRET']!;
 const AUTH_URL = 'https://developer.api.autodesk.com/authentication/v2/token';
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 // Token cache
 let cachedToken: { access_token: string; expires_at: number } | null = null;
@@ -81,7 +81,7 @@ export async function getEmbodiedCarbon(
     if (MONGODB_URI) {
       try {
         await connectDB();
-        const Material = mongoose.models.Material ||
+        const Material = mongoose.models['Material'] ||
         // @ts-ignore
           (await import('../models/Material')).default;
 
@@ -96,21 +96,21 @@ export async function getEmbodiedCarbon(
           isActive: true,
         }).lean();
 
-        if (cachedMaterial) {
+        if (cachedMaterial && !Array.isArray(cachedMaterial)) {
           return {
-            id: cachedMaterial.materialId,
-            name: cachedMaterial.name,
-            category: cachedMaterial.category,
-            gwp: cachedMaterial.gwp,
-            gwpUnit: cachedMaterial.gwpUnit,
-            declaredUnit: cachedMaterial.declaredUnit,
-            lifecycleStages: cachedMaterial.lifecycleStages || { a1a3: cachedMaterial.gwp },
-            benchmarks: cachedMaterial.benchmarks,
-            source: cachedMaterial.source,
+            id: (cachedMaterial as any).materialId,
+            name: (cachedMaterial as any).name,
+            category: (cachedMaterial as any).category,
+            gwp: (cachedMaterial as any).gwp,
+            gwpUnit: (cachedMaterial as any).gwpUnit,
+            declaredUnit: (cachedMaterial as any).declaredUnit,
+            lifecycleStages: (cachedMaterial as any).lifecycleStages || { a1a3: (cachedMaterial as any).gwp },
+            benchmarks: (cachedMaterial as any).benchmarks,
+            source: (cachedMaterial as any).source,
             methodology: 'EN 15804',
             scope: ['A1-A3'],
             cached: true,
-            last_updated: cachedMaterial.updatedAt || cachedMaterial.createdAt,
+            last_updated: (cachedMaterial as any).updatedAt || (cachedMaterial as any).createdAt,
           };
         }
 
@@ -118,10 +118,10 @@ export async function getEmbodiedCarbon(
         if (options?.category || options?.name) {
           const searchQuery: Record<string, unknown> = { isActive: true };
           if (options.category) {
-            searchQuery.category = { $regex: options.category, $options: 'i' };
+            searchQuery['category'] = { $regex: options.category, $options: 'i' };
           }
           if (options.name) {
-            searchQuery.$or = [
+            searchQuery['$or'] = [
               { name: { $regex: options.name, $options: 'i' } },
               { tags: { $in: [options.name.toLowerCase()] } },
             ];
@@ -129,22 +129,22 @@ export async function getEmbodiedCarbon(
 
           const matchedMaterial = await Material.findOne(searchQuery).lean();
 
-          if (matchedMaterial) {
+          if (matchedMaterial && !Array.isArray(matchedMaterial)) {
             return {
-              id: matchedMaterial.materialId,
-              name: matchedMaterial.name,
-              category: matchedMaterial.category,
-              gwp: matchedMaterial.gwp,
-              gwpUnit: matchedMaterial.gwpUnit,
-              declaredUnit: matchedMaterial.declaredUnit,
-              lifecycleStages: matchedMaterial.lifecycleStages || { a1a3: matchedMaterial.gwp },
-              benchmarks: matchedMaterial.benchmarks,
-              source: `${matchedMaterial.source} (category match)`,
+              id: (matchedMaterial as any).materialId,
+              name: (matchedMaterial as any).name,
+              category: (matchedMaterial as any).category,
+              gwp: (matchedMaterial as any).gwp,
+              gwpUnit: (matchedMaterial as any).gwpUnit,
+              declaredUnit: (matchedMaterial as any).declaredUnit,
+              lifecycleStages: (matchedMaterial as any).lifecycleStages || { a1a3: (matchedMaterial as any).gwp },
+              benchmarks: (matchedMaterial as any).benchmarks,
+              source: `${(matchedMaterial as any).source} (category match)`,
               methodology: 'EN 15804',
               scope: ['A1-A3'],
               cached: true,
               matchType: 'category',
-              last_updated: matchedMaterial.updatedAt || matchedMaterial.createdAt,
+              last_updated: (matchedMaterial as any).updatedAt || (matchedMaterial as any).createdAt,
             };
           }
         }
@@ -255,18 +255,18 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const CarbonFactor = mongoose.models.CarbonFactor ||
+      const CarbonFactor = mongoose.models['CarbonFactor'] ||
         // @ts-ignore
         (await import('../models/CarbonFactor')).default;
 
       const query: Record<string, unknown> = { type, isActive: true };
 
       if (type === 'transport' && options.mode) {
-        query.factorId = `transport-${options.mode.toLowerCase()}`;
+        query['factorId'] = `transport-${options.mode.toLowerCase()}`;
       } else {
-        if (options.subregion) query.subregion = options.subregion.toUpperCase();
-        if (options.country) query.country = options.country.toUpperCase();
-        if (options.region) query.region = { $regex: options.region, $options: 'i' };
+        if (options.subregion) query['subregion'] = options.subregion.toUpperCase();
+        if (options.country) query['country'] = options.country.toUpperCase();
+        if (options.region) query['region'] = { $regex: options.region, $options: 'i' };
       }
 
       const factor = await CarbonFactor.findOne(query).lean();
@@ -288,7 +288,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const CarbonAlternative = mongoose.models.CarbonAlternative ||
+      const CarbonAlternative = mongoose.models['CarbonAlternative'] ||
         // @ts-ignore
         (await import('../models/CarbonAlternative')).default;
 
@@ -299,7 +299,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
       if (!result) return [];
 
-      let alternatives = result.alternatives as { reduction?: number }[];
+      let alternatives = (result as any)['alternatives'] as { reduction?: number }[];
 
       if (options?.minReduction) {
         alternatives = alternatives.filter(a => (a.reduction || 0) >= options.minReduction!);
@@ -327,7 +327,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const Material = mongoose.models.Material ||
+      const Material = mongoose.models['Material'] ||
         (await import('../models/Material')).default;
 
       const searchQuery: Record<string, unknown> = {
@@ -341,11 +341,11 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       };
 
       if (options?.category) {
-        searchQuery.category = { $regex: options.category, $options: 'i' };
+        searchQuery['category'] = { $regex: options.category, $options: 'i' };
       }
 
       if (options?.maxGwp) {
-        searchQuery.gwp = { $lte: options.maxGwp };
+        searchQuery['gwp'] = { $lte: options.maxGwp };
       }
 
       const materials = await Material.find(searchQuery)
@@ -373,7 +373,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const UnitConversion = mongoose.models.UnitConversion ||
+      const UnitConversion = mongoose.models['UnitConversion'] ||
         // @ts-ignore
         (await import('../models/UnitConversion')).default;
 
@@ -384,7 +384,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       if (!conversionDoc) return null;
 
       interface Conv { fromUnit: string; toUnit: string; factor: number }
-      const conversions = conversionDoc.conversions as Conv[];
+      const conversions = (conversionDoc as any)['conversions'] as Conv[];
 
       let conversion = conversions.find(
         c => c.fromUnit.toLowerCase() === fromUnit.toLowerCase() &&
@@ -403,11 +403,12 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       }
 
       // Try density-based
-      if (!conversion && conversionDoc.density) {
+      if (!conversion && (conversionDoc as any)['density']) {
+        const density = (conversionDoc as any)['density'] as number;
         if (fromUnit.toLowerCase() === 'm³' && toUnit.toLowerCase() === 'kg') {
-          conversion = { fromUnit, toUnit, factor: conversionDoc.density };
+          conversion = { fromUnit, toUnit, factor: density };
         } else if (fromUnit.toLowerCase() === 'kg' && toUnit.toLowerCase() === 'm³') {
-          conversion = { fromUnit, toUnit, factor: 1 / conversionDoc.density };
+          conversion = { fromUnit, toUnit, factor: 1 / density };
         }
       }
 

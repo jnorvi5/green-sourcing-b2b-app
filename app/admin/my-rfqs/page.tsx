@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Rfq, RfqStatus } from '@/types/rfq';
+import { Rfq } from '@/types/rfq';
 import { formatShortDate, getStatusColor } from '@/lib/utils/formatters';
 
 interface RfqWithQuoteCount extends Rfq {
@@ -16,7 +16,6 @@ interface RfqWithQuoteCount extends Rfq {
 type FilterStatus = 'all' | 'pending' | 'responded' | 'closed';
 
 export default function MyRfqsPage() {
-  const [user, setUser] = useState<{ id: string } | null>(null);
   const [rfqs, setRfqs] = useState<RfqWithQuoteCount[]>([]);
   const [filteredRfqs, setFilteredRfqs] = useState<RfqWithQuoteCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +43,6 @@ export default function MyRfqsPage() {
         router.push('/auth/login');
         return;
       }
-      setUser(authUser);
 
       // Verify user is architect
       const { data: userData, error: userError } = await supabase

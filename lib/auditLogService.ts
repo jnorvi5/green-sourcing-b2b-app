@@ -288,7 +288,7 @@ export class AuditLogService {
         const query: Record<string, unknown> = {};
 
         if (params.action) {
-            query.action = Array.isArray(params.action) ? { $in: params.action } : params.action;
+            query['action'] = Array.isArray(params.action) ? { $in: params.action } : params.action;
         }
         if (params.actorId) {
             query['actor.userId'] = new mongoose.Types.ObjectId(params.actorId);
@@ -300,15 +300,15 @@ export class AuditLogService {
             query['target.id'] = params.targetId;
         }
         if (params.severity) {
-            query.severity = params.severity;
+            query['severity'] = params.severity;
         }
         if (params.success !== undefined) {
-            query.success = params.success;
+            query['success'] = params.success;
         }
         if (params.startDate || params.endDate) {
-            query.createdAt = {};
-            if (params.startDate) (query.createdAt as Record<string, Date>).$gte = params.startDate;
-            if (params.endDate) (query.createdAt as Record<string, Date>).$lte = params.endDate;
+            query['createdAt'] = {};
+            if (params.startDate) (query['createdAt'] as Record<string, Date>)['$gte'] = params.startDate;
+            if (params.endDate) (query['createdAt'] as Record<string, Date>)['$lte'] = params.endDate;
         }
 
         const [logs, total] = await Promise.all([
@@ -320,7 +320,7 @@ export class AuditLogService {
             AuditLog.countDocuments(query),
         ]);
 
-        return { logs, total };
+        return { logs: logs as unknown as IAuditLog[], total };
     }
 
     /**
@@ -333,13 +333,14 @@ export class AuditLogService {
     ): Promise<IAuditLog[]> {
         const AuditLog = await getAuditLogModel();
 
-        return AuditLog.find({
+        const logs = await AuditLog.find({
             'target.type': entityType,
             'target.id': entityId,
         })
             .sort({ createdAt: -1 })
             .limit(limit)
             .lean();
+        return logs as unknown as IAuditLog[];
     }
 
     /**
@@ -360,14 +361,15 @@ export class AuditLogService {
         };
 
         if (options?.actions) {
-            query.action = { $in: options.actions };
+            query['action'] = { $in: options.actions };
         }
 
-        return AuditLog.find(query)
+        const logs = await AuditLog.find(query)
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 100)
             .lean();
+        return logs as unknown as IAuditLog[];
     }
 
     /**
@@ -398,13 +400,14 @@ export class AuditLogService {
         };
 
         if (startDate) {
-            query.createdAt = { $gte: startDate };
+            query['createdAt'] = { $gte: startDate };
         }
 
-        return AuditLog.find(query)
+        const logs = await AuditLog.find(query)
             .sort({ createdAt: -1 })
             .limit(limit)
             .lean();
+        return logs as unknown as IAuditLog[];
     }
 
     /**
@@ -413,10 +416,11 @@ export class AuditLogService {
     async getFailedOperations(limit: number = 100): Promise<IAuditLog[]> {
         const AuditLog = await getAuditLogModel();
 
-        return AuditLog.find({ success: false })
+        const logs = await AuditLog.find({ success: false })
             .sort({ createdAt: -1 })
             .limit(limit)
             .lean();
+        return logs as unknown as IAuditLog[];
     }
 
     /**

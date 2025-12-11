@@ -78,8 +78,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const uploadUrl = await getPresignedUploadUrl(key, body.contentType, 3600);
 
         // Construct public URL
-        const bucket = process.env.AWS_BUCKET_NAME;
-        const region = process.env.AWS_REGION || 'us-east-1';
+        const bucket = process.env['AWS_BUCKET_NAME'];
+        const region = process.env['AWS_REGION'] || 'us-east-1';
         const publicUrl = `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 
         return NextResponse.json({

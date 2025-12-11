@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import CarbonFactor from '../../../../models/CarbonFactor';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {
@@ -32,19 +32,19 @@ export async function GET(request: NextRequest) {
         const query: Record<string, unknown> = { isActive: true };
 
         if (type) {
-            query.type = type;
+            query['type'] = type;
         }
 
         if (country) {
-            query.country = country.toUpperCase();
+            query['country'] = country.toUpperCase();
         }
 
         if (region) {
-            query.region = { $regex: region, $options: 'i' };
+            query['region'] = { $regex: region, $options: 'i' };
         }
 
         if (subregion) {
-            query.subregion = subregion.toUpperCase();
+            query['subregion'] = subregion.toUpperCase();
         }
 
         // Execute query

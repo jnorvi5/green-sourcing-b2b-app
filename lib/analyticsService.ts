@@ -14,8 +14,8 @@ let supabase: SupabaseClient | null = null;
 function getSupabaseClient(): SupabaseClient | null {
   if (supabase) return supabase;
   
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   
   if (!supabaseUrl || !supabaseServiceKey) {
     console.warn('Analytics: Supabase credentials not configured');
@@ -500,13 +500,13 @@ export async function generateQuarterlyReportData(
   };
 
   // Basic tier data
-  reportData.topKeywords = await getTopKeywords(100);
-  reportData.certificationDemand = await getCertificationDemand();
-  reportData.geographicDemand = await getGeographicGaps();
+  reportData['topKeywords'] = await getTopKeywords(100);
+  reportData['certificationDemand'] = await getCertificationDemand();
+  reportData['geographicDemand'] = await getGeographicGaps();
 
   // Premium tier data
   if (tier === 'Professional' || tier === 'Enterprise') {
-    reportData.certificationPerformance = await getCertificationPerformance();
+    reportData['certificationPerformance'] = await getCertificationPerformance();
     
     if (client) {
       // RFQ conversion analysis
@@ -516,7 +516,7 @@ export async function generateQuarterlyReportData(
         .gte('time_period', startDate.toISOString().split('T')[0])
         .lte('time_period', endDate.toISOString().split('T')[0]);
       
-      reportData.rfqAnalytics = rfqData || [];
+      reportData['rfqAnalytics'] = rfqData || [];
       
       // Anonymized supplier benchmarks
       const { data: supplierData } = await client
@@ -526,11 +526,11 @@ export async function generateQuarterlyReportData(
         .lte('time_period', endDate.toISOString().split('T')[0]);
       
       // Anonymize supplier data - only show aggregated metrics
-      reportData.marketBenchmarks = {
-        avgWinRate: supplierData?.reduce((sum, s) => sum + (s.win_rate || 0), 0) / (supplierData?.length || 1),
-        avgResponseTime: supplierData?.reduce((sum, s) => sum + (s.average_response_time || 0), 0) / (supplierData?.length || 1),
-        avgTimeToClose: supplierData?.reduce((sum, s) => sum + (s.average_time_to_close || 0), 0) / (supplierData?.length || 1),
-        avgOrderValue: supplierData?.reduce((sum, s) => sum + (s.average_order_value || 0), 0) / (supplierData?.length || 1),
+      reportData['marketBenchmarks'] = {
+        avgWinRate: (supplierData && supplierData.length > 0) ? supplierData.reduce((sum, s) => sum + (s.win_rate || 0), 0) / supplierData.length : 0,
+        avgResponseTime: (supplierData && supplierData.length > 0) ? supplierData.reduce((sum, s) => sum + (s.average_response_time || 0), 0) / supplierData.length : 0,
+        avgTimeToClose: (supplierData && supplierData.length > 0) ? supplierData.reduce((sum, s) => sum + (s.average_time_to_close || 0), 0) / supplierData.length : 0,
+        avgOrderValue: (supplierData && supplierData.length > 0) ? supplierData.reduce((sum, s) => sum + (s.average_order_value || 0), 0) / supplierData.length : 0,
       };
     }
   }

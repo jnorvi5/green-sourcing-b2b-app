@@ -275,7 +275,7 @@ class CarbonCalculatorService {
         buildingType: string
     ): ProjectCarbonAnalysis['benchmarks'] {
         const carbonPerSqFt = squareFootage > 0 ? totalCarbon / squareFootage : 0;
-        const benchmarkData = BUILDING_BENCHMARKS[buildingType.toLowerCase()] || BUILDING_BENCHMARKS.default;
+        const benchmarkData = BUILDING_BENCHMARKS[buildingType.toLowerCase()] || BUILDING_BENCHMARKS['default'];
 
         // Calculate percentile (simplified)
         const range = benchmarkData.average - benchmarkData.bestInClass;

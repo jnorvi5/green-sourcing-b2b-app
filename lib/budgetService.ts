@@ -1,7 +1,7 @@
 // lib/budgetService.ts
 import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || '';
+const uri = process.env['MONGODB_URI'] || '';
 
 export interface BudgetCategory {
     id: string;
@@ -220,9 +220,9 @@ class BudgetService {
 
         const query: Record<string, unknown> = { organizationId };
 
-        if (filters?.fiscalYear) query.fiscalYear = filters.fiscalYear;
-        if (filters?.type) query.type = filters.type;
-        if (filters?.status) query.status = filters.status;
+        if (filters?.fiscalYear) query['fiscalYear'] = filters.fiscalYear;
+        if (filters?.type) query['type'] = filters.type;
+        if (filters?.status) query['status'] = filters.status;
 
         return collection.find(query).sort({ createdAt: -1 }).toArray();
     }
@@ -325,15 +325,15 @@ class BudgetService {
 
         const query: Record<string, unknown> = { organizationId };
 
-        if (filters?.budgetId) query.budgetId = filters.budgetId;
-        if (filters?.categoryId) query.categoryId = filters.categoryId;
-        if (filters?.status) query.status = filters.status;
-        if (filters?.vendor) query.vendor = { $regex: filters.vendor, $options: 'i' };
+        if (filters?.budgetId) query['budgetId'] = filters.budgetId;
+        if (filters?.categoryId) query['categoryId'] = filters.categoryId;
+        if (filters?.status) query['status'] = filters.status;
+        if (filters?.vendor) query['vendor'] = { $regex: filters.vendor, $options: 'i' };
 
         if (filters?.fromDate || filters?.toDate) {
-            query.createdAt = {};
-            if (filters.fromDate) (query.createdAt as Record<string, Date>).$gte = filters.fromDate;
-            if (filters.toDate) (query.createdAt as Record<string, Date>).$lte = filters.toDate;
+            query['createdAt'] = {};
+            if (filters.fromDate) (query['createdAt'] as Record<string, Date>)['$gte'] = filters.fromDate;
+            if (filters.toDate) (query['createdAt'] as Record<string, Date>)['$lte'] = filters.toDate;
         }
 
         const page = pagination?.page || 1;

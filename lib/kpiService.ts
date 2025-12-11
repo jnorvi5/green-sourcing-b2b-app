@@ -141,7 +141,7 @@ export class KPIService {
 
         return KPIMetric.findOne({ name, period })
             .sort({ periodStart: -1 })
-            .lean();
+            .lean() as any as IKPIMetric | null;
     }
 
     /**
@@ -157,7 +157,7 @@ export class KPIService {
         return KPIMetric.find({ name, period })
             .sort({ periodStart: -1 })
             .limit(limit)
-            .lean();
+            .lean() as any as IKPIMetric[];
     }
 
     /**
@@ -237,27 +237,27 @@ export class KPIService {
             ]).toArray(),
         ]);
 
-        const orders = orderStats[0] || { totalGMV: 0, totalOrders: 0, avgOrderValue: 0, totalCarbon: 0 };
-        const users = userStats[0] || {};
-        const products = productStats[0] || { totalProducts: 0, avgCarbonScore: 0 };
-        const rfqs = rfqStats[0] || { totalRFQs: 0, respondedRFQs: 0, wonRFQs: 0 };
+        const orders = (orderStats[0] || { totalGMV: 0, totalOrders: 0, avgOrderValue: 0, totalCarbon: 0 }) as any;
+        const users = (userStats[0] || {}) as any;
+        const products = (productStats[0] || { totalProducts: 0, avgCarbonScore: 0 }) as any;
+        const rfqs = (rfqStats[0] || { totalRFQs: 0, respondedRFQs: 0, wonRFQs: 0 }) as any;
 
         return {
-            gmv: orders.totalGMV || 0,
-            totalOrders: orders.totalOrders || 0,
-            avgOrderValue: orders.avgOrderValue || 0,
-            totalBuyers: users.buyers?.[0]?.count || 0,
-            totalSuppliers: users.suppliers?.[0]?.count || 0,
-            newBuyers: users.newBuyers?.[0]?.count || 0,
-            newSuppliers: users.newSuppliers?.[0]?.count || 0,
-            dau: users.activeToday?.[0]?.count || 0,
-            mau: users.activeThisMonth?.[0]?.count || 0,
-            totalProducts: products.totalProducts || 0,
-            avgCarbonScore: products.avgCarbonScore || 0,
-            totalRFQs: rfqs.totalRFQs || 0,
-            rfqResponseRate: rfqs.totalRFQs > 0 ? (rfqs.respondedRFQs / rfqs.totalRFQs) * 100 : 0,
-            rfqWinRate: rfqs.respondedRFQs > 0 ? (rfqs.wonRFQs / rfqs.respondedRFQs) * 100 : 0,
-            totalCarbonSaved: orders.totalCarbon || 0,
+            gmv: orders['totalGMV'] || 0,
+            totalOrders: orders['totalOrders'] || 0,
+            avgOrderValue: orders['avgOrderValue'] || 0,
+            totalBuyers: users['buyers']?.[0]?.['count'] || 0,
+            totalSuppliers: users['suppliers']?.[0]?.['count'] || 0,
+            newBuyers: users['newBuyers']?.[0]?.['count'] || 0,
+            newSuppliers: users['newSuppliers']?.[0]?.['count'] || 0,
+            dau: users['activeToday']?.[0]?.['count'] || 0,
+            mau: users['activeThisMonth']?.[0]?.['count'] || 0,
+            totalProducts: products['totalProducts'] || 0,
+            avgCarbonScore: products['avgCarbonScore'] || 0,
+            totalRFQs: rfqs['totalRFQs'] || 0,
+            rfqResponseRate: rfqs['totalRFQs'] > 0 ? (rfqs['respondedRFQs'] / rfqs['totalRFQs']) * 100 : 0,
+            rfqWinRate: rfqs['respondedRFQs'] > 0 ? (rfqs['wonRFQs'] / rfqs['respondedRFQs']) * 100 : 0,
+            totalCarbonSaved: orders['totalCarbon'] || 0,
         };
     }
 
@@ -282,24 +282,24 @@ export class KPIService {
 
         if (snapshotType === 'admin') {
             const platformKPIs = await this.calculatePlatformKPIs();
-            snapshotData.platform = {
-                gmv: platformKPIs.gmv,
-                revenue: platformKPIs.gmv * 0.05, // 5% take rate
-                orders: platformKPIs.totalOrders,
-                newBuyers: platformKPIs.newBuyers,
-                newSuppliers: platformKPIs.newSuppliers,
-                activeUsers: platformKPIs.dau,
-                dau: platformKPIs.dau,
-                mau: platformKPIs.mau,
-                conversionRate: platformKPIs.totalBuyers > 0
-                    ? (platformKPIs.totalOrders / platformKPIs.totalBuyers / 30) * 100
+            snapshotData['platform'] = {
+                gmv: platformKPIs['gmv'],
+                revenue: platformKPIs['gmv'] * 0.05, // 5% take rate
+                orders: platformKPIs['totalOrders'],
+                newBuyers: platformKPIs['newBuyers'],
+                newSuppliers: platformKPIs['newSuppliers'],
+                activeUsers: platformKPIs['dau'],
+                dau: platformKPIs['dau'],
+                mau: platformKPIs['mau'],
+                conversionRate: platformKPIs['totalBuyers'] > 0
+                    ? (platformKPIs['totalOrders'] / platformKPIs['totalBuyers'] / 30) * 100
                     : 0,
-                avgOrderValue: platformKPIs.avgOrderValue,
-                carbonSaved: platformKPIs.totalCarbonSaved,
+                avgOrderValue: platformKPIs['avgOrderValue'],
+                carbonSaved: platformKPIs['totalCarbonSaved'],
             };
-            snapshotData.sustainability = {
-                totalCarbonSaved: platformKPIs.totalCarbonSaved,
-                avgCarbonScore: platformKPIs.avgCarbonScore,
+            snapshotData['sustainability'] = {
+                totalCarbonSaved: platformKPIs['totalCarbonSaved'],
+                avgCarbonScore: platformKPIs['avgCarbonScore'],
                 sustainableOrdersPercent: 75, // Calculate from orders
                 certifiedSuppliersPercent: 60, // Calculate from suppliers
                 recycledMaterialsUsed: 5000, // Calculate from products
@@ -323,7 +323,7 @@ export class KPIService {
         for (const alert of activeAlerts) {
             const latestMetric = await KPIMetric.findOne({ name: alert.kpiName })
                 .sort({ periodStart: -1 })
-                .lean();
+                .lean() as any as IKPIMetric | null;
 
             if (!latestMetric) continue;
 

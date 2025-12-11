@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import EPDProgram from '../../../../models/EPDProgram';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {
@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
         const query: Record<string, unknown> = { isActive: true };
 
         if (region) {
-            query.regions = { $in: [region] };
+            query['regions'] = { $in: [region] };
         }
 
         if (country) {
-            query.headquarters = country.toUpperCase();
+            query['headquarters'] = country.toUpperCase();
         }
 
         const programs = await EPDProgram.find(query)

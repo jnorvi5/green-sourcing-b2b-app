@@ -121,18 +121,21 @@ function DashboardContent() {
       const unquotedRfqs = (rfqsData || []).filter(rfq => !respondedRfqIds.has(rfq.id))
 
       // Transform RFQs data
-      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map(rfq => ({
-        id: rfq.id,
-        project_name: rfq.project_name,
-        material_type: (rfq.material_specs as { material_type?: string })?.material_type || 'N/A',
-        delivery_deadline: rfq.delivery_deadline,
-        match_score: 85, // Placeholder - would need actual matching algorithm
-        created_at: rfq.created_at,
-        architect: {
-          full_name: (rfq.users as { full_name: string | null } | null)?.full_name || null,
-          company_name: (rfq.users as { company_name: string | null } | null)?.company_name || null,
-        },
-      }))
+      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map(rfq => {
+        const users = Array.isArray(rfq.users) ? rfq.users[0] : rfq.users;
+        return {
+          id: rfq.id,
+          project_name: rfq.project_name,
+          material_type: (rfq.material_specs as { material_type?: string })?.material_type || 'N/A',
+          delivery_deadline: rfq.delivery_deadline,
+          match_score: 85, // Placeholder - would need actual matching algorithm
+          created_at: rfq.created_at,
+          architect: {
+            full_name: (users as { full_name: string | null } | null)?.full_name || null,
+            company_name: (users as { company_name: string | null } | null)?.company_name || null,
+          },
+        };
+      })
 
       setIncomingRfqs(transformedRfqs)
 
@@ -154,16 +157,19 @@ function DashboardContent() {
         logError('Error loading quotes:', quotesError)
       }
 
-      const transformedQuotes: SupplierQuote[] = (quotesData || []).map(quote => ({
-        id: quote.id,
-        rfq_id: quote.rfq_id,
-        quote_amount: quote.quote_amount,
-        status: quote.status as 'submitted' | 'accepted' | 'rejected',
-        responded_at: quote.responded_at,
-        rfq: {
-          project_name: (quote.rfqs as { project_name: string })?.project_name || 'Unknown Project',
-        },
-      }))
+      const transformedQuotes: SupplierQuote[] = (quotesData || []).map(quote => {
+        const rfqs = Array.isArray(quote.rfqs) ? quote.rfqs[0] : quote.rfqs;
+        return {
+          id: quote.id,
+          rfq_id: quote.rfq_id,
+          quote_amount: quote.quote_amount,
+          status: quote.status as 'submitted' | 'accepted' | 'rejected',
+          responded_at: quote.responded_at,
+          rfq: {
+            project_name: (rfqs as { project_name: string } | null)?.project_name || 'Unknown Project',
+          },
+        };
+      })
 
       setMyQuotes(transformedQuotes)
 

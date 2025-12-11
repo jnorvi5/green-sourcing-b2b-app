@@ -8,7 +8,7 @@
 import { connect } from 'http2';
 
 // MailerLite API Configuration
-const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY;
+const MAILERLITE_API_KEY = process.env['MAILERLITE_API_KEY'];
 const MAILERLITE_BASE_URL = 'https://connect.mailerlite.com/api';
 
 interface EmailOptions {
@@ -81,7 +81,7 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
         const result = await makeMailerLiteRequest('/campaigns', 'POST', {
             type: 'transactional',
             emails: Array.isArray(options.to) ? options.to : [options.to],
-            from: options.from || process.env.EMAIL_FROM || 'noreply@greenchainz.com',
+            from: options.from || process.env['EMAIL_FROM'] || 'noreply@greenchainz.com',
             from_name: options.fromName || 'GreenChainz',
             subject: options.subject,
             content: {

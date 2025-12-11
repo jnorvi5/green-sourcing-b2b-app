@@ -121,7 +121,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     return NextResponse.json(
       { 
         error: 'Failed to generate CSV export',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        details: process.env['NODE_ENV'] === 'development' ? errorMessage : undefined,
       },
       { status: 500 }
     );

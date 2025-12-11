@@ -16,16 +16,16 @@ import mongoose, { Connection } from 'mongoose';
 
 // Database URIs from environment variables
 const getDefaultUri = (dbName: string): string => {
-    const baseUri = process.env.MONGODB_URI || 'mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/greenchainz?retryWrites=true&w=majority';
+    const baseUri = process.env['MONGODB_URI'] || 'mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/greenchainz?retryWrites=true&w=majority';
     return baseUri.replace('/greenchainz', `/${dbName}`);
 };
 
 const DATABASE_URIS: Record<string, string> = {
-    greenchainz: process.env.MONGODB_URI || 'mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/greenchainz?retryWrites=true&w=majority',
-    buyers: process.env.MONGODB_BUYERS_URI || getDefaultUri('buyers'),
-    suppliers: process.env.MONGODB_SUPPLIERS_URI || getDefaultUri('suppliers'),
-    analytics: process.env.MONGODB_ANALYTICS_URI || getDefaultUri('analytics'),
-    dataproviders: process.env.MONGODB_DATAPROVIDERS_URI || getDefaultUri('dataproviders'),
+    greenchainz: process.env['MONGODB_URI'] || 'mongodb+srv://ADMIN:RnUH4PqyIfiComGB@cluster0.q9gvyyg.mongodb.net/greenchainz?retryWrites=true&w=majority',
+    buyers: process.env['MONGODB_BUYERS_URI'] || getDefaultUri('buyers'),
+    suppliers: process.env['MONGODB_SUPPLIERS_URI'] || getDefaultUri('suppliers'),
+    analytics: process.env['MONGODB_ANALYTICS_URI'] || getDefaultUri('analytics'),
+    dataproviders: process.env['MONGODB_DATAPROVIDERS_URI'] || getDefaultUri('dataproviders'),
 };
 
 // Database names
@@ -72,7 +72,7 @@ export async function getDatabase(dbName: string): Promise<Connection> {
     }
 
     if (!cached.promise) {
-        const uri = DATABASE_URIS[dbName] || DATABASE_URIS.greenchainz;
+        const uri = DATABASE_URIS[dbName] || DATABASE_URIS['greenchainz'];
 
         if (!uri) {
             throw new Error(`No connection URI configured for database: ${dbName}`);

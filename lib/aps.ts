@@ -8,10 +8,10 @@
  */
 import mongoose, { Model } from 'mongoose'
 
-const CLIENT_ID = process.env.AUTODESK_CLIENT_ID
-const CLIENT_SECRET = process.env.AUTODESK_CLIENT_SECRET
+const CLIENT_ID = process.env['AUTODESK_CLIENT_ID']
+const CLIENT_SECRET = process.env['AUTODESK_CLIENT_SECRET']
 const AUTH_URL = 'https://developer.api.autodesk.com/authentication/v2/token'
-const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_URI = process.env['MONGODB_URI']
 
 type AutodeskTokenResponse = {
   access_token: string
@@ -185,9 +185,9 @@ export async function getEmbodiedCarbon(
 
       if (options?.category || options?.name) {
         const query: Record<string, unknown> = { isActive: true }
-        if (options.category) query.category = { $regex: options.category, $options: 'i' }
+        if (options.category) query['category'] = { $regex: options.category, $options: 'i' }
         if (options.name) {
-          query.$or = [
+          query['$or'] = [
             { name: { $regex: options.name, $options: 'i' } },
             { tags: { $in: [options.name.toLowerCase()] } },
           ]
@@ -287,11 +287,11 @@ export async function getCarbonFactor(
     const query: Record<string, unknown> = { type, isActive: true }
 
     if (type === 'transport' && options.mode) {
-      query.factorId = `transport-${options.mode.toLowerCase()}`
+      query['factorId'] = `transport-${options.mode.toLowerCase()}`
     } else {
-      if (options.subregion) query.subregion = options.subregion.toUpperCase()
-      if (options.country) query.country = options.country.toUpperCase()
-      if (options.region) query.region = { $regex: options.region, $options: 'i' }
+      if (options.subregion) query['subregion'] = options.subregion.toUpperCase()
+      if (options.country) query['country'] = options.country.toUpperCase()
+      if (options.region) query['region'] = { $regex: options.region, $options: 'i' }
     }
 
     return (await CarbonFactorModel.findOne(query).lean()) as CarbonFactor | null
@@ -323,11 +323,12 @@ export async function getLowCarbonAlternatives(
 
     let alternatives = doc.alternatives ?? []
 
-    if (options?.minReduction) {
-      alternatives = alternatives.filter((a) => (a.reduction ?? 0) >= options.minReduction)
+    if (options?.minReduction !== undefined) {
+      const minReduction = options.minReduction;
+      alternatives = alternatives.filter((a) => (a.reduction ?? 0) >= minReduction)
     }
 
-    if (options?.maxResults) {
+    if (options?.maxResults !== undefined) {
       alternatives = alternatives.slice(0, options.maxResults)
     }
 
@@ -358,11 +359,11 @@ export async function searchMaterials(
     }
 
     if (options?.category) {
-      searchQuery.category = { $regex: options.category, $options: 'i' }
+      searchQuery['category'] = { $regex: options.category, $options: 'i' }
     }
 
     if (options?.maxGwp) {
-      searchQuery.gwp = { $lte: options.maxGwp }
+      searchQuery['gwp'] = { $lte: options.maxGwp }
     }
 
     return Material.find(searchQuery)

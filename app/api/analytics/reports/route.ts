@@ -27,8 +27,8 @@ let supabase: SupabaseClient | null = null;
 function getSupabaseClient(): SupabaseClient | null {
   if (supabase) return supabase;
   
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   
   if (!url || !key) return null;
   
@@ -84,29 +84,29 @@ export async function GET(request: NextRequest) {
       // Return current data based on report type
       switch (reportType) {
         case 'keywords':
-          reportData.topKeywords = await getTopKeywords(100);
+          reportData['topKeywords'] = await getTopKeywords(100);
           break;
         
         case 'certifications':
-          reportData.certificationDemand = await getCertificationDemand();
+          reportData['certificationDemand'] = await getCertificationDemand();
           if (licenseTier === 'Professional' || licenseTier === 'Enterprise') {
-            reportData.certificationPerformance = await getCertificationPerformance();
+            reportData['certificationPerformance'] = await getCertificationPerformance();
           }
           break;
         
         case 'geographic':
-          reportData.geographicGaps = await getGeographicGaps();
+          reportData['geographicGaps'] = await getGeographicGaps();
           break;
         
         case 'all':
         default:
           // Return all available data for tier
-          reportData.topKeywords = await getTopKeywords(100);
-          reportData.certificationDemand = await getCertificationDemand();
-          reportData.geographicGaps = await getGeographicGaps();
+          reportData['topKeywords'] = await getTopKeywords(100);
+          reportData['certificationDemand'] = await getCertificationDemand();
+          reportData['geographicGaps'] = await getGeographicGaps();
           
           if (licenseTier === 'Professional' || licenseTier === 'Enterprise') {
-            reportData.certificationPerformance = await getCertificationPerformance();
+            reportData['certificationPerformance'] = await getCertificationPerformance();
             
             // Get RFQ analytics for last 90 days
             const ninetyDaysAgo = new Date();
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
                 .select('*')
                 .gte('time_period', ninetyDaysAgo.toISOString().split('T')[0]);
               
-              reportData.rfqAnalytics = rfqData || [];
+              reportData['rfqAnalytics'] = rfqData || [];
             }
           }
           break;
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Add metadata
-    reportData.metadata = {
+    reportData['metadata'] = {
       generatedAt: new Date().toISOString(),
       tier: licenseTier,
       reportType,
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
 
     // Log access (reportId -1 indicates general API access, not a specific report)
     const forwardedFor = request.headers.get('x-forwarded-for');
-    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0]?.trim() || 'unknown' : 'unknown';
     
     if (customerId) {
       // Use -1 to indicate this is a general API access, not a specific report download
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
 /**
  * Get list of available reports
  */
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   return NextResponse.json({
     availableReports: [
       { type: 'keywords', description: 'Top 100 searched keywords with trends', tier: 'Basic' },
