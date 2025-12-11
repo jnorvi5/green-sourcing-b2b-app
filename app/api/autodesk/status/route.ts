@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getConnection } from '@/lib/integrations/autodesk/oauth';
 import type { ConnectionStatusResponse } from '@/types/autodesk';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get user from session
     const supabase = createClient(
