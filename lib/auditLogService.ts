@@ -320,7 +320,7 @@ export class AuditLogService {
             AuditLog.countDocuments(query),
         ]);
 
-        return { logs, total };
+        return { logs: logs as any, total };
     }
 
     /**
@@ -339,7 +339,7 @@ export class AuditLogService {
         })
             .sort({ createdAt: -1 })
             .limit(limit)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -367,7 +367,7 @@ export class AuditLogService {
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 100)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -404,7 +404,7 @@ export class AuditLogService {
         return AuditLog.find(query)
             .sort({ createdAt: -1 })
             .limit(limit)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -416,7 +416,7 @@ export class AuditLogService {
         return AuditLog.find({ success: false })
             .sort({ createdAt: -1 })
             .limit(limit)
-            .lean();
+            .lean() as any;
     }
 
     /**

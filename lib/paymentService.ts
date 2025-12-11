@@ -336,7 +336,7 @@ export class PaymentService {
     async confirmPayment(paymentId: string): Promise<IPayment | null> {
         const { Payment } = await getPaymentModels();
 
-        const payment = await Payment.findById(paymentId);
+        const payment = await (Payment.findById as any)(paymentId);
         if (!payment) return null;
 
         // Would call Stripe API here
@@ -359,7 +359,7 @@ export class PaymentService {
     ): Promise<IPayment | null> {
         const { Payment } = await getPaymentModels();
 
-        const payment = await Payment.findById(paymentId);
+        const payment = await (Payment.findById as any)(paymentId);
         if (!payment || payment.status !== 'succeeded') return null;
 
         const refundAmount = amount || payment.amount;
@@ -383,7 +383,7 @@ export class PaymentService {
      */
     async getPayment(paymentId: string): Promise<IPayment | null> {
         const { Payment } = await getPaymentModels();
-        return Payment.findById(paymentId).lean();
+        return (Payment.findById as any)(paymentId).lean() as any;
     }
 
     /**
@@ -391,9 +391,9 @@ export class PaymentService {
      */
     async getOrderPayments(orderId: string): Promise<IPayment[]> {
         const { Payment } = await getPaymentModels();
-        return Payment.find({ orderId: new mongoose.Types.ObjectId(orderId) })
+        return (Payment.find as any)({ orderId: new mongoose.Types.ObjectId(orderId) })
             .sort({ createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -408,11 +408,11 @@ export class PaymentService {
         const query: Record<string, unknown> = { customerId: new mongoose.Types.ObjectId(customerId) };
         if (options?.status) query.status = options.status;
 
-        return Payment.find(query)
+        return (Payment.find as any)(query)
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 50)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -495,7 +495,7 @@ export class PaymentService {
         const { PaymentMethod } = await getPaymentModels();
         return PaymentMethod.find({ customerId: new mongoose.Types.ObjectId(customerId) })
             .sort({ isDefault: -1, createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -572,7 +572,7 @@ export class PaymentService {
      */
     async getPayoutAccount(companyId: string): Promise<IPayoutAccount | null> {
         const { PayoutAccount } = await getPaymentModels();
-        return PayoutAccount.findOne({ companyId: new mongoose.Types.ObjectId(companyId) }).lean();
+        return PayoutAccount.findOne({ companyId: new mongoose.Types.ObjectId(companyId) }).lean() as any;
     }
 
     // ==================== Webhooks ====================

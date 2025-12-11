@@ -86,7 +86,7 @@ export async function getEmbodiedCarbon(
           (await import('../models/Material')).default;
 
         // Search by various IDs
-        const cachedMaterial = await Material.findOne({
+        const cachedMaterial = await (Material.findOne as any)({
           $or: [
             { materialId },
             { epdId: materialId },
@@ -127,7 +127,7 @@ export async function getEmbodiedCarbon(
             ];
           }
 
-          const matchedMaterial = await Material.findOne(searchQuery).lean();
+          const matchedMaterial = await (Material.findOne as any)(searchQuery).lean();
 
           if (matchedMaterial) {
             return {
@@ -269,7 +269,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
         if (options.region) query.region = { $regex: options.region, $options: 'i' };
       }
 
-      const factor = await CarbonFactor.findOne(query).lean();
+      const factor = await (CarbonFactor.findOne as any)(query).lean();
       return factor;
     } catch (error) {
       console.error('getCarbonFactor error:', error);
@@ -292,7 +292,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
         // @ts-ignore
         (await import('../models/CarbonAlternative')).default;
 
-      const result = await CarbonAlternative.findOne({
+      const result = await (CarbonAlternative.findOne as any)({
         'originalMaterial.category': { $regex: category, $options: 'i' },
         isActive: true,
       }).lean();
@@ -348,7 +348,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
         searchQuery.gwp = { $lte: options.maxGwp };
       }
 
-      const materials = await Material.find(searchQuery)
+      const materials = await (Material.find as any)(searchQuery)
         .sort({ gwp: 1 })
         .limit(options?.limit || 20)
         .lean();
@@ -377,7 +377,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
         // @ts-ignore
         (await import('../models/UnitConversion')).default;
 
-      const conversionDoc = await UnitConversion.findOne({
+      const conversionDoc = await (UnitConversion.findOne as any)({
         materialCategory: { $regex: category, $options: 'i' },
       }).lean();
 
