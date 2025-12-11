@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
     const uniqueSuppliers = matchingProducts
       ? Array.from(
           new Map(
-            (matchingProducts as unknown as MatchedProduct[]).map(p => [
+            (matchingProducts as MatchedProduct[]).map(p => [
               p.supplier_id,
               {
                 supplier_id: p.supplier_id,

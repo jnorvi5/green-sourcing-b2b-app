@@ -372,7 +372,7 @@ class SupplierPerformanceService {
     // Get supplier scorecard
     async getScorecard(supplierId: string): Promise<ISupplierScorecard | null> {
         const { SupplierScorecard } = await this.getModels();
-        return (SupplierScorecard.findOne as any)({ supplierId });
+        return SupplierScorecard.findOne({ supplierId });
     }
 
     // Get performance history
@@ -445,16 +445,16 @@ class SupplierPerformanceService {
             tier: { $ne: 'new' },
         };
 
-        return (SupplierScorecard.find as any)(query)
+        return SupplierScorecard.find(query)
             .sort({ overallScore: -1 })
             .limit(limit)
-            .lean() as any;
+            .lean();
     }
 
     // Get suppliers by tier
     async getSuppliersByTier(tier: ISupplierScorecard['tier']): Promise<ISupplierScorecard[]> {
         const { SupplierScorecard } = await this.getModels();
-        return (SupplierScorecard.find as any)({ tier }).sort({ overallScore: -1 }).lean() as any;
+        return SupplierScorecard.find({ tier }).sort({ overallScore: -1 }).lean();
     }
 }
 

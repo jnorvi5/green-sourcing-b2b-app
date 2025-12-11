@@ -139,9 +139,9 @@ export class KPIService {
     ): Promise<IKPIMetric | null> {
         const { KPIMetric } = await getAnalyticsModels();
 
-        return (KPIMetric.findOne as any)({ name, period })
+        return KPIMetric.findOne({ name, period })
             .sort({ periodStart: -1 })
-            .lean() as any;
+            .lean();
     }
 
     /**
@@ -154,10 +154,10 @@ export class KPIService {
     ): Promise<IKPIMetric[]> {
         const { KPIMetric } = await getAnalyticsModels();
 
-        return (KPIMetric.find as any)({ name, period })
+        return KPIMetric.find({ name, period })
             .sort({ periodStart: -1 })
             .limit(limit)
-            .lean() as any;
+            .lean();
     }
 
     /**
@@ -321,9 +321,9 @@ export class KPIService {
         const results: Array<{ alert: IKPIAlert; triggered: boolean }> = [];
 
         for (const alert of activeAlerts) {
-            const latestMetric = await (KPIMetric.findOne as any)({ name: alert.kpiName })
+            const latestMetric = await KPIMetric.findOne({ name: alert.kpiName })
                 .sort({ periodStart: -1 })
-                .lean() as any;
+                .lean();
 
             if (!latestMetric) continue;
 

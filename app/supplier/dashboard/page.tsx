@@ -129,8 +129,8 @@ function DashboardContent() {
         match_score: 85, // Placeholder - would need actual matching algorithm
         created_at: rfq.created_at,
         architect: {
-          full_name: (rfq.users as unknown as { full_name: string | null } | null)?.full_name || null,
-          company_name: (rfq.users as unknown as { company_name: string | null } | null)?.company_name || null,
+          full_name: (rfq.users as { full_name: string | null } | null)?.full_name || null,
+          company_name: (rfq.users as { company_name: string | null } | null)?.company_name || null,
         },
       }))
 
@@ -161,7 +161,7 @@ function DashboardContent() {
         status: quote.status as 'submitted' | 'accepted' | 'rejected',
         responded_at: quote.responded_at,
         rfq: {
-          project_name: (quote.rfqs as unknown as { project_name: string })?.project_name || 'Unknown Project',
+          project_name: (quote.rfqs as { project_name: string })?.project_name || 'Unknown Project',
         },
       }))
 

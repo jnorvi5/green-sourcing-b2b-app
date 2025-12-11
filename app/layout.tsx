@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
 import IntercomProvider from '@/components/IntercomProvider';
 
@@ -15,14 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          id="cookieyes"
-          src="https://cdn-cookieyes.com/client_data/80d633ac80d2b968de32ce14/script.js"
-          strategy="beforeInteractive"
-        />
-      </head>
-      <body className="bg-slate-950 text-white">
+     <body className="bg-slate-950 text-white">
         <IntercomProvider>
           {children}
         </IntercomProvider>
