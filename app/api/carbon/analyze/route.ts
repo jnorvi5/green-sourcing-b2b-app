@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         };
 
         if (buildingType && buildingType !== 'all') {
-            const data = benchmarks[buildingType.toLowerCase()] || benchmarks.office;
+            const data = benchmarks[buildingType.toLowerCase()] || benchmarks['office'];
             return NextResponse.json({
                 success: true,
                 data: {
