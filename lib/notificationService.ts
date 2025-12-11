@@ -432,7 +432,7 @@ export class NotificationService {
         if (options?.type) query.type = options.type;
 
         const [notifications, unreadCount] = await Promise.all([
-            Notification.find(query)
+            (Notification.find as any)(query)
                 .sort({ createdAt: -1 })
                 .skip(options?.skip || 0)
                 .limit(options?.limit || 50)

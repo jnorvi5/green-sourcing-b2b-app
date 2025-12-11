@@ -333,7 +333,7 @@ export class DocumentService {
      */
     async getById(documentId: string): Promise<IDocument | null> {
         const { Document } = await getDocumentModels();
-        return Document.findById(documentId).lean();
+        return (Document.findById as any)(documentId).lean() as any;
     }
 
     /**
@@ -354,11 +354,11 @@ export class DocumentService {
         if (options?.type) query.type = options.type;
         if (options?.status) query.status = options.status;
 
-        return Document.find(query)
+        return (Document.find as any)(query)
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 50)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -366,9 +366,9 @@ export class DocumentService {
      */
     async getForOrder(orderId: string): Promise<IDocument[]> {
         const { Document } = await getDocumentModels();
-        return Document.find({ orderId: new mongoose.Types.ObjectId(orderId) })
+        return (Document.find as any)({ orderId: new mongoose.Types.ObjectId(orderId) })
             .sort({ type: 1, createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -376,9 +376,9 @@ export class DocumentService {
      */
     async getForProduct(productId: string): Promise<IDocument[]> {
         const { Document } = await getDocumentModels();
-        return Document.find({ productId: new mongoose.Types.ObjectId(productId) })
+        return (Document.find as any)({ productId: new mongoose.Types.ObjectId(productId) })
             .sort({ type: 1, createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -386,7 +386,7 @@ export class DocumentService {
      */
     async updateStatus(documentId: string, status: DocumentStatus): Promise<IDocument | null> {
         const { Document } = await getDocumentModels();
-        return Document.findByIdAndUpdate(documentId, { status }, { new: true }).lean();
+        return Document.findByIdAndUpdate(documentId, { status }, { new: true }).lean() as any;
     }
 
     /**
@@ -414,7 +414,7 @@ export class DocumentService {
                 accessLevel: 'shared',
             },
             { new: true }
-        ).lean();
+        ).lean() as any;
     }
 
     /**
@@ -448,7 +448,7 @@ export class DocumentService {
                 status: 'signed',
             },
             { new: true }
-        ).lean();
+        ).lean() as any;
     }
 
     /**
@@ -466,7 +466,7 @@ export class DocumentService {
     ): Promise<IDocument | null> {
         const { Document } = await getDocumentModels();
 
-        const original = await Document.findById(documentId);
+        const original = await (Document.findById as any)(documentId);
         if (!original) return null;
 
         const newDoc = new Document({
@@ -527,12 +527,12 @@ export class DocumentService {
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + daysAhead);
 
-        return Document.find({
+        return (Document.find as any)({
             'metadata.expirationDate': { $lte: futureDate, $gte: new Date() },
             status: { $ne: 'expired' },
         })
             .sort({ 'metadata.expirationDate': 1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -573,7 +573,7 @@ export class DocumentService {
         }
 
         const [documents, total] = await Promise.all([
-            Document.find(filter)
+            (Document.find as any)(filter)
                 .sort({ createdAt: -1 })
                 .skip(params.skip || 0)
                 .limit(params.limit || 50)
@@ -618,7 +618,7 @@ export class DocumentService {
         const query: Record<string, unknown> = { isActive: true };
         if (type) query.type = type;
 
-        return DocumentTemplate.find(query).sort({ usageCount: -1 }).lean();
+        return (DocumentTemplate.find as any)(query).sort({ usageCount: -1 }).lean() as any;
     }
 
     /**
@@ -635,7 +635,7 @@ export class DocumentService {
     ): Promise<IDocument> {
         const { DocumentTemplate, Document } = await getDocumentModels();
 
-        const template = await DocumentTemplate.findById(templateId);
+        const template = await (DocumentTemplate.findById as any)(templateId);
         if (!template) throw new Error('Template not found');
 
         // TODO: Actually generate PDF with populated placeholders
