@@ -47,7 +47,6 @@ const MATERIAL_TYPES: MaterialType[] = [
 ];
 
 export default function ProductsManagementPage() {
-  const [user, setUser] = useState<{ id: string } | null>(null);
   const [supplierId, setSupplierId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +81,6 @@ export default function ProductsManagementPage() {
         router.push('/auth/login');
         return;
       }
-      setUser(authUser);
 
       // Get supplier ID for this user
       const { data: supplierData, error: supplierError } = await supabase

@@ -106,7 +106,7 @@ export async function GET(request: Request) {
     console.log('[Materials API] Found materials in MongoDB:', materials.length);
     
     // Log first document structure for debugging (only in development)
-    if (materials.length > 0 && process.env.NODE_ENV === 'development') {
+    if (materials.length > 0 && process.env['NODE_ENV'] === 'development') {
       console.log('[Materials API] Sample document structure:', JSON.stringify(materials[0], null, 2));
     }
 
@@ -136,7 +136,7 @@ export async function GET(request: Request) {
       { 
         success: false, 
         error: 'Failed to fetch materials',
-        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+        details: process.env['NODE_ENV'] === 'development' ? String(error) : undefined
       },
       { status: 500 }
     );

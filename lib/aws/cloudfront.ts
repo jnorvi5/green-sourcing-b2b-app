@@ -10,12 +10,12 @@ import {
 } from '@aws-sdk/client-cloudfront';
 
 // Environment configuration
-const AWS_REGION = process.env.AWS_REGION ?? 'us-east-1';
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-const CLOUDFRONT_DISTRIBUTION_ID = process.env.AWS_CLOUDFRONT_DISTRIBUTION_ID;
-const CLOUDFRONT_DOMAIN = process.env.AWS_CLOUDFRONT_DOMAIN ?? 'cdn.greenchainz.com';
-const IMAGES_BUCKET = process.env.AWS_IMAGES_BUCKET ?? 'gc-product-images-prod';
+const AWS_REGION = process.env['AWS_REGION'] ?? 'us-east-1';
+const AWS_ACCESS_KEY_ID = process.env['AWS_ACCESS_KEY_ID'];
+const AWS_SECRET_ACCESS_KEY = process.env['AWS_SECRET_ACCESS_KEY'];
+const CLOUDFRONT_DISTRIBUTION_ID = process.env['AWS_CLOUDFRONT_DISTRIBUTION_ID'];
+const CLOUDFRONT_DOMAIN = process.env['AWS_CLOUDFRONT_DOMAIN'] ?? 'cdn.greenchainz.com';
+const IMAGES_BUCKET = process.env['AWS_IMAGES_BUCKET'] ?? 'gc-product-images-prod';
 
 // Validate configuration
 if (!CLOUDFRONT_DISTRIBUTION_ID) {

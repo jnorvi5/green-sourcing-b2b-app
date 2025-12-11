@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import UnitConversion from '../../../../models/UnitConversion';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = process.env['MONGODB_URI'] || '';
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {
@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
         const query: Record<string, unknown> = {};
 
         if (category) {
-            query.materialCategory = { $regex: category, $options: 'i' };
+            query['materialCategory'] = { $regex: category, $options: 'i' };
         }
 
         if (materialType) {
-            query.materialType = { $regex: materialType, $options: 'i' };
+            query['materialType'] = { $regex: materialType, $options: 'i' };
         }
 
         const conversions = await UnitConversion.find(query)
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         };
 
         if (materialType) {
-            query.materialType = { $regex: materialType, $options: 'i' };
+            query['materialType'] = { $regex: materialType, $options: 'i' };
         }
 
         const conversionDoc = await UnitConversion.findOne(query).lean();

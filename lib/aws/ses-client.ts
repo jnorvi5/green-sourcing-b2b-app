@@ -16,11 +16,11 @@ import {
 import { z } from 'zod';
 
 // Environment configuration
-const AWS_REGION = process.env.AWS_SES_REGION ?? process.env.AWS_REGION ?? 'us-east-1';
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-const FROM_EMAIL = process.env.AWS_SES_FROM_EMAIL ?? 'noreply@greenchainz.com';
-const CONFIGURATION_SET = process.env.AWS_SES_CONFIGURATION_SET ?? 'gc-transactional';
+const AWS_REGION = process.env['AWS_SES_REGION'] ?? process.env['AWS_REGION'] ?? 'us-east-1';
+const AWS_ACCESS_KEY_ID = process.env['AWS_ACCESS_KEY_ID'];
+const AWS_SECRET_ACCESS_KEY = process.env['AWS_SECRET_ACCESS_KEY'];
+const FROM_EMAIL = process.env['AWS_SES_FROM_EMAIL'] ?? 'noreply@greenchainz.com';
+const CONFIGURATION_SET = process.env['AWS_SES_CONFIGURATION_SET'] ?? 'gc-transactional';
 
 // Initialize SES client
 const sesClient = new SESClient({

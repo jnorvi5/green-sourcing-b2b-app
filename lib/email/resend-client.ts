@@ -17,7 +17,7 @@ let resendClient: Resend | null = null;
  * Gets or creates a Resend client instance.
  */
 function getResendClient(): Resend {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env['RESEND_API_KEY'];
 
   if (!apiKey) {
     throw new Error('RESEND_API_KEY environment variable is not configured');
@@ -60,8 +60,8 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
   try {
     const client = getResendClient();
 
-    const fromEmail = options.from || process.env.RESEND_FROM_EMAIL || 'noreply@greenchainz.com';
-    const fromName = process.env.RESEND_FROM_NAME || 'GreenChainz';
+    const fromEmail = options.from || process.env['RESEND_FROM_EMAIL'] || 'noreply@greenchainz.com';
+    const fromName = process.env['RESEND_FROM_NAME'] || 'GreenChainz';
 
     // Prepare email payload
     const emailPayload: {

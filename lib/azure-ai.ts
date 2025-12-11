@@ -16,9 +16,9 @@ import {
 // Configuration
 // =============================================================================
 
-const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
-const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
-const AZURE_OPENAI_DEPLOYMENT_NAME = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'emailer';
+const AZURE_OPENAI_ENDPOINT = process.env['AZURE_OPENAI_ENDPOINT'];
+const AZURE_OPENAI_KEY = process.env['AZURE_OPENAI_KEY'];
+const AZURE_OPENAI_DEPLOYMENT_NAME = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'emailer';
 
 // =============================================================================
 // System Prompts

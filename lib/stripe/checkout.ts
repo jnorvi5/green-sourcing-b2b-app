@@ -20,8 +20,8 @@ export async function createCheckoutSession(
 ): Promise<{ url: string; sessionId: string }> {
   // Get supplier details
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
   );
 
   const { data: supplier, error } = await supabase
@@ -106,7 +106,7 @@ export async function createCustomerPortalSession(
 ): Promise<string> {
   const session = await stripe.billingPortal.sessions.create({
     customer: stripeCustomerId,
-    return_url: returnUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/supplier/subscription`,
+    return_url: returnUrl || `${process.env['NEXT_PUBLIC_BASE_URL']}/supplier/subscription`,
   });
 
   return session.url;

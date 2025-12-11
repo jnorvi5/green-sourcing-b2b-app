@@ -1,7 +1,7 @@
 // lib/supplierQualificationService.ts
 import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || '';
+const uri = process.env['MONGODB_URI'] || '';
 
 export interface QualificationCriteria {
     id: string;

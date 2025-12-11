@@ -1,7 +1,7 @@
 // lib/shipmentService.ts
 import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || '';
+const uri = process.env['MONGODB_URI'] || '';
 
 export interface ShipmentAddress {
     name: string;

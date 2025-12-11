@@ -27,8 +27,8 @@ export function verifyWebhookSignature(
  */
 export async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
   const supplierId = session.metadata?.supplier_id;
@@ -84,8 +84,8 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
  */
 export async function handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
   const customerId = invoice.customer as string;
@@ -149,8 +149,8 @@ export async function handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> 
  */
 export async function handlePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
   const customerId = invoice.customer as string;
@@ -188,8 +188,8 @@ export async function handlePaymentFailed(invoice: Stripe.Invoice): Promise<void
  */
 export async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
   const subscriptionId = subscription.id;
@@ -232,8 +232,8 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
  */
 export async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
   const subscriptionId = subscription.id;

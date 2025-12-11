@@ -13,12 +13,12 @@ import { SendSmtpEmailParams, SendSmtpEmailResult } from '../types/outreach';
 // Configuration
 // =============================================================================
 
-const ZOHO_SMTP_HOST = process.env.ZOHO_SMTP_HOST || 'smtp.zoho.com';
-const ZOHO_SMTP_PORT = parseInt(process.env.ZOHO_SMTP_PORT || '587', 10);
-const ZOHO_SMTP_USER = process.env.ZOHO_SMTP_USER;
-const ZOHO_SMTP_PASS = process.env.ZOHO_SMTP_PASS;
-const ZOHO_FROM_EMAIL = process.env.ZOHO_FROM_EMAIL;
-const ZOHO_FROM_NAME = process.env.ZOHO_FROM_NAME || 'GreenChainz';
+const ZOHO_SMTP_HOST = process.env['ZOHO_SMTP_HOST'] || 'smtp.zoho.com';
+const ZOHO_SMTP_PORT = parseInt(process.env['ZOHO_SMTP_PORT'] || '587', 10);
+const ZOHO_SMTP_USER = process.env['ZOHO_SMTP_USER'];
+const ZOHO_SMTP_PASS = process.env['ZOHO_SMTP_PASS'];
+const ZOHO_FROM_EMAIL = process.env['ZOHO_FROM_EMAIL'];
+const ZOHO_FROM_NAME = process.env['ZOHO_FROM_NAME'] || 'GreenChainz';
 
 // =============================================================================
 // Transporter

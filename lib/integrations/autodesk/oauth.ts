@@ -11,10 +11,10 @@ import type {
   AutodeskConnection,
 } from '@/types/autodesk';
 
-const AUTODESK_CLIENT_ID = process.env.AUTODESK_CLIENT_ID!;
-const AUTODESK_CLIENT_SECRET = process.env.AUTODESK_CLIENT_SECRET!;
+const AUTODESK_CLIENT_ID = process.env['AUTODESK_CLIENT_ID']!;
+const AUTODESK_CLIENT_SECRET = process.env['AUTODESK_CLIENT_SECRET']!;
 const AUTODESK_CALLBACK_URL =
-  process.env.AUTODESK_CALLBACK_URL || 'http://localhost:3001/api/autodesk/callback';
+  process.env['AUTODESK_CALLBACK_URL'] || 'http://localhost:3001/api/autodesk/callback';
 
 const AUTODESK_AUTH_URL = 'https://developer.api.autodesk.com/authentication/v2/authorize';
 const AUTODESK_TOKEN_URL = 'https://developer.api.autodesk.com/authentication/v2/token';
@@ -123,8 +123,8 @@ export async function storeConnection(
   userInfo?: AutodeskUserInfo
 ): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
   );
 
   const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000);
@@ -154,8 +154,8 @@ export async function storeConnection(
  */
 export async function getConnection(userId: string): Promise<AutodeskConnection | null> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
   );
 
   const { data, error } = await supabase
@@ -205,8 +205,8 @@ export async function getValidAccessToken(userId: string): Promise<string> {
  */
 export async function revokeConnection(userId: string): Promise<void> {
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
   );
 
   const { error } = await supabase.from('autodesk_connections').delete().eq('user_id', userId);

@@ -133,7 +133,7 @@ export function generateAllExamples(): Record<string, string> {
  *       quantity: `${rfq.quantity} ${rfq.unit}`,
  *       location: rfq.deliveryLocation,
  *     },
- *     `${process.env.NEXT_PUBLIC_BASE_URL}/supplier/rfqs/${rfq.id}`
+ *     `${process.env['NEXT_PUBLIC_BASE_URL']}/supplier/rfqs/${rfq.id}`
  *   );
  *
  *   await sendEmail({

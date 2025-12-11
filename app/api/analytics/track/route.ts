@@ -42,26 +42,26 @@ function sanitizeString(str: string, maxLength: number = 500): string {
 function validateSearchEvent(data: unknown): data is SearchEvent {
   if (typeof data !== 'object' || data === null) return false;
   const event = data as Record<string, unknown>;
-  return isValidString(event.searchQuery, 500) && 
-         (event.resultCount === undefined || isValidNumber(event.resultCount));
+  return isValidString(event['searchQuery'], 500) && 
+         (event['resultCount'] === undefined || isValidNumber(event['resultCount']));
 }
 
 function validateFilterEvent(data: unknown): data is FilterEvent {
   if (typeof data !== 'object' || data === null) return false;
   const event = data as Record<string, unknown>;
   const validTypes = ['carbon_footprint', 'certification', 'price', 'material_type', 'location', 'lead_time'];
-  return isValidString(event.filterType, 50) && 
-         validTypes.includes(event.filterType as string) &&
-         isValidString(event.filterValue, 255);
+  return isValidString(event['filterType'], 50) && 
+         validTypes.includes(event['filterType'] as string) &&
+         isValidString(event['filterValue'], 255);
 }
 
 function validateRFQEvent(data: unknown): data is RFQAnalyticsEvent {
   if (typeof data !== 'object' || data === null) return false;
   const event = data as Record<string, unknown>;
-  return isValidNumber(event.rfqId) &&
-         isValidString(event.materialType, 100) &&
-         Array.isArray(event.certifications) &&
-         isValidString(event.geographicRegion, 100);
+  return isValidNumber(event['rfqId']) &&
+         isValidString(event['materialType'], 100) &&
+         Array.isArray(event['certifications']) &&
+         isValidString(event['geographicRegion'], 100);
 }
 
 export async function POST(request: NextRequest) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     // Generate anonymized session ID
     const userAgent = request.headers.get('user-agent') || 'unknown';
     const forwardedFor = request.headers.get('x-forwarded-for');
-    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0]?.trim() || 'unknown' : 'unknown';
     const sessionId = generateSessionId(userAgent, ipAddress);
 
     // Detect device type

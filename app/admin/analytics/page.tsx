@@ -213,7 +213,7 @@ export default function AdminAnalyticsPage() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {mrrData.map((entry, index) => (
+                    {mrrData.map((_entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}

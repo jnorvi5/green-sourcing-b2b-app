@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Proxy requests to backend service (for Vercel deployment)
 // This allows the Next.js app to communicate with backend services
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+const BACKEND_URL = process.env['BACKEND_URL'] || 'http://localhost:3001';
 const PROXY_TIMEOUT = 30000; // 30 seconds
 const EXCLUDED_REQUEST_HEADERS = ['host', 'connection'];
 const EXCLUDED_RESPONSE_HEADERS = ['connection', 'keep-alive', 'transfer-encoding'];
@@ -151,7 +151,7 @@ async function proxyRequest(
     return NextResponse.json(
       { 
         error: 'Backend service unavailable',
-        details: process.env.NODE_ENV === 'development' 
+        details: process.env['NODE_ENV'] === 'development' 
           ? (error instanceof Error ? error.message : String(error))
           : undefined
       },

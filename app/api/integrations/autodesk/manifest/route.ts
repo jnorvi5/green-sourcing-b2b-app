@@ -130,7 +130,7 @@ export async function GET(request: Request): Promise<NextResponse<APSManifest | 
     return NextResponse.json(
       { 
         error: 'Failed to generate APS manifest',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        details: process.env['NODE_ENV'] === 'development' ? errorMessage : undefined,
       },
       { status: 500 }
     );
