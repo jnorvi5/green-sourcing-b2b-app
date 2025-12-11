@@ -31,8 +31,8 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
     process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
-  const supplierId = session.metadata?.supplier_id;
-  const tier = session.metadata?.tier as SubscriptionTier;
+  const supplierId = session.metadata?.['supplier_id'];
+  const tier = session.metadata?.['tier'] as SubscriptionTier;
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 

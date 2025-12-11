@@ -159,6 +159,6 @@ MaterialSchema.index({ masterFormat: 1 });
 MaterialSchema.index({ 'benchmarks.percentile': 1 });
 
 export const Material: Model<IMaterial> =
-    mongoose.models.Material || mongoose.model<IMaterial>('Material', MaterialSchema);
+    mongoose.models['Material'] || mongoose.model<IMaterial>('Material', MaterialSchema);
 
 export default Material;

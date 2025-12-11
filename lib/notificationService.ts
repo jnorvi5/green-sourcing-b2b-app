@@ -428,15 +428,15 @@ export class NotificationService {
         const { Notification } = await getNotificationModels();
 
         const query: Record<string, unknown> = { userId: new mongoose.Types.ObjectId(userId) };
-        if (options?.unreadOnly) query.read = false;
-        if (options?.type) query.type = options.type;
+        if (options?.unreadOnly) query['read'] = false;
+        if (options?.type) query['type'] = options.type;
 
         const [notifications, unreadCount] = await Promise.all([
             Notification.find(query)
                 .sort({ createdAt: -1 })
                 .skip(options?.skip || 0)
                 .limit(options?.limit || 50)
-                .lean(),
+                .lean() as any,
             Notification.countDocuments({ userId: new mongoose.Types.ObjectId(userId), read: false }),
         ]);
 

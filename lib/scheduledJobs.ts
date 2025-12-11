@@ -64,9 +64,9 @@ export async function runHourlyKPISnapshot(): Promise<void> {
 
         // Record each KPI
         const kpisToRecord = [
-            { name: 'gmv', category: 'platform', value: platformKPIs.gmv, unit: 'USD' },
-            { name: 'totalOrders', category: 'platform', value: platformKPIs.totalOrders, unit: 'count' },
-            { name: 'dau', category: 'platform', value: platformKPIs.dau, unit: 'count' },
+            { name: 'gmv', category: 'platform', value: platformKPIs['gmv'], unit: 'USD' },
+            { name: 'totalOrders', category: 'platform', value: platformKPIs['totalOrders'], unit: 'count' },
+            { name: 'dau', category: 'platform', value: platformKPIs['dau'], unit: 'count' },
         ];
 
         for (const kpi of kpisToRecord) {
@@ -109,18 +109,18 @@ export async function runDailyKPISnapshot(): Promise<void> {
 
         const allKPIs = [
             // Platform KPIs
-            { name: 'gmv', category: 'platform', value: platformKPIs.gmv, unit: 'USD', target: KPI_DEFINITIONS.platform.gmv.target },
-            { name: 'totalOrders', category: 'platform', value: platformKPIs.totalOrders, unit: 'count', target: KPI_DEFINITIONS.platform.totalOrders.target },
-            { name: 'totalBuyers', category: 'platform', value: platformKPIs.totalBuyers, unit: 'count', target: KPI_DEFINITIONS.platform.totalBuyers.target },
-            { name: 'totalSuppliers', category: 'platform', value: platformKPIs.totalSuppliers, unit: 'count', target: KPI_DEFINITIONS.platform.totalSuppliers.target },
-            { name: 'newBuyers', category: 'platform', value: platformKPIs.newBuyers, unit: 'count', target: KPI_DEFINITIONS.platform.newBuyers.target },
-            { name: 'newSuppliers', category: 'platform', value: platformKPIs.newSuppliers, unit: 'count', target: KPI_DEFINITIONS.platform.newSuppliers.target },
-            { name: 'dau', category: 'platform', value: platformKPIs.dau, unit: 'count', target: KPI_DEFINITIONS.platform.dau.target },
-            { name: 'mau', category: 'platform', value: platformKPIs.mau, unit: 'count', target: KPI_DEFINITIONS.platform.mau.target },
-            { name: 'avgOrderValue', category: 'platform', value: platformKPIs.avgOrderValue, unit: 'USD', target: KPI_DEFINITIONS.platform.avgOrderValue.target },
+            { name: 'gmv', category: 'platform', value: platformKPIs['gmv'], unit: 'USD', target: KPI_DEFINITIONS['platform']['gmv']['target'] },
+            { name: 'totalOrders', category: 'platform', value: platformKPIs['totalOrders'], unit: 'count', target: KPI_DEFINITIONS['platform']['totalOrders']['target'] },
+            { name: 'totalBuyers', category: 'platform', value: platformKPIs['totalBuyers'], unit: 'count', target: KPI_DEFINITIONS['platform']['totalBuyers']['target'] },
+            { name: 'totalSuppliers', category: 'platform', value: platformKPIs['totalSuppliers'], unit: 'count', target: KPI_DEFINITIONS['platform']['totalSuppliers']['target'] },
+            { name: 'newBuyers', category: 'platform', value: platformKPIs['newBuyers'], unit: 'count', target: KPI_DEFINITIONS['platform']['newBuyers']['target'] },
+            { name: 'newSuppliers', category: 'platform', value: platformKPIs['newSuppliers'], unit: 'count', target: KPI_DEFINITIONS['platform']['newSuppliers']['target'] },
+            { name: 'dau', category: 'platform', value: platformKPIs['dau'], unit: 'count', target: KPI_DEFINITIONS['platform']['dau']['target'] },
+            { name: 'mau', category: 'platform', value: platformKPIs['mau'], unit: 'count', target: KPI_DEFINITIONS['platform']['mau']['target'] },
+            { name: 'avgOrderValue', category: 'platform', value: platformKPIs['avgOrderValue'], unit: 'USD', target: KPI_DEFINITIONS['platform']['avgOrderValue']['target'] },
             // Sustainability KPIs
-            { name: 'totalCarbonSaved', category: 'sustainability', value: platformKPIs.totalCarbonSaved, unit: 'tCO2e', target: KPI_DEFINITIONS.sustainability.totalCarbonSaved.target },
-            { name: 'avgCarbonScore', category: 'sustainability', value: platformKPIs.avgCarbonScore, unit: 'score', target: KPI_DEFINITIONS.sustainability.avgCarbonScore.target },
+            { name: 'totalCarbonSaved', category: 'sustainability', value: platformKPIs['totalCarbonSaved'], unit: 'tCO2e', target: KPI_DEFINITIONS['sustainability']['totalCarbonSaved']['target'] },
+            { name: 'avgCarbonScore', category: 'sustainability', value: platformKPIs['avgCarbonScore'], unit: 'score', target: KPI_DEFINITIONS['sustainability']['avgCarbonScore']['target'] },
         ];
 
         for (const kpi of allKPIs) {
@@ -314,10 +314,11 @@ export async function runCacheRefresh(): Promise<void> {
 
     try {
         await connectAllDatabases();
-        const { DataProviderSync } = await getDataProviderModels();
+        const models = await getDataProviderModels() as any;
+        const DataProviderSync = models['DataProviderSync'];
 
         // Get all sync configurations
-        const syncConfigs = await DataProviderSync.find({ status: 'active' });
+        const syncConfigs = DataProviderSync ? await DataProviderSync.find({ status: 'active' }) : [];
 
         for (const config of syncConfigs) {
             try {

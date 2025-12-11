@@ -48,7 +48,7 @@ export async function saveVerification(payload: VerificationPayload): Promise<vo
   const updateData: Record<string, string | number | boolean | null> = {};
 
   if (payload.epdNumber !== undefined) {
-    updateData.epd_number = payload.epdNumber;
+    updateData['epd_number'] = payload.epdNumber;
   }
 
   if (payload.carbonFootprintA1A3 !== undefined) {
@@ -56,39 +56,39 @@ export async function saveVerification(payload: VerificationPayload): Promise<vo
     if (payload.carbonFootprintA1A3 < 0) {
       throw new Error('carbonFootprintA1A3 must be a positive number');
     }
-    updateData.carbon_footprint_a1a3 = payload.carbonFootprintA1A3;
+    updateData['carbon_footprint_a1a3'] = payload.carbonFootprintA1A3;
   }
 
   if (payload.epdVerified !== undefined) {
-    updateData.epd_verified = payload.epdVerified;
+    updateData['epd_verified'] = payload.epdVerified;
   }
 
   if (payload.fscVerified !== undefined) {
-    updateData.fsc_verified = payload.fscVerified;
+    updateData['fsc_verified'] = payload.fscVerified;
   }
 
   if (payload.bcorpVerified !== undefined) {
-    updateData.bcorp_verified = payload.bcorpVerified;
+    updateData['bcorp_verified'] = payload.bcorpVerified;
   }
 
   if (payload.leedVerified !== undefined) {
-    updateData.leed_verified = payload.leedVerified;
+    updateData['leed_verified'] = payload.leedVerified;
   }
 
   if (payload.epdDataSource !== undefined) {
-    updateData.epd_data_source = payload.epdDataSource;
+    updateData['epd_data_source'] = payload.epdDataSource;
   }
 
   if (payload.verificationSource !== undefined) {
-    updateData.verification_source = payload.verificationSource;
+    updateData['verification_source'] = payload.verificationSource;
   }
 
   // Set verified_at timestamp if verifiedAt is provided
   if (payload.verifiedAt !== undefined) {
-    updateData.epd_verified_at = payload.verifiedAt.toISOString();
+    updateData['epd_verified_at'] = payload.verifiedAt.toISOString();
   } else if (payload.epdVerified) {
     // Auto-set verified_at if epdVerified is true and verifiedAt not provided
-    updateData.epd_verified_at = new Date().toISOString();
+    updateData['epd_verified_at'] = new Date().toISOString();
   }
 
   // Perform update

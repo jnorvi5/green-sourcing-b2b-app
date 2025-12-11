@@ -225,6 +225,6 @@ ProductSchema.index(
  * Prevent model recompilation in serverless environments
  */
 const Product: Model<IProduct> =
-  mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+  mongoose.models['Product'] || mongoose.model<IProduct>('Product', ProductSchema);
 
 export default Product;

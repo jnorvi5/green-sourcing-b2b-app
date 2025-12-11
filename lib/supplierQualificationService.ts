@@ -275,13 +275,13 @@ class SupplierQualificationService {
 
         const query: Record<string, unknown> = { organizationId };
 
-        if (filters?.status) query.status = filters.status;
-        if (filters?.tier) query.tier = filters.tier;
-        if (filters?.riskLevel) query.overallRiskLevel = filters.riskLevel;
+        if (filters?.status) query['status'] = filters.status;
+        if (filters?.tier) query['tier'] = filters.tier;
+        if (filters?.riskLevel) query['overallRiskLevel'] = filters.riskLevel;
 
         if (filters?.requalificationDue) {
             const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-            query.requalificationDue = { $lte: thirtyDaysFromNow };
+            query['requalificationDue'] = { $lte: thirtyDaysFromNow };
         }
 
         return collection.find(query).sort({ updatedAt: -1 }).toArray();

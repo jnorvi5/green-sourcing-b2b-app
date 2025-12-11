@@ -383,7 +383,7 @@ export class PaymentService {
      */
     async getPayment(paymentId: string): Promise<IPayment | null> {
         const { Payment } = await getPaymentModels();
-        return Payment.findById(paymentId).lean();
+        return Payment.findById(paymentId).lean() as any;
     }
 
     /**
@@ -393,7 +393,7 @@ export class PaymentService {
         const { Payment } = await getPaymentModels();
         return Payment.find({ orderId: new mongoose.Types.ObjectId(orderId) })
             .sort({ createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -406,13 +406,13 @@ export class PaymentService {
         const { Payment } = await getPaymentModels();
 
         const query: Record<string, unknown> = { customerId: new mongoose.Types.ObjectId(customerId) };
-        if (options?.status) query.status = options.status;
+        if (options?.status) query['status'] = options.status;
 
         return Payment.find(query)
             .sort({ createdAt: -1 })
             .skip(options?.skip || 0)
             .limit(options?.limit || 50)
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -436,9 +436,9 @@ export class PaymentService {
         };
 
         if (startDate || endDate) {
-            matchStage.paidAt = {};
-            if (startDate) (matchStage.paidAt as Record<string, Date>).$gte = startDate;
-            if (endDate) (matchStage.paidAt as Record<string, Date>).$lte = endDate;
+            matchStage['paidAt'] = {};
+            if (startDate) (matchStage['paidAt'] as Record<string, Date>)['$gte'] = startDate;
+            if (endDate) (matchStage['paidAt'] as Record<string, Date>)['$lte'] = endDate;
         }
 
         const result = await Payment.aggregate([
@@ -495,7 +495,7 @@ export class PaymentService {
         const { PaymentMethod } = await getPaymentModels();
         return PaymentMethod.find({ customerId: new mongoose.Types.ObjectId(customerId) })
             .sort({ isDefault: -1, createdAt: -1 })
-            .lean();
+            .lean() as any;
     }
 
     /**
@@ -572,7 +572,7 @@ export class PaymentService {
      */
     async getPayoutAccount(companyId: string): Promise<IPayoutAccount | null> {
         const { PayoutAccount } = await getPaymentModels();
-        return PayoutAccount.findOne({ companyId: new mongoose.Types.ObjectId(companyId) }).lean();
+        return PayoutAccount.findOne({ companyId: new mongoose.Types.ObjectId(companyId) }).lean() as any;
     }
 
     // ==================== Webhooks ====================
@@ -585,7 +585,7 @@ export class PaymentService {
 
         switch (event.type) {
             case 'payment_intent.succeeded':
-                const paymentIntentId = event.data.object.id as string;
+                const paymentIntentId = event.data.object['id'] as string;
                 await Payment.findOneAndUpdate(
                     { stripePaymentIntentId: paymentIntentId },
                     { status: 'succeeded', paidAt: new Date() }
@@ -593,7 +593,7 @@ export class PaymentService {
                 break;
 
             case 'payment_intent.payment_failed':
-                const failedIntentId = event.data.object.id as string;
+                const failedIntentId = event.data.object['id'] as string;
                 await Payment.findOneAndUpdate(
                     { stripePaymentIntentId: failedIntentId },
                     { status: 'failed', failedAt: new Date() }

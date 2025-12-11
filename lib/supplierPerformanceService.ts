@@ -151,12 +151,12 @@ class SupplierPerformanceService {
         const db = await getDatabase('suppliers');
 
         if (!this.SupplierPerformance) {
-            this.SupplierPerformance = db.models.SupplierPerformance ||
+            this.SupplierPerformance = db.models['SupplierPerformance'] ||
                 db.model<ISupplierPerformance>('SupplierPerformance', SupplierPerformanceSchema);
         }
 
         if (!this.SupplierScorecard) {
-            this.SupplierScorecard = db.models.SupplierScorecard ||
+            this.SupplierScorecard = db.models['SupplierScorecard'] ||
                 db.model<ISupplierScorecard>('SupplierScorecard', SupplierScorecardSchema);
         }
 
@@ -448,13 +448,13 @@ class SupplierPerformanceService {
         return SupplierScorecard.find(query)
             .sort({ overallScore: -1 })
             .limit(limit)
-            .lean();
+            .lean() as any;
     }
 
     // Get suppliers by tier
     async getSuppliersByTier(tier: ISupplierScorecard['tier']): Promise<ISupplierScorecard[]> {
         const { SupplierScorecard } = await this.getModels();
-        return SupplierScorecard.find({ tier }).sort({ overallScore: -1 }).lean();
+        return SupplierScorecard.find({ tier }).sort({ overallScore: -1 }).lean() as any;
     }
 }
 
