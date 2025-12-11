@@ -116,6 +116,6 @@ CarbonFactorSchema.index({ type: 1, country: 1 });
 CarbonFactorSchema.index({ country: 1, subregion: 1 });
 
 export const CarbonFactor: Model<ICarbonFactor> =
-    mongoose.models.CarbonFactor || mongoose.model<ICarbonFactor>('CarbonFactor', CarbonFactorSchema);
+    mongoose.models['CarbonFactor'] || mongoose.model<ICarbonFactor>('CarbonFactor', CarbonFactorSchema);
 
 export default CarbonFactor;

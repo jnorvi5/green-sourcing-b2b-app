@@ -255,18 +255,18 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const CarbonFactor = mongoose.models.CarbonFactor ||
+      const CarbonFactor = mongoose.models['CarbonFactor'] ||
         // @ts-ignore
         (await import('../models/CarbonFactor')).default;
 
       const query: Record<string, unknown> = { type, isActive: true };
 
       if (type === 'transport' && options.mode) {
-        query.factorId = `transport-${options.mode.toLowerCase()}`;
+        query['factorId'] = `transport-${options.mode.toLowerCase()}`;
       } else {
-        if (options.subregion) query.subregion = options.subregion.toUpperCase();
-        if (options.country) query.country = options.country.toUpperCase();
-        if (options.region) query.region = { $regex: options.region, $options: 'i' };
+        if (options.subregion) query['subregion'] = options.subregion.toUpperCase();
+        if (options.country) query['country'] = options.country.toUpperCase();
+        if (options.region) query['region'] = { $regex: options.region, $options: 'i' };
       }
 
       const factor = await CarbonFactor.findOne(query).lean();
@@ -288,7 +288,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const CarbonAlternative = mongoose.models.CarbonAlternative ||
+      const CarbonAlternative = mongoose.models['CarbonAlternative'] ||
         // @ts-ignore
         (await import('../models/CarbonAlternative')).default;
 
@@ -299,7 +299,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
       if (!result) return [];
 
-      let alternatives = result.alternatives as { reduction?: number }[];
+      let alternatives = (result as any)['alternatives'] as { reduction?: number }[];
 
       if (options?.minReduction) {
         alternatives = alternatives.filter(a => (a.reduction || 0) >= options.minReduction!);
@@ -327,7 +327,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const Material = mongoose.models.Material ||
+      const Material = mongoose.models['Material'] ||
         (await import('../models/Material')).default;
 
       const searchQuery: Record<string, unknown> = {
@@ -341,11 +341,11 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       };
 
       if (options?.category) {
-        searchQuery.category = { $regex: options.category, $options: 'i' };
+        searchQuery['category'] = { $regex: options.category, $options: 'i' };
       }
 
       if (options?.maxGwp) {
-        searchQuery.gwp = { $lte: options.maxGwp };
+        searchQuery['gwp'] = { $lte: options.maxGwp };
       }
 
       const materials = await Material.find(searchQuery)
@@ -373,7 +373,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
 
     try {
       await connectDB();
-      const UnitConversion = mongoose.models.UnitConversion ||
+      const UnitConversion = mongoose.models['UnitConversion'] ||
         // @ts-ignore
         (await import('../models/UnitConversion')).default;
 
@@ -384,7 +384,7 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       if (!conversionDoc) return null;
 
       interface Conv { fromUnit: string; toUnit: string; factor: number }
-      const conversions = conversionDoc.conversions as Conv[];
+      const conversions = (conversionDoc as any)['conversions'] as Conv[];
 
       let conversion = conversions.find(
         c => c.fromUnit.toLowerCase() === fromUnit.toLowerCase() &&
@@ -403,11 +403,12 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
       }
 
       // Try density-based
-      if (!conversion && conversionDoc.density) {
+      if (!conversion && (conversionDoc as any)['density']) {
+        const density = (conversionDoc as any)['density'] as number;
         if (fromUnit.toLowerCase() === 'm³' && toUnit.toLowerCase() === 'kg') {
-          conversion = { fromUnit, toUnit, factor: conversionDoc.density };
+          conversion = { fromUnit, toUnit, factor: density };
         } else if (fromUnit.toLowerCase() === 'kg' && toUnit.toLowerCase() === 'm³') {
-          conversion = { fromUnit, toUnit, factor: 1 / conversionDoc.density };
+          conversion = { fromUnit, toUnit, factor: 1 / density };
         }
       }
 

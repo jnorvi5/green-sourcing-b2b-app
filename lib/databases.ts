@@ -72,7 +72,7 @@ export async function getDatabase(dbName: string): Promise<Connection> {
     }
 
     if (!cached.promise) {
-        const uri = DATABASE_URIS[dbName] || DATABASE_URIS.greenchainz;
+        const uri = DATABASE_URIS[dbName] || DATABASE_URIS['greenchainz'];
 
         if (!uri) {
             throw new Error(`No connection URI configured for database: ${dbName}`);

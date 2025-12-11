@@ -95,6 +95,6 @@ const UnitConversionSchema = new Schema<IUnitConversion>(
 UnitConversionSchema.index({ materialCategory: 1, materialType: 1 });
 
 export const UnitConversion: Model<IUnitConversion> =
-    mongoose.models.UnitConversion || mongoose.model<IUnitConversion>('UnitConversion', UnitConversionSchema);
+    mongoose.models['UnitConversion'] || mongoose.model<IUnitConversion>('UnitConversion', UnitConversionSchema);
 
 export default UnitConversion;

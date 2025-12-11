@@ -93,6 +93,6 @@ const EPDProgramSchema = new Schema<IEPDProgram>(
 );
 
 export const EPDProgram: Model<IEPDProgram> =
-    mongoose.models.EPDProgram || mongoose.model<IEPDProgram>('EPDProgram', EPDProgramSchema);
+    mongoose.models['EPDProgram'] || mongoose.model<IEPDProgram>('EPDProgram', EPDProgramSchema);
 
 export default EPDProgram;

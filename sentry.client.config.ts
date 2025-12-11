@@ -5,7 +5,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: process.env['NEXT_PUBLIC_SENTRY_DSN'],
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1.0,
@@ -47,6 +47,6 @@ Sentry.init({
   },
 
   // Add environment and release info
-  environment: process.env.NEXT_PUBLIC_VERCEL_ENV || 'development',
-  release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+  environment: process.env['NEXT_PUBLIC_VERCEL_ENV'] || 'development',
+  release: process.env['NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA'],
 });

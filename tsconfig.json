@@ -74,7 +74,6 @@
     "sentry.*.ts",
     "next.config.js",
     "jest.config.js",
-    "playwright.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
