@@ -7,7 +7,6 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
 
     // Fetch total users
     const { count: totalUsers, error: usersError } = await supabase
