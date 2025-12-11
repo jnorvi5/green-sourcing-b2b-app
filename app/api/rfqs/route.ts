@@ -160,8 +160,8 @@ export async function POST(request: NextRequest) {
         users: {
           id: string;
           email: string;
-        };
-      };
+        }[];
+      }[];
     };
 
     // Deduplicate suppliers (one supplier may have multiple products)
@@ -172,9 +172,9 @@ export async function POST(request: NextRequest) {
               p.supplier_id,
               {
                 supplier_id: p.supplier_id,
-                company_name: p.suppliers.company_name,
-                user_id: p.suppliers.user_id,
-                email: p.suppliers.users.email,
+                company_name: p.suppliers[0]?.company_name,
+                user_id: p.suppliers[0]?.user_id,
+                email: p.suppliers[0]?.users[0]?.email,
               }
             ])
           ).values()

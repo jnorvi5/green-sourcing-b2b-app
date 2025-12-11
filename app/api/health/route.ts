@@ -34,7 +34,7 @@ export async function GET() {
         storage: process.env['AWS_BUCKET_NAME'] ? 'configured' : 'not configured'
       },
       environment: process.env['NODE_ENV'] || 'development',
-      version: process.env.npm_package_version || '0.1.0'
+      version: process.env['npm_package_version'] || '0.1.0'
     };
 
     return NextResponse.json(health);

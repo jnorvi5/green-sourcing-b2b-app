@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
         const query: Record<string, unknown> = { isActive: true };
 
         if (region) {
-            query.regions = { $in: [region] };
+            query['regions'] = { $in: [region] };
         }
 
         if (country) {
-            query.headquarters = country.toUpperCase();
+            query['headquarters'] = country.toUpperCase();
         }
 
         const programs = await EPDProgram.find(query)

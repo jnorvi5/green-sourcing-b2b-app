@@ -60,13 +60,13 @@ async function persistToSupabase(productId: string | null, parsed: Record<string
     .from('products')
     .update({
       sustainability_data: {
-        epd_number: parsed.epd_number,
-        gwp_fossil_a1_a3: parsed.gwp_fossil_a1_a3,
-        validity_start: parsed.validity_start,
-        validity_end: parsed.validity_end,
-        program_operator: parsed.program_operator,
+        epd_number: parsed['epd_number'],
+        gwp_fossil_a1_a3: parsed['gwp_fossil_a1_a3'],
+        validity_start: parsed['validity_start'],
+        validity_end: parsed['validity_end'],
+        program_operator: parsed['program_operator'],
         epd_source: 'epd-international',
-        raw: parsed.raw,
+        raw: parsed['raw'],
       },
     })
     .eq('id', productId);

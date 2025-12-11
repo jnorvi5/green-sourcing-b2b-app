@@ -13,7 +13,7 @@ type SortDirection = 'asc' | 'desc';
 export default function QuoteComparisonPage() {
   const params = useParams();
   const router = useRouter();
-  const rfqId = params.id as string;
+  const rfqId = params?.['id'] as string;
 
   const [rfqData, setRfqData] = useState<RFQWithQuotes | null>(null);
   const [loading, setLoading] = useState(true);
@@ -361,9 +361,9 @@ export default function QuoteComparisonPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            {quote.pdf_url && (
+                            {quote.attachment_url && (
                               <a
-                                href={quote.pdf_url}
+                                href={quote.attachment_url}
                                 download
                                 className="px-3 py-1 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 text-gray-300 text-sm transition"
                               >
@@ -479,9 +479,9 @@ export default function QuoteComparisonPage() {
                     )}
 
                     <div className="flex flex-col gap-2">
-                      {quote.pdf_url && (
+                      {quote.attachment_url && (
                         <a
-                          href={quote.pdf_url}
+                          href={quote.attachment_url}
                           download
                           className="px-4 py-2 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 text-gray-300 text-center transition"
                         >

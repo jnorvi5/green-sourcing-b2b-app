@@ -32,19 +32,19 @@ export async function GET(request: NextRequest) {
         const query: Record<string, unknown> = { isActive: true };
 
         if (type) {
-            query.type = type;
+            query['type'] = type;
         }
 
         if (country) {
-            query.country = country.toUpperCase();
+            query['country'] = country.toUpperCase();
         }
 
         if (region) {
-            query.region = { $regex: region, $options: 'i' };
+            query['region'] = { $regex: region, $options: 'i' };
         }
 
         if (subregion) {
-            query.subregion = subregion.toUpperCase();
+            query['subregion'] = subregion.toUpperCase();
         }
 
         // Execute query

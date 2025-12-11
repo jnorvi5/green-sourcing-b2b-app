@@ -89,12 +89,12 @@ export async function GET(request: Request) {
     
     // Text search on name field
     if (query) {
-      filter.name = { $regex: query, $options: 'i' };
+      filter['name'] = { $regex: query, $options: 'i' };
     }
     
     // Category filter (case-insensitive)
     if (category) {
-      filter.category = { $regex: `^${category}$`, $options: 'i' };
+      filter['category'] = { $regex: `^${category}$`, $options: 'i' };
     }
     
     // Fetch materials from MongoDB with filters

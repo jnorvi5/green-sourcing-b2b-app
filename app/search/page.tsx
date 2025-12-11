@@ -12,8 +12,8 @@ interface Supplier {
   description: string
   location: string
   certifications: string[]
-  products_count: number
-  avg_carbon_footprint: number
+  products_count?: number
+  avg_carbon_footprint?: number
   epd_verified: boolean
   fsc_verified: boolean
   bcorp_verified: boolean
