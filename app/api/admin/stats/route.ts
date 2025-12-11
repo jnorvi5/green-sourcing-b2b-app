@@ -71,8 +71,9 @@ export async function GET() {
       recentActivity,
     });
   } catch (error) {
+    console.error('Failed to fetch stats:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch stats' },
       { status: 500 }
     );
   }
