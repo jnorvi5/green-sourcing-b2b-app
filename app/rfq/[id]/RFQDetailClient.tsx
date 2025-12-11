@@ -203,19 +203,19 @@ export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Pr
                 <div>
                   <p className="text-xs text-gray-500">Material Category</p>
                   <p className="text-white">
-                    {String(rfq.material_specs.material_category || rfq.material_specs.material_type || 'Not specified')}
+                    {rfq.material_specs.material_category || rfq.material_specs.material_type || 'Not specified'}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Quantity</p>
                   <p className="text-white">
-                    {String(rfq.material_specs.quantity)} {String(rfq.material_specs.unit)}
+                    {rfq.material_specs.quantity} {rfq.material_specs.unit}
                   </p>
                 </div>
                 {rfq.material_specs.project_description && (
                   <div className="sm:col-span-3">
                     <p className="text-xs text-gray-500">Project Description</p>
-                    <p className="text-white">{String(rfq.material_specs.project_description)}</p>
+                    <p className="text-white">{rfq.material_specs.project_description}</p>
                   </div>
                 )}
               </div>

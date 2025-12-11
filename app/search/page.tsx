@@ -77,7 +77,7 @@ export default function SearchPage() {
       const { data, error } = await query.limit(50)
 
       if (error) throw error
-      setSuppliers((data as any) || [])
+      setSuppliers(data || [])
     } catch (error) {
       console.error('Search error:', error)
     } finally {

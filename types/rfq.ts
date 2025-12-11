@@ -115,7 +115,6 @@ export interface Quote {
  */
 export interface QuoteWithSupplier extends Quote {
   supplier: Supplier;
-  pdf_url?: string;
 }
 
 /**

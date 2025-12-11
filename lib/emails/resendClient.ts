@@ -60,8 +60,8 @@ export async function sendBulkEmail({ recipients, subject, html }: BulkParams): 
 export async function scheduleEmail({ to, subject, html, sendAt }: ScheduleParams): Promise<SendResponse> {
   try {
     const resend = getClient();
-    const scheduledAt = sendAt instanceof Date ? sendAt.toISOString() : sendAt;
-    return await resend.emails.send({ from: FROM, to, subject, html, scheduledAt } as any);
+    const scheduled_at = sendAt instanceof Date ? sendAt.toISOString() : sendAt;
+    return await resend.emails.send({ from: FROM, to, subject, html, scheduled_at });
   } catch (err) {
     console.error('Resend scheduleEmail error:', err);
     throw err;
