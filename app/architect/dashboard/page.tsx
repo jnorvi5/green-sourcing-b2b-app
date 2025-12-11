@@ -1,7 +1,8 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react, useCallback, useEffect, useState';
+import { useSearchParams } from 'next/navigation', useRouter }
+import { createClient } from '@/lib/supabase/client';
 
 // 1. Inner component that uses searchParams
 function DashboardContent() {
