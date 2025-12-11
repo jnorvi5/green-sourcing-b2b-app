@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {

@@ -88,11 +88,11 @@ export default function ArchitectDashboardRFQ() {
 
       // Get authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser()
-      if (authError || !user) {
+      if (authError || !user || !user.email) {
         router.push('/login')
         return
       }
-      setUser(user)
+      setUser({ id: user.id, email: user.email })
 
       // Get user profile
       const { data: profileData, error: profileError } = await supabase

@@ -100,7 +100,7 @@ export default function ArchitectDashboard() {
     loadDashboard();
 
     // Check for success message
-    if (searchParams.get('rfq') === 'created') {
+    if (searchParams && searchParams.get('rfq') === 'created') {
       setShowSuccessMessage(true);
       // Hide message after 5 seconds
       setTimeout(() => setShowSuccessMessage(false), 5000);

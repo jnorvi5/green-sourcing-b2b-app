@@ -81,7 +81,7 @@ export async function getEmbodiedCarbon(
     if (MONGODB_URI) {
       try {
         await connectDB();
-        const Material = mongoose.models.Material ||
+        const Material = mongoose.models['Material'] ||
         // @ts-ignore
           (await import('../models/Material')).default;
 
@@ -96,21 +96,21 @@ export async function getEmbodiedCarbon(
           isActive: true,
         }).lean();
 
-        if (cachedMaterial) {
+        if (cachedMaterial && !Array.isArray(cachedMaterial)) {
           return {
-            id: cachedMaterial.materialId,
-            name: cachedMaterial.name,
-            category: cachedMaterial.category,
-            gwp: cachedMaterial.gwp,
-            gwpUnit: cachedMaterial.gwpUnit,
-            declaredUnit: cachedMaterial.declaredUnit,
-            lifecycleStages: cachedMaterial.lifecycleStages || { a1a3: cachedMaterial.gwp },
-            benchmarks: cachedMaterial.benchmarks,
-            source: cachedMaterial.source,
+            id: (cachedMaterial as any).materialId,
+            name: (cachedMaterial as any).name,
+            category: (cachedMaterial as any).category,
+            gwp: (cachedMaterial as any).gwp,
+            gwpUnit: (cachedMaterial as any).gwpUnit,
+            declaredUnit: (cachedMaterial as any).declaredUnit,
+            lifecycleStages: (cachedMaterial as any).lifecycleStages || { a1a3: (cachedMaterial as any).gwp },
+            benchmarks: (cachedMaterial as any).benchmarks,
+            source: (cachedMaterial as any).source,
             methodology: 'EN 15804',
             scope: ['A1-A3'],
             cached: true,
-            last_updated: cachedMaterial.updatedAt || cachedMaterial.createdAt,
+            last_updated: (cachedMaterial as any).updatedAt || (cachedMaterial as any).createdAt,
           };
         }
 
@@ -118,10 +118,10 @@ export async function getEmbodiedCarbon(
         if (options?.category || options?.name) {
           const searchQuery: Record<string, unknown> = { isActive: true };
           if (options.category) {
-            searchQuery.category = { $regex: options.category, $options: 'i' };
+            searchQuery['category'] = { $regex: options.category, $options: 'i' };
           }
           if (options.name) {
-            searchQuery.$or = [
+            searchQuery['$or'] = [
               { name: { $regex: options.name, $options: 'i' } },
               { tags: { $in: [options.name.toLowerCase()] } },
             ];
@@ -129,22 +129,22 @@ export async function getEmbodiedCarbon(
 
           const matchedMaterial = await Material.findOne(searchQuery).lean();
 
-          if (matchedMaterial) {
+          if (matchedMaterial && !Array.isArray(matchedMaterial)) {
             return {
-              id: matchedMaterial.materialId,
-              name: matchedMaterial.name,
-              category: matchedMaterial.category,
-              gwp: matchedMaterial.gwp,
-              gwpUnit: matchedMaterial.gwpUnit,
-              declaredUnit: matchedMaterial.declaredUnit,
-              lifecycleStages: matchedMaterial.lifecycleStages || { a1a3: matchedMaterial.gwp },
-              benchmarks: matchedMaterial.benchmarks,
-              source: `${matchedMaterial.source} (category match)`,
+              id: (matchedMaterial as any).materialId,
+              name: (matchedMaterial as any).name,
+              category: (matchedMaterial as any).category,
+              gwp: (matchedMaterial as any).gwp,
+              gwpUnit: (matchedMaterial as any).gwpUnit,
+              declaredUnit: (matchedMaterial as any).declaredUnit,
+              lifecycleStages: (matchedMaterial as any).lifecycleStages || { a1a3: (matchedMaterial as any).gwp },
+              benchmarks: (matchedMaterial as any).benchmarks,
+              source: `${(matchedMaterial as any).source} (category match)`,
               methodology: 'EN 15804',
               scope: ['A1-A3'],
               cached: true,
               matchType: 'category',
-              last_updated: matchedMaterial.updatedAt || matchedMaterial.createdAt,
+              last_updated: (matchedMaterial as any).updatedAt || (matchedMaterial as any).createdAt,
             };
           }
         }

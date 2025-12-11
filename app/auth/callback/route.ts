@@ -14,9 +14,9 @@ export async function GET(request: Request) {
   // Get user to check role and redirect appropriately
   const { data: { user } } = await supabase.auth.getUser()
   
-  if (user?.user_metadata?.role === 'supplier') {
+  if (user?.user_metadata?.['role'] === 'supplier') {
     return NextResponse.redirect(`${requestUrl.origin}/supplier/dashboard`)
-  } else if (user?.user_metadata?.role === 'architect') {
+  } else if (user?.user_metadata?.['role'] === 'architect') {
     return NextResponse.redirect(`${requestUrl.origin}/architect/portal`)
   }
   

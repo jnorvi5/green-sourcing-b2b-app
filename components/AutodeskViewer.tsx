@@ -55,7 +55,7 @@ const VIEWER_SCRIPT_URL = 'https://developer.api.autodesk.com/modelderivative/v2
 const VIEWER_STYLE_URL = 'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css';
 
 // Token endpoint - uses Next.js API route by default, can be overridden via environment variable
-const TOKEN_ENDPOINT = process.env.NEXT_PUBLIC_APS_TOKEN_ENDPOINT || '/api/aps/token';
+const TOKEN_ENDPOINT = process.env['NEXT_PUBLIC_APS_TOKEN_ENDPOINT'] || '/api/aps/token';
 
 // Ghost Mode Component - Spinning Wireframe Cube
 function GhostMode(): JSX.Element {

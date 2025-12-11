@@ -59,16 +59,32 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "types/**/*.ts",
+    "types/**/*.tsx",
+    "pages/**/*.ts",
+    "pages/**/*.tsx",
+    "instrumentation.ts",
+    "instrumentation-client.ts",
+    "sentry.*.ts",
+    "next.config.js",
+    "jest.config.js",
+    "playwright.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     ".next",
     "out",
-    "build"
+    "build",
+    "azure-functions",
+    "azure-infrastructure",
+    "emails",
+    "frontend"
   ]
 }
