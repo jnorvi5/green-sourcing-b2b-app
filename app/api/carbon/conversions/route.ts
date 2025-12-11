@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         };
 
         if (materialType) {
-            query.materialType = { $regex: materialType, $options: 'i' };
+            query['materialType'] = { $regex: materialType, $options: 'i' };
         }
 
         const conversionDoc = await UnitConversion.findOne(query).lean();
