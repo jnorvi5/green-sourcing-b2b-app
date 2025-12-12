@@ -5,7 +5,6 @@
 
 import { stripe, STRIPE_PRICE_IDS, getSuccessUrl, getCancelUrl } from './config';
 import { createClient } from '@supabase/supabase-js';
-import type { SubscriptionTier } from '@/types/stripe';
 
 /**
  * Create Stripe Checkout session for subscription upgrade

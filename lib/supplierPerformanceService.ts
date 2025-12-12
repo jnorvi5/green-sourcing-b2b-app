@@ -436,8 +436,7 @@ class SupplierPerformanceService {
 
     // Get top performing suppliers
     async getTopSuppliers(
-        limit: number = 10,
-        category?: string
+        limit: number = 10
     ): Promise<ISupplierScorecard[]> {
         const { SupplierScorecard } = await this.getModels();
 
