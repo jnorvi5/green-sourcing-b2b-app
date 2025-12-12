@@ -14,8 +14,6 @@
     "deploy:vercel": "vercel --prod",
     "deploy:preview": "vercel",
     "vercel-build": "next build",
-    "start:all": "concurrently \"npm start\" \"cd frontend && npm run dev\" \"cd backend && npm start\"",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install && cd ..",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {

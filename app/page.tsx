@@ -65,7 +65,7 @@ export default function HomePage() {
               Search Suppliers →
             </Link>
             <Link
-              href="/supplier-signup"
+              href="/signup?type=supplier"
               className="px-8 py-4 bg-slate-800/50 text-white rounded-xl font-semibold border border-slate-700 hover:border-emerald-500/50 transition-all"
             >
               I&apos;m a Supplier
@@ -216,7 +216,7 @@ export default function HomePage() {
               </div>
               <div className="text-slate-400 mb-4">Basic Tier</div>
               <Link
-                href="/supplier-signup"
+                href="/signup?type=supplier"
                 className="block w-full text-center px-6 py-3 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all"
               >
                 Get Started
@@ -228,7 +228,7 @@ export default function HomePage() {
               </div>
               <div className="text-slate-400 mb-4">Pro Tier</div>
               <Link
-                href="/supplier-signup"
+                href="/signup?type=supplier"
                 className="block w-full text-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:shadow-xl hover:shadow-emerald-500/30 transition-all"
               >
                 Get Started
@@ -240,7 +240,7 @@ export default function HomePage() {
               </div>
               <div className="text-slate-400 mb-4">Enterprise</div>
               <Link
-                href="/supplier-signup"
+                href="/signup?type=supplier"
                 className="block w-full text-center px-6 py-3 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all"
               >
                 Get Started

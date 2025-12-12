@@ -19,13 +19,13 @@ export default function Hero() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              href="/register?type=architect" 
+              href="/signup?type=architect" 
               className="px-8 py-4 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-lg transition-all hover:scale-105 shadow-lg shadow-sky-500/20"
             >
               I&apos;m an Architect
             </Link>
             <Link 
-              href="/register?type=supplier" 
+              href="/signup?type=supplier" 
               className="px-8 py-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-lg border border-slate-700 transition-all hover:scale-105"
             >
               I&apos;m a Supplier

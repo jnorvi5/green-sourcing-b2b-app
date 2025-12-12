@@ -27,7 +27,7 @@ export default function PricingPage() {
                 <span className="text-gray-600">/month</span>
               </div>
               <Link 
-                href="/auth/signup" 
+                href="/signup" 
                 className="block w-full py-3 px-6 bg-gray-100 text-gray-800 rounded-lg font-semibold hover:bg-gray-200 transition"
               >
                 Get Started Free
@@ -191,10 +191,7 @@ export default function PricingPage() {
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="font-semibold text-lg mb-2">Can I switch plans later?</h3>
-            <p className="text-gray-700">
-              Yes, you can upgrade or downgrade at any time. Changes take effect immediately, 
-              and we'll prorate any differences.
-            </p>
+            <p className="text-gray-500 text-sm">That&apos;s okay! You can upgrade or downgrade your plan at any time through your account settings.</p>
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow">
