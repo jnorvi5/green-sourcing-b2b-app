@@ -26,6 +26,7 @@ describe('saveVerification', () => {
     mockFrom = jest.fn().mockReturnValue({ update: mockUpdate });
 
     // Mock createClient
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { createClient } = require('@supabase/supabase-js');
     mockCreateClient = createClient as jest.Mock;
     mockCreateClient.mockReturnValue({ from: mockFrom });
@@ -167,7 +168,6 @@ describe('saveVerification', () => {
 
   describe('error propagation', () => {
     it('should throw error when database update fails', async () => {
-      const dbError = new Error('Database connection failed');
       mockEq.mockResolvedValue({ error: { message: 'Database connection failed' } });
 
       const payload: VerificationPayload = {
