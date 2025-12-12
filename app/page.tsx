@@ -1,6 +1,7 @@
 ﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -22,20 +23,14 @@ export default function HomePage() {
 
           {/* Logo Icon */}
           <div className="flex justify-center mb-8">
-            <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/20">
-              <svg
-                className="w-16 h-16 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+            <div className="relative w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/20 overflow-hidden">
+              <Image
+                src="/logos/greenchainz-logo.png"
+                alt="GreenChainz"
+                width={96}
+                height={96}
+                className="object-cover"
+              />
             </div>
           </div>
 

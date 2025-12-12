@@ -1,17 +1,19 @@
 ---
 name: "GreenChainz Code Review Agent"
 description: "Reviews the entire GreenChainz repo for code, configuration, and deployment issues, with a focus on why frontend changes may not appear in production."
-model: "gpt-4.1-mini"
+model: "gpt-4-turbo"
 ---
 
 # Copilot Custom Code Review Instructions
 
 ## Objective
+
 - Review the entire repo for code, configuration, and deployment errors.
 - Focus on paths, imports, logo/branding issues, missing exports, and reasons why frontend changes might not appear in production.
 - Suggest exact code or config fixes as diffs.
 
 ## Steps Copilot Should Do:
+
 1. Index all TypeScript, JavaScript, asset, and config files in this workspace.
 2. Flag any unresolved imports, missing or outdated assets (logo, images).
 3. Identify stale or unused files.
@@ -20,6 +22,7 @@ model: "gpt-4.1-mini"
 6. Write a prioritized report with checklists and diffs.
 
 ## Output
+
 - Write a report as CODE_REVIEW_REPORT.md in the root folder.
 - Suggest terminal commands for me to test or deploy the fixes.
 - If possible, create scripts/tasks to automate fixing the common issues.
