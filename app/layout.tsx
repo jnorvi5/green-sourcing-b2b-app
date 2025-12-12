@@ -5,6 +5,13 @@ import IntercomProvider from '@/components/IntercomProvider';
 export const metadata: Metadata = {
   title: 'GreenChainz - Sustainable Building Materials Marketplace',
   description: 'B2B marketplace for verified green building materials',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -14,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-     <body className="bg-slate-950 text-white">
+      <body className="bg-slate-950 text-white">
         <IntercomProvider>
           {children}
         </IntercomProvider>
@@ -22,3 +29,4 @@ export default function RootLayout({
     </html>
   );
 }
+
