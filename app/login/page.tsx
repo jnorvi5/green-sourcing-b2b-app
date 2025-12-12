@@ -99,6 +99,7 @@ export default function LoginPage() {
   };
 
   async function signInWithGoogle() {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -112,10 +113,12 @@ export default function LoginPage() {
     if (error) {
       console.error('Google login error:', error);
       setError(error.message);
+      setLoading(false);
     }
   }
 
   async function signInWithGitHub() {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
@@ -125,10 +128,12 @@ export default function LoginPage() {
     if (error) {
       console.error('GitHub login error:', error);
       setError(error.message);
+      setLoading(false);
     }
   }
 
   async function signInWithLinkedIn() {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'linkedin_oidc',
       options: {
@@ -138,10 +143,12 @@ export default function LoginPage() {
     if (error) {
       console.error('LinkedIn login error:', error);
       setError(error.message);
+      setLoading(false);
     }
   }
 
   async function signInWithMicrosoft() {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
@@ -152,6 +159,7 @@ export default function LoginPage() {
     if (error) {
       console.error('Microsoft login error:', error);
       setError(error.message);
+      setLoading(false);
     }
   }
 
@@ -183,7 +191,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={signInWithGoogle}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FcGoogle className="h-5 w-5" />
             Continue with Google
@@ -192,16 +201,18 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={signInWithMicrosoft}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaMicrosoft className="h-5 w-5 text-[#00A4EF]" />
-            Continue with Microsoft
+            Continue with Microsoft (Azure)
           </button>
 
           <button
             type="button"
             onClick={signInWithLinkedIn}
-            className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#0A66C2] px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#004182] transition"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#0A66C2] px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#004182] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaLinkedin className="h-5 w-5" />
             Continue with LinkedIn
@@ -210,7 +221,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={signInWithGitHub}
-            className="flex w-full items-center justify-center gap-3 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 transition"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaGithub className="h-5 w-5" />
             Continue with GitHub
