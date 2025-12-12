@@ -44,18 +44,36 @@ export default function NewRFQPage() {
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/rfq/create', {
+      // Map form data to API schema
+      const apiPayload = {
+        project_name: data.project_name,
+        project_location: data.location, // Mapped from 'location'
+        material_specs: {
+          material_type: data.material_category.toLowerCase(), // Ensure lowercase match
+          quantity: data.quantity,
+          unit: data.unit,
+        },
+        budget_range: data.budget_range,
+        delivery_deadline: new Date(data.deadline).toISOString(), // Ensure ISO string
+        message: data.project_description, // Mapped from 'project_description'
+        required_certifications: [], // Default empty array as it's not in the form yet
+      };
+
+      const response = await fetch('/api/rfqs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(apiPayload),
       });
 
       const result = await response.json();
 
       if (!response.ok || !result.success) {
         setErrorMessage(result.error || 'Failed to create RFQ. Please try again.');
+        if (result.details) {
+          console.error('Validation details:', result.details);
+        }
         setIsSubmitting(false);
         return;
       }

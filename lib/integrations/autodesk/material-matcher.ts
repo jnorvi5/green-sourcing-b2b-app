@@ -157,3 +157,52 @@ export async function getLowCarbonAlternatives(
       100,
   }));
 }
+
+/**
+ * Search for materials returning multiple matches
+ */
+export async function searchMaterials(
+  queryStr: string,
+  limit = 5
+): Promise<MaterialMatch[]> {
+  const supabase = createClient(
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
+  );
+
+  const { data: products, error } = await supabase.from('products').select('*');
+
+  if (error || !products || products.length === 0) {
+    return [];
+  }
+
+  const fuse = new Fuse(products, {
+    keys: [
+      { name: 'name', weight: 0.5 },
+      { name: 'material_type', weight: 0.3 },
+      { name: 'description', weight: 0.2 },
+    ],
+    threshold: 0.4,
+    includeScore: true,
+    minMatchCharLength: 3,
+  });
+
+  const results = fuse.search(queryStr);
+
+  return results.slice(0, limit).map(result => {
+    const product = result.item;
+    const score = 1 - (result.score || 0);
+    
+    return {
+      product_id: product.id,
+      product_name: product.name,
+      category: product.material_type || 'Unknown',
+      carbon_footprint: parseFloat(
+        product.sustainability_data?.gwp_kg_co2e || product.sustainability_data?.gwp || 0
+      ),
+      confidence_score: score,
+      match_type: score > 0.9 ? 'exact' : 'fuzzy',
+      match_reasons: ['Search match']
+    };
+  });
+}

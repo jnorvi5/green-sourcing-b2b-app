@@ -1,33 +1,18 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
-      "@/app/*": [
-        "app/*"
-      ],
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/lib/*": [
-        "lib/*"
-
-      ],
-      "@/types/*": [
-        "types/*"
-
-      ]
+      "@/app/*": ["app/*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"],
+      "@/types/*": ["types/*"],
+      "@/models/*": ["models/*"]
     },
-    "types": [
-      "node"
-    ],
+    "types": ["node", "jest"],
     "jsx": "preserve",
     "strict": false,
     "noUncheckedIndexedAccess": false,
@@ -69,6 +54,7 @@
     "types/**/*.tsx",
     "pages/**/*.ts",
     "pages/**/*.tsx",
+    "models/**/*.ts",
     "instrumentation.ts",
     "instrumentation-client.ts",
     "sentry.*.ts",
@@ -84,6 +70,7 @@
     "azure-functions",
     "azure-infrastructure",
     "emails",
-    "frontend"
+    "frontend",
+    "**/__tests__/**/*"
   ]
 }

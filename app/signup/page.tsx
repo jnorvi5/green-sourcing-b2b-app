@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -105,7 +105,7 @@ export default function SignupPage() {
               required
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900 bg-white"
               placeholder="Jerit Norville"
             />
           </div>
@@ -117,7 +117,7 @@ export default function SignupPage() {
               required
               value={formData.companyName}
               onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900 bg-white"
               placeholder="Your company"
             />
           </div>
@@ -129,7 +129,7 @@ export default function SignupPage() {
               required
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900 bg-white"
               placeholder="you@company.com"
             />
           </div>
@@ -141,7 +141,7 @@ export default function SignupPage() {
               required
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900 bg-white"
               placeholder="••••••••"
               minLength={8}
             />
@@ -154,7 +154,7 @@ export default function SignupPage() {
               required
               value={formData.confirmPassword}
               onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900 bg-white"
               placeholder="••••••••"
               minLength={8}
             />

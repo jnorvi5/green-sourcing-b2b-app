@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { FcGoogle } from 'react-icons/fc';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaMicrosoft } from 'react-icons/fa';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -109,7 +109,10 @@ export default function LoginPage() {
         }
       }
     });
-    if (error) setError(error.message);
+    if (error) {
+      console.error('Google login error:', error);
+      setError(error.message);
+    }
   }
 
   async function signInWithGitHub() {
@@ -119,7 +122,10 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`
       }
     });
-    if (error) setError(error.message);
+    if (error) {
+      console.error('GitHub login error:', error);
+      setError(error.message);
+    }
   }
 
   async function signInWithLinkedIn() {
@@ -129,7 +135,24 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`
       }
     });
-    if (error) setError(error.message);
+    if (error) {
+      console.error('LinkedIn login error:', error);
+      setError(error.message);
+    }
+  }
+
+  async function signInWithMicrosoft() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'azure',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'email profile openid',
+      }
+    });
+    if (error) {
+      console.error('Microsoft login error:', error);
+      setError(error.message);
+    }
   }
 
   return (
@@ -164,6 +187,15 @@ export default function LoginPage() {
           >
             <FcGoogle className="h-5 w-5" />
             Continue with Google
+          </button>
+
+          <button
+            type="button"
+            onClick={signInWithMicrosoft}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition"
+          >
+            <FaMicrosoft className="h-5 w-5 text-[#00A4EF]" />
+            Continue with Microsoft
           </button>
 
           <button

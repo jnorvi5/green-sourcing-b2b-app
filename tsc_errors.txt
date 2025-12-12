@@ -1,0 +1,865 @@
+
+> green-sourcing-b2b-app@0.1.0 type-check
+> tsc --noEmit
+
+app/api/admin/epd-sync/__tests__/route.test.ts(11,1): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(15,1): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(16,18): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(19,29): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(23,42): error TS2503: Cannot find namespace 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(24,62): error TS2503: Cannot find namespace 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(26,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(29,16): error TS2503: Cannot find namespace 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(31,11): error TS2503: Cannot find namespace 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(34,3): error TS2304: Cannot find name 'beforeEach'.
+app/api/admin/epd-sync/__tests__/route.test.ts(35,5): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(40,18): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(42,13): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(48,17): error TS4111: Property 'EPD_INTERNATIONAL_API_KEY' comes from an index signature, so it must be accessed with ['EPD_INTERNATIONAL_API_KEY'].
+app/api/admin/epd-sync/__tests__/route.test.ts(51,3): error TS2304: Cannot find name 'afterEach'.
+app/api/admin/epd-sync/__tests__/route.test.ts(52,24): error TS4111: Property 'EPD_INTERNATIONAL_API_KEY' comes from an index signature, so it must be accessed with ['EPD_INTERNATIONAL_API_KEY'].
+app/api/admin/epd-sync/__tests__/route.test.ts(55,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(56,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(69,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(70,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(73,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(79,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(80,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(81,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(99,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(100,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(104,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(105,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(106,26): error TS4111: Property 'EPD_INTERNATIONAL_API_KEY' comes from an index signature, so it must be accessed with ['EPD_INTERNATIONAL_API_KEY'].
+app/api/admin/epd-sync/__tests__/route.test.ts(113,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(114,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(115,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(133,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(134,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(138,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(139,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(145,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(146,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(147,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(159,32): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(170,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(171,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(174,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(180,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(181,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(182,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(200,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(201,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(205,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(206,5): error TS2304: Cannot find name 'beforeEach'.
+app/api/admin/epd-sync/__tests__/route.test.ts(213,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(214,13): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(215,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(229,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(230,32): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(242,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(243,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(244,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(245,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(246,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(249,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(267,32): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(273,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(274,13): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(275,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(279,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(288,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(289,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(290,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(309,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(310,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(311,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(312,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(313,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(316,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(331,32): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(336,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(337,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(343,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(344,13): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(345,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(362,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(363,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(364,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(383,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(384,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(385,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(386,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(387,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(390,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/admin/epd-sync/__tests__/route.test.ts(405,32): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(410,26): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(413,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(414,13): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(415,22): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(430,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(431,17): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(432,21): error TS2304: Cannot find name 'jest'.
+app/api/admin/epd-sync/__tests__/route.test.ts(451,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(452,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(453,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(454,7): error TS2304: Cannot find name 'expect'.
+app/api/admin/epd-sync/__tests__/route.test.ts(455,7): error TS2304: Cannot find name 'expect'.
+app/api/intercom/canvas/route.ts(2,37): error TS2304: Cannot find name 'NextRequest'.
+app/api/intercom/canvas/route.ts(8,27): error TS2304: Cannot find name 'searchMaterials'.
+app/api/intercom/canvas/route.ts(11,10): error TS2304: Cannot find name 'NextResponse'.
+app/api/intercom/canvas/route.ts(20,28): error TS7006: Parameter 'm' implicitly has an 'any' type.
+app/api/rfqs/__tests__/route.test.ts(9,1): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(10,17): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(13,1): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(14,29): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(17,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(18,17): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(19,17): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(20,19): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(21,15): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(22,19): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(23,19): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(24,19): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(25,25): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(26,22): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(32,3): error TS2304: Cannot find name 'beforeEach'.
+app/api/rfqs/__tests__/route.test.ts(33,5): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(37,49): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(41,18): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(42,14): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(43,18): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(44,18): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(45,18): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(46,16): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(51,16): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(55,40): error TS2503: Cannot find namespace 'jest'.
+app/api/rfqs/__tests__/route.test.ts(64,17): error TS4111: Property 'NEXT_PUBLIC_BASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_BASE_URL'].
+app/api/rfqs/__tests__/route.test.ts(65,17): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+app/api/rfqs/__tests__/route.test.ts(68,3): error TS2304: Cannot find name 'afterEach'.
+app/api/rfqs/__tests__/route.test.ts(69,24): error TS4111: Property 'NEXT_PUBLIC_BASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_BASE_URL'].
+app/api/rfqs/__tests__/route.test.ts(70,24): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+app/api/rfqs/__tests__/route.test.ts(73,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(74,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(89,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(90,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(93,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(112,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(113,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(117,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(118,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(130,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(131,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(132,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(135,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(148,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(149,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(153,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(154,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/rfqs/__tests__/route.test.ts(158,29): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(159,17): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(171,29): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(172,17): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(186,29): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(191,30): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(192,34): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(198,33): error TS7030: Not all code paths return a value.
+app/api/rfqs/__tests__/route.test.ts(198,34): error TS7006: Parameter 'table' implicitly has an 'any' type.
+app/api/rfqs/__tests__/route.test.ts(201,30): error TS2304: Cannot find name 'jest'.
+app/api/rfqs/__tests__/route.test.ts(204,33): error TS7030: Not all code paths return a value.
+app/api/rfqs/__tests__/route.test.ts(204,34): error TS7006: Parameter 'table' implicitly has an 'any' type.
+app/api/rfqs/__tests__/route.test.ts(210,33): error TS7030: Not all code paths return a value.
+app/api/rfqs/__tests__/route.test.ts(210,34): error TS7006: Parameter 'table' implicitly has an 'any' type.
+app/api/rfqs/__tests__/route.test.ts(236,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(237,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(238,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(239,7): error TS2304: Cannot find name 'expect'.
+app/api/rfqs/__tests__/route.test.ts(240,9): error TS2304: Cannot find name 'expect'.
+app/api/search/route.ts(3,21): error TS2307: Cannot find module '@/models/Product' or its corresponding type declarations.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(9,1): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(10,14): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(11,20): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(14,1): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(15,33): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(16,34): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(17,38): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(18,38): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(21,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(23,75): error TS2503: Cannot find namespace 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(25,25): error TS2503: Cannot find namespace 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(27,3): error TS2304: Cannot find name 'beforeEach'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(28,5): error TS2304: Cannot find name 'jest'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(31,17): error TS4111: Property 'NEXT_PUBLIC_BASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_BASE_URL'].
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(32,17): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(46,3): error TS2304: Cannot find name 'afterEach'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(47,24): error TS4111: Property 'NEXT_PUBLIC_BASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_BASE_URL'].
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(48,24): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(51,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(52,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(56,7): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(57,7): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(58,7): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(59,7): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(63,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(64,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(65,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(79,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(80,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(81,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(82,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(85,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(107,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(108,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(111,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(134,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(135,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(136,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(137,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(141,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(142,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(165,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(166,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(169,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(170,11): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(174,19): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(182,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(205,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(206,11): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(207,13): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(210,28): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(211,21): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(215,13): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(218,28): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(219,21): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(233,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(234,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(237,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(259,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(263,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(264,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(287,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(288,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(291,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(292,11): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(296,19): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(304,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(326,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(329,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(351,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(352,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(353,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(357,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(358,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(385,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(386,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(387,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(390,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(399,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(400,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(403,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(436,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(437,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(441,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(442,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(462,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(463,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(464,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(467,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(489,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(490,9): error TS2304: Cannot find name 'expect'.
+app/api/webhooks/supabase-user-created/__tests__/route.test.ts(491,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(8,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(9,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(16,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(17,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(18,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(19,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(20,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(21,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(24,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(31,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(32,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(35,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(42,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(43,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(46,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(53,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(54,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(57,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(64,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(65,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(68,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(75,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(78,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(86,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(87,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(88,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(92,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(93,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(101,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(102,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(103,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(104,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(105,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(106,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(109,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(117,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(118,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(121,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(129,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(130,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(133,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(141,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(142,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(145,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(153,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(154,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(157,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(165,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(166,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(169,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(177,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(178,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(179,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(182,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(190,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(191,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(194,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(202,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(205,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(214,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(215,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(216,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(220,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(221,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(228,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(229,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(232,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(239,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(242,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/certificationTemplates.test.ts(249,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/certificationTemplates.test.ts(250,5): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(9,1): error TS2304: Cannot find name 'jest'.
+lib/email/__tests__/resendClient.test.ts(10,20): error TS2304: Cannot find name 'jest'.
+lib/email/__tests__/resendClient.test.ts(11,25): error TS2304: Cannot find name 'jest'.
+lib/email/__tests__/resendClient.test.ts(14,13): error TS2304: Cannot find name 'jest'.
+lib/email/__tests__/resendClient.test.ts(27,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(28,17): error TS2503: Cannot find namespace 'jest'.
+lib/email/__tests__/resendClient.test.ts(29,22): error TS2503: Cannot find namespace 'jest'.
+lib/email/__tests__/resendClient.test.ts(31,3): error TS2304: Cannot find name 'beforeEach'.
+lib/email/__tests__/resendClient.test.ts(32,5): error TS2304: Cannot find name 'jest'.
+lib/email/__tests__/resendClient.test.ts(43,17): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+lib/email/__tests__/resendClient.test.ts(46,3): error TS2304: Cannot find name 'afterEach'.
+lib/email/__tests__/resendClient.test.ts(47,24): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+lib/email/__tests__/resendClient.test.ts(51,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(52,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(53,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(56,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(57,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(58,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(61,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(64,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(65,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(66,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(69,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(73,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(74,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(75,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(78,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(81,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(82,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(83,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(86,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(98,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(99,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(108,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(109,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(121,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(122,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(123,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(126,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(135,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(136,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(137,11): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(144,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(145,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(157,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(158,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(161,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(169,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(170,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(173,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(178,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(179,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(182,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(187,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(188,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(192,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(193,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(194,28): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+lib/email/__tests__/resendClient.test.ts(198,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(199,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(200,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(205,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(206,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(207,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(210,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(211,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(212,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(215,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(222,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(223,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(224,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(227,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(241,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(242,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(246,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(247,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(258,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(259,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(260,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(261,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(264,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(278,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(279,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(280,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(281,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(287,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(288,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(305,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(306,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(307,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(308,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(311,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(325,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(326,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(327,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(328,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(329,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(333,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(334,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(335,28): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+lib/email/__tests__/resendClient.test.ts(340,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(341,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(342,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(343,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(348,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(349,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(350,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(354,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(355,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(356,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(359,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(363,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(364,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(365,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(368,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(372,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(373,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(374,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(377,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(386,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(387,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(388,11): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(395,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(396,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(410,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(411,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(412,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(422,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(423,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(436,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(437,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(441,5): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(442,7): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(443,28): error TS4111: Property 'RESEND_API_KEY' comes from an index signature, so it must be accessed with ['RESEND_API_KEY'].
+lib/email/__tests__/resendClient.test.ts(448,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(449,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(450,9): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(455,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(456,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(462,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/resendClient.test.ts(465,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/resendClient.test.ts(473,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(22,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(23,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(40,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(47,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(48,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(49,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(50,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(51,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(54,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(61,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(64,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(71,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(72,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(73,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(74,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(75,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(78,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(85,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(86,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(89,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(96,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(99,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(106,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(109,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(116,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(117,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(118,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(121,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(134,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(135,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(136,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(138,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(139,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(142,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(149,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(150,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(151,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(154,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(161,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(162,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(163,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(166,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(180,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(181,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(184,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(192,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(196,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(211,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(220,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(221,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(224,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(232,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(235,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(243,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(244,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(247,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(255,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(256,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(261,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(270,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(271,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(274,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(282,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(285,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(293,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(294,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(297,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(305,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(306,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(309,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(317,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(320,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(328,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(329,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(333,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(349,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(356,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(357,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(360,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(367,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(368,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(371,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(378,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(381,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(388,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(389,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(390,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(391,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(392,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(395,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(402,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(403,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(404,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(405,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(408,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(415,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(418,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(425,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(428,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(440,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(441,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(442,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(443,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(446,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(453,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(456,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(463,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(464,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(465,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(468,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(475,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(476,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(479,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(486,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(487,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(490,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(497,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(498,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(501,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(508,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(509,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(513,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(514,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(525,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(526,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(529,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(537,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(538,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(541,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(551,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(552,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(556,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(557,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(569,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(570,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(571,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(572,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(573,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(576,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(588,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(589,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(593,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(594,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(606,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(608,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(611,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(622,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(623,7): error TS2304: Cannot find name 'expect'.
+lib/email/__tests__/rfqTemplates.test.ts(626,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/email/__tests__/rfqTemplates.test.ts(637,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(9,16): error TS2304: Cannot find name 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(11,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(14,3): error TS2304: Cannot find name 'beforeEach'.
+lib/integrations/__tests__/epd-international.test.ts(15,5): error TS2304: Cannot find name 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(21,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(22,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(33,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(41,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(42,9): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(43,9): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(44,20): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(52,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(62,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(70,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(71,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(74,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(82,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(90,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(93,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(104,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(112,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(113,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(116,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(117,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(123,13): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(126,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(132,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(136,13): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(140,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(141,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(158,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(172,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(173,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(176,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(182,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(190,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(193,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(199,24): error TS2503: Cannot find namespace 'jest'.
+lib/integrations/__tests__/epd-international.test.ts(207,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(208,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(213,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(214,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(231,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(232,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(233,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(234,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(235,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(236,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(237,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(238,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(241,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(253,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(254,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(255,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(256,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(257,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(260,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(276,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(277,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(280,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(295,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(296,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(299,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(309,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(312,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(322,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(325,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(334,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(337,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(348,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(349,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(350,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(351,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(352,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(353,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(354,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(357,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/__tests__/epd-international.test.ts(369,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/__tests__/epd-international.test.ts(370,5): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(14,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(15,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(16,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(18,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(21,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(23,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(26,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(28,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(31,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(33,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(36,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(38,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(42,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(43,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(45,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(48,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(50,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(53,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(55,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(58,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(60,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(63,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(65,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(68,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(70,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(73,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(75,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(78,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(80,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(84,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(85,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(86,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(89,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(91,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(94,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(96,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(99,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(100,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(101,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(102,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(107,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(108,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(109,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(111,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(114,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(116,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(120,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(121,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(123,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(126,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(128,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(131,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(133,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(136,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(138,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(143,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(144,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(145,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(149,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(154,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(159,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(160,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(161,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(164,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(168,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(171,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(175,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(179,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(180,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(182,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(185,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(187,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(190,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(192,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(196,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(197,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(200,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(203,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(206,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(209,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(212,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(215,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(218,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(221,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(224,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(227,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(229,7): error TS2304: Cannot find name 'expect'.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(232,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/integrations/autodesk/__tests__/bim-analysis-validation.test.ts(235,7): error TS2304: Cannot find name 'expect'.
+lib/scheduledJobs.ts(317,24): error TS2352: Conversion of type 'DataProviderModels' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'DataProviderModels'.
+lib/scheduledJobs.ts(321,71): error TS2339: Property 'find' does not exist on type '{}'.
+lib/scheduledJobs.ts(332,23): error TS18046: 'DataProviderSync' is of type 'unknown'.
+lib/scheduledJobs.ts(342,23): error TS18046: 'DataProviderSync' is of type 'unknown'.
+lib/scheduledJobs.ts(349,23): error TS18046: 'DataProviderSync' is of type 'unknown'.
+lib/verification/__tests__/saveVerification.test.ts(9,1): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(10,17): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(13,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(14,19): error TS2503: Cannot find namespace 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(15,15): error TS2503: Cannot find namespace 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(16,17): error TS2503: Cannot find namespace 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(17,25): error TS2503: Cannot find namespace 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(19,3): error TS2304: Cannot find name 'beforeEach'.
+lib/verification/__tests__/saveVerification.test.ts(21,5): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(24,14): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(25,18): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(26,16): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(31,40): error TS2503: Cannot find namespace 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(35,17): error TS4111: Property 'NEXT_PUBLIC_SUPABASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_SUPABASE_URL'].
+lib/verification/__tests__/saveVerification.test.ts(36,17): error TS4111: Property 'SUPABASE_SERVICE_ROLE_KEY' comes from an index signature, so it must be accessed with ['SUPABASE_SERVICE_ROLE_KEY'].
+lib/verification/__tests__/saveVerification.test.ts(39,3): error TS2304: Cannot find name 'afterEach'.
+lib/verification/__tests__/saveVerification.test.ts(40,24): error TS4111: Property 'NEXT_PUBLIC_SUPABASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_SUPABASE_URL'].
+lib/verification/__tests__/saveVerification.test.ts(41,24): error TS4111: Property 'SUPABASE_SERVICE_ROLE_KEY' comes from an index signature, so it must be accessed with ['SUPABASE_SERVICE_ROLE_KEY'].
+lib/verification/__tests__/saveVerification.test.ts(44,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(45,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(51,13): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(54,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(60,13): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(65,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(66,26): error TS4111: Property 'NEXT_PUBLIC_SUPABASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_SUPABASE_URL'].
+lib/verification/__tests__/saveVerification.test.ts(73,13): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(79,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(80,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(97,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(98,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(109,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(112,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(121,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(122,9): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(125,28): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(128,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(129,9): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(130,23): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(131,25): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(136,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(149,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(150,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(153,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(161,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(162,9): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(169,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(170,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(178,13): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(183,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(194,7): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(195,9): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(202,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(203,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+lib/verification/__tests__/saveVerification.test.ts(224,9): error TS2304: Cannot find name 'expect'.
+lib/verification/__tests__/saveVerification.test.ts(225,9): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(226,18): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(227,22): error TS2304: Cannot find name 'jest'.
+lib/verification/__tests__/saveVerification.test.ts(228,20): error TS2304: Cannot find name 'jest'.
