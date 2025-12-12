@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+*
+* ADOBE SYSTEMS INCORPORATED
+*  Copyright 2013 Adobe Systems Incorporated
+*  All Rights Reserved.
+*
+* NOTICE:  Adobe permits you to use, modify, and distribute this file in 
+* accordance with the terms of the Adobe license agreement accompanying it. 
+* If you have received this file from a source other than Adobe, then your 
+* use, modification, or distribution of it requires the prior written 
+* permission of Adobe.
+-->
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />		 
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/> 
+	<!-- Hiding the Safari on iPhone OS UI components --> 
+	<meta name="apple-mobile-web-app-capable" content="yes" /> 
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" /> 
+	<meta name="apple-touch-fullscreen" content="YES" />
+        <title>Mixed Media Viewer</title>
+        <script language="javascript" type="text/javascript"  src="js/MixedMediaViewer.js"></script> 
+		<style type="text/css">
+		html,body {
+			width:100%;
+			height:100%;
+		}
+            body {
+                padding:0;
+                margin:0;
+                font-size:12px;
+                background: #FFFFFF;
+                overflow: hidden;	
+            }
+        </style>		
+    </head>
+    <body>
+        <div id='mixedmediaviewer'></div>
+        <script type="text/javascript">
+			var mixedMediaViewer = new s7viewers.MixedMediaViewer({"containerId":"mixedmediaviewer"}).init();
+        </script> 
+    </body>
+</html>
+

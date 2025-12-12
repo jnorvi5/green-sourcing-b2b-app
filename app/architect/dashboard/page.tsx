@@ -149,124 +149,154 @@ function ArchitectDashboardInner() {
                 clipRule="evenodd"
               />
             </svg>
-            <span>
-              RFQ created successfully! Suppliers will be notified and can
-              respond with quotes.
-            </span>
+            <span>RFQ sent successfully!</span>
           </div>
         )}
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Architect Dashboard</h1>
-            <p className="text-gray-400 mt-1">
-              Welcome back, {profile?.full_name}
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
+              Architect Dashboard
+            </h1>
+            <p className="text-gray-400">
+              Welcome back, {profile?.full_name || user?.email}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/architect/rfq/new"
-              className="px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition"
-            >
-              Create RFQ
-            </Link>
-            <Link
-              href="/search"
-              className="px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold transition"
-            >
-              Search Suppliers
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            Logout
+          </button>
         </div>
 
-        {/* Stats */}
+        {/* Quick Actions */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-            <h3 className="text-lg font-semibold mb-2">RFQs Sent</h3>
-            <p className="text-3xl font-bold text-teal-400">
-              {sentRFQs.length}
-            </p>
-          </div>
-          <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-            <h3 className="text-lg font-semibold mb-2">Saved Suppliers</h3>
-            <p className="text-3xl font-bold text-blue-400">
-              {savedSuppliers.length}
-            </p>
-          </div>
-          <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-            <h3 className="text-lg font-semibold mb-2">Active Projects</h3>
-            <p className="text-3xl font-bold text-emerald-400">0</p>
-          </div>
+          <Link
+            href="/search"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Search Products</h3>
+                <p className="text-sm text-gray-400">
+                  Find green materials
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/architect/rfqs"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">My RFQs</h3>
+                <p className="text-sm text-gray-400">
+                  View all requests
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/projects"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">My Projects</h3>
+                <p className="text-sm text-gray-400">
+                  Manage projects
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Recent RFQs */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Your RFQs</h2>
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-white">
+            Recent RFQs
+          </h2>
           {sentRFQs.length === 0 ? (
-            <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center">
-              <p className="text-gray-400 mb-4">No RFQs sent yet</p>
-              <Link
-                href="/search"
-                className="inline-block px-6 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-medium transition"
-              >
-                Search Suppliers
-              </Link>
-            </div>
+            <p className="text-gray-400">No RFQs sent yet.</p>
           ) : (
             <div className="space-y-4">
               {sentRFQs.map((rfq) => (
                 <div
                   key={rfq.id}
-                  className="p-6 rounded-xl bg-white/5 border border-white/10"
+                  className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h3 className="font-semibold text-lg">
-                        RFQ to {rfq.profiles?.company_name || 'Supplier'}
-                      </h3>
+                      <p className="text-white font-medium">
+                        {rfq.profiles?.company_name || 'Unknown Supplier'}
+                      </p>
                       <p className="text-sm text-gray-400">
-                        Sent {new Date(rfq.created_at).toLocaleDateString()}
+                        {new Date(rfq.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-medium">
-                      {rfq.status || 'Pending'}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        rfq.status === 'Pending'
+                          ? 'bg-yellow-500/10 text-yellow-400'
+                          : rfq.status === 'Answered'
+                          ? 'bg-green-500/10 text-green-400'
+                          : 'bg-gray-500/10 text-gray-400'
+                      }`}
+                    >
+                      {rfq.status}
                     </span>
                   </div>
-                  <p className="text-gray-300">{rfq.message}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Saved Suppliers */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Saved Suppliers</h2>
-          {savedSuppliers.length === 0 ? (
-            <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center">
-              <p className="text-gray-400">
-                No saved suppliers yet. Discover verified suppliers in the
-                marketplace.
-              </p>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {savedSuppliers.map((supplier) => (
-                <div
-                  key={supplier.id}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10"
-                >
-                  <h3 className="font-semibold mb-2">
-                    {supplier.company_name}
-                  </h3>
-                  <p className="text-sm text-gray-400">{supplier.location}</p>
+                  <p className="text-gray-300 text-sm">{rfq.message}</p>
                 </div>
               ))}
             </div>
