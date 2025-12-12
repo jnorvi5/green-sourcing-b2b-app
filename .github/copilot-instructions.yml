@@ -1,0 +1,56 @@
+# GitHub Copilot Custom Instructions for GreenChainz
+
+version: 1.0
+project_type: nextjs
+framework_version: "14.2.33"
+
+critical_rules:
+  - rule: "This is a Next.js 14 project using App Router. NOT Vite, NOT Create React App."
+    severity: CRITICAL
+    
+  - rule: "Environment variables MUST use process.env.NEXT_PUBLIC_* (NOT import.meta.env.*)"
+    severity: CRITICAL
+    examples:
+      correct: "const apiUrl = process.env.NEXT_PUBLIC_API_URL"
+      incorrect: "const apiUrl = import.meta.env.VITE_API_URL"
+    
+  - rule: "Use Next.js App Router (app/ directory), NOT React Router"
+    severity: CRITICAL
+    examples:
+      correct: "import { useRouter } from 'next/navigation'"
+      incorrect: "import { useNavigate } from 'react-router-dom'"
+    
+  - rule: "NEVER create or modify files in /frontend-DEPRECATED-VITE-DO-NOT-USE"
+    severity: CRITICAL
+    
+  - rule: "All new components go in /components, all new routes go in /app"
+    severity: HIGH
+
+architecture:
+  frontend: "Next.js 14 App Router"
+  backend: "Next.js API Routes (/app/api)"
+  database: "Supabase (PostgreSQL)"
+  deployment: "Vercel"
+  styling: "Tailwind CSS"
+  
+  deprecated:
+    - "Vite (removed Dec 2025)"
+    - "React Router (use Next.js routing)"
+    - "/frontend directory (legacy code)"
+
+file_structure:
+  new_components: "/components"
+  new_pages: "/app"
+  api_routes: "/app/api"
+  utilities: "/lib"
+  types: "/types"
+  
+  do_not_use:
+    - "/frontend-DEPRECATED-VITE-DO-NOT-USE"
+    - "vite.config.*"
+
+coding_standards:
+  - "Use TypeScript for all new files"
+  - "Use 'use client' directive for client components"
+  - "Prefer Server Components by default"
+  - "Use Supabase client from /lib/supabase/*"

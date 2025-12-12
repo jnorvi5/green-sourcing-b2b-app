@@ -1,3 +1,39 @@
+# 🚨 IMPORTANT: Architecture Notice
+
+## This is a Next.js Project (NOT Vite)
+
+**Current Stack (As of December 2025):**
+- ✅ **Frontend:** Next.js 14 (App Router)
+- ✅ **Backend:** Next.js API Routes + Supabase
+- ✅ **Deployment:** Vercel
+- ✅ **Styling:** Tailwind CSS
+- ❌ **Vite:** REMOVED (see Migration Notes below)
+
+### ⚠️ For Developers & AI Assistants
+
+**DO NOT:**
+- ❌ Use `import.meta.env.*` (use `process.env.NEXT_PUBLIC_*`)
+- ❌ Create `vite.config.*` files
+- ❌ Import from `/frontend-DEPRECATED-VITE-DO-NOT-USE`
+- ❌ Use React Router (use Next.js `app/` routing)
+
+**DO:**
+- ✅ Put new components in `/components`
+- ✅ Put new pages in `/app`
+- ✅ Use Next.js `useRouter` from `next/navigation`
+- ✅ Use Server Components by default
+
+---
+
+## Migration Notes
+
+**December 11, 2025:** Vite frontend deprecated  
+**Legacy code location:** `/frontend-DEPRECATED-VITE-DO-NOT-USE` (reference only)  
+**Migration tracking:** [GitHub Issue #232](https://github.com/jnorvi5/green-sourcing-b2b-app/issues/232)  
+**Scheduled deletion:** January 15, 2026
+
+---
+
 # GreenChainz - B2B Green Sourcing Marketplace
 
 **Mission**: Build a data-driven B2B marketplace connecting sustainability-minded buyers (architects, contractors, procurement teams) with verified green suppliers.

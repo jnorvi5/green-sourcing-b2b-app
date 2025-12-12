@@ -1,13 +1,11 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-function DashboardContent() {
+function ArchitectDashboardInner() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [savedSuppliers, setSavedSuppliers] = useState<any[]>([])
@@ -309,18 +307,11 @@ function DashboardContent() {
   );
 }
 
-// Wrap in Suspense to satisfy Next.js build requirements for useSearchParams
 export default function ArchitectDashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-gray-400">Loading dashboard...</p>
-        </div>
-      </div>
-    }>
-      <DashboardContent />
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex items-center justify-center"><div className="text-center"><div className="inline-block w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4" /><p className="text-gray-400">Loading dashboard...</p></div></div>}>
+      <ArchitectDashboardInner />
     </Suspense>
   );
 }
+

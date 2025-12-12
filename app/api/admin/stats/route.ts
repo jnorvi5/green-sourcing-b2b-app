@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// Force dynamic rendering to prevent build errors
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
