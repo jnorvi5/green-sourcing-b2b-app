@@ -181,8 +181,14 @@ export default function SearchPage() {
                           <FaMapMarkerAlt /> {supplier.location || 'Global'}
                         </span>
                         {supplier.verification_source && (
-                          <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-xs">
-                            Via {supplier.verification_source}
+                          <span className={`px-2 py-0.5 rounded-full text-xs border ${
+                            supplier.verification_source === 'EC3' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                            supplier.verification_source === 'EPD' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                            'bg-gray-500/10 text-gray-400 border-gray-500/20'
+                          }`}>
+                            {supplier.verification_source === 'EC3' && '🌍 Building Transparency EC3'}
+                            {supplier.verification_source === 'EPD' && '📊 EPD International'}
+                            {supplier.verification_source === 'Autodesk' && '🏗️ Autodesk Verified'}
                           </span>
                         )}
                       </div>
