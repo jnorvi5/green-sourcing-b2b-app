@@ -448,13 +448,13 @@ class SupplierPerformanceService {
         return SupplierScorecard.find(query)
             .sort({ overallScore: -1 })
             .limit(limit)
-            .lean() as any;
+            .lean() as unknown as ISupplierScorecard[];
     }
 
     // Get suppliers by tier
     async getSuppliersByTier(tier: ISupplierScorecard['tier']): Promise<ISupplierScorecard[]> {
         const { SupplierScorecard } = await this.getModels();
-        return SupplierScorecard.find({ tier }).sort({ overallScore: -1 }).lean() as any;
+        return SupplierScorecard.find({ tier }).sort({ overallScore: -1 }).lean() as unknown as ISupplierScorecard[];
     }
 }
 
