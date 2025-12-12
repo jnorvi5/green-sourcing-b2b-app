@@ -1,8 +1,25 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended"
-  ],
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"]
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "MemberExpression[object.object.name='import'][object.property.name='meta']",
+        "message": "🚫 Use process.env instead of import.meta.env - This is a Next.js project, NOT Vite!"
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["**/frontend-DEPRECATED-VITE-DO-NOT-USE/**"],
+            "message": "🚫 Do not import from deprecated Vite frontend!"
+          }
+        ]
+      }
+    ]
+  }
 }
