@@ -314,7 +314,7 @@ export async function runCacheRefresh(): Promise<void> {
 
     try {
         await connectAllDatabases();
-        const models = await getDataProviderModels() as any;
+        const models = await getDataProviderModels() as Record<string, unknown>;
         const DataProviderSync = models['DataProviderSync'];
 
         // Get all sync configurations
