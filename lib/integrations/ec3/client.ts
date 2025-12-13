@@ -82,7 +82,12 @@ export async function searchEC3Materials(
   limit: number = 5
 ): Promise<EC3Material[]> {
   const token = await getAccessToken();
-  if (!token) return [];
+
+  // Return mock data if credentials are missing
+  if (!token) {
+    console.log('[EC3] Using mock data');
+    return getMockMaterials(query, limit);
+  }
 
   try {
     // Note: This is a simplified search endpoint. Real EC3 API has complex filtering.
@@ -125,4 +130,40 @@ export async function searchEC3Materials(
     console.error('Error searching EC3:', error);
     return [];
   }
+}
+
+function getMockMaterials(query: string, limit: number): EC3Material[] {
+  const mockDb: EC3Material[] = [
+    {
+      id: 'ec3-1',
+      name: 'Low Carbon Concrete 3000psi',
+      description: 'High fly ash content concrete',
+      category: 'Concrete',
+      gwp: { value: 180, unit: 'kgCO2e' },
+      manufacturer: { name: 'EcoMix', country: 'USA' }
+    },
+    {
+      id: 'ec3-2',
+      name: 'Recycled Steel Rebar',
+      description: '90% recycled content',
+      category: 'Steel',
+      gwp: { value: 450, unit: 'kgCO2e' },
+      manufacturer: { name: 'GreenSteel Inc', country: 'USA' }
+    },
+    {
+      id: 'ec3-3',
+      name: 'FSC Birch Plywood',
+      description: 'Sustainably sourced plywood',
+      category: 'Wood',
+      gwp: { value: 95, unit: 'kgCO2e' },
+      manufacturer: { name: 'Nordic Wood', country: 'Sweden' }
+    }
+  ];
+
+  return mockDb
+    .filter(m =>
+      m.name.toLowerCase().includes(query.toLowerCase()) ||
+      m.category.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(0, limit);
 }

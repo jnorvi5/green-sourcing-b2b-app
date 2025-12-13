@@ -48,6 +48,12 @@ export class EPDInternationalClient {
    * Make an authenticated request to the EPD International API
    */
   private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    // Mock mode for testing without valid API key
+    if (this.apiKey === 'mock-key') {
+      console.log('[EPD API] Using mock data');
+      return this.getMockData() as T;
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -85,6 +91,53 @@ export class EPDInternationalClient {
     } finally {
       clearTimeout(timeoutId);
     }
+  }
+
+  private getMockData(): unknown {
+    // Return a mock paginated response with some realistic EPD data
+    return {
+      data: [
+        {
+          epd_number: "S-P-00123",
+          product_name: "Low Carbon Concrete",
+          manufacturer: "GreenBuild Co",
+          gwp_fossil_a1a3: 240.5,
+          valid_from: "2023-01-01T00:00:00Z",
+          valid_until: "2028-01-01T00:00:00Z",
+          declared_unit: "1 m3",
+          certifications: ["ISO 14025"],
+          geographic_scope: ["Global"]
+        },
+        {
+          epd_number: "S-P-00456",
+          product_name: "Recycled Steel Beam",
+          manufacturer: "SteelWorks",
+          gwp_fossil_a1a3: 850.2,
+          valid_from: "2023-05-15T00:00:00Z",
+          valid_until: "2028-05-15T00:00:00Z",
+          declared_unit: "1 ton",
+          certifications: ["ISO 14025"],
+          geographic_scope: ["EU"]
+        },
+        {
+          epd_number: "S-P-00789",
+          product_name: "Birch Plywood",
+          manufacturer: "Nordic Wood",
+          gwp_fossil_a1a3: 120.0,
+          valid_from: "2023-03-10T00:00:00Z",
+          valid_until: "2028-03-10T00:00:00Z",
+          declared_unit: "1 m3",
+          certifications: ["FSC", "ISO 14025"],
+          geographic_scope: ["Global"]
+        }
+      ],
+      meta: {
+        total: 3,
+        page: 1,
+        perPage: 20,
+        totalPages: 1
+      }
+    };
   }
 
   /**
