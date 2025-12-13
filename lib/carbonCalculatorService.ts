@@ -1,5 +1,3 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-
 // Carbon calculation models and service
 export interface MaterialCarbonData {
     materialId: string;
@@ -12,9 +10,9 @@ export interface MaterialCarbonData {
     carbonSaved?: number;
 }
 
-export interface ProjectCarbonAnalysis extends Document {
-    projectId: mongoose.Types.ObjectId;
-    userId: mongoose.Types.ObjectId;
+export interface ProjectCarbonAnalysis {
+    projectId: string; // Changed from ObjectId
+    userId: string;    // Changed from ObjectId
     name: string;
     description?: string;
     location?: {
@@ -48,52 +46,6 @@ export interface ProjectCarbonAnalysis extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
-
-const ProjectCarbonAnalysisSchema = new Schema<ProjectCarbonAnalysis>({
-    projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
-    userId: { type: Schema.Types.ObjectId, required: true },
-    name: { type: String, required: true },
-    description: { type: String },
-    location: {
-        city: { type: String },
-        state: { type: String },
-        country: { type: String },
-    },
-    buildingType: { type: String },
-    squareFootage: { type: Number },
-    materials: [{
-        materialId: { type: String },
-        name: { type: String, required: true },
-        gwp: { type: Number, required: true },
-        unit: { type: String, required: true },
-        quantity: { type: Number, required: true },
-        totalCarbon: { type: Number, required: true },
-        alternativeGwp: { type: Number },
-        carbonSaved: { type: Number },
-    }],
-    summary: {
-        totalCarbon: { type: Number, default: 0 },
-        carbonPerSqFt: { type: Number },
-        carbonSaved: { type: Number, default: 0 },
-        potentialSavings: { type: Number, default: 0 },
-        percentReduction: { type: Number, default: 0 },
-    },
-    benchmarks: {
-        industryAverage: { type: Number },
-        bestInClass: { type: Number },
-        percentile: { type: Number },
-    },
-    recommendations: [{
-        materialId: { type: String },
-        currentMaterial: { type: String },
-        suggestedMaterial: { type: String },
-        currentGwp: { type: Number },
-        suggestedGwp: { type: Number },
-        potentialSavings: { type: Number },
-    }],
-}, {
-    timestamps: true,
-});
 
 // Industry benchmark data (kg CO2e per sq ft)
 const BUILDING_BENCHMARKS: Record<string, { average: number; bestInClass: number }> = {
@@ -135,8 +87,6 @@ const MATERIAL_ALTERNATIVES: Record<string, { name: string; gwpReduction: number
 };
 
 class CarbonCalculatorService {
-    private ProjectCarbonAnalysis: Model<ProjectCarbonAnalysis> | null = null;
-
     // Calculate carbon for a single material
     calculateMaterialCarbon(
         gwp: number,
