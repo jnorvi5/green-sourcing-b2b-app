@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { FaSearch, FaMapMarkerAlt, FaLeaf, FaRobot } from 'react-icons/fa'
-import AgentChat from '@/components/AgentChat'
 
 interface ProductSnippet {
   _id: string
@@ -239,8 +238,6 @@ export default function SearchPage() {
         )}
       </div>
       
-      {/* Microsoft Foundry Agent */}
-      <AgentChat />
     </main>
   )
 }
