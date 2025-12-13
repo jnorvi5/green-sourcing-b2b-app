@@ -3,19 +3,10 @@ require('dotenv').config({ path: '.env.local' });
 
 console.log('Environment Variables Check:');
 console.log('============================');
-console.log('MONGODB_URI exists?', !!process.env.MONGODB_URI);
-console.log('MONGODB_URI starts with mongodb?', process.env.MONGODB_URI?.startsWith('mongodb'));
+console.log('NEXT_PUBLIC_SUPABASE_URL exists?', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists?', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+console.log('AWS_BUCKET_NAME exists?', !!process.env.AWS_BUCKET_NAME);
+console.log('RESEND_API_KEY exists?', !!process.env.RESEND_API_KEY);
+console.log('NEXT_PUBLIC_INTERCOM_APP_ID exists?', !!process.env.NEXT_PUBLIC_INTERCOM_APP_ID);
 
-if (process.env.MONGODB_URI) {
-  const uri = process.env.MONGODB_URI;
-  console.log('URI format check:');
-  console.log('  - Starts with mongodb+srv://?', uri.startsWith('mongodb+srv://'));
-  console.log('  - Has @ symbol?', uri.includes('@'));
-  console.log('  - Has database name?', uri.includes('/greenchainz'));
-  console.log('  - Length:', uri.length, 'chars');
-  console.log('  - First 30 chars:', uri.substring(0, 30) + '...');
-} else {
-  console.log('❌ MONGODB_URI is NOT SET in .env.local');
-  console.log('\nAdd this line to .env.local:');
-  console.log('MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/greenchainz');
-}
+console.log('\n✅ Environment check complete (MongoDB removed)');
