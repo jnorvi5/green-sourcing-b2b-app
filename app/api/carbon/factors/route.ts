@@ -6,10 +6,18 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+interface CarbonFactor {
+    id: string;
+    type: 'electricity' | 'transport' | 'fuel';
+    region: string;
+    factor: number;
+    unit: string;
+}
+
+export async function GET() {
     // Mock data for factors - MongoDB removed
     // In a real app, this would come from a static JSON file or external API
-    const factors: any[] = []; 
+    const factors: CarbonFactor[] = []; 
     const grouped = {
         electricity: [],
         transport: [],

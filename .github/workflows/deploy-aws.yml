@@ -49,8 +49,6 @@ jobs:
     strategy:
       matrix:
         lambda:
-          - ec3-sync
-          - epd-sync
           - supabase-backup
           - cost-monitor
     
@@ -93,8 +91,6 @@ jobs:
     strategy:
       matrix:
         lambda:
-          - ec3-sync
-          - epd-sync
           - supabase-backup
           - cost-monitor
     
@@ -155,7 +151,7 @@ jobs:
       
       - name: Move Lambda packages
         run: |
-          for lambda in ec3-sync epd-sync supabase-backup cost-monitor; do
+          for lambda in supabase-backup cost-monitor; do
             if [ -f "../../lambda/lambda-${lambda}/function.zip" ]; then
               mv "../../lambda/lambda-${lambda}/function.zip" "../../lambda/${lambda}/function.zip"
             fi
@@ -189,7 +185,6 @@ jobs:
           terraform plan \
             -var="ec3_api_key=${{ secrets.EC3_API_KEY || 'placeholder' }}" \
             -var="epd_api_key=${{ secrets.EPD_INTERNATIONAL_API_KEY || 'placeholder' }}" \
-            -var="mongodb_uri=${{ secrets.MONGODB_URI || 'placeholder' }}" \
             -var="supabase_access_token=${{ secrets.SUPABASE_ACCESS_TOKEN || 'placeholder' }}" \
             -var="supabase_project_ref=${{ secrets.SUPABASE_PROJECT_REF || 'placeholder' }}" \
             -no-color \
@@ -253,7 +248,7 @@ jobs:
       
       - name: Move Lambda packages
         run: |
-          for lambda in ec3-sync epd-sync supabase-backup cost-monitor; do
+          for lambda in supabase-backup cost-monitor; do
             if [ -f "../../lambda/lambda-${lambda}/function.zip" ]; then
               mv "../../lambda/lambda-${lambda}/function.zip" "../../lambda/${lambda}/function.zip"
             fi
@@ -278,7 +273,6 @@ jobs:
           terraform apply \
             -var="ec3_api_key=${{ secrets.EC3_API_KEY }}" \
             -var="epd_api_key=${{ secrets.EPD_INTERNATIONAL_API_KEY }}" \
-            -var="mongodb_uri=${{ secrets.MONGODB_URI }}" \
             -var="supabase_access_token=${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
             -var="supabase_project_ref=${{ secrets.SUPABASE_PROJECT_REF }}" \
             -auto-approve
@@ -294,10 +288,6 @@ jobs:
     strategy:
       matrix:
         lambda:
-          - name: ec3-sync
-            function: gc-ec3-sync
-          - name: epd-sync
-            function: gc-epd-sync
           - name: supabase-backup
             function: gc-supabase-backup
           - name: cost-monitor

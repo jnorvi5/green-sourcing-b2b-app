@@ -6,21 +6,6 @@ export async function GET() {
     // Check Supabase connection
     const supabase = await createClient();
     const { error: dbError } = await supabase.from('users').select('count').limit(1);
-    
-    // Check MongoDB connection
-    let mongoStatus = 'not configured';
-    if (process.env['MONGODB_URI']) {
-      try {
-        const { MongoClient } = require('mongodb');
-        const client = new MongoClient(process.env['MONGODB_URI']);
-        await client.connect();
-        await client.db().admin().ping();
-        await client.close();
-        mongoStatus = 'connected';
-      } catch (error) {
-        mongoStatus = 'error';
-      }
-    }
 
     const health = {
       status: 'healthy',
@@ -28,7 +13,6 @@ export async function GET() {
       services: {
         api: 'operational',
         database: dbError ? 'error' : 'connected',
-        mongodb: mongoStatus,
         intercom: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'] ? 'configured' : 'not configured',
         email: process.env['RESEND_API_KEY'] ? 'configured' : 'not configured',
         storage: process.env['AWS_BUCKET_NAME'] ? 'configured' : 'not configured'
