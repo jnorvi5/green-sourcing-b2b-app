@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import BuyCleanActCountdown from '@/components/BuyCleanActCountdown'
 
 function ArchitectDashboardInner() {
   const [user, setUser] = useState<any>(null)
@@ -170,6 +171,9 @@ function ArchitectDashboardInner() {
             Logout
           </button>
         </div>
+
+        {/* Compliance Countdown */}
+        <BuyCleanActCountdown />
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
