@@ -21,7 +21,6 @@ resource "aws_secretsmanager_secret_version" "api_keys" {
   secret_string = jsonencode({
     EC3_API_KEY               = var.ec3_api_key
     EPD_INTERNATIONAL_API_KEY = var.epd_api_key
-    MONGODB_URI               = var.mongodb_uri
     SUPABASE_ACCESS_TOKEN     = var.supabase_access_token
     SUPABASE_PROJECT_REF      = var.supabase_project_ref
   })
