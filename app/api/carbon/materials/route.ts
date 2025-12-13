@@ -5,5 +5,9 @@ export async function GET(request: Request) {
   return NextResponse.json({
     materials: [], // or some mock data if needed
     source: 'mock'
+  }, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=59',
+    },
   });
 }
