@@ -5,13 +5,13 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { FaSearch, FaMapMarkerAlt, FaLeaf, FaRobot } from 'react-icons/fa'
-import AgentChat from '@/components/AgentChat'
 
 interface ProductSnippet {
   _id: string
   title: string
   price: number
   currency: string
+  material_type?: string // Added for Agent
   greenData?: {
     carbonFootprint?: number
     certifications?: string[]
@@ -224,10 +224,23 @@ export default function SearchPage() {
                               {product.greenData?.carbonFootprint && (
                                 <span className="text-emerald-400">
                                   {product.greenData.carbonFootprint} kg CO2e
+                          <div key={product._id} className="bg-black/20 rounded-lg p-3 border border-white/5 hover:border-teal-500/30 transition flex flex-col justify-between">
+                            <div>
+                                <h4 className="font-medium text-gray-200 truncate mb-1">{product.title}</h4>
+                                <div className="flex items-center justify-between text-xs mb-3">
+                                <span className="text-gray-400">
+                                    {product.currency} {product.price}
                                 </span>
-                              )}
+                                </div>
                             </div>
                           </Link>
+
+                            {/* LIVE Sustainability Data Badge */}
+                            <SustainabilityDataBadge
+                                productId={product.title}
+                                materialType={product.material_type || 'Unknown'}
+                            />
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -239,8 +252,6 @@ export default function SearchPage() {
         )}
       </div>
       
-      {/* Microsoft Foundry Agent */}
-      <AgentChat />
     </main>
   )
 }
