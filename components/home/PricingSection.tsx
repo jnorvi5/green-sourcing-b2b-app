@@ -57,7 +57,7 @@ export default function PricingSection() {
 
         <div className="text-center mt-8">
           <Link
-            href="/supplier-signup"
+            href="/pricing"
             className="text-emerald-400 hover:text-emerald-300 transition-colors"
           >
             View Pricing Details →
