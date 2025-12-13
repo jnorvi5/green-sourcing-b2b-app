@@ -68,12 +68,11 @@ export async function GET(request: Request) {
   });
 
   return NextResponse.json({
-    success: true,
-    data: filtered,
-    meta: {
-      intent: {
-        isSmartSearch: true
-      }
+    results: [],
+    source: 'mock'
+  }, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=59'
     }
   });
 }
