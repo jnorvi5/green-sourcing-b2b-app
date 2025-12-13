@@ -36,7 +36,7 @@ export interface SearchIntent {
  * Query Building Transparency's EC3 database
  */
 export async function queryEC3(intent: SearchIntent): Promise<ExternalProduct[]> {
-  if (!process.env.EC3_CLIENT_ID || !process.env.EC3_CLIENT_SECRET) {
+  if (!process.env['EC3_CLIENT_ID'] || !process.env['EC3_CLIENT_SECRET']) {
     console.warn('EC3 credentials missing, skipping query');
     return [];
   }
@@ -68,14 +68,14 @@ export async function queryEC3(intent: SearchIntent): Promise<ExternalProduct[]>
  * Query EPD International database
  */
 export async function queryEPD(intent: SearchIntent): Promise<ExternalProduct[]> {
-  if (!process.env.EPD_API_KEY) {
+  if (!process.env['EPD_API_KEY']) {
     console.warn('EPD API key missing, skipping query');
     return [];
   }
 
   try {
     const client = new EPDInternationalClient({
-      apiKey: process.env.EPD_API_KEY
+      apiKey: process.env['EPD_API_KEY']
     });
 
     // The client currently fetches recent EPDs. 

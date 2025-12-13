@@ -16,11 +16,17 @@ export async function checkFSCCertification(productId: string): Promise<FSCData>
   // Simulate API latency
   await new Promise(resolve => setTimeout(resolve, 300));
 
+  const lowerId = productId.toLowerCase();
+
   // Determine certification based on ID pattern (Mock Logic)
-  // In a real app, this would call the FSC Public Search API
-  const isCertified = productId.toLowerCase().includes('wood') || 
-                     productId.toLowerCase().includes('timber') ||
-                     productId.toLowerCase().includes('fsc');
+  // Broadened to include common wood products for better demo experience
+  const isCertified = lowerId.includes('wood') ||
+                     lowerId.includes('timber') ||
+                     lowerId.includes('fsc') ||
+                     lowerId.includes('plywood') ||
+                     lowerId.includes('lumber') ||
+                     lowerId.includes('oak') ||
+                     lowerId.includes('pine');
 
   if (isCertified) {
     return {
