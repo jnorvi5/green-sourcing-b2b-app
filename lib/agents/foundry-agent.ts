@@ -173,12 +173,12 @@ export class FoundryAgent {
               const epdClient = new EPDInternationalClient({
                 apiKey: process.env.EPD_API_KEY || '',
               });
-              // Note: fetchEPDs expects pagination options, but we want a search. 
+              // Note: fetchEPDs expects pagination options, but we want a search.
               // The client doesn't have a direct search method exposed in the interface I saw,
               // but let's assume we can fetch and filter or use a search endpoint if available.
-              // Looking at the client code, it fetches /epds. 
+              // Looking at the client code, it fetches /epds.
               // For now, let's try to fetch and filter client-side or assume the API supports query params if we modified it.
-              // Actually, let's use fetchAllEPDs with a limit and pretend we searched, 
+              // Actually, let's use fetchAllEPDs with a limit and pretend we searched,
               // OR better, let's just return a placeholder if search isn't implemented in the client yet.
               // Wait, I saw the client code. It has fetchEPDs. It doesn't seem to have a search query param.
               // I will implement a basic search by fetching recent EPDs and filtering by name for now.

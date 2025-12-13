@@ -1,4 +1,4 @@
-﻿const { withSentryConfig } = require("@sentry/nextjs");
+const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,7 +10,12 @@ const nextConfig = {
   },
   experimental: {
     instrumentationHook: true,
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react'],
   },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
+  compress: true,
   webpack: (config) => {
     config.externals.push({
       'utf-8-validate': 'commonjs utf-8-validate',
@@ -18,6 +23,7 @@ const nextConfig = {
     })
     return config
   },
+  output: 'standalone',
 }
 
 module.exports = withSentryConfig(nextConfig, {

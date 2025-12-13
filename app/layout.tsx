@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import IntercomProvider from '@/components/IntercomProvider';
+import AgentChat from '@/components/AgentChat';
 
 export const metadata: Metadata = {
   title: 'GreenChainz - Sustainable Building Materials Marketplace',
@@ -25,6 +26,7 @@ export default function RootLayout({
         <IntercomProvider>
           {children}
         </IntercomProvider>
+        <AgentChat />
       </body>
     </html>
   );
