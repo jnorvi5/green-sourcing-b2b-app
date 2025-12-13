@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import BuyCleanActCountdown from '@/components/BuyCleanActCountdown'
 import { FaSearch, FaMapMarkerAlt, FaLeaf, FaBalanceScale, FaPaperPlane, FaCheckSquare, FaSquare, FaTimes } from 'react-icons/fa'
 
 // Types
@@ -387,6 +388,66 @@ function ArchitectDashboardInner() {
           </div>
         </div>
 
+        {/* Compliance Countdown */}
+        <BuyCleanActCountdown />
+
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Link
+            href="/search"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Search Products</h3>
+                <p className="text-sm text-gray-400">
+                  Find green materials
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/architect/rfqs"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">My RFQs</h3>
+                <p className="text-sm text-gray-400">
+                  View all requests
+                </p>
+              </div>
         {/* Success Toast */}
         {showSuccessMessage && (
           <div className="fixed top-4 right-4 z-50 p-4 bg-teal-500/10 border border-teal-500/30 rounded-lg text-teal-400 flex items-center gap-3 shadow-lg backdrop-blur-md">
