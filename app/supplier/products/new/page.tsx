@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { ImageUpload } from '@/components/ImageUpload'
+import ImageUpload from '@/components/ImageUpload'
 import { DashboardErrorBoundary } from '@/components/DashboardErrorBoundary'
 import Link from 'next/link'
 
