@@ -448,6 +448,9 @@ function ArchitectDashboardInner() {
                   View all requests
                 </p>
               </div>
+            </div>
+          </Link>
+        </div>
         {/* Success Toast */}
         {showSuccessMessage && (
           <div className="fixed top-4 right-4 z-50 p-4 bg-teal-500/10 border border-teal-500/30 rounded-lg text-teal-400 flex items-center gap-3 shadow-lg backdrop-blur-md">
