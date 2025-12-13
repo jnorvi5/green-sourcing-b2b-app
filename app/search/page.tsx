@@ -215,6 +215,15 @@ export default function SearchPage() {
                       </div>
                       <div className="grid md:grid-cols-3 gap-4">
                         {supplier.matched_products.map((product) => (
+                          <Link href={`/products/${product._id}`} key={product._id} className="block bg-black/20 rounded-lg p-3 border border-white/5 hover:border-teal-500/30 transition group/product">
+                            <h4 className="font-medium text-gray-200 truncate mb-1 group-hover/product:text-teal-400 transition">{product.title}</h4>
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-gray-400">
+                                {product.currency} {product.price}
+                              </span>
+                              {product.greenData?.carbonFootprint && (
+                                <span className="text-emerald-400">
+                                  {product.greenData.carbonFootprint} kg CO2e
                           <div key={product._id} className="bg-black/20 rounded-lg p-3 border border-white/5 hover:border-teal-500/30 transition flex flex-col justify-between">
                             <div>
                                 <h4 className="font-medium text-gray-200 truncate mb-1">{product.title}</h4>
@@ -224,6 +233,7 @@ export default function SearchPage() {
                                 </span>
                                 </div>
                             </div>
+                          </Link>
 
                             {/* LIVE Sustainability Data Badge */}
                             <SustainabilityDataBadge
