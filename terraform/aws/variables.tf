@@ -105,13 +105,6 @@ variable "epd_api_key" {
   default     = ""
 }
 
-variable "mongodb_uri" {
-  description = "MongoDB Atlas connection URI"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "supabase_access_token" {
   description = "Supabase access token"
   type        = string
