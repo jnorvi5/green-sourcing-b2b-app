@@ -1,10 +1,9 @@
-'use client';
-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Data Licensing | GreenChainz Market Intelligence",
-  description: "Access aggregated, anonymized market intelligence on sustainable building materials demand. Quarterly reports with search trends, certification demand, and geographic analysis.",
+  description:
+    "Access aggregated, anonymized market intelligence on sustainable building materials demand. Quarterly reports with search trends, certification demand, and geographic analysis.",
 };
 
 export default function DataLicensingPage() {
@@ -18,9 +17,9 @@ export default function DataLicensingPage() {
             <span className="block text-green-600">Market Intelligence</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Aggregated, anonymized data on architect search behavior, certification demand, 
-            and market trends. Power your product development, marketing, and research 
-            with real market signals.
+            Aggregated, anonymized data on architect search behavior,
+            certification demand, and market trends. Power your product
+            development, marketing, and research with real market signals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -84,7 +83,7 @@ export default function DataLicensingPage() {
                 "Identify product development opportunities",
                 "Benchmark certification ROI",
                 "Understand regional demand patterns",
-                "Optimize pricing strategies"
+                "Optimize pricing strategies",
               ]}
             />
             <UseCaseCard
@@ -94,7 +93,7 @@ export default function DataLicensingPage() {
                 "Track adoption trends",
                 "Identify high-value certifications",
                 "Measure market penetration",
-                "Plan outreach campaigns"
+                "Plan outreach campaigns",
               ]}
             />
             <UseCaseCard
@@ -104,7 +103,7 @@ export default function DataLicensingPage() {
                 "Enhance market reports",
                 "Validate research hypotheses",
                 "Track sustainability adoption",
-                "Inform industry forecasts"
+                "Inform industry forecasts",
               ]}
             />
           </div>
@@ -118,7 +117,7 @@ export default function DataLicensingPage() {
             Data Licensing Plans
           </h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-            Quarterly reports delivered on Jan 1, Apr 1, Jul 1, Oct 1. 
+            Quarterly reports delivered on Jan 1, Apr 1, Jul 1, Oct 1.
             Enterprise customers get real-time API access.
           </p>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -131,7 +130,7 @@ export default function DataLicensingPage() {
                 "Certification demand trends",
                 "Geographic demand heatmap",
                 "PDF & CSV delivery",
-                "Quarterly email updates"
+                "Quarterly email updates",
               ]}
               cta="Get Started"
               ctaHref="mailto:data@greenchainz.com?subject=Basic%20Data%20License%20Inquiry"
@@ -146,7 +145,7 @@ export default function DataLicensingPage() {
                 "Certification win rates",
                 "Competitive benchmarking",
                 "Price premium analysis",
-                "API access to raw data"
+                "API access to raw data",
               ]}
               cta="Contact Sales"
               ctaHref="mailto:data@greenchainz.com?subject=Premium%20Data%20License%20Inquiry"
@@ -162,7 +161,7 @@ export default function DataLicensingPage() {
                 "Custom data queries",
                 "Quarterly strategy call",
                 "Dedicated account manager",
-                "Custom report generation"
+                "Custom report generation",
               ]}
               cta="Schedule Demo"
               ctaHref="mailto:data@greenchainz.com?subject=Enterprise%20Data%20License%20Inquiry"
@@ -178,15 +177,19 @@ export default function DataLicensingPage() {
             Request a Sample Report
           </h2>
           <p className="text-gray-600 mb-8">
-            See the quality and depth of our market intelligence before you commit. 
-            We&apos;ll send you a redacted sample from last quarter.
+            See the quality and depth of our market intelligence before you
+            commit. We&apos;ll send you a redacted sample from last quarter.
           </p>
-          <form 
+          <form
             className="max-w-md mx-auto space-y-4"
             action="https://formspree.io/f/data@greenchainz.com"
             method="POST"
           >
-            <input type="hidden" name="_subject" value="Sample Report Request - Data Licensing" />
+            <input
+              type="hidden"
+              name="_subject"
+              value="Sample Report Request - Data Licensing"
+            />
             <input
               type="text"
               name="name"
@@ -227,7 +230,10 @@ export default function DataLicensingPage() {
             </button>
             <p className="text-sm text-gray-500 text-center">
               Or email us directly at{" "}
-              <a href="mailto:data@greenchainz.com" className="text-green-600 hover:underline">
+              <a
+                href="mailto:data@greenchainz.com"
+                className="text-green-600 hover:underline"
+              >
                 data@greenchainz.com
               </a>
             </p>
@@ -242,10 +248,16 @@ export default function DataLicensingPage() {
             Trusted by Industry Leaders
           </h2>
           <div className="flex flex-wrap justify-center items-center gap-12 opacity-60">
-            <span className="text-xl font-semibold text-gray-500">EPD International</span>
+            <span className="text-xl font-semibold text-gray-500">
+              EPD International
+            </span>
             <span className="text-xl font-semibold text-gray-500">EPD Hub</span>
-            <span className="text-xl font-semibold text-gray-500">Building Transparency</span>
-            <span className="text-xl font-semibold text-gray-500">Dodge Data Analytics</span>
+            <span className="text-xl font-semibold text-gray-500">
+              Building Transparency
+            </span>
+            <span className="text-xl font-semibold text-gray-500">
+              Dodge Data Analytics
+            </span>
           </div>
         </div>
       </section>
@@ -288,7 +300,7 @@ export default function DataLicensingPage() {
             Ready to Access Market Intelligence?
           </h2>
           <p className="text-green-100 text-lg mb-8">
-            Join leading EPD bodies, manufacturers, and research firms who use 
+            Join leading EPD bodies, manufacturers, and research firms who use
             GreenChainz data to inform their strategies.
           </p>
           <a
@@ -305,7 +317,8 @@ export default function DataLicensingPage() {
         <div className="max-w-7xl mx-auto text-center">
           <p>© 2024-2025 GreenChainz, Inc. All rights reserved.</p>
           <p className="mt-2 text-sm">
-            All data is aggregated and anonymized. No individual user data is shared.
+            All data is aggregated and anonymized. No individual user data is
+            shared.
           </p>
         </div>
       </footer>
@@ -313,7 +326,15 @@ export default function DataLicensingPage() {
   );
 }
 
-function DataPointCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+function DataPointCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+}) {
   return (
     <div className="text-center p-6 rounded-lg bg-green-50 hover:bg-green-100 transition-colors">
       <div className="text-4xl mb-4">{icon}</div>
@@ -323,7 +344,15 @@ function DataPointCard({ icon, title, description }: { icon: string; title: stri
   );
 }
 
-function UseCaseCard({ icon, title, items }: { icon: string; title: string; items: string[] }) {
+function UseCaseCard({
+  icon,
+  title,
+  items,
+}: {
+  icon: string;
+  title: string;
+  items: string[];
+}) {
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
       <div className="text-3xl mb-4">{icon}</div>
@@ -347,7 +376,7 @@ function PricingCard({
   features,
   cta,
   ctaHref,
-  highlighted = false
+  highlighted = false,
 }: {
   title: string;
   price: string;
@@ -365,22 +394,43 @@ function PricingCard({
           : "bg-white border-2 border-gray-200"
       }`}
     >
-      <h3 className={`text-xl font-semibold mb-2 ${highlighted ? "text-white" : "text-gray-900"}`}>
+      <h3
+        className={`text-xl font-semibold mb-2 ${
+          highlighted ? "text-white" : "text-gray-900"
+        }`}
+      >
         {title}
       </h3>
       <div className="mb-6">
-        <span className={`text-4xl font-bold ${highlighted ? "text-white" : "text-gray-900"}`}>
+        <span
+          className={`text-4xl font-bold ${
+            highlighted ? "text-white" : "text-gray-900"
+          }`}
+        >
           {price}
         </span>
-        <span className={`text-sm ${highlighted ? "text-green-100" : "text-gray-500"}`}>
-          {" "}{period}
+        <span
+          className={`text-sm ${
+            highlighted ? "text-green-100" : "text-gray-500"
+          }`}
+        >
+          {" "}
+          {period}
         </span>
       </div>
       <ul className="space-y-3 mb-8">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
-            <span className={`mr-2 ${highlighted ? "text-green-200" : "text-green-500"}`}>✓</span>
-            <span className={highlighted ? "text-green-50" : "text-gray-600"}>{feature}</span>
+            <span
+              className={`mr-2 ${
+                highlighted ? "text-green-200" : "text-green-500"
+              }`}
+            >
+              ✓
+            </span>
+            <span className={highlighted ? "text-green-50" : "text-gray-600"}>
+              {feature}
+            </span>
           </li>
         ))}
       </ul>
