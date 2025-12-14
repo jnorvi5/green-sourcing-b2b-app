@@ -1,185 +1,221 @@
-# GreenChainz - Project Structure
+# Project Structure
 
-## Directory Organization
+## Architecture Overview
+**Pattern:** Next.js 14 App Router with API-first, headless architecture  
+**Deployment:** Vercel (frontend + API routes) + Supabase (database + edge functions)  
+**Paradigm:** Hybrid SQL/NoSQL for transactional integrity and flexible sustainability data
 
-### Root Level
-- **frontend/** - React/TypeScript UI application (Vite + React Router)
-- **backend/** - Node.js/Express API server with services and data providers
-- **database-schemas/** - PostgreSQL schema definitions and migrations
-- **supabase/** - Supabase edge functions and configuration
-- **lambda/** - AWS Lambda functions for async processing
-- **terraform/** - Infrastructure as Code for AWS resources
-- **cloudflare-landing/** - Static landing pages for different user segments
-- **docs/** - Strategic documentation, brand guidelines, deployment guides
-- **emails/** - React email templates for transactional communications
-- **aws/** - AWS CloudFormation templates (S3 bucket configuration)
-- **app/** - Next.js app directory (legacy/alternative frontend)
+## Root Directory Organization
 
-### Frontend Structure (`frontend/src/`)
-```
-src/
-├── api/              # API client functions and hooks
-├── components/       # Reusable React components
-├── context/          # React context providers
-├── data/             # Static data and constants
-├── email-templates/  # Email template components
-├── hooks/            # Custom React hooks
-├── lib/              # Utility functions and Supabase client
-├── mocks/            # Mock data for testing
-├── pages/            # Page components (routing)
-├── store/            # Zustand state management
-├── styles/           # Global CSS and Tailwind config
-├── types/            # TypeScript type definitions
-└── assets/           # Images, icons, static files
-```
+### `/app` - Next.js Application (App Router)
+Primary application code using Next.js 14 App Router pattern.
 
-### Backend Structure (`backend/`)
-```
-backend/
-├── config/           # Passport OAuth configuration
-├── middleware/       # Express middleware (auth, etc.)
-├── providers/        # Data provider integrations (EC3, EPD International, FSC, etc.)
-├── routes/           # Express route handlers
-├── services/         # Business logic services
-├── scripts/          # Utility and seed scripts
-├── public/           # Static files (admin dashboard HTML)
-├── index.js          # Express server entry point
-├── db.js             # PostgreSQL connection
-├── eventLogger.js    # Event logging system
-└── openapi.yaml      # API documentation
-```
+**Key Subdirectories:**
+- **`/admin`** - Admin dashboard and management interfaces
+  - `/dashboard` - System overview and automation controls
+  - `/products` - Product approval and management
+  - `/certifications` - Certification verification
+  - `/analytics` - Platform analytics and reporting
+  - `/outreach` - Lead management and email campaigns
+  - `/my-rfqs` - RFQ management interface
+- **`/architect`** - Buyer/architect-specific interfaces
+  - `/dashboard` - Architect project dashboard
+  - `/rfq` - RFQ creation and management
+  - `/rfqs` - RFQ listing and tracking
+- **`/supplier`** - Supplier-specific interfaces
+  - `/dashboard` - Supplier analytics and overview
+  - `/products` - Product catalog management
+  - `/rfqs` - Incoming RFQ management
+  - `/certifications` - Certification submission
+  - `/subscription` - Subscription and billing
+- **`/api`** - Next.js API routes (backend endpoints)
+  - `/admin` - Admin operations
+  - `/rfq` - RFQ CRUD operations
+  - `/auth` - Authentication endpoints
+  - `/stripe` - Payment processing
+  - `/webhooks` - External service webhooks
+  - `/email` - Email sending services
+  - `/analytics` - Analytics data endpoints
+- **`/actions`** - Server actions for form handling and mutations
+- **`/components`** - Shared React components
 
-### Database Layer (`database-schemas/`)
-```
-database-schemas/
-├── init.sql                    # Initial schema setup
-├── mvp_schema.sql              # MVP feature schema
-├── schema.sql                  # Main schema definition
-├── performance-indexes.sql     # Query optimization indexes
-├── seed-data-providers.sql     # Data provider seed data
-├── seed-plans.sql              # Subscription plan seed data
-└── migrations/                 # Versioned schema migrations
-    ├── 20251107_214500_add_rfq_tables.sql
-    └── 20251107_214900_add_search_indexes.sql
-```
+### `/components` - Reusable UI Components
+Shared component library organized by domain.
 
-## Core Components & Relationships
+**Structure:**
+- **`/home`** - Landing page components (Hero, HowItWorks, Pricing, Stats)
+- **`/layout`** - Layout components (Navbar, Footer)
+- **`/ui`** - Base UI primitives (button, card, input, skeleton)
+- **`/chat`** - AI assistant chat components
 
-### Data Flow Architecture
-1. **Frontend** (React/TypeScript) → **Backend API** (Express)
-2. **Backend** → **PostgreSQL** (Supabase) for transactional data
-3. **Backend** → **Data Providers** (EC3, EPD International, FSC, etc.)
-4. **Backend** → **S3** for file uploads/storage
-5. **Backend** → **Email Service** (Resend/Nodemailer) for notifications
-6. **Lambda** → Async EPD data synchronization
+### `/lib` - Business Logic & Utilities
+Core business logic, integrations, and utility functions.
 
-### Key Service Modules
+**Key Modules:**
+- **`/agents`** - AI agents for automation
+  - `/assistant` - AI assistant functionality
+  - `/email` - Email automation agents
+  - `/scraper` - Data scraping agents
+  - `/social` - Social media automation
+- **`/aws`** - AWS service integrations (S3, SES, CloudFront)
+- **`/azure`** - Azure service integrations (OpenAI, email)
+- **`/email`** - Email service clients (Resend, MailerLite, Zoho)
+- **`/integrations`** - External API integrations
+  - `/autodesk` - Autodesk platform integration
+  - `/ec3` - EC3 carbon database integration
+- **`/stripe`** - Stripe payment processing
+- **`/supabase`** - Supabase client configuration
+- **`/verification`** - Certification verification logic
 
-#### Backend Services (`backend/services/`)
-- **verificationScore.js** - Supplier verification scoring algorithm
-- **certifierService.js** - B-Corp and certification verification
-- **dataScoutService.js** - Data provider integration orchestration
-- **ec3Service.js** - EC3 carbon data integration
-- **epdInternational.js** - EPD International data provider
-- **matchmakerService.js** - Supplier-buyer intelligent matching
-- **rfqRouterService.js** - RFQ routing and management
-- **marketIntelService.js** - Market trends and analytics
-- **complianceOracleService.js** - Compliance checking and validation
-- **emailService.js** - Email notification system
-- **s3.js** - AWS S3 file management
-- **bcorpService.js** - B-Corp certification verification
+### `/types` - TypeScript Type Definitions
+Centralized type definitions for the entire application.
 
-#### Data Providers (`backend/providers/`)
-- **baseProvider.js** - Abstract base class for all providers
-- **ec3.js** - EC3 carbon data provider
-- **epdInternational.js** - EPD International provider
-- **ecoPlatform.js** - Eco-Platform provider
-- **fscMock.js** - FSC certification mock data
+**Key Files:**
+- `admin-dashboard.ts` - Admin interface types
+- `autodesk.ts` - Autodesk integration types
+- `certification-verification.ts` - Certification types
+- `outreach.ts` - Lead and email campaign types
+- `product.ts` - Product and EPD types
+- `rfq.ts` - RFQ and quote types
+- `stripe.ts` - Payment and subscription types
+- `supplier-dashboard.ts` - Supplier interface types
 
-### Frontend Components (`frontend/src/components/`)
-- **SupplierProductList.tsx** - Product listing and filtering
-- **AdminConsole.tsx** - Admin dashboard and management
-- **RFQ Components** - Request for Quote workflow
-- **Search Components** - Product search and filtering
-- **Auth Components** - Login and registration flows
-- **Dashboard Components** - User dashboards and analytics
+### `/supabase` - Database & Backend
+Supabase configuration, migrations, and edge functions.
 
-## Architectural Patterns
+**Structure:**
+- **`/migrations`** - SQL migration files (versioned schema changes)
+- **`/functions`** - Supabase Edge Functions (serverless)
+  - `/handle-transactional-email` - Email handling
+  - `/send-email` - Email sending
+  - `/upload-url` - File upload URL generation
+- `schema.sql` - Complete database schema
+- `seed.ts` - Database seeding scripts
+- `rls-policies.sql` - Row Level Security policies
 
-### API-First Design
-- All platform functions exposed via REST/GraphQL APIs
-- Swagger/OpenAPI documentation (`backend/openapi.yaml`)
-- Decoupled frontend and backend for multi-channel flexibility
+### `/lambda` - AWS Lambda Functions
+Serverless functions for specific automation tasks.
 
-### Headless Commerce
-- Presentation layer (frontend) completely decoupled from business logic (backend)
-- Enables multi-channel deployment (web, mobile, third-party integrations)
+**Functions:**
+- **`/cost-monitor`** - AWS cost monitoring and alerts
+- **`/greenchainz-epd-sync`** - EPD data synchronization
+- **`/supabase-backup`** - Automated database backups
+- **`/antigravity-editor-sanitizer`** - Content sanitization (Python)
 
-### Service-Oriented Architecture
-- Modular services handling specific business domains
-- Each service has clear responsibility and interface
-- Services communicate via well-defined APIs
+### `/database-schemas` - Database Documentation
+SQL schemas, migrations, and database documentation.
 
-### Data Provider Pattern
-- Abstract base provider class for extensibility
-- Multiple provider implementations (EC3, EPD International, FSC, etc.)
-- Standardized data transformation and validation
+**Contents:**
+- `schema.sql` - Master database schema
+- `mvp_schema.sql` - MVP-specific schema
+- `performance-indexes.sql` - Performance optimization indexes
+- `/migrations` - Historical migration files
+- Seed data files for plans and data providers
 
-### Authentication & Authorization
-- Passport.js OAuth integration (GitHub, Google, LinkedIn, Microsoft)
-- JWT token-based API authentication
-- Session-based web authentication
+### `/docs` - Documentation
+Comprehensive project documentation.
 
-## Technology Stack Integration
+**Categories:**
+- **`/brand`** - Brand guidelines and color palettes
+- **`/sales`** - Sales materials and objection handling
+- Technical guides (OAuth, Stripe, Sentry, Autodesk integration)
+- Deployment and security documentation
+- Marketing and outreach templates
 
-### Frontend Stack
-- **Framework**: React 19 + TypeScript
-- **Build Tool**: Vite
-- **Routing**: React Router v6
-- **State Management**: Zustand
-- **Styling**: Tailwind CSS + PostCSS
-- **UI Components**: Radix UI, Heroicons, Lucide React
-- **HTTP Client**: Axios
-- **Database Client**: Supabase JS SDK
-- **Analytics**: React GA4
-- **Email Rendering**: React Email
+### `/emails` - Email Templates
+React-based email templates using React Email.
 
-### Backend Stack
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: PostgreSQL (via Supabase)
-- **Authentication**: Passport.js (OAuth)
-- **File Storage**: AWS S3
-- **Email**: Nodemailer, Resend
-- **API Documentation**: Swagger UI + OpenAPI
-- **Data Parsing**: Cheerio, CSV Parser
+**Structure:**
+- **`/components`** - Reusable email components (Header, Footer, Button)
+- **`/templates`** - Email templates
+  - `WelcomeEmail.tsx` - User welcome
+  - `RFQConfirmationEmail.tsx` - RFQ submission confirmation
+  - `SupplierQuoteResponse.tsx` - Quote response notification
+  - `ProductApprovalEmail.tsx` - Product approval notification
 
-### Infrastructure
-- **Frontend Hosting**: Vercel (Next.js/React deployment)
-- **Backend Hosting**: Docker containers
-- **Database**: Supabase (PostgreSQL managed)
-- **CDN/Security**: Cloudflare (DDoS, WAF, SSL/TLS)
-- **File Storage**: AWS S3
-- **Async Processing**: AWS Lambda
-- **IaC**: Terraform
+### `/terraform` - Infrastructure as Code
+Terraform configurations for AWS infrastructure.
 
-## Database Schema Highlights
+**Structure:**
+- **`/aws`** - AWS-specific resources
+  - `s3.tf` - S3 bucket configuration
+  - `lambda.tf` - Lambda function definitions
+  - `ses.tf` - Email service configuration
+  - `cloudfront.tf` - CDN configuration
+  - `budgets.tf` - Cost monitoring
 
-### Core Tables
-- **users** - User accounts and profiles
-- **suppliers** - Supplier company information
-- **products** - Product listings with sustainability data
-- **epds** - Environmental Product Declarations
-- **certifications** - Product and supplier certifications
-- **rfqs** - Request for Quote records
-- **quotes** - Supplier quote responses
-- **orders** - Purchase orders
-- **compliance_records** - Compliance verification data
+### `/scripts` - Automation Scripts
+Utility scripts for development and operations.
 
-### Relationships
-- Users → Suppliers (one-to-many)
-- Suppliers → Products (one-to-many)
-- Products → EPDs (one-to-many)
-- Products → Certifications (many-to-many)
-- RFQs → Quotes (one-to-many)
-- Users → RFQs (one-to-many)
+**Key Scripts:**
+- `generate_quarterly_report.py` - Analytics report generation
+- `scrape-supplier.ts` - Supplier data scraping
+- `deploy-vercel.ps1` - Vercel deployment automation
+- `quick-deploy.sh` - Quick deployment script
+- Various fix and cleanup scripts
+
+### `/tests` - End-to-End Tests
+Playwright-based E2E tests for critical user flows.
+
+**Test Suites:**
+- `auth.spec.ts` - Authentication flows
+- `supplier.spec.ts` - Supplier workflows
+- `api.spec.ts` - API endpoint testing
+- `verify_architect_dashboard.spec.ts` - Dashboard verification
+
+### `/cloudflare-landing` - Static Marketing Pages
+Static HTML landing pages for Cloudflare Pages deployment.
+
+**Pages:**
+- `index.html` - Main landing page
+- `/architects` - Architect-focused landing
+- `/suppliers` - Supplier-focused landing
+- `/data-providers` - Data provider landing
+
+### `/campaigns` - Marketing Campaigns
+Campaign materials and outreach content.
+
+**Current Campaigns:**
+- **`/founding-50`** - Founding member campaign
+  - Email outreach templates
+  - LinkedIn post content
+  - Follow-up sequences
+
+## Core Architectural Patterns
+
+### 1. API-First Design
+Every platform function exposed via secure, documented API endpoints in `/app/api`.
+
+### 2. Role-Based Access Control (RBAC)
+- User roles: `buyer`, `supplier`, `admin`, `data_provider`
+- Role-specific dashboards and permissions
+- Supabase RLS policies enforce data access
+
+### 3. Hybrid Data Strategy
+- **SQL (Supabase PostgreSQL):** Transactional data (users, orders, RFQs)
+- **JSONB Fields:** Flexible sustainability data (EPDs, certifications)
+- **Indexes:** Optimized for search and filtering
+
+### 4. Server Components First
+- Default to React Server Components for performance
+- Client components (`"use client"`) only when needed for interactivity
+- Server actions for mutations and form handling
+
+### 5. Type Safety
+- Centralized TypeScript types in `/types`
+- Strict type checking across frontend and backend
+- Zod schemas for runtime validation
+
+## Key Relationships
+
+### Authentication Flow
+`/app/login` → Supabase Auth → Role detection → Dashboard redirect (`/admin`, `/architect`, `/supplier`)
+
+### RFQ Workflow
+Buyer creates RFQ → `/app/api/rfq` → Supabase → Matching algorithm → Supplier notification → Quote submission → Comparison
+
+### Product Data Flow
+Supplier uploads → `/app/api/admin/products` → Verification → EPD sync (`/lambda/greenchainz-epd-sync`) → Search index → Buyer discovery
+
+### Email Flow
+Trigger → `/lib/email/resend-client.ts` → Template (`/emails/templates`) → Resend API → Delivery + tracking
