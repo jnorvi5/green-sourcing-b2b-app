@@ -78,3 +78,5 @@ local.settings.json
 scripts/debug_connection.ts
 scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
+scripts/guess_deployment.ts
+scripts/guess_deployment_2.ts
