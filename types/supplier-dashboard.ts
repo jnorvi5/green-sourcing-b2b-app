@@ -44,6 +44,13 @@ export interface SupplierProfile {
     expiry?: string;
   }>;
   geographic_coverage: string[];
+  scraped_data?: Array<{
+    id: string;
+    url: string;
+    data_type: string;
+    data: any;
+    scraped_at: string;
+  }>;
 }
 
 export interface Product {
