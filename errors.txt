@@ -1,0 +1,82 @@
+
+> green-sourcing-b2b-app@0.1.0 type-check
+> tsc --noEmit
+
+app/api/audit/route.ts(29,26): error TS4111: Property 'AZURE_OPENAI_DEPLOYMENT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_DEPLOYMENT'].
+app/api/credits/balance/route.ts(8,21): error TS4111: Property 'NEXT_PUBLIC_SUPABASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_SUPABASE_URL'].
+app/api/credits/balance/route.ts(9,21): error TS4111: Property 'SUPABASE_SERVICE_ROLE_KEY' comes from an index signature, so it must be accessed with ['SUPABASE_SERVICE_ROLE_KEY'].
+app/api/credits/purchase/route.ts(6,39): error TS4111: Property 'STRIPE_SECRET_KEY' comes from an index signature, so it must be accessed with ['STRIPE_SECRET_KEY'].
+app/api/credits/purchase/route.ts(7,5): error TS2322: Type '"2024-06-20"' is not assignable to type '"2023-10-16"'.
+app/api/credits/purchase/route.ts(13,21): error TS4111: Property 'NEXT_PUBLIC_SUPABASE_URL' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_SUPABASE_URL'].
+app/api/credits/purchase/route.ts(14,21): error TS4111: Property 'SUPABASE_SERVICE_ROLE_KEY' comes from an index signature, so it must be accessed with ['SUPABASE_SERVICE_ROLE_KEY'].
+app/api/cron/scraper/route.ts(7,46): error TS4111: Property 'CRON_SECRET' comes from an index signature, so it must be accessed with ['CRON_SECRET'].
+app/api/intercom/canvas/route.ts(22,25): error TS2339: Property 'name' does not exist on type 'MaterialMatch'.
+app/api/intercom/canvas/route.ts(22,36): error TS2339: Property 'gwp' does not exist on type 'MaterialMatch'.
+app/api/intercom/canvas/route.ts(25,59): error TS2339: Property 'id' does not exist on type 'MaterialMatch'.
+app/api/webhooks/stripe/route.ts(43,56): error TS4111: Property 'user_id' comes from an index signature, so it must be accessed with ['user_id'].
+app/api/webhooks/stripe/route.ts(44,58): error TS4111: Property 'purchase_type' comes from an index signature, so it must be accessed with ['purchase_type'].
+app/architect/rfq/new/page.tsx(30,3): error TS2322: Type '"kg"' is not assignable to type 'UnitType'.
+app/architect/rfq/new/page.tsx(31,3): error TS2322: Type '"m3"' is not assignable to type 'UnitType'.
+app/architect/rfq/new/page.tsx(32,3): error TS2322: Type '"m2"' is not assignable to type 'UnitType'.
+app/architect/rfq/new/page.tsx(50,21): error TS18047: 'searchParams' is possibly 'null'.
+app/architect/rfq/new/page.tsx(60,7): error TS2322: Type '"kg"' is not assignable to type 'UnitType | undefined'.
+app/architect/rfq/new/page.tsx(141,36): error TS2345: Argument of type '(data: RFQFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type 'RFQFormData'.
+      Type 'FieldValues' is missing the following properties from type 'RFQFormData': project_name, project_description, material_category, quantity, and 3 more.
+app/onboarding/deposit-modal.tsx(12,15): error TS4111: Property 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'].
+app/supplier/products/new/page.tsx(349,25): error TS2322: Type '{ onUploadComplete: (url: string) => void; className: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'onUploadComplete' does not exist on type 'IntrinsicAttributes'.
+components/PostHogProvider.tsx(9,30): error TS4111: Property 'NEXT_PUBLIC_POSTHOG_KEY' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_POSTHOG_KEY'].
+lib/agents/assistant/azure-client.ts(8,25): error TS4111: Property 'AZURE_OPENAI_API_KEY' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_API_KEY'].
+lib/agents/assistant/azure-client.ts(8,61): error TS4111: Property 'AZURE_OPENAI_ENDPOINT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_ENDPOINT'].
+lib/agents/assistant/azure-client.ts(10,37): error TS4111: Property 'AZURE_OPENAI_API_KEY' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_API_KEY'].
+lib/agents/assistant/azure-client.ts(11,39): error TS4111: Property 'AZURE_OPENAI_ENDPOINT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_ENDPOINT'].
+lib/agents/email/email-agent.ts(53,30): error TS4111: Property 'ZOHO_CLIENT_ID' comes from an index signature, so it must be accessed with ['ZOHO_CLIENT_ID'].
+lib/agents/email/email-agent.ts(97,26): error TS4111: Property 'ZOHO_CLIENT_ID' comes from an index signature, so it must be accessed with ['ZOHO_CLIENT_ID'].
+lib/agents/email/zoho-client.ts(14,35): error TS4111: Property 'ZOHO_CLIENT_ID' comes from an index signature, so it must be accessed with ['ZOHO_CLIENT_ID'].
+lib/agents/email/zoho-client.ts(15,39): error TS4111: Property 'ZOHO_CLIENT_SECRET' comes from an index signature, so it must be accessed with ['ZOHO_CLIENT_SECRET'].
+lib/agents/email/zoho-client.ts(16,39): error TS4111: Property 'ZOHO_REFRESH_TOKEN' comes from an index signature, so it must be accessed with ['ZOHO_REFRESH_TOKEN'].
+lib/agents/email/zoho-client.ts(17,36): error TS4111: Property 'ZOHO_ACCOUNT_ID' comes from an index signature, so it must be accessed with ['ZOHO_ACCOUNT_ID'].
+lib/agents/email/zoho-client.ts(37,9): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+lib/agents/foundry-agent.ts(16,30): error TS4111: Property 'AZURE_OPENAI_API_KEY' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_API_KEY'].
+lib/agents/foundry-agent.ts(17,32): error TS4111: Property 'AZURE_OPENAI_ENDPOINT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_ENDPOINT'].
+lib/agents/foundry-agent.ts(18,34): error TS4111: Property 'AZURE_OPENAI_DEPLOYMENT_NAME' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_DEPLOYMENT_NAME'].
+lib/agents/foundry-agent.ts(142,66): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion>', gave the following error.
+    Argument of type '{ messages: any; tools: any; tool_choice: "auto"; }' is not assignable to parameter of type 'ChatCompletionCreateParamsNonStreaming'.
+      Property 'model' is missing in type '{ messages: any; tools: any; tool_choice: "auto"; }' but required in type 'ChatCompletionCreateParamsNonStreaming'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Argument of type '{ messages: any; tools: any; tool_choice: "auto"; }' is not assignable to parameter of type 'ChatCompletionCreateParamsStreaming'.
+      Type '{ messages: any; tools: any; tool_choice: "auto"; }' is missing the following properties from type 'ChatCompletionCreateParamsStreaming': stream, model
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion | Stream<...>>', gave the following error.
+    Argument of type '{ messages: any; tools: any; tool_choice: "auto"; }' is not assignable to parameter of type 'ChatCompletionCreateParamsBase'.
+      Property 'model' is missing in type '{ messages: any; tools: any; tool_choice: "auto"; }' but required in type 'ChatCompletionCreateParamsBase'.
+lib/agents/foundry-agent.ts(174,37): error TS4111: Property 'EPD_API_KEY' comes from an index signature, so it must be accessed with ['EPD_API_KEY'].
+lib/agents/foundry-agent.ts(211,74): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion>', gave the following error.
+    Argument of type '{ messages: any; }' is not assignable to parameter of type 'ChatCompletionCreateParamsNonStreaming'.
+      Property 'model' is missing in type '{ messages: any; }' but required in type 'ChatCompletionCreateParamsNonStreaming'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Argument of type '{ messages: any; }' is not assignable to parameter of type 'ChatCompletionCreateParamsStreaming'.
+      Type '{ messages: any; }' is missing the following properties from type 'ChatCompletionCreateParamsStreaming': stream, model
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion | Stream<...>>', gave the following error.
+    Argument of type '{ messages: any; }' is not assignable to parameter of type 'ChatCompletionCreateParamsBase'.
+      Property 'model' is missing in type '{ messages: any; }' but required in type 'ChatCompletionCreateParamsBase'.
+lib/agents/scraper/browser-pool.ts(13,45): error TS4111: Property 'PUPPETEER_EXECUTABLE_PATH' comes from an index signature, so it must be accessed with ['PUPPETEER_EXECUTABLE_PATH'].
+lib/agents/social/linkedin-client.ts(5,40): error TS4111: Property 'LINKEDIN_ACCESS_TOKEN' comes from an index signature, so it must be accessed with ['LINKEDIN_ACCESS_TOKEN'].
+lib/agents/social/social-agent.ts(33,35): error TS4111: Property 'supplierName' comes from an index signature, so it must be accessed with ['supplierName'].
+lib/agents/social/social-agent.ts(34,35): error TS4111: Property 'productCategory' comes from an index signature, so it must be accessed with ['productCategory'].
+lib/agents/social/social-agent.ts(39,76): error TS4111: Property 'topic' comes from an index signature, so it must be accessed with ['topic'].
+lib/agents/social/social-agent.ts(43,34): error TS4111: Property 'LINKEDIN_AUTHOR_URN' comes from an index signature, so it must be accessed with ['LINKEDIN_AUTHOR_URN'].
+lib/agents/social/social-agent.ts(48,44): error TS4111: Property 'LINKEDIN_AUTHOR_URN' comes from an index signature, so it must be accessed with ['LINKEDIN_AUTHOR_URN'].
+lib/azure-openai.ts(4,30): error TS4111: Property 'AZURE_OPENAI_ENDPOINT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_ENDPOINT'].
+lib/azure-openai.ts(5,28): error TS4111: Property 'AZURE_OPENAI_API_KEY' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_API_KEY'].
+lib/azure-openai.ts(6,32): error TS4111: Property 'AZURE_OPENAI_DEPLOYMENT' comes from an index signature, so it must be accessed with ['AZURE_OPENAI_DEPLOYMENT'].
+lib/posthog.ts(5,49): error TS4111: Property 'NEXT_PUBLIC_POSTHOG_KEY' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_POSTHOG_KEY'].
+lib/posthog.ts(6,23): error TS4111: Property 'NEXT_PUBLIC_POSTHOG_HOST' comes from an index signature, so it must be accessed with ['NEXT_PUBLIC_POSTHOG_HOST'].
+lib/services/external-apis.ts(39,20): error TS4111: Property 'EC3_CLIENT_ID' comes from an index signature, so it must be accessed with ['EC3_CLIENT_ID'].
+lib/services/external-apis.ts(39,50): error TS4111: Property 'EC3_CLIENT_SECRET' comes from an index signature, so it must be accessed with ['EC3_CLIENT_SECRET'].
+lib/services/external-apis.ts(71,20): error TS4111: Property 'EPD_API_KEY' comes from an index signature, so it must be accessed with ['EPD_API_KEY'].
+lib/services/external-apis.ts(78,27): error TS4111: Property 'EPD_API_KEY' comes from an index signature, so it must be accessed with ['EPD_API_KEY'].
