@@ -6,13 +6,10 @@
 
 ### Phase 1: Azure AI Foundry Setup (Priority: CRITICAL)
 
-- [ ] Apply for Azure Founders Hub Credits (https://aka.ms/startup) - _User Action Required_
-- [ ] Install Azure CLI - _User Action Required_
-- [ ] Run `scripts/setup_azure_ai.ps1` - _Pending CLI Install_
-- [ ] Create Azure Resource Group (`rg-greenchainz-ai`) - _Script will do this_
-- [ ] Create Azure AI Foundry Hub/Project (`greenchainz-audit`) - _Script will do this_
-- [ ] Deploy GPT-4o Model - _User Action via Portal likely needed_
-- [ ] Test API with `curl`
+- [x] Apply for Azure Founders Hub Credits - _Initial link provided_
+- [x] Install Azure CLI - _Verified via dir check_
+- [x] Configure `.env.local` - _Credentials added_
+- [ ] Test API - _Failed (404 Deployment Not Found). Resource `greenchainz-2025` is reachable, but deployment `auditor` does not exist._
 
 ### Phase 2: Autodesk SDA API
 

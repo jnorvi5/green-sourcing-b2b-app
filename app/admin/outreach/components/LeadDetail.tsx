@@ -135,7 +135,7 @@ export default function LeadDetail({
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <select
           value={lead.status}
-          onChange={(e: any) => handleStatusChange(e.target.value as LeadStatus)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleStatusChange(e.target.value as LeadStatus)}
           className={`px-3 py-1.5 rounded-lg border text-sm font-medium ${statusColors[lead.status]} bg-transparent focus:outline-none`}
         >
           {Object.values(LeadStatus).map((status) => (
@@ -231,7 +231,7 @@ export default function LeadDetail({
         <label className="text-sm text-gray-500 block mb-2">Notes</label>
         <textarea
           value={notes}
-          onChange={(e: any) => setNotes(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
           onBlur={handleUpdateNotes}
           rows={3}
           className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"

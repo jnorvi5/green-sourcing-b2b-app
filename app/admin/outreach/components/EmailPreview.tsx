@@ -111,7 +111,7 @@ export default function EmailPreview({
               <input
                 type="text"
                 value={editedSubject}
-                onChange={(e: any) => setEditedSubject(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedSubject(e.target.value)}
                 className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
               />
             ) : (
@@ -125,7 +125,7 @@ export default function EmailPreview({
             {isEditing ? (
               <textarea
                 value={editedBody}
-                onChange={(e: any) => setEditedBody(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditedBody(e.target.value)}
                 rows={15}
                 className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500 resize-none font-mono text-sm"
               />

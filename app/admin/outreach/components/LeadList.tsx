@@ -62,14 +62,14 @@ export default function LeadList({
           type="text"
           placeholder="Search leads..."
           value={searchQuery}
-          onChange={(e: any) => onSearch(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearch(e.target.value)}
           className="flex-1 min-w-[200px] bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500"
         />
         
         {/* Status Filter */}
         <select
           value={statusFilter}
-          onChange={(e: any) => onStatusFilter(e.target.value as LeadStatus | '')}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onStatusFilter(e.target.value as LeadStatus | '')}
           className="bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
         >
           <option value="">All Statuses</option>
@@ -83,7 +83,7 @@ export default function LeadList({
         {/* Type Filter */}
         <select
           value={typeFilter}
-          onChange={(e: any) => onTypeFilter(e.target.value as LeadType | '')}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onTypeFilter(e.target.value as LeadType | '')}
           className="bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
         >
           <option value="">All Types</option>

@@ -10,7 +10,8 @@
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/types/*": ["types/*"],
-      "@/models/*": ["models/*"]
+      "@/models/*": ["models/*"],
+      "@/hooks/*": ["hooks/*"]
     },
     "types": ["node", "jest"],
     "jsx": "preserve",
