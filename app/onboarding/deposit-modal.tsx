@@ -9,7 +9,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env["NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"]!
 );
 
 export default function DepositModal({ userId: _userId }: { userId: string }) {

@@ -3,20 +3,20 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-06-20', // Updated to a valid recent version
+const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
+    apiVersion: '2023-10-16',
 })
 
 export async function POST(req: Request) {
     const cookieStore = cookies()
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
                 get: (name: string) => cookieStore.get(name)?.value,
-                set: (name: string, value: string) => { },
-                remove: (name: string) => { },
+                set: (_name: string, _value: string) => { },
+                remove: (_name: string) => { },
             },
         }
     )

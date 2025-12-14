@@ -40,8 +40,8 @@ export async function POST(req: Request) {
     switch (event.type) {
         case 'payment_intent.succeeded':
             const paymentIntent = event.data.object as Stripe.PaymentIntent
-            const userIdMeta = paymentIntent.metadata?.user_id
-            const purchaseType = paymentIntent.metadata?.purchase_type
+            const userIdMeta = paymentIntent.metadata?.['user_id']
+            const purchaseType = paymentIntent.metadata?.['purchase_type']
 
             if (userIdMeta && purchaseType) {
                 if (purchaseType === 'deposit') {
@@ -104,10 +104,6 @@ export async function POST(req: Request) {
                 }
             }
             break
-
-        // Check for other event types if needed
-        default:
-            console.log(`Unhandled event type ${event.type}`)
     }
 
     return NextResponse.json({ received: true })
