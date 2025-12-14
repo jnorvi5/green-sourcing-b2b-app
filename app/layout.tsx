@@ -2,6 +2,7 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
+import PostHogProvider from '@/components/PostHogProvider';
 import IntercomProvider from '@/components/IntercomProvider';
 import AgentChat from '@/components/AgentChat';
 
@@ -25,12 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-slate-950 text-white">
-        <IntercomProvider>
-          {children}
-        </IntercomProvider>
-        <AgentChat />
+        <PostHogProvider>
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
+          <AgentChat />
+        </PostHogProvider>
       </body>
     </html>
   );
 }
-

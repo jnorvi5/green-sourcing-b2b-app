@@ -39,6 +39,8 @@
     "openai": "^4.104.0",
     "pdfkit": "^0.14.0",
     "postcss": "^8.4.32",
+    "posthog-js": "^1.306.1",
+    "posthog-node": "^5.17.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.68.0",
