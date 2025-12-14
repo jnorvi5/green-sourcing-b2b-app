@@ -80,3 +80,10 @@ scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
 scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
+
+# Generated Junk
+*.txt
+main
+debug_output
+tsc_errors.txt
+build_errors.txt
