@@ -1,3 +1,5 @@
+'use client';
+
 import { FaLeaf, FaCheckCircle, FaInfoCircle, FaClock } from 'react-icons/fa';
 
 interface MaterialPassportProps {

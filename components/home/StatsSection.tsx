@@ -1,3 +1,5 @@
+'use client';
+
 export default function StatsSection() {
   return (
     <section className="py-16 bg-slate-900/50">

@@ -1,3 +1,5 @@
+'use client';
+
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'

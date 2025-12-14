@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * Export to Revit Button Component
  * Allows users to export GreenChainz materials to their Revit projects

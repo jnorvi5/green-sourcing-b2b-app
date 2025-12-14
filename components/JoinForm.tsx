@@ -1,4 +1,6 @@
 'use client';
+
+'use client';
 import { useState, ChangeEvent, FormEvent } from 'react';
 
 export default function JoinForm() {

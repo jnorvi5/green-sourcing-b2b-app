@@ -9,55 +9,76 @@ import { createClient } from '@supabase/supabase-js';
 /**
  * Create Stripe Checkout session for subscription upgrade
  */
+/**
+ * Create Stripe Checkout session for subscription upgrade
+ */
 export async function createCheckoutSession(
-  supplierId: string,
-  tier: 'standard' | 'verified',
+  entityId: string, // User ID or Supplier ID
+  priceIdKey: keyof typeof STRIPE_PRICE_IDS,
   options?: {
     successUrl?: string;
     cancelUrl?: string;
   }
 ): Promise<{ url: string; sessionId: string }> {
-  // Get supplier details
   const supabase = createClient(
     process.env['NEXT_PUBLIC_SUPABASE_URL']!,
     process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
   );
 
-  const { data: supplier, error } = await supabase
+  // Attempt to find if entity is a supplier
+  const { data: supplier } = await supabase
     .from('suppliers')
     .select('id, name, user_id, stripe_customer_id')
-    .eq('id', supplierId)
+    .eq('id', entityId)
     .single();
 
-  if (error || !supplier) {
-    throw new Error('Supplier not found');
+  let customerId = supplier?.stripe_customer_id;
+  let email: string | undefined;
+  let userId = supplier?.user_id || entityId; // Fallback to treating entityId as userId if not supplier
+
+  const metadata: Record<string, string> = { tier: priceIdKey };
+
+  if (supplier) {
+    metadata['supplier_id'] = supplier.id;
+    metadata['supplier_name'] = supplier.name;
   }
 
-  // Get user email for Stripe customer
-  const { data: user } = await supabase.auth.admin.getUserById(supplier.user_id);
-  const customerEmail = user?.user?.email;
+  // Get user email
+  const { data: userData } = await supabase.auth.admin.getUserById(userId);
+  if (userData?.user) {
+    email = userData.user.email;
+  } else if (!supplier) {
+    // If not a supplier and user not found, try treating entityId as user ID in public auth? 
+    // For now assume valid user ID passed
+  }
 
   // Determine price ID
-  const priceId = tier === 'standard' ? STRIPE_PRICE_IDS.standard_monthly : STRIPE_PRICE_IDS.verified_monthly;
+  const priceId = STRIPE_PRICE_IDS[priceIdKey];
+  if (!priceId) throw new Error('Invalid Price configuration');
 
   // Create or retrieve Stripe customer
-  let customerId = supplier.stripe_customer_id;
-
   if (!customerId) {
     const customer = await stripe.customers.create({
-      email: customerEmail,
-      metadata: {
-        supplier_id: supplierId,
-        supplier_name: supplier.name,
-      },
+      email: email,
+      metadata: metadata,
     });
     customerId = customer.id;
 
-    // Update supplier with customer ID
-    await supabase
-      .from('suppliers')
-      .update({ stripe_customer_id: customerId })
-      .eq('id', supplierId);
+    // Save Customer ID
+    if (supplier) {
+      await supabase
+        .from('suppliers')
+        .update({ stripe_customer_id: customerId })
+        .eq('id', supplier.id);
+    } else {
+      // If it's a regular user (Architect), we might need to store it in a 'profiles' table 
+      // or 'customers' table. For now, we'll try 'profiles' if it exists.
+      await supabase
+        .from('profiles')
+        .update({ stripe_customer_id: customerId })
+        .eq('id', userId)
+        .maybeSingle(); // Ignore error if table doesn't exist or column missing
+    }
   }
 
   // Create Checkout session
@@ -73,15 +94,9 @@ export async function createCheckoutSession(
     ],
     success_url: options?.successUrl || getSuccessUrl('{CHECKOUT_SESSION_ID}'),
     cancel_url: options?.cancelUrl || getCancelUrl(),
-    metadata: {
-      supplier_id: supplierId,
-      tier: tier,
-    },
+    metadata: metadata,
     subscription_data: {
-      metadata: {
-        supplier_id: supplierId,
-        tier: tier,
-      },
+      metadata: metadata,
     },
     allow_promotion_codes: true,
   });

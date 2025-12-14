@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * Pricing Page
  * Displays subscription tiers and upgrade buttons

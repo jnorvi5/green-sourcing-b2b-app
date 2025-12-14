@@ -1,3 +1,5 @@
+'use client';
+
 export default function ProblemSolutionSection() {
   return (
     <section className="py-20">

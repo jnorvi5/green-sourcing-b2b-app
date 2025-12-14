@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * Subscription Management Dashboard
  * Allows suppliers to view and manage their subscription
