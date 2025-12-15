@@ -154,7 +154,7 @@ export class FoundryAgent {
       const response = await this.client.chat.completions.create({
         model: this.deployment,
         messages: messages as ChatCompletionMessageParam[],
-        tools: tools as ChatCompletionTool[],
+        tools: [...tools] as ChatCompletionTool[],
         tool_choice: 'auto',
       });
 

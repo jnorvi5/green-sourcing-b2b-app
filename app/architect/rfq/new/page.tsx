@@ -37,7 +37,7 @@ function RFQFormContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Get product_id from URL if present
-  const productId = searchParams.get("product_id");
+  const productId = searchParams?.get("product_id");
 
   const {
     register,
@@ -100,11 +100,10 @@ function RFQFormContent() {
       } else {
         router.push("/architect/dashboard?rfq=created");
       }
-    } catch (error: Record<string, unknown>) {
+    } catch (error: unknown) {
       console.error("Error submitting RFQ:", error);
-      setErrorMessage(
-        error.message || "An unexpected error occurred. Please try again."
-      );
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(errorMessage);
       setIsSubmitting(false);
     }
   };

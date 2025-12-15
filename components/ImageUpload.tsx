@@ -5,15 +5,47 @@
 
 import { useState } from 'react';
 
-export default function ImageUpload() {
+interface ImageUploadProps {
+  onUploadComplete?: (url: string) => void;
+  className?: string;
+}
+
+export default function ImageUpload({ onUploadComplete, className }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      
+      // Auto-upload when file is selected
+      setUploading(true);
+      // Placeholder for S3 upload logic
+      console.log("Simulating upload for:", selectedFile.name);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setUploading(false);
+      
+      // Generate a placeholder URL
+      const placeholderUrl = URL.createObjectURL(selectedFile);
+      if (onUploadComplete) {
+        onUploadComplete(placeholderUrl);
+      }
     }
   };
+
+  // If used as a simple input overlay
+  if (className) {
+    return (
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className={className}
+        disabled={uploading}
+      />
+    );
+  }
 
   const handleUpload = async () => {
     if (!file) {

@@ -220,7 +220,10 @@ export type UnitType =
   | 'sqft'
   | 'linear ft'
   | 'tons'
-  | 'units';
+  | 'units'
+  | 'kg'
+  | 'm3'
+  | 'm2';
 
 export type BudgetRange =
   | '<$10k'

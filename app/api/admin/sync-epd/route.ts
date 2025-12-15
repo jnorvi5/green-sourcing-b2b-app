@@ -140,8 +140,9 @@ export async function POST(request: NextRequest) {
 
           fetchedCount++;
 
-        } catch (err: Record<string, unknown>) {
-          errors.push({ item_index: fetchedCount, error: err.message });
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          errors.push({ item_index: fetchedCount, error: errorMessage });
         }
       }
 
@@ -164,10 +165,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error: Record<string, unknown>) {
+  } catch (error: unknown) {
     console.error('Sync EPD Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { error: error.message || 'Internal Server Error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

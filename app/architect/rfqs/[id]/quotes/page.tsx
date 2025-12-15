@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getRFQWithQuotes, acceptQuote } from '@/app/actions/quotes';
 import { exportQuotesToCSV } from '@/lib/utils/formatters';

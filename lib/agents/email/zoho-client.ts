@@ -34,7 +34,7 @@ class ZohoMailClient {
 
         const data = await response.json();
         this.accessToken = data.access_token;
-        return this.accessToken;
+        return this.accessToken || '';
     }
 
     async sendEmail(params: {

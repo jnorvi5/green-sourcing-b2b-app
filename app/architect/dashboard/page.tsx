@@ -46,7 +46,7 @@ interface RFQ {
 
 function ArchitectDashboardInner() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [profile, setProfile] = useState<{ full_name?: string } | null>(null);
+  const [profile, setProfile] = useState<{ id?: string; full_name?: string; role?: string } | null>(null);
   const [, setSentRFQs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTestMode, setIsTestMode] = useState(false);

@@ -81,7 +81,7 @@ export async function createSuccessFeeInvoice(
 
   try {
     // Create invoice item first
-    const invoiceItem = await stripe.invoiceItems.create({
+    await stripe.invoiceItems.create({
       customer: supplier.stripe_customer_id,
       amount: feeAmount,
       currency: 'usd',
