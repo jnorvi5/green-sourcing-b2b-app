@@ -4,8 +4,14 @@ import Script from 'next/script';
 
 const GA_MEASUREMENT_ID = process.env['NEXT_PUBLIC_GA_ID'];
 
+// Validate GA Measurement ID format (G-XXXXXXXXXX)
+const isValidGAId = (id: string | undefined): id is string => {
+  if (!id) return false;
+  return /^G-[A-Z0-9]+$/.test(id);
+};
+
 export default function GoogleAnalytics() {
-  if (!GA_MEASUREMENT_ID) {
+  if (!isValidGAId(GA_MEASUREMENT_ID)) {
     return null;
   }
 
