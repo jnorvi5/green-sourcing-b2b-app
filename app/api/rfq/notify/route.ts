@@ -36,6 +36,10 @@ export async function POST(req: Request) {
         .eq('id', rfq_id)
         .single()
 
+    if (!rfq) {
+        return NextResponse.json({ error: 'RFQ not found' }, { status: 404 })
+    }
+
     // Send SMS
     try {
         await sendSMS(

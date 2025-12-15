@@ -3,10 +3,9 @@
  * Fetch billing history including invoices and payments
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getStripe } from '@/lib/stripe/config';
-import type { Payment } from '@/types/stripe';
 import type Stripe from 'stripe';
 
 interface InvoiceWithDetails {
@@ -22,7 +21,7 @@ interface InvoiceWithDetails {
   paid_at?: string;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Authenticate user
     const supabase = await createClient();

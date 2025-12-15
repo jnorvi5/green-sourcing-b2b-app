@@ -44,7 +44,7 @@ export default async function SupplierPage({
   }
 
   // Parse certifications if needed
-  let certifications: any[] = [];
+  let certifications: unknown[] = [];
   if (Array.isArray(supplier.certifications)) {
      certifications = supplier.certifications;
   }
@@ -111,10 +111,10 @@ export default async function SupplierPage({
                     </h3>
                     {certifications.length > 0 ? (
                         <ul className="space-y-3">
-                            {certifications.map((cert: any, i: number) => (
+                            {certifications.map((cert: unknown, i: number) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
                                     <div className="mt-1 w-2 h-2 rounded-full bg-teal-500 flex-shrink-0" />
-                                    {typeof cert === 'string' ? cert : cert.name || JSON.stringify(cert)}
+                                    {typeof cert === 'string' ? cert : (cert as { name?: string })?.name || JSON.stringify(cert)}
                                 </li>
                             ))}
                         </ul>

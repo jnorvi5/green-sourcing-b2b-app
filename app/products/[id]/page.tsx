@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import MaterialPassportCard from "@/components/MaterialPassportCard";
 import { FaArrowLeft, FaIndustry, FaRulerCombined, FaLeaf, FaRecycle } from "react-icons/fa";
-import { Product } from "@/types/schema";
 
 export default async function ProductPage({
   params,
@@ -52,7 +51,7 @@ export default async function ProductPage({
 
   let certifications: string[] = [];
   if (Array.isArray(product.certifications)) {
-    certifications = product.certifications.map((c: any) => {
+    certifications = product.certifications.map((c: unknown) => {
       if (typeof c === "string") return c;
       if (typeof c === "object" && c !== null && "name" in c)
         return (c as { name: string }).name;

@@ -79,12 +79,12 @@ async function callEPDAPI(productId: string): Promise<{ certified: boolean; data
     }
 }
 
-async function callFSCAPI(productId: string): Promise<unknown> {
-  return await checkFSCCertification(productId);
+async function callFSCAPI(productId: string): Promise<{ certified?: boolean } | null> {
+  return await checkFSCCertification(productId) as { certified?: boolean } | null;
 }
 
-async function callAutodeskAPI(productId: string, category: string): Promise<{ carbon_score: string; gwp: number; unit: string } | null> {
-   const data = await getEmbodiedCarbon(productId, { category });
+async function callAutodeskAPI(productId: string, _category: string): Promise<{ carbon_score: string; gwp: number; unit: string } | null> {
+   const data = await getEmbodiedCarbon(productId);
    if (data) {
      return {
          carbon_score: data.gwp < 10 ? 'A' : (data.gwp < 50 ? 'B' : 'C'),
@@ -107,7 +107,7 @@ export async function fetchSustainabilityData(productId: string, materialType: s
   // 1. Check cache
   const cacheKey = `product:${productId}:sustainability:flat`;
   try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis.get(cacheKey) as { timestamp?: number; data?: SustainabilityData } | null;
       if (cached && cached.timestamp && (Date.now() - cached.timestamp < 86400000)) {
         console.log(`[DataAgent] Cache hit for ${productId}`);
         return cached.data as SustainabilityData;

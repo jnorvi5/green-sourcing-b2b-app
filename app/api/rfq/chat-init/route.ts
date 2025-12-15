@@ -32,7 +32,9 @@ export async function POST(req: Request) {
             .eq('status', 'active')
             .single()
 
-        const isPremium = ['Basic', 'Enterprise'].includes(subscription?.supplier_plans?.plan_name)
+        // supplier_plans is an array due to the join
+        const supplierPlans = subscription?.supplier_plans as { plan_name: string }[] | null;
+        const isPremium = supplierPlans?.[0] && ['Basic', 'Enterprise'].includes(supplierPlans[0].plan_name)
 
         // Check existing conversation (architect may have initiated)
         const { data: existing } = await supabase
