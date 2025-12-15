@@ -28,7 +28,7 @@ export default function ArchitectRfqDetailPage({
       // 1. Fetch RFQ
       const { data: rfqData, error: rfqError } = await supabase
         .from("rfqs")
-        .select("*")
+        .select("*, projects(id, name)")
         .eq("id", params.id)
         .single();
 
@@ -103,6 +103,15 @@ export default function ArchitectRfqDetailPage({
         >
           ← Back to Requests
         </Link>
+
+        {rfq.projects && (
+          <Link
+            href={`/projects/${rfq.projects.id}`}
+            className="text-teal-400 hover:text-teal-300 mb-6 ml-4 inline-block"
+          >
+            Go to Project: {rfq.projects.name} →
+          </Link>
+        )}
 
         <div className="flex justify-between items-start mb-8">
           <div>

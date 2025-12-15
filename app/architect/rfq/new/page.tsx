@@ -1,7 +1,5 @@
 'use client';
 
-"use client";
-
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -12,6 +10,7 @@ import type {
   UnitType,
   BudgetRange,
 } from "@/types/rfq";
+import { createClient } from "@/lib/supabase/client";
 
 const materialCategories: MaterialCategory[] = [
   "Lumber",
@@ -43,11 +42,34 @@ function RFQFormContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Get product_id from URL if present
+  // Get parameters from URL if present
   const productId = searchParams.get("product_id");
+  const projectId = searchParams.get("project_id");
+  const materialId = searchParams.get("material_id");
+
+  // Pre-fill values
+  const preFillName = searchParams.get("name") || "";
+  const preFillQty = searchParams.get("qty") ? Number(searchParams.get("qty")) : undefined;
+  const preFillUnit = searchParams.get("unit") as UnitType || "kg";
+  const preFillCategory = searchParams.get("cat") as MaterialCategory || "";
+
+  // Project data state
+  const [projectData, setProjectData] = useState<any>(null);
+
+  useEffect(() => {
+    if (projectId) {
+      // Fetch project details to auto-fill location and name
+      async function fetchProject() {
+         const { data } = await supabase.from('projects').select('*').eq('id', projectId).single();
+         if (data) setProjectData(data);
+      }
+      fetchProject();
+    }
+  }, [projectId]);
 
   const {
     register,
@@ -57,9 +79,24 @@ function RFQFormContent() {
   } = useForm<RFQFormData>({
     defaultValues: {
       urgency: "medium",
-      unit: "kg",
+      unit: preFillUnit,
+      quantity: preFillQty,
+      project_name: "", // Will update when projectData loads
     },
   });
+
+  useEffect(() => {
+    if (projectData) {
+      setValue("project_name", projectData.name);
+      setValue("location", projectData.location);
+    }
+    if (preFillName) {
+      // Could potentially append to description if not matching strictly, but here we assume material details map
+    }
+    if (preFillCategory) {
+      setValue("material_category", preFillCategory);
+    }
+  }, [projectData, preFillName, preFillCategory, setValue]);
 
   const onSubmit = async (data: RFQFormData) => {
     if (!user) {
@@ -86,6 +123,7 @@ function RFQFormContent() {
         message: `Urgency: ${data.urgency}\n\n${data.project_description}`,
         required_certifications: [],
         product_id: productId || null,
+        project_id: projectId || null, // Pass project_id
       };
 
       const response = await fetch("/api/rfqs", {
@@ -106,8 +144,18 @@ function RFQFormContent() {
         return;
       }
 
-      if (result.rfq_id) {
-        router.push(`/architect/rfq/${result.rfq_id}`);
+      // If this was from a material, update the material status
+      if (materialId) {
+        await supabase
+          .from("project_materials")
+          .update({ status: "rfq_sent" })
+          .eq("id", materialId);
+      }
+
+      if (projectId) {
+         router.push(`/projects/${projectId}`);
+      } else if (result.rfq_id) {
+        router.push(`/architect/rfqs/${result.rfq_id}`);
       } else {
         router.push("/architect/dashboard?rfq=created");
       }
@@ -158,7 +206,7 @@ function RFQFormContent() {
               errors.project_name ? "border-red-500" : "border-white/10"
             } text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition`}
             placeholder="e.g., Office Building Renovation"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !!projectId} // Disable if linked to project
           />
           {errors.project_name && (
             <p className="mt-1 text-sm text-red-400">
@@ -298,7 +346,7 @@ function RFQFormContent() {
                 errors.location ? "border-red-500" : "border-white/10"
               } text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition`}
               placeholder="e.g., Seattle, WA"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !!projectId}
             />
             {errors.location && (
               <p className="mt-1 text-sm text-red-400">
@@ -347,6 +395,7 @@ function RFQFormContent() {
               errors.project_description ? "border-red-500" : "border-white/10"
             } text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition`}
             placeholder="Specifications, certifications required, etc."
+            defaultValue={preFillName ? `Item: ${preFillName}\n` : ""}
             disabled={isSubmitting}
           />
         </div>

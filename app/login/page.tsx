@@ -11,7 +11,7 @@ import { FaGithub, FaLinkedin, FaMicrosoft } from 'react-icons/fa';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiCheckSquare } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
