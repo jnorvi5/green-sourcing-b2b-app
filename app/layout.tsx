@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
@@ -41,6 +42,14 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-slate-950 text-white">
+        {/* ✅ START COOKIEYES BANNER */}
+        <Script
+          id="cookieyes"
+          type="text/javascript"
+          src="https://cdn-cookieyes.com/client_data/80d633ac80d2b968de32ce14/script.js"
+          strategy="beforeInteractive"
+        />
+        {/* ✅ END COOKIEYES BANNER */}
         <GoogleAnalytics />
         <SentryProvider>
           <PostHogProvider>
