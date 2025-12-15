@@ -1,47 +1,42 @@
 [
   {
-    "companyName": "Warmcel Insulation",
-    "website": "https://warmcel.com",
-    "contactEmail": "info@warmcel.com",
-    "contactName": "",
-    "categories": ["Insulation", "Recycled Materials"],
-    "certifications": ["Natureplus", "FSC"],
-    "description": "Leading manufacturer of recycled cellulose insulation for sustainable buildings."
+    "name": "Sarah Miller",
+    "role": "Head of Sales",
+    "companyName": "Warmcel",
+    "email": "sarah.miller@example.com",
+    "category": "recycled cellulose insulation",
+    "certification": "Natureplus and FSC certifications"
   },
   {
-    "companyName": "Interface Flooring",
-    "website": "https://interface.com",
-    "contactEmail": "sustainability@interface.com",
-    "contactName": "",
-    "categories": ["Flooring", "Carbon Neutral"],
-    "certifications": ["Carbon Neutral Floors", "EPD"],
-    "description": "Global leader in carbon-neutral modular carpet and luxury vinyl tile."
+    "name": "David Chen",
+    "role": "Sustainability Director",
+    "companyName": "Interface",
+    "email": "david.chen@example.com",
+    "category": "carbon-neutral flooring",
+    "certification": "Carbon Neutral Floors verified by SGS"
   },
   {
-    "companyName": "Ecovative Design",
-    "website": "https://ecovative.com",
-    "contactEmail": "hello@ecovative.com",
-    "contactName": "",
-    "categories": ["Mushroom Materials", "Insulation", "Packaging"],
-    "certifications": ["C2C", "USDA Biobased"],
-    "description": "Mycelium-based sustainable materials for construction and packaging."
+    "name": "Elena Rodriguez",
+    "role": "Marketing Manager",
+    "companyName": "EcoGlass Solutions",
+    "email": "elena.r@example.com",
+    "category": "energy-efficient glazing",
+    "certification": "LEED and Passive House certifications"
   },
   {
-    "companyName": "Kebony",
-    "website": "https://kebony.com",
-    "contactEmail": "info@kebony.com",
-    "contactName": "",
-    "categories": ["Modified Wood", "Cladding", "Decking"],
-    "certifications": ["FSC", "EPD", "C2C"],
-    "description": "Sustainable modified wood that enhances softwood to achieve hardwood characteristics."
+    "name": "Marcus Johnson",
+    "role": "Founder",
+    "companyName": "ReWood Timber",
+    "email": "marcus@example.com",
+    "category": "reclaimed timber products",
+    "certification": "FSC Recycled 100%"
   },
   {
-    "companyName": "CarbonCure Technologies",
-    "website": "https://carboncure.com",
-    "contactEmail": "info@carboncure.com",
-    "contactName": "",
-    "categories": ["Concrete", "Carbon Sequestration"],
-    "certifications": ["EPD"],
-    "description": "Concrete technology that reduces CO2 emissions by mineralizing captured carbon."
+    "name": "Priya Patel",
+    "role": "VP of Business Development",
+    "companyName": "GreenConcrete Co.",
+    "email": "priya.p@example.com",
+    "category": "low-carbon concrete",
+    "certification": "EPD and ISO 14001"
   }
 ]
