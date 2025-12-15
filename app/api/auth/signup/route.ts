@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,34 +18,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    const signupUrl = `${supabaseUrl}/auth/v1/signup`;
-    const signupBody = {
+    // Get cookie store for setting auth cookies
+    const cookieStore = await cookies();
+
+    // Create Supabase client with cookie handling
+    const supabase = createServerClient(
+      supabaseUrl,
+      supabaseKey,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          },
+        },
+      }
+    );
+
+    // Sign up with email and password
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      data: {
-        full_name: fullName,
-        company_name: companyName,
-        user_type: userType,
+      options: {
+        data: {
+          full_name: fullName,
+          company_name: companyName,
+          user_type: userType,
+        },
       },
-    };
-
-    const response = await fetch(signupUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-      },
-      body: JSON.stringify(signupBody),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        const errorMsg = data.msg || data.error || 'Signup failed';
-        return NextResponse.json({ error: errorMsg }, { status: response.status });
+    if (error) {
+      console.log('[SIGNUP] FAILED:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(data);
+    // Check if email confirmation is required
+    if (data.user && !data.session) {
+      // User created but needs email confirmation
+      return NextResponse.json({ 
+        message: 'Please check your email to confirm your account.',
+        requiresConfirmation: true,
+      });
+    }
+
+    return NextResponse.json({
+      user: data.user,
+      session: data.session,
+    });
 
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
