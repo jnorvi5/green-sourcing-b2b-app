@@ -1,30 +1,4 @@
-export interface Product {
-    id: string
-    name: string
-    category: string
-    epd_data?: any
-    description?: string
-}
-
-export interface Supplier {
-    id: string
-    name: string
-    location: string
-    lat: number
-    lng: number
-    verification_status: 'verified' | 'unverified'
-    certifications?: string[]
-    description?: string
-    products: Product[]
-    distance_miles?: number
-    transport_carbon_kg?: number
-    embodied_carbon_kg?: number
-    total_carbon_kg?: number
-    tier?: number
-    match_score?: number
-    is_verified?: boolean
-    is_premium?: boolean
-}
+export * from './schema';
 
 export interface RFQ {
     id: string
