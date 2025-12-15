@@ -19,10 +19,10 @@ export async function POST(req: NextRequest) {
           },
           ...matches.map((m: MaterialMatch) => ({
             type: 'button',
-            label: `${m.name} (${m.gwp} kg CO2e)`,
+            label: `${m.product_name} (${m.carbon_footprint} kg CO2e)`,
             action: {
               type: 'url',
-              url: `https://greenchainz.com/materials/${m.id}`,
+              url: `https://greenchainz.com/materials/${m.product_id}`,
             },
           })),
         ],
