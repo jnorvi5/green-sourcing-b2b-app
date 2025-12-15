@@ -1,22 +1,6 @@
-'use client'
-
-export const dynamic = 'force-dynamic'
-
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { FaSearch, FaMapMarkerAlt, FaLeaf, FaRobot } from 'react-icons/fa'
-import AgentChat from '@/components/AgentChat'
-import { SustainabilityDataBadge } from '@/components/SustainabilityDataBadge'
-
-interface ProductSnippet {
-  _id: string
-  title: string
-  price: number
-  currency: string
-  material_type?: string // Added for Agent
 'use client';
 
-"use client";
+export const dynamic = 'force-dynamic'
 
 import { useState } from "react";
 import Header from "@/components/Header";
@@ -28,6 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import { FadeIn } from "@/components/ui/motion-wrapper";
+import { FaLeaf } from 'react-icons/fa';
+import { SustainabilityDataBadge } from '@/components/SustainabilityDataBadge';
 
 // Lazy load the AgentChat component
 const AgentChat = nextDynamic(() => import("@/components/AgentChat"), {
@@ -40,6 +26,7 @@ interface ProductSnippet {
   title: string;
   price: number;
   currency: string;
+  material_type?: string;
   greenData?: {
     carbonFootprint?: number;
     certifications?: string[];
@@ -64,12 +51,20 @@ interface Supplier {
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [results, setResults] = useState<Supplier[]>([]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSearching(true);
-    // Simulate search delay
-    setTimeout(() => setIsSearching(false), 1000);
+    try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const json = await res.json();
+        setResults(json.data || []);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        setIsSearching(false);
+    }
   };
 
   return (
@@ -113,6 +108,51 @@ export default function SearchPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Results Section */}
+        {results.length > 0 && (
+            <div className="mb-12 space-y-6">
+                <h2 className="text-2xl font-bold">Search Results</h2>
+                {results.map((supplier) => (
+                    <Card key={supplier.id} className="p-6">
+                         <h3 className="text-xl font-bold">{supplier.company_name}</h3>
+                         <p className="text-muted-foreground">{supplier.description}</p>
+
+                        {supplier.matched_products && supplier.matched_products.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-border">
+                            <div className="flex items-center gap-2 mb-4 text-sm text-teal-600 font-medium">
+                            <FaLeaf />
+                            <span>Matching Products</span>
+                            {supplier.agent_insight && (
+                                <span className="text-muted-foreground font-normal ml-2">• {supplier.agent_insight}</span>
+                            )}
+                            </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                            {supplier.matched_products.map((product) => (
+                                <div key={product._id} className="bg-muted/50 rounded-lg p-3 border border-border hover:border-teal-500/30 transition flex flex-col justify-between">
+                                <div>
+                                    <h4 className="font-medium text-foreground truncate mb-1">{product.title}</h4>
+                                    <div className="flex items-center justify-between text-xs mb-3">
+                                    <span className="text-muted-foreground">
+                                        {product.currency} {product.price}
+                                    </span>
+                                    </div>
+                                </div>
+
+                                {/* LIVE Sustainability Data Badge */}
+                                <SustainabilityDataBadge
+                                    productId={product.title}
+                                    materialType={product.material_type || 'Unknown'}
+                                />
+                                </div>
+                            ))}
+                            </div>
+                        </div>
+                        )}
+                    </Card>
+                ))}
+            </div>
+        )}
 
         {/* AI Agent Chat Interface */}
         <div className="grid lg:grid-cols-3 gap-8">
@@ -165,50 +205,6 @@ export default function SearchPage() {
           </div>
         </div>
       </main>
-
-                  {/* Matched Products Section */}
-                  {supplier.matched_products && supplier.matched_products.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-white/5">
-                      <div className="flex items-center gap-2 mb-4 text-sm text-teal-400 font-medium">
-                        <FaLeaf />
-                        <span>Matching Products</span>
-                        {supplier.agent_insight && (
-                          <span className="text-gray-500 font-normal ml-2">• {supplier.agent_insight}</span>
-                        )}
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        {supplier.matched_products.map((product) => (
-                          <div key={product._id} className="bg-black/20 rounded-lg p-3 border border-white/5 hover:border-teal-500/30 transition flex flex-col justify-between">
-                            <div>
-                                <h4 className="font-medium text-gray-200 truncate mb-1">{product.title}</h4>
-                                <div className="flex items-center justify-between text-xs mb-3">
-                                <span className="text-gray-400">
-                                    {product.currency} {product.price}
-                                </span>
-                                </div>
-                            </div>
-
-                            {/* LIVE Sustainability Data Badge */}
-                            <SustainabilityDataBadge
-                                productId={product.title}
-                                materialType={product.material_type || 'Unknown'}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      {/* Microsoft Foundry Agent */}
-      <AgentChat />
-    </main>
-  )
       <Footer />
     </div>
   );
