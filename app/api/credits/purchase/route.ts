@@ -15,8 +15,8 @@ export async function POST(req: Request) {
         {
             cookies: {
                 get: (name: string) => cookieStore.get(name)?.value,
-                set: (_name: string, _value: string) => { },
-                remove: (_name: string) => { },
+                set: () => { },
+                remove: () => { },
             },
         }
     )

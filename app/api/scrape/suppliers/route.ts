@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { z } from 'zod'
+import { AZURE_DEPLOYMENT_CHEAP } from '@/lib/constants'
 
 const RequestSchema = z.object({
     urls: z.array(z.string().url()),
@@ -89,9 +90,9 @@ Return ONLY valid JSON:
                 })
 
                 return { url, success: true, company: extracted.company_name }
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`Scrape error for ${url}:`, error)
-                return { url, success: false, error: error.message || 'Unknown error' }
+                return { url, success: false, error: error instanceof Error ? error.message : 'Unknown error' }
             }
         })
     )
