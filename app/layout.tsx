@@ -1,5 +1,27 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import "./globals.css";
+
+// Dynamically import providers with error boundaries
+const PostHogProvider = dynamic(
+  () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
+  { ssr: false }
+);
+
+const IntercomProvider = dynamic(
+  () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
+  { ssr: false }
+);
+
+const GoogleAnalytics = dynamic(
+  () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
+  { ssr: false }
+);
+
+const AgentChat = dynamic(
+  () => import("@/components/AgentChat").catch(() => ({ default: () => null })),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   title: "GreenChainz - Sustainable Building Materials Marketplace",
@@ -28,7 +50,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-slate-950 text-white">
-        {children}
+        <GoogleAnalytics />
+        <PostHogProvider>
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
+        </PostHogProvider>
+        <AgentChat />
       </body>
     </html>
   );
