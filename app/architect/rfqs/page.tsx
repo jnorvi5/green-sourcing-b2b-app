@@ -34,7 +34,8 @@ export default function ArchitectRfqsPage() {
         .select(
           `
           *,
-          quotes:rfq_responses(count)
+          quotes:rfq_responses(count),
+          projects(name)
         `
         )
         .eq("architect_id", user.id)
@@ -99,7 +100,7 @@ export default function ArchitectRfqsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-xl font-semibold mb-2 group-hover:text-green-400 transition">
-                      {rfq.project_name}
+                      {rfq.projects?.name ? `${rfq.projects.name} - ` : ''}{rfq.project_name}
                     </h3>
                     <div className="flex gap-4 text-sm text-gray-400">
                       <span>{rfq.material_specs.material_type}</span>
