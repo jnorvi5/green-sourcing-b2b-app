@@ -20,7 +20,7 @@ export type RfqResponseStatus = 'submitted' | 'accepted' | 'rejected';
 /**
  * Material type enum matching database type
  */
-export type MaterialType = 
+export type MaterialType =
   | 'insulation'
   | 'flooring'
   | 'cladding'
@@ -208,7 +208,7 @@ export type RfqSort = 'newest' | 'deadline' | 'match_score';
  * Form-specific types
  */
 
-export type MaterialCategory = 
+export type MaterialCategory =
   | 'Lumber'
   | 'Insulation'
   | 'Concrete'
@@ -216,13 +216,13 @@ export type MaterialCategory =
   | 'Flooring'
   | 'Other';
 
-export type UnitType = 
+export type UnitType =
   | 'sqft'
   | 'linear ft'
   | 'tons'
   | 'units';
 
-export type BudgetRange = 
+export type BudgetRange =
   | '<$10k'
   | '$10k-50k'
   | '$50k-100k'
@@ -240,6 +240,7 @@ export interface RFQFormData {
   budget_range?: BudgetRange;
   deadline: string; // ISO date string
   location: string;
+  urgency?: 'low' | 'medium' | 'high';
 }
 
 /**

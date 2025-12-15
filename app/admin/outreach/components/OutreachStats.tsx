@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * OutreachStats Component
  * 

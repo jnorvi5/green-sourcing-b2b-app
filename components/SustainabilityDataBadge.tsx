@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { useSustainabilityData } from '@/lib/hooks/useSustainabilityData';
 
 function Spinner() {

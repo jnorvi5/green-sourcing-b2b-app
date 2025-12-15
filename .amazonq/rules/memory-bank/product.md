@@ -1,61 +1,101 @@
-# GreenChainz - Product Overview
+# Product Overview
 
-## Project Purpose
-GreenChainz is a B2B green sourcing marketplace connecting sustainability-minded buyers (architects, contractors, procurement teams) with verified green suppliers. The platform aggregates, standardizes, and presents Environmental Product Declarations (EPDs), certifications, and carbon footprints in a single, trusted platform.
+## Project Identity
+**Name:** GreenChainz  
+**Type:** B2B Green Sourcing Marketplace  
+**Version:** 0.1.0 (MVP Development Phase)
+
+## Mission Statement
+Build a data-driven B2B marketplace connecting sustainability-minded buyers (architects, contractors, procurement teams) with verified green suppliers through verifiable sustainability data.
 
 ## Core Value Proposition
-- **Verifiable Sustainability Data**: Aggregated EPDs, certifications, and carbon metrics from 5+ data providers
-- **Apples-to-Apples Comparisons**: Standardized sustainability metrics for informed purchasing decisions
-- **Risk Mitigation**: De-risk sourcing of green materials through verified supplier data
-- **B2B Focus**: Tailored for architects, contractors, and procurement teams
+**Our Moat:** Verifiable sustainability data aggregation, standardization, and presentation of EPDs (Environmental Product Declarations), certifications, and carbon footprints in a single, trusted platform.
+
+## Target Users
+
+### Demand Side (Buyers)
+**Primary Persona:** Sustainability-Minded Architect (Sarah)
+- **Goal:** Discover, compare, and de-risk sourcing of green materials
+- **Pain Point:** Fragmented research, no "apples-to-apples" comparisons
+- **Use Cases:**
+  - Search and filter sustainable building materials
+  - Compare products by carbon footprint and certifications
+  - Submit RFQs (Request for Quotes) to qualified suppliers
+  - Track and manage procurement projects
+
+### Supply Side (Sellers)
+**Primary Persona:** Regional Materials Manufacturer (David)
+- **Goal:** Get innovative, sustainable products in front of qualified buyers
+- **Pain Point:** High cost, low ROI of traditional marketing
+- **Use Cases:**
+  - Showcase products with verified sustainability credentials
+  - Respond to qualified RFQs from buyers
+  - Manage product catalog and certifications
+  - Track sales pipeline and analytics
+
+### Platform Administrators
+- **Goal:** Manage platform operations, data quality, and user relationships
+- **Use Cases:**
+  - Monitor system health and automation tasks
+  - Verify supplier credentials and certifications
+  - Manage RFQ matching and notifications
+  - Generate analytics and reports
 
 ## Key Features & Capabilities
 
 ### For Buyers (Architects/Contractors)
-- Search and discover green materials with verified sustainability data
-- Compare products using standardized EPD metrics and carbon footprints
-- Request for Quotes (RFQ) system for bulk sourcing
-- Supplier verification and compliance tracking
-- Market intelligence and trend analysis
+- **Advanced Search & Discovery:** Filter by sustainability metrics, certifications, carbon footprint
+- **RFQ Management:** Submit requests, receive quotes, compare proposals
+- **Project Dashboard:** Track multiple procurement projects
+- **Verified Data:** Access aggregated EPDs and certifications from trusted sources
+- **Carbon Analysis:** Compare environmental impact across products
 
 ### For Suppliers
-- Product listing with sustainability certifications
-- Supplier verification and B-Corp certification tracking
-- Quote management and RFQ response system
-- Brand verification and compliance documentation
-- Access to qualified buyer network
+- **Product Management:** Upload and manage product catalogs
+- **Certification Verification:** Submit and verify sustainability credentials
+- **RFQ Response System:** Receive and respond to qualified buyer requests
+- **Analytics Dashboard:** Track engagement, quotes, and conversions
+- **Subscription Tiers:** Flexible pricing based on feature access
 
-### Platform Services
-- **Data Integration**: Multi-provider EPD and certification data aggregation
-- **Verification System**: Brand verification, B-Corp certification, compliance oracle
-- **Matchmaking**: Intelligent supplier-buyer matching based on requirements
-- **RFQ Management**: Request for Quote routing and management
-- **Market Intelligence**: Sustainability trends and market insights
-- **Email Notifications**: Transactional and marketing email system
-- **File Management**: S3-based product and document uploads
+### For Administrators
+- **System Automation:** One-click automation for EPD sync, supplier matching, notifications
+- **User Management:** Approve suppliers, manage user roles and permissions
+- **Data Quality Control:** Verify certifications and sustainability claims
+- **Analytics & Reporting:** Platform-wide metrics and insights
+- **Email Campaign Management:** Outreach and lead nurturing tools
 
-## Target Users
+## Key Differentiators
 
-### Demand Side: Sustainability-Minded Architect
-- Goal: Discover, compare, and de-risk sourcing of green materials
-- Pain Point: Fragmented research, no standardized comparisons
+| Feature | GreenChainz | Competitors (2050 Materials, Ecomedes) |
+|---------|-------------|----------------------------------------|
+| **Data Moat** | Verified EPDs, certifications, carbon metrics aggregated from 5+ sources | Limited or fragmented data |
+| **Architecture** | Modern, API-first, headless (scalable, multi-channel) | Often monolithic |
+| **Database** | Hybrid SQL/NoSQL (transactional integrity + flexible sustainability data) | Typically single-paradigm |
+| **Target Market** | B2B (architects, contractors, procurement) | Often B2C or mixed |
+| **Verification** | Multi-source data validation and provenance tracking | Single-source or unverified |
 
-### Supply Side: Regional Materials Manufacturer
-- Goal: Get innovative, sustainable products in front of qualified buyers
-- Pain Point: High cost, low ROI of traditional marketing
+## Compliance & Standards
+The platform aligns with international sustainability standards:
+- **ISO 14025:** Type III Environmental Declarations (EPDs)
+- **EN 15804:** Sustainability of construction works
+- **ISO 21930:** Environmental declarations for building products
+- **EPD Hub GPI v1.3:** General Program Instructions for EPD verification
 
-## Competitive Differentiators
-- Modern, API-first, headless architecture (scalable, multi-channel)
-- Hybrid SQL/NoSQL database (transactional integrity + flexible sustainability data)
-- Verified EPDs and certifications from multiple authoritative sources
-- B2B focus vs. B2C competitors
-- Compliance with ISO 14025, EN 15804, ISO 21930 standards
+## Current Development Status
+**Phase:** MVP Development (Phase 1: Foundation - Weeks 1-4)
 
-## Current MVP Status
-- Phase 1: Foundation (IN PROGRESS)
-  - Strategic blueprint finalized
-  - Tech stack selected
-  - Data provider partnerships in progress
-  - Local MVP deployed to Vercel staging
-- Phase 2: Data Integration (Weeks 5-8)
-- Phase 3: Supplier Onboarding (Weeks 9-12)
+**Completed:**
+- Strategic blueprint finalized
+- Tech stack selected
+- Core authentication and routing implemented
+- Admin dashboard foundation built
+
+**In Progress:**
+- Data provider partnerships (EPD International, WAP Sustainability, Building Transparency, Autodesk, FSC)
+- Supplier onboarding system
+- RFQ workflow implementation
+
+**Upcoming:**
+- API integrations with 2-3 core data providers
+- White-glove onboarding for 10-15 anchor suppliers
+- Production deployment to Vercel

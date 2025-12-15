@@ -6,7 +6,7 @@
 // Subscription Tiers
 // ============================================
 
-export type SubscriptionTier = 'free' | 'standard' | 'verified';
+export type SubscriptionTier = 'free' | 'standard' | 'verified' | 'professional' | 'supplier';
 
 export interface SubscriptionLimits {
   products: number | 'unlimited';
@@ -45,6 +45,24 @@ export const TIER_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
     epd_verifications: 1,
     verified_badge: true,
     ranking_boost: 2,
+  },
+  professional: {
+    products: 100,
+    rfqs: 'unlimited',
+    visibility: 'premium',
+    analytics: 'basic',
+    epd_verifications: 0,
+    verified_badge: false,
+    ranking_boost: 1,
+  },
+  supplier: {
+    products: 'unlimited',
+    rfqs: 10, // Example limit for receiving
+    visibility: 'premium',
+    analytics: 'advanced',
+    epd_verifications: 5,
+    verified_badge: true,
+    ranking_boost: 3,
   },
 };
 
@@ -104,7 +122,7 @@ export interface SupplierWithSubscription {
 // ============================================
 
 export interface CreateCheckoutRequest {
-  tier: 'standard' | 'verified'; // Can't checkout for free tier
+  tier: 'professional' | 'supplier' | 'standard' | 'verified'; // Can't checkout for free tier
   success_url?: string;
   cancel_url?: string;
 }

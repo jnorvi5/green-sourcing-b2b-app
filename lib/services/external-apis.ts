@@ -1,6 +1,6 @@
 /**
  * External API Service Layer
- * 
+ *
  * Unified interface for querying external sustainability databases (EC3, EPD International).
  */
 
@@ -78,15 +78,15 @@ export async function queryEPD(intent: SearchIntent): Promise<ExternalProduct[]>
       apiKey: process.env['EPD_API_KEY']
     });
 
-    // The client currently fetches recent EPDs. 
+    // The client currently fetches recent EPDs.
     // Ideally we'd use a search endpoint, but for now we fetch and filter.
     // In a real scenario, we'd want to implement a proper search method in the client if the API supports it.
     // Assuming the client has a way to search or we filter a larger set.
     // For this implementation, we'll fetch a batch and filter client-side as a fallback,
     // mirroring the logic used in the agent tool.
-    
+
     const response = await client.fetchEPDs({ perPage: 20 });
-    
+
     const filtered = response.data.filter(epd => {
       const searchTerms = intent.query.toLowerCase().split(' ');
       const text = `${epd.product_name} ${epd.manufacturer}`.toLowerCase();

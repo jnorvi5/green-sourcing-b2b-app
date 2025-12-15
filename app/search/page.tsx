@@ -14,196 +14,157 @@ interface ProductSnippet {
   price: number
   currency: string
   material_type?: string // Added for Agent
+'use client';
+
+"use client";
+
+import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import nextDynamic from "next/dynamic";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FiSearch, FiFilter } from "react-icons/fi";
+import { FadeIn } from "@/components/ui/motion-wrapper";
+
+// Lazy load the AgentChat component
+const AgentChat = nextDynamic(() => import("@/components/AgentChat"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[600px] w-full rounded-xl" />,
+});
+
+interface ProductSnippet {
+  _id: string;
+  title: string;
+  price: number;
+  currency: string;
   greenData?: {
-    carbonFootprint?: number
-    certifications?: string[]
-  }
+    carbonFootprint?: number;
+    certifications?: string[];
+  };
 }
 
 interface Supplier {
-  id: string
-  company_name: string
-  description: string
-  location: string
-  certifications: string[]
-  epd_verified: boolean
-  fsc_verified: boolean
-  bcorp_verified: boolean
-  leed_verified: boolean
-  verification_source: string | null
-  matched_products?: ProductSnippet[]
-  agent_insight?: string
+  id: string;
+  company_name: string;
+  description: string;
+  location: string;
+  certifications: string[];
+  epd_verified: boolean;
+  fsc_verified: boolean;
+  bcorp_verified: boolean;
+  leed_verified: boolean;
+  verification_source: string | null;
+  matched_products?: ProductSnippet[];
+  agent_insight?: string;
 }
 
 export default function SearchPage() {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState({
-    location: '',
-    search: ''
-  })
-  const [agentActive, setAgentActive] = useState(false)
+  const [query, setQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadSuppliers()
-    }, 500) // Debounce search
-    return () => clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
-
-  async function loadSuppliers() {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (filters.search) params.append('q', filters.search)
-      if (filters.location) params.append('location', filters.location)
-
-      const res = await fetch(`/api/search?${params.toString()}`)
-      const data = await res.json()
-
-      if (data.success) {
-        setSuppliers(data.data)
-        setAgentActive(data.meta?.intent?.isSmartSearch || false)
-      }
-    } catch (error) {
-      console.error('Search error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSearching(true);
+    // Simulate search delay
+    setTimeout(() => setIsSearching(false), 1000);
+  };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/" className="text-teal-400 hover:underline flex items-center gap-2">
-            <span>←</span> Back to Home
-          </Link>
-          <Link href="/login" className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
-            Login
-          </Link>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        {/* Search Header */}
+        <div className="mb-12">
+          <FadeIn>
+            <h1 className="text-4xl font-bold text-foreground mb-4 tracking-tight">
+              Find Sustainable Materials
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl">
+              Search across thousands of verified suppliers, EPDs, and carbon data
+              points.
+            </p>
+          </FadeIn>
         </div>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-500">
-            Enterprise Supplier Search
-          </h1>
-          <p className="text-gray-400">
-            Find verified suppliers using natural language. Try &quot;FSC plywood under 50kg carbon&quot;
-          </p>
-        </div>
+        {/* Search Input Section */}
+        <Card className="mb-12 shadow-md">
+          <CardContent className="p-6">
+            <form onSubmit={handleSearch} className="flex gap-4">
+              <div className="relative flex-1">
+                <FiSearch className="absolute left-3 top-3 text-muted-foreground w-5 h-5" />
+                <Input
+                  type="text"
+                  placeholder="e.g., 'Recycled Steel Beams' or 'FSC Certified Oak'"
+                  className="pl-10 h-12 text-lg"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </div>
+              <Button type="submit" size="lg" className="h-12 px-8 text-lg" disabled={isSearching}>
+                {isSearching ? "Searching..." : "Search"}
+              </Button>
+              <Button type="button" variant="outline" size="lg" className="h-12 w-12 px-0">
+                <FiFilter className="w-5 h-5" />
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        {/* Search Bar & Filters */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-8 backdrop-blur-sm">
-          <div className="grid md:grid-cols-[1fr_auto_auto] gap-4">
-            {/* Main Search */}
-            <div className="relative">
-              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search suppliers, products, certifications..."
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-12 pr-4 py-3 rounded-lg bg-black/20 border border-white/10 focus:border-teal-500 outline-none text-lg transition-colors"
-              />
-              {agentActive && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-teal-400 text-xs font-medium animate-pulse">
-                  <FaRobot />
-                  <span>AI Active</span>
-                </div>
-              )}
-            </div>
+        {/* AI Agent Chat Interface */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="shadow-md overflow-hidden border-emerald-500/20">
+              <CardHeader className="bg-muted/30 border-b">
+                <CardTitle className="flex items-center gap-2">
+                  <span className="text-2xl">🤖</span>
+                  AI Procurement Assistant
+                </CardTitle>
+                <CardDescription>
+                  Ask complex questions about material availability, certifications, and pricing.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <AgentChat />
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Location */}
-            <div className="relative min-w-[200px]">
-              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Location..."
-                value={filters.location}
-                onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/20 border border-white/10 focus:border-teal-500 outline-none transition-colors"
-              />
-            </div>
+          <div className="space-y-8">
+            {/* Quick Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Popular Categories</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {["Structural Steel", "Concrete", "Insulation", "Glass", "Timber"].map((item) => (
+                  <Button
+                    key={item}
+                    variant="ghost"
+                    className="w-full justify-start text-muted-foreground hover:text-primary"
+                    onClick={() => setQuery(item)}
+                  >
+                    {item}
+                  </Button>
+                ))}
+              </CardContent>
+            </Card>
 
-            {/* Clear */}
-            <button
-              onClick={() => setFilters({ location: '', search: '' })}
-              className="px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-            >
-              Clear
-            </button>
+            {/* Recent Searches */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Recent Searches</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="text-sm text-muted-foreground">No recent searches</div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-
-        {/* Results */}
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-gray-400">Searching enterprise database...</p>
-          </div>
-        ) : suppliers.length === 0 ? (
-          <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
-            <FaSearch className="mx-auto w-12 h-12 text-gray-600 mb-4" />
-            <p className="text-gray-400 text-lg">No suppliers found matching your criteria</p>
-            <button
-              onClick={() => setFilters({ location: '', search: '' })}
-              className="mt-4 px-6 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-medium transition"
-            >
-              Clear Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {suppliers.map((supplier) => (
-              <div
-                key={supplier.id}
-                className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-teal-500/50 transition-all group overflow-hidden"
-              >
-                <div className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <Link href={`/supplier/${supplier.id}`} className="text-2xl font-bold group-hover:text-teal-400 transition">
-                          {supplier.company_name}
-                        </Link>
-                        {supplier.epd_verified && (
-                          <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20">
-                            EPD Verified
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-400 mb-3 max-w-2xl">
-                        {supplier.description || 'No description provided'}
-                      </p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <FaMapMarkerAlt /> {supplier.location || 'Global'}
-                        </span>
-                        {supplier.verification_source && (
-                          <span className={`px-2 py-0.5 rounded-full text-xs border ${
-                            supplier.verification_source === 'EC3' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                            supplier.verification_source === 'EPD' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                            'bg-gray-500/10 text-gray-400 border-gray-500/20'
-                          }`}>
-                            {supplier.verification_source === 'EC3' && '🌍 Building Transparency EC3'}
-                            {supplier.verification_source === 'EPD' && '📊 EPD International'}
-                            {supplier.verification_source === 'Autodesk' && '🏗️ Autodesk Verified'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2 md:justify-end max-w-md">
-                      {supplier.certifications?.map((cert, idx) => (
-                        <span key={idx} className="px-3 py-1 rounded-full bg-white/5 text-xs text-gray-300 border border-white/5">
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+      </main>
 
                   {/* Matched Products Section */}
                   {supplier.matched_products && supplier.matched_products.length > 0 && (
@@ -248,4 +209,7 @@ export default function SearchPage() {
       <AgentChat />
     </main>
   )
+      <Footer />
+    </div>
+  );
 }

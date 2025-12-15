@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * Outreach Dashboard Page
  * 

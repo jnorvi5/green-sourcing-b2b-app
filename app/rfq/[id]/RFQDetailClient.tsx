@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * RFQ Detail Client Component
  * 

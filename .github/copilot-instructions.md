@@ -788,8 +788,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...          # Server-side only, NEVER expose
 
 # ===========================================
 # MONGODB ATLAS (Flex Layer)
-# ===========================================
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
+# ========================================
 
 # ===========================================
 # AZURE AI FOUNDRY (The "Brain")

@@ -74,6 +74,11 @@ export async function GET(request: Request) {
       intent: {
         isSmartSearch: true
       }
+    results: [],
+    source: 'mock'
+  }, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=59',
     }
   });
 }
