@@ -1,19 +1,18 @@
 'use client';
 
-"use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
+import type { Rfq, RfqResponse } from "@/types/rfq";
 
 export default function ArchitectRfqDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const [rfq, setRfq] = useState<Record<string, unknown> | null>(null);
-  const [quotes, setQuotes] = useState<Record<string, unknown>[]>([]);
+  const [rfq, setRfq] = useState<Rfq | null>(null);
+  const [quotes, setQuotes] = useState<RfqResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
