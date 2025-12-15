@@ -54,7 +54,7 @@ class AzureAssistant {
         }
     }
 
-    async auditProduct(productId: string) {
+    async auditProduct() {
         if (!this.client) return "Mock Audit: Product looks sustainable.";
 
         // TODO: Integrate with Autodesk SDA API

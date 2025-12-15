@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
 /**
  * Get list of available reports
  */
-export async function OPTIONS(_request: NextRequest) {
+export async function OPTIONS() {
   return NextResponse.json({
     availableReports: [
       { type: 'keywords', description: 'Top 100 searched keywords with trends', tier: 'Basic' },

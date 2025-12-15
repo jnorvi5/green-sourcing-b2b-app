@@ -34,7 +34,7 @@ export class SocialAgent {
                     task.metadata.productCategory as string
                 );
             } else if (task.type === 'weekly_update') {
-                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as any);
+                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as Record<string, unknown>);
             } else {
                 content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata.topic as string);
             }
@@ -67,14 +67,15 @@ export class SocialAgent {
             });
 
             return { success: true, platform: task.platform, type: task.type };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Social post failed:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
             await logAgentActivity({
                 agentType: 'social',
                 action: 'create_post',
                 status: 'error',
-                metadata: { platform: task.platform, error: error.message }
+                metadata: { platform: task.platform, error: errorMessage }
             });
 
             return { success: false, platform: task.platform, error };

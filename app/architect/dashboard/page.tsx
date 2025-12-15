@@ -15,7 +15,6 @@ import {
   FaBalanceScale,
   FaPaperPlane,
   FaCheckSquare,
-  FaSquare,
   FaTimes,
 } from "react-icons/fa";
 
@@ -26,7 +25,7 @@ interface Product {
   description?: string;
   image_url?: string;
   gwp?: number; // Global Warming Potential
-  specifications?: any;
+  specifications?: unknown;
   supplier?: {
     company_name: string;
     location?: string;
@@ -46,9 +45,9 @@ interface RFQ {
 }
 
 function ArchitectDashboardInner() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [sentRFQs, setSentRFQs] = useState<RFQ[]>([]);
+  const [user, setUser] = useState<unknown>(null);
+  const [profile, setProfile] = useState<unknown>(null);
+  const [, setSentRFQs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTestMode, setIsTestMode] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -261,7 +260,7 @@ function ArchitectDashboardInner() {
         // 2. Fetch Suppliers for these products
         // Collect supplier IDs (which are user IDs)
         const supplierIds = Array.from(
-          new Set(productData.map((p: any) => p.supplier_id).filter(Boolean))
+          new Set(productData.map((p: Record<string, unknown>) => p.supplier_id).filter(Boolean))
         );
 
         // Fetch from 'suppliers' table first, fall back to 'profiles'
@@ -271,10 +270,10 @@ function ArchitectDashboardInner() {
           .in("id", supplierIds);
 
         const supplierMap = new Map();
-        supplierData?.forEach((s: any) => supplierMap.set(s.id, s));
+        supplierData?.forEach((s: Record<string, unknown>) => supplierMap.set(s.id, s));
 
         // Map data to Product interface
-        let products: Product[] = productData.map((item: any) => ({
+        let products: Product[] = productData.map((item: Record<string, unknown>) => ({
           id: item.id,
           name: item.name,
           description: item.description,

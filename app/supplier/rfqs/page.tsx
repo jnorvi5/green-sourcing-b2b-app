@@ -12,8 +12,8 @@ import type { RfqWithResponse, RfqFilter, RfqSort, Rfq, UserProfile, RfqResponse
 import { formatMaterialType, formatShortDate, getStatusColor } from '@/lib/utils/formatters'
 
 export default function SupplierRfqsPage() {
-  const [user, setUser] = useState<{ id: string } | null>(null)
-  const [supplierId, setSupplierId] = useState<string | null>(null)
+  const [, setUser] = useState<{ id: string } | null>(null)
+  const [, setSupplierId] = useState<string | null>(null)
   const [rfqs, setRfqs] = useState<RfqWithResponse[]>([])
   const [filteredRfqs, setFilteredRfqs] = useState<RfqWithResponse[]>([])
   const [loading, setLoading] = useState(true)
@@ -84,7 +84,7 @@ export default function SupplierRfqsPage() {
 
       // Fetch responses for these RFQs
       const rfqIds = (rfqsData || []).map((rfq: Rfq) => rfq.id)
-      let responsesMap = new Map<string, RfqResponse>()
+      const responsesMap = new Map<string, RfqResponse>()
       
       if (rfqIds.length > 0) {
         const { data: responsesData } = await supabase

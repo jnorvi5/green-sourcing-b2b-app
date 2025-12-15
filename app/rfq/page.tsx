@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function RFQForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const productId = searchParams?.get('productId');
   const supplierId = searchParams?.get('supplierId');
@@ -52,10 +50,11 @@ function RFQForm() {
       }
 
       setStatus('success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setStatus('error');
-      setErrorMessage(err.message || "An unexpected error occurred");
+      const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred";
+      setErrorMessage(errorMsg);
     }
   };
 

@@ -1,5 +1,5 @@
 // Puppeteer pool for concurrent scraping
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 
 class BrowserPool {
     private browsers: Browser[] = [];

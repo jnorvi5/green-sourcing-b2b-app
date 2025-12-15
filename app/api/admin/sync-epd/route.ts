@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     let fetchedCount = 0;
     let newInserts = 0;
     let updates = 0;
-    const errors: any[] = [];
+    const errors: unknown[] = [];
     
     // Pagination loop
     let page = 1;
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
 
           fetchedCount++;
 
-        } catch (err: any) {
+        } catch (err: Record<string, unknown>) {
           errors.push({ item_index: fetchedCount, error: err.message });
         }
       }
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error: any) {
+  } catch (error: Record<string, unknown>) {
     console.error('Sync EPD Error:', error);
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },

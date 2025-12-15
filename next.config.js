@@ -17,10 +17,10 @@ const cspHeader = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,  // EMERGENCY: Bypass ESLint errors during build for immediate deployment
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,  // EMERGENCY: Bypass TypeScript errors during build for immediate deployment
+    ignoreBuildErrors: false,
   },
   experimental: {
     instrumentationHook: true,

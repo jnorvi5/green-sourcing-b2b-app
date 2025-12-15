@@ -5,9 +5,9 @@
 import { useState } from 'react';
 
 export default function AgentsDashboard() {
-  const [emailResult, setEmailResult] = useState<any>(null);
-  const [socialResult, setSocialResult] = useState<any>(null);
-  const [epdResult, setEpdResult] = useState<any>(null);
+  const [emailResult, setEmailResult] = useState<unknown>(null);
+  const [socialResult, setSocialResult] = useState<unknown>(null);
+  const [epdResult, setEpdResult] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
 
   const testEmailAgent = async () => {

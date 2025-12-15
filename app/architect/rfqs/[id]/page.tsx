@@ -3,7 +3,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
@@ -13,10 +12,9 @@ export default function ArchitectRfqDetailPage({
 }: {
   params: { id: string };
 }) {
-  const [rfq, setRfq] = useState<any>(null);
-  const [quotes, setQuotes] = useState<any[]>([]);
+  const [rfq, setRfq] = useState<Record<string, unknown> | null>(null);
+  const [quotes, setQuotes] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
@@ -197,7 +195,7 @@ export default function ArchitectRfqDetailPage({
                     </div>
                     {quote.message && (
                       <div className="mt-4 p-3 bg-black/20 rounded text-sm text-gray-300">
-                        "{quote.message}"
+                        &ldquo;{quote.message}&rdquo;
                       </div>
                     )}
                   </div>

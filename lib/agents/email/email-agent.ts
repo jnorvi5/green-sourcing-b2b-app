@@ -55,7 +55,7 @@ export class EmailAgent {
                 return { success: false, error: 'Missing credentials' };
             }
 
-            const result = await zohoClient.sendEmail({
+            await zohoClient.sendEmail({
                 to: task.recipientEmail,
                 subject,
                 body
@@ -79,14 +79,15 @@ export class EmailAgent {
             });
 
             return { success: true, taskType: task.type, recipient: task.recipientEmail };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Email failed for ${task.recipientEmail}:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
             await logAgentActivity({
                 agentType: 'email',
                 action: 'send_email',
                 status: 'error',
-                metadata: { recipient: task.recipientEmail, error: error.message }
+                metadata: { recipient: task.recipientEmail, error: errorMessage }
             });
 
             return { success: false, taskType: task.type, recipient: task.recipientEmail, error };
