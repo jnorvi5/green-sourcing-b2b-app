@@ -74,6 +74,7 @@ export async function GET(request: Request) {
       intent: {
         isSmartSearch: true
       }
+    },
     results: [],
     source: 'mock'
   }, {

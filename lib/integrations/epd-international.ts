@@ -5,7 +5,6 @@
  * Supports both ILCD/EPD XML and JSON response formats with automatic parsing and normalization.
  */
 
-import { z } from 'zod';
 import { epdApiResponseSchema, type EPDApiResponse, type NormalizedEPD } from '@/lib/validations/epd-sync';
 
 interface EPDInternationalClientConfig {

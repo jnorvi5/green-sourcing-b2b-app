@@ -4,7 +4,6 @@
  * POST /api/stripe/cancel-subscription - Cancel subscription
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cancelSubscription, reactivateSubscription } from '@/lib/stripe/checkout';
 import { TIER_LIMITS, type SubscriptionTier } from '@/types/stripe';
@@ -14,7 +13,7 @@ import type { SubscriptionStatusResponse, CancelSubscriptionResponse } from '@/t
  * GET /api/stripe/subscription
  * Get current subscription status and usage
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = createClient(
       process.env['NEXT_PUBLIC_SUPABASE_URL']!,
@@ -97,7 +96,7 @@ export async function GET(request: NextRequest) {
  * POST /api/stripe/cancel-subscription
  * Cancel subscription (at period end)
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const supabase = createClient(
       process.env['NEXT_PUBLIC_SUPABASE_URL']!,
@@ -156,7 +155,7 @@ export async function POST(request: NextRequest) {
  * DELETE /api/stripe/cancel-subscription
  * Reactivate a canceled subscription
  */
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     const supabase = createClient(
       process.env['NEXT_PUBLIC_SUPABASE_URL']!,

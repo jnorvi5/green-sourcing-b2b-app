@@ -41,7 +41,7 @@ import { getDeadlineUrgency, getDeadlineUrgencyIcon } from "@/lib/utils/formatte
 
 // Safe error logging helper - only logs in development
 function logError(message: string, error: unknown): void {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env['NODE_ENV'] === "development") {
     console.error(message, error);
   }
 }
@@ -171,14 +171,12 @@ function DashboardContent() {
       const respondedRfqIds = new Set(
         existingResponses?.map((r) => r.rfq_id) || []
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const unquotedRfqs = (rfqsData || []).filter(
-        (rfq: any) => !respondedRfqIds.has(rfq.id)
+        (rfq: Record<string, unknown>) => !respondedRfqIds.has(rfq.id as string)
       );
 
       // Transform RFQs data
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map((rfq: any) => {
+      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map((rfq: Record<string, unknown>) => {
         const users = Array.isArray(rfq.users) ? rfq.users[0] : rfq.users;
         return {
           id: rfq.id,
@@ -221,9 +219,8 @@ function DashboardContent() {
         logError("Error loading quotes:", quotesError);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const transformedQuotes: SupplierQuote[] = (quotesData || []).map(
-        (quote: any) => {
+        (quote: Record<string, unknown>) => {
           const rfqs = Array.isArray(quote.rfqs) ? quote.rfqs[0] : quote.rfqs;
           return {
             id: quote.id,

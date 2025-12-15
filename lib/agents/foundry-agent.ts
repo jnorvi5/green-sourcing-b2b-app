@@ -6,6 +6,7 @@
  */
 
 import { AzureOpenAI } from 'openai';
+import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
 import { searchMaterials as searchAutodesk } from '@/lib/integrations/autodesk/material-matcher';
 import { EPDInternationalClient } from '@/lib/integrations/epd-international';
 import { searchEC3Materials } from '@/lib/integrations/ec3/client';
@@ -85,10 +86,19 @@ const tools = [
   },
 ] as const;
 
+export interface ToolCall {
+  id: string;
+  type: 'function';
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
 export interface AgentMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | null;
-  tool_calls?: any[];
+  tool_calls?: ToolCall[];
   tool_call_id?: string;
   name?: string;
 }
@@ -143,8 +153,8 @@ export class FoundryAgent {
       // First call to LLM
       const response = await this.client.chat.completions.create({
         model: this.deployment,
-        messages: messages as any,
-        tools: tools as any,
+        messages: messages as ChatCompletionMessageParam[],
+        tools: tools as ChatCompletionTool[],
         tool_choice: 'auto',
       });
 
@@ -213,7 +223,7 @@ export class FoundryAgent {
         // Second call to LLM to summarize results
         const secondResponse = await this.client.chat.completions.create({
           model: this.deployment,
-          messages: [...messages, ...newMessages] as any,
+          messages: [...messages, ...newMessages] as ChatCompletionMessageParam[],
         });
 
         newMessages.push({

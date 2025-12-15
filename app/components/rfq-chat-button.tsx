@@ -14,7 +14,6 @@ interface ChatButtonProps {
 export default function RFQChatButton({
   rfq_id,
   user_role,
-  is_premium = false,
   disabled = false,
 }: ChatButtonProps) {
   const [loading, setLoading] = useState(false);

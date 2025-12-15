@@ -27,14 +27,14 @@ describe('POST /api/rfqs', () => {
 
   const mockUserId = '123e4567-e89b-12d3-a456-426614174000';
   const mockRfqId = '223e4567-e89b-12d3-a456-426614174001';
-  const mockSupplierId = '323e4567-e89b-12d3-a456-426614174002';
+  // const _mockSupplierId = '323e4567-e89b-12d3-a456-426614174002';
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     // Mock email service
-    const { sendRfqNotificationEmail } = require('@/lib/email/resend');
-    mockSendEmail = sendRfqNotificationEmail as jest.Mock;
+    const emailModule = await import('@/lib/email/resend') as { sendRfqNotificationEmail: jest.Mock };
+    mockSendEmail = emailModule.sendRfqNotificationEmail;
     mockSendEmail.mockResolvedValue({ success: true, messageId: 'test-msg-id' });
 
     // Create mock chain for Supabase
@@ -51,8 +51,8 @@ describe('POST /api/rfqs', () => {
     mockAuth = jest.fn();
 
     // Mock Supabase client
-    const { createClient } = require('@/lib/supabase/server');
-    mockCreateClient = createClient as jest.Mock;
+    const supabaseModule = await import('@/lib/supabase/server') as { createClient: jest.Mock };
+    mockCreateClient = supabaseModule.createClient;
     mockCreateClient.mockResolvedValue({
       auth: {
         getUser: mockAuth,

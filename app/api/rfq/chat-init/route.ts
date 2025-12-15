@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
                 get: (name: string) => cookies().get(name)?.value,
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             conversation_id: conversationId,
-            intercom_app_id: process.env.NEXT_PUBLIC_INTERCOM_APP_ID,
+            intercom_app_id: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'],
         })
     } catch (error) {
         console.error('Chat init error:', error)

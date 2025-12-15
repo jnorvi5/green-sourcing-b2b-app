@@ -5,7 +5,7 @@
  * and marketing campaigns via MailerLite API
  */
 
-import { connect } from 'http2';
+
 
 // MailerLite API Configuration
 const MAILERLITE_API_KEY = process.env['MAILERLITE_API_KEY'];
@@ -165,10 +165,10 @@ export async function getGroups(): Promise<{ id: string; name: string; count: nu
         }
 
         const result = await makeMailerLiteRequest('/groups');
-        return result.data?.map((g: any) => ({
-            id: g.id,
-            name: g.name,
-            count: g.active_count || 0,
+        return result.data?.map((g: Record<string, unknown>) => ({
+            id: g['id'],
+            name: g['name'],
+            count: (g['active_count'] as number) || 0,
         })) || [];
     } catch (error) {
         console.error('Failed to get groups:', error);

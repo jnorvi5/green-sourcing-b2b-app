@@ -2,9 +2,8 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { FiTarget, FiAlertTriangle, FiTrendingUp, FiUser, FiMail } from "react-icons/fi";
 
 export default function AboutPage() {

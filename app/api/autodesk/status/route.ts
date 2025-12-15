@@ -3,12 +3,11 @@
  * Check user's Autodesk connection status
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getConnection } from '@/lib/integrations/autodesk/oauth';
 import type { ConnectionStatusResponse } from '@/types/autodesk';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Get user from session
     const supabase = createClient(

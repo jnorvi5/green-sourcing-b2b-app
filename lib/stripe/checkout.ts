@@ -34,7 +34,7 @@ export async function createCheckoutSession(
 
   let customerId = supplier?.stripe_customer_id;
   let email: string | undefined;
-  let userId = supplier?.user_id || entityId; // Fallback to treating entityId as userId if not supplier
+  const userId = supplier?.user_id || entityId; // Fallback to treating entityId as userId if not supplier
 
   const metadata: Record<string, string> = { tier: priceIdKey };
 
