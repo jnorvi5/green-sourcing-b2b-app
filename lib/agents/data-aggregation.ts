@@ -83,7 +83,6 @@ async function callFSCAPI(productId: string): Promise<{ certified?: boolean } | 
   return await checkFSCCertification(productId) as { certified?: boolean } | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function callAutodeskAPI(productId: string, _category: string): Promise<{ carbon_score: string; gwp: number; unit: string } | null> {
    const data = await getEmbodiedCarbon(productId);
    if (data) {

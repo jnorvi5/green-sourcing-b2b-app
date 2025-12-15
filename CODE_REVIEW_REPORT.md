@@ -1,5 +1,43 @@
 # Code Review Report - ESLint & TypeScript Error Fixes
 
+## Latest Update (December 2024)
+
+### Build Fixes for Vercel Deployment
+
+Fixed the following critical issues preventing Vercel deployment:
+
+1. **PostCSS Configuration** - Removed `@fullhuman/postcss-purgecss` plugin causing "require(...) is not a function" error (Tailwind CSS 3+ has built-in purging)
+
+2. **Supabase Environment Variables** - Fixed build-time environment variable check in `lib/supabase/server.ts` that prevented static page generation
+
+3. **Additional TypeScript Fixes**:
+   - Catch clause type annotations (must be `any` or `unknown`)
+   - Missing imports (NextResponse, useSearchParams, useParams)
+   - Type assertions for database query results
+   - Extended UnitType in `types/rfq.ts` to include 'kg', 'm3', 'm2'
+
+4. **Component Updates**:
+   - `components/ImageUpload.tsx` - Added props interface and memory leak fix for object URLs
+
+5. **ESLint Configuration** - Added rule to ignore unused vars with underscore prefix
+
+### Verification Commands
+
+```bash
+# Build with placeholder env vars (required for CI without env vars)
+NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co \
+NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder \
+npm run build
+```
+
+### Vercel Environment Variables Required
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+---
+
 ## Summary
 
 Successfully fixed **ALL 135 ESLint errors** in the GreenChainz B2B Marketplace repository.

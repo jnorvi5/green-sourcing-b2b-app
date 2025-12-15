@@ -3,7 +3,7 @@
 // components/ImageUpload.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -13,11 +13,26 @@ interface ImageUploadProps {
 export default function ImageUpload({ onUploadComplete, className }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+
+  // Cleanup object URL on unmount or when new file is selected
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
+      
+      // Cleanup previous object URL
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
       
       // Auto-upload when file is selected
       setUploading(true);
@@ -28,6 +43,7 @@ export default function ImageUpload({ onUploadComplete, className }: ImageUpload
       
       // Generate a placeholder URL
       const placeholderUrl = URL.createObjectURL(selectedFile);
+      objectUrlRef.current = placeholderUrl;
       if (onUploadComplete) {
         onUploadComplete(placeholderUrl);
       }
