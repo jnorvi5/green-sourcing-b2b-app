@@ -1,67 +1,44 @@
-import type { Metadata } from "next";
-import Script from "next/script";
-import "./globals.css";
-import { PostHogProvider } from "@/components/PostHogProvider";
-import IntercomProvider from "@/components/IntercomProvider";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
-import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import AdminNavigation from "./AdminNavigation";
 
-const AgentChat = dynamic(() => import("@/components/AgentChat"), {
-  ssr: false,
-});
-
-const SentryProvider = dynamic(
-  () => import("@sentry/nextjs").then((mod) => mod.ErrorBoundary),
-  { ssr: false }
-);
-
-export const metadata: Metadata = {
-  title: "GreenChainz - Sustainable Building Materials Marketplace",
-  description: "B2B marketplace for verified green building materials",
-  icons: {
-    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
-    apple: "/apple-touch-icon.png",
-  },
-};
-
-export default function RootLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    redirect("/login");
+  }
+
+  // Get user profile with role
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, full_name, company_name, role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    redirect("/login");
+  }
+
+  // Check if user has appropriate role (admin, supplier, or architect)
+  if (!["admin", "supplier", "architect"].includes(profile.role)) {
+    redirect("/");
+  }
+
   return (
-    <html lang="en">
-      <head>
-        {/* DNS Prefetch for Supabase */}
-        <link
-          rel="preconnect"
-          href="https://jfexzdhacbguleutgdwq.supabase.co"
-        />
-        <link
-          rel="dns-prefetch"
-          href="https://jfexzdhacbguleutgdwq.supabase.co"
-        />
-      </head>
-      <body className="bg-slate-950 text-white">
-        {/* ✅ START COOKIEYES BANNER */}
-        <Script
-          id="cookieyes"
-          type="text/javascript"
-          src="https://cdn-cookieyes.com/client_data/80d633ac80d2b968de32ce14/script.js"
-          strategy="beforeInteractive"
-        />
-        {/* ✅ END COOKIEYES BANNER */}
-
-        <SentryProvider>
-          <PostHogProvider>
-            <IntercomProvider>{children}</IntercomProvider>
-            <AgentChat />
-          </PostHogProvider>
-        </SentryProvider>
-
-        {/* Google Analytics - Waits for CookieYes consent */}
-        <GoogleAnalytics />
-      </body>
-    </html>
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
+      <AdminNavigation role={profile.role} profile={profile} />
+      <main className="container mx-auto px-4 py-6 sm:py-8">{children}</main>
+    </div>
   );
 }
