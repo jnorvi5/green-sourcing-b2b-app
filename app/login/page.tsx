@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react';
@@ -13,7 +11,7 @@ import { FaGithub, FaLinkedin, FaMicrosoft } from 'react-icons/fa';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { FiCheckSquare, FiSquare, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,14 +24,30 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [debugMode, setDebugMode] = useState(false);
-  const [useTestLogin, setUseTestLogin] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
+  // Check for existing Supabase session on mount
   useEffect(() => {
-    const token = localStorage.getItem('auth-token');
-    if (token) {
-      router.push('/architect/dashboard');
-    }
-  }, [router]);
+    const checkSession = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // User is already logged in, redirect based on user type
+          const userType = user.user_metadata?.['user_type'] || user.user_metadata?.['role'] || 'architect';
+          if (userType === 'supplier') {
+            router.push('/supplier/dashboard');
+          } else {
+            router.push('/architect/dashboard');
+          }
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      } finally {
+        setCheckingSession(false);
+      }
+    };
+    checkSession();
+  }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,17 +55,15 @@ export default function LoginPage() {
     setError('');
 
     if (debugMode) {
-      console.log('🔍 Login attempt:', { testMode: useTestLogin });
+      console.log('🔍 Login attempt for:', formData.email);
     }
 
     try {
-      // Use test endpoint if toggled, otherwise production auth
-      const endpoint = useTestLogin ? '/api/auth/test-login' : '/api/auth/login';
-      
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        credentials: 'include', // Important: include cookies in request
       });
 
       const data = await response.json();
@@ -62,20 +74,20 @@ export default function LoginPage() {
       }
 
       if (response.ok) {
-        localStorage.setItem('auth-token', data.token);
-        localStorage.setItem('user-type', data.user.user_type);
-        
+        // Session cookies are set by the API, just redirect
         if (data.user.user_type === 'supplier') {
           router.push('/supplier/dashboard');
         } else {
           router.push('/architect/dashboard');
         }
+        // Force a refresh to ensure cookies are recognized
+        router.refresh();
       } else {
         let errorMsg = data.error || 'Login failed';
         if (data.details) {
           if (data.details.msg) errorMsg = data.details.msg;
           if (data.details.error) errorMsg = data.details.error;
-          if (data.details.error_code) errorMsg += ` (${data.details.error_code})`;
+          if (data.details.error_code) errorMsg += ` (Code: ${data.details.error_code})`;
         }
         setError(errorMsg);
         if (debugMode) {
@@ -169,6 +181,18 @@ export default function LoginPage() {
     }
   }
 
+  // Show loading while checking existing session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-muted-foreground">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 relative overflow-hidden">
       {/* Background decoration */}
@@ -190,13 +214,6 @@ export default function LoginPage() {
           {error && (
             <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
               <p className="text-destructive text-sm font-medium">{error}</p>
-            </div>
-          )}
-
-          {/* Test Mode Banner */}
-          {useTestLogin && (
-            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-              <p className="text-yellow-600 text-xs font-medium">⚠️ Test Mode Active (Bypassing Supabase)</p>
             </div>
           )}
 
@@ -361,21 +378,14 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Debug & Test Mode Toggles */}
-          <div className="flex items-center justify-between text-center gap-2 w-full mt-2">
+          {/* Debug Toggle */}
+          <div className="flex items-center justify-center text-center gap-2 w-full mt-2">
             <button
               type="button"
               onClick={() => setDebugMode(!debugMode)}
-              className="text-xs text-muted-foreground hover:text-foreground flex-1"
+              className="text-xs text-muted-foreground hover:text-foreground"
             >
               {debugMode ? '🔍 Debug ON' : '🔍 Debug'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setUseTestLogin(!useTestLogin)}
-              className="text-xs text-blue-500 hover:text-blue-600 flex-1"
-            >
-              {useTestLogin ? '✅ Test Mode' : '⚪ Test'}
             </button>
           </div>
         </CardFooter>

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import Script from "next/script";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import IntercomProvider from "@/components/IntercomProvider";
-import AgentChat from "@/components/AgentChat";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+
+const AgentChat = dynamic(() => import("@/components/AgentChat"), {
+  ssr: false,
+});
 
 const SentryProvider = dynamic(
   () => import("@sentry/nextjs").then((mod) => mod.ErrorBoundary),
@@ -38,13 +41,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-slate-950 text-white">
+        <GoogleAnalytics />
         <SentryProvider>
           <PostHogProvider>
             <IntercomProvider>{children}</IntercomProvider>
             <AgentChat />
           </PostHogProvider>
         </SentryProvider>
-        <Script src="https://analytics.example.com" strategy="lazyOnload" />
       </body>
     </html>
   );

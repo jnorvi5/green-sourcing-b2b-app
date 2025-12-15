@@ -49,8 +49,14 @@ async function callEC3API(query: string): Promise<any> {
 }
 
 async function callEPDAPI(productId: string): Promise<any> {
+    const apiKey = process.env['EPD_API_KEY'];
+    if (!apiKey && process.env.NODE_ENV === 'production') {
+        console.warn('[DataAgent] EPD_API_KEY missing in production');
+        return null;
+    }
+
     const client = new EPDInternationalClient({
-        apiKey: process.env['EPD_API_KEY'] || 'mock-key',
+        apiKey: apiKey || 'mock-key',
     });
     
     try {
