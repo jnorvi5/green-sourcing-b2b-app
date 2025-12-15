@@ -1,28 +1,60 @@
 'use client';
 
-'use client';
-
 /**
  * Subscription Management Dashboard
  * Allows suppliers to view and manage their subscription
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import type { SubscriptionStatusResponse } from '@/types/stripe';
+
+interface BillingHistoryItem {
+  id: string;
+  stripe_invoice_id?: string;
+  amount_cents: number;
+  currency: string;
+  status: string;
+  description?: string;
+  invoice_pdf?: string;
+  hosted_invoice_url?: string;
+  created_at: string;
+  paid_at?: string;
+}
+
+interface BillingHistory {
+  invoices: BillingHistoryItem[];
+  payments: Array<{
+    id: string;
+    amount_cents: number;
+    currency: string;
+    status: string;
+    description?: string;
+    paid_at: string;
+  }>;
+  success_fee_invoices: Array<{
+    id: string;
+    amount_cents: number;
+    status: string;
+    description?: string;
+    invoice_pdf_url?: string;
+    invoice_hosted_url?: string;
+    due_date?: string;
+    created_at: string;
+  }>;
+}
 
 export default function SubscriptionPage() {
   const router = useRouter();
   const [subscription, setSubscription] = useState<SubscriptionStatusResponse | null>(null);
+  const [billingHistory, setBillingHistory] = useState<BillingHistory | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingBilling, setLoadingBilling] = useState(false);
   const [canceling, setCanceling] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchSubscription();
-  }, []);
-
-  async function fetchSubscription() {
+  const fetchSubscription = useCallback(async () => {
     try {
       const response = await fetch('/api/stripe/subscription');
       const data = await response.json();
@@ -37,12 +69,55 @@ export default function SubscriptionPage() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchBillingHistory = useCallback(async () => {
+    setLoadingBilling(true);
+    try {
+      const response = await fetch('/api/stripe/billing-history');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch billing history');
+      }
+
+      setBillingHistory(data);
+    } catch (err) {
+      console.error('Failed to load billing history:', err);
+    } finally {
+      setLoadingBilling(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSubscription();
+  }, [fetchSubscription]);
+
+  async function handleManageBilling() {
+    try {
+      const response = await fetch('/api/stripe/customer-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          return_url: window.location.href,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create portal session');
+      }
+
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+    }
   }
 
   async function handleCancelSubscription() {
-    if (!confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your billing period.')) {
-      return;
-    }
+    setShowCancelModal(false);
 
     setCanceling(true);
     setError(null);
@@ -60,7 +135,8 @@ export default function SubscriptionPage() {
 
       // Refresh subscription data
       await fetchSubscription();
-      alert('Subscription canceled successfully. You will retain access until the end of your billing period.');
+      setError(null);
+      // Show success message in UI instead of alert
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to cancel subscription');
     } finally {
@@ -84,7 +160,7 @@ export default function SubscriptionPage() {
       }
 
       await fetchSubscription();
-      alert('Subscription reactivated successfully!');
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reactivate subscription');
     } finally {
@@ -268,28 +344,155 @@ export default function SubscriptionPage() {
 
         {/* Actions */}
         {subscription.has_subscription && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h3 className="text-xl font-semibold mb-4">Manage Subscription</h3>
-            {subscription.cancel_at_period_end ? (
+            <div className="flex flex-wrap gap-4">
               <button
-                onClick={handleReactivate}
-                disabled={canceling}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                onClick={handleManageBilling}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                {canceling ? 'Processing...' : 'Reactivate Subscription'}
+                Manage Billing
               </button>
-            ) : (
               <button
-                onClick={handleCancelSubscription}
-                disabled={canceling}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                onClick={() => router.push('/supplier/pricing')}
+                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
-                {canceling ? 'Processing...' : 'Cancel Subscription'}
+                Change Plan
+              </button>
+              {subscription.cancel_at_period_end ? (
+                <button
+                  onClick={handleReactivate}
+                  disabled={canceling}
+                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                >
+                  {canceling ? 'Processing...' : 'Reactivate Subscription'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  disabled={canceling}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                >
+                  Cancel Subscription
+                </button>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 mt-4">
+              Use &quot;Manage Billing&quot; to update payment methods, view invoices, or change billing details.
+            </p>
+          </div>
+        )}
+
+        {/* Billing History */}
+        {subscription.has_subscription && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Billing History</h3>
+              <button
+                onClick={fetchBillingHistory}
+                disabled={loadingBilling}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                {loadingBilling ? 'Loading...' : 'Refresh'}
+              </button>
+            </div>
+            
+            {!billingHistory && !loadingBilling && (
+              <button
+                onClick={fetchBillingHistory}
+                className="w-full py-3 text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200"
+              >
+                Load Billing History
               </button>
             )}
-            <p className="text-sm text-gray-500 mt-2">
-              Canceling will retain your access until the end of the current billing period
-            </p>
+
+            {loadingBilling && (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              </div>
+            )}
+
+            {billingHistory && (
+              <div className="space-y-4">
+                {billingHistory.invoices.length === 0 && billingHistory.payments.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">No billing history yet</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Description
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Amount
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {billingHistory.invoices.map((invoice) => (
+                          <tr key={invoice.id}>
+                            <td className="px-4 py-3 text-sm text-gray-900">
+                              {new Date(invoice.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-900">
+                              {invoice.description || 'Subscription payment'}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-900">
+                              ${(invoice.amount_cents / 100).toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  invoice.status === 'paid'
+                                    ? 'bg-green-100 text-green-800'
+                                    : invoice.status === 'open'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {invoice.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-right">
+                              {invoice.invoice_pdf && (
+                                <a
+                                  href={invoice.invoice_pdf}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-700 mr-3"
+                                >
+                                  PDF
+                                </a>
+                              )}
+                              {invoice.hosted_invoice_url && (
+                                <a
+                                  href={invoice.hosted_invoice_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-700"
+                                >
+                                  View
+                                </a>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -307,6 +510,40 @@ export default function SubscriptionPage() {
           </div>
         )}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold mb-4">Cancel Subscription?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to cancel your subscription? You will retain access until the end of your billing period on{' '}
+              <span className="font-medium">
+                {subscription.current_period_end
+                  ? new Date(subscription.current_period_end).toLocaleDateString()
+                  : 'your billing period ends'}
+              </span>
+              .
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                disabled={canceling}
+              >
+                Keep Subscription
+              </button>
+              <button
+                onClick={handleCancelSubscription}
+                disabled={canceling}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {canceling ? 'Canceling...' : 'Yes, Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
