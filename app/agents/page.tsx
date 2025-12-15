@@ -5,9 +5,9 @@
 import { useState } from 'react';
 
 export default function AgentsDashboard() {
-  const [emailResult, setEmailResult] = useState<unknown>(null);
-  const [socialResult, setSocialResult] = useState<unknown>(null);
-  const [epdResult, setEpdResult] = useState<unknown>(null);
+  const [emailResult, setEmailResult] = useState<Record<string, unknown> | null>(null);
+  const [socialResult, setSocialResult] = useState<Record<string, unknown> | null>(null);
+  const [epdResult, setEpdResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
 
   const testEmailAgent = async () => {
@@ -153,8 +153,8 @@ export default function AgentsDashboard() {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="font-bold text-lg mb-3 text-green-700">✉️ Email Writer Result</h3>
               <div className="bg-gray-50 p-4 rounded">
-                <p className="font-semibold">Subject: {emailResult.email?.subject}</p>
-                <pre className="mt-2 text-sm whitespace-pre-wrap">{emailResult.email?.body}</pre>
+                <p className="font-semibold">Subject: {(emailResult['email'] as Record<string, unknown>)?.['subject'] as string}</p>
+                <pre className="mt-2 text-sm whitespace-pre-wrap">{(emailResult['email'] as Record<string, unknown>)?.['body'] as string}</pre>
               </div>
             </div>
           )}
@@ -164,9 +164,9 @@ export default function AgentsDashboard() {
               <h3 className="font-bold text-lg mb-3 text-blue-700">📣 Social Media Result</h3>
               <div className="bg-gray-50 p-4 rounded">
                 <p className="text-xs text-gray-500 mb-2">
-                  Platform: {socialResult.post?.platform} | Type: {socialResult.post?.contentType}
+                  Platform: {(socialResult['post'] as Record<string, unknown>)?.['platform'] as string} | Type: {(socialResult['post'] as Record<string, unknown>)?.['contentType'] as string}
                 </p>
-                <pre className="text-sm whitespace-pre-wrap">{socialResult.post?.content}</pre>
+                <pre className="text-sm whitespace-pre-wrap">{(socialResult['post'] as Record<string, unknown>)?.['content'] as string}</pre>
               </div>
             </div>
           )}
@@ -178,31 +178,31 @@ export default function AgentsDashboard() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="font-semibold">Product:</p>
-                    <p>{epdResult.data?.productName}</p>
+                    <p>{(epdResult['data'] as Record<string, unknown>)?.['productName'] as string}</p>
                   </div>
                   <div>
                     <p className="font-semibold">Manufacturer:</p>
-                    <p>{epdResult.data?.manufacturer}</p>
+                    <p>{(epdResult['data'] as Record<string, unknown>)?.['manufacturer'] as string}</p>
                   </div>
                   <div>
                     <p className="font-semibold">EPD Number:</p>
-                    <p>{epdResult.data?.epdNumber}</p>
+                    <p>{(epdResult['data'] as Record<string, unknown>)?.['epdNumber'] as string}</p>
                   </div>
                   <div>
                     <p className="font-semibold">Carbon Footprint:</p>
-                    <p>{epdResult.data?.gwpFossilA1A3} kg CO2e</p>
+                    <p>{(epdResult['data'] as Record<string, unknown>)?.['gwpFossilA1A3'] as string} kg CO2e</p>
                   </div>
                   <div>
                     <p className="font-semibold">Recycled Content:</p>
-                    <p>{epdResult.data?.recycledContentPct}%</p>
+                    <p>{(epdResult['data'] as Record<string, unknown>)?.['recycledContentPct'] as string}%</p>
                   </div>
                   <div>
                     <p className="font-semibold">Certifications:</p>
-                    <p>{epdResult.data?.certifications?.join(', ')}</p>
+                    <p>{((epdResult['data'] as Record<string, unknown>)?.['certifications'] as string[])?.join(', ')}</p>
                   </div>
                 </div>
-                {epdResult.note && (
-                  <p className="mt-4 text-yellow-700 text-sm">⚠️ {epdResult.note}</p>
+                {epdResult['note'] as string && (
+                  <p className="mt-4 text-yellow-700 text-sm">⚠️ {epdResult['note'] as string}</p>
                 )}
               </div>
             </div>

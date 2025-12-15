@@ -85,7 +85,7 @@ export default function ArchitectRfqsPage() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {rfqs.map((rfq: Record<string, unknown>) => (
+            {rfqs.map((rfq) => (
               <Link
                 key={rfq.id}
                 href={`/architect/rfqs/${rfq.id}`}
