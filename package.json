@@ -28,7 +28,7 @@
     "@stripe/stripe-js": "^8.5.3",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.8.0",
-    "@supabase/supabase-js": "^2.87.1",
+    "@supabase/supabase-js": "^2.87.2",
     "@types/nodemailer": "^7.0.4",
     "autoprefixer": "^10.4.16",
     "class-variance-authority": "^0.7.1",
