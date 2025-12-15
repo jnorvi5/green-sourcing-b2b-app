@@ -126,7 +126,7 @@ export default function GenerateEmailModal({
                     name="emailType"
                     value={option.value}
                     checked={emailType === option.value}
-                    onChange={(e: any) => setEmailType(e.target.value as EmailType)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailType(e.target.value as EmailType)}
                     className="mt-1"
                   />
                   <div>

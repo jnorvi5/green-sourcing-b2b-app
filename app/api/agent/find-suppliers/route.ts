@@ -5,6 +5,8 @@ import { OpenAI } from 'openai'
 import { z } from 'zod'
 import { calculateDistance, calculateTransportCarbon, calculateTier } from '@/lib/carbon'
 import { getEPDData } from '@/lib/autodesk-sda'
+import { SUPPLIER_CANDIDATE_LIMIT, AZURE_DEPLOYMENT_EXPENSIVE } from '@/lib/constants'
+import { Supplier, Product } from '@/types'
 
 const client = new OpenAI({
     apiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -84,7 +86,7 @@ export async function POST(req: Request) {
 
     // 2. Sync Calculation: Calculate Distance, Carbon, and Tier for ALL suppliers locally
     // This is fast and cheap.
-    let candidates = suppliers!.map((supplier: any) => {
+    let candidates: Supplier[] = suppliers!.map((supplier: any) => {
         const distance = calculateDistance(
             rfq.job_site_lat,
             rfq.job_site_lng,
@@ -109,20 +111,20 @@ export async function POST(req: Request) {
             is_premium: isPremium,
             tier,
             match_score: 50, // Default score before AI
-        }
+        } as Supplier
     })
 
     // 3. Pre-sort by Tier (asc) then Distance (asc)
     // This puts the most promising candidates at the top
     candidates.sort((a, b) => {
-        if (a.tier !== b.tier) return a.tier - b.tier
-        return a.distance_miles - b.distance_miles
+        if ((a.tier || 4) !== (b.tier || 4)) return (a.tier || 4) - (b.tier || 4)
+        return (a.distance_miles || 0) - (b.distance_miles || 0)
     })
 
     // 4. Batch AI Optimization: Only run expensive AI match scoring on top 10 candidates
     // The rest get the default score (or a simpler heuristic if we implemented one)
-    const topCandidates = candidates.slice(0, 10)
-    const remainingCandidates = candidates.slice(10)
+    const topCandidates = candidates.slice(0, SUPPLIER_CANDIDATE_LIMIT)
+    const remainingCandidates = candidates.slice(SUPPLIER_CANDIDATE_LIMIT)
 
     let aiTokensUsed = 0
 
@@ -139,8 +141,8 @@ export async function POST(req: Request) {
 
     // Final Sort: Tier 1->4, then Match Score desc
     ranked.sort((a, b) => {
-        if (a.tier !== b.tier) return a.tier - b.tier
-        return b.match_score - a.match_score
+        if ((a.tier || 4) !== (b.tier || 4)) return (a.tier || 4) - (b.tier || 4)
+        return (b.match_score || 0) - (a.match_score || 0)
     })
 
     // Log AI usage
@@ -161,7 +163,7 @@ export async function POST(req: Request) {
                 tier4: ranked.filter(s => s.tier === 4).length,
             }
         },
-        model_used: 'gpt-4o',
+        model_used: AZURE_DEPLOYMENT_EXPENSIVE,
         tokens_used: aiTokensUsed,
         cost_usd: costUsd,
     })
@@ -185,7 +187,7 @@ export async function POST(req: Request) {
 }
 
 // AI match scoring
-async function calculateMatchScore(materials: string[], products: any[]) {
+async function calculateMatchScore(materials: string[], products: Product[]) {
     if (!materials || materials.length === 0) return { score: 50, tokens: 0 }
 
     const prompt = `Materials needed: ${materials.join(', ')}
@@ -196,7 +198,7 @@ Return ONLY a JSON object: {"match_score": 85}`
 
     try {
         const response = await client.chat.completions.create({
-            model: process.env['AZURE_OPENAI_DEPLOYMENT_NAME']!,
+            model: AZURE_DEPLOYMENT_EXPENSIVE, // Use constant
             messages: [{ role: 'user', content: prompt }],
             response_format: { type: 'json_object' },
             max_tokens: 50,
@@ -212,4 +214,3 @@ Return ONLY a JSON object: {"match_score": 85}`
         return { score: 50, tokens: 0 } // Fallback
     }
 }
-

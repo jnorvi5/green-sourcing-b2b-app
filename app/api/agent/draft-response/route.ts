@@ -2,17 +2,22 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
+import { z } from 'zod'
 import { getEPDData } from '@/lib/autodesk-sda'
 
 const client = new OpenAI({
-    apiKey: process.env.AZURE_OPENAI_API_KEY,
-    baseURL: process.env.AZURE_OPENAI_ENDPOINT,
+    apiKey: process.env['AZURE_OPENAI_API_KEY'],
+    baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
+})
+
+const RequestSchema = z.object({
+    rfq_id: z.string().uuid(),
 })
 
 export async function POST(req: Request) {
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
                 get: (name: string) => cookies().get(name)?.value,
@@ -25,8 +30,18 @@ export async function POST(req: Request) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const body = await req.json()
-    const { rfq_id } = body
+    let body
+    try {
+        body = await req.json()
+    } catch (e) {
+        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+    }
+
+    const parse = RequestSchema.safeParse(body)
+    if (!parse.success) {
+        return NextResponse.json({ error: 'Invalid input', details: parse.error }, { status: 400 })
+    }
+    const { rfq_id } = parse.data
 
     // Get RFQ
     const { data: rfq } = await supabase
@@ -67,7 +82,7 @@ Your Company: ${supplier?.name}
 Your Certifications: ${supplier?.certifications?.join(', ') || 'None listed'}
 
 Your Available Products:
-${products?.map(p => `- ${p.name}: ${p.description} (Category: ${p.category})`).join('\n') || 'No products listed'}
+${products?.map((p: any) => `- ${p.name}: ${p.description} (Category: ${p.category})`).join('\n') || 'No products listed'}
 
 Environmental Data (from EPDs):
 ${epdResults.map(e => `- ${e.material}: ${e.embodied_carbon_kg} kg CO2 per unit`).join('\n')}
@@ -92,7 +107,7 @@ Return ONLY valid JSON in this exact format:
 
     try {
         const response = await client.chat.completions.create({
-            model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME!,
+            model: process.env['AZURE_OPENAI_DEPLOYMENT_NAME']!,
             messages: [{ role: 'user', content: prompt }],
             response_format: { type: 'json_object' },
             max_tokens: 1000,
@@ -121,3 +136,4 @@ Return ONLY valid JSON in this exact format:
         return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
     }
 }
+

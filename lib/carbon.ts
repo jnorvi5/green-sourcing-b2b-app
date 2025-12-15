@@ -1,3 +1,5 @@
+import { EMISSION_FACTOR, LOCAL_DISTANCE_MILES } from './constants'
+
 // Calculate distance between two lat/lng points (Haversine formula)
 export function calculateDistance(
     lat1: number,
@@ -23,8 +25,9 @@ export function calculateTransportCarbon(
     distanceMiles: number,
     weightTons: number
 ): number {
-    const EMISSION_FACTOR = 0.35 // kg CO2 per ton-mile (truck transport)
-    return distanceMiles * weightTons * EMISSION_FACTOR
+    // Audit Fixed: Ensure weight is positive to prevent weird math
+    const safeWeight = Math.max(0, weightTons || 0)
+    return distanceMiles * safeWeight * EMISSION_FACTOR
 }
 
 // Determine tier based on verification, premium status, and distance
@@ -33,7 +36,7 @@ export function calculateTier(
     isPremium: boolean,
     distanceMiles: number
 ): number {
-    const isLocal = distanceMiles <= 100
+    const isLocal = distanceMiles <= LOCAL_DISTANCE_MILES
 
     if (!isVerified) return 4 // Tier 4: Unverified (bottom)
     if (isPremium && isLocal) return 1 // Tier 1: Verified + Premium + Local

@@ -2,16 +2,21 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
+import { z } from 'zod'
 
 const client = new OpenAI({
-    apiKey: process.env.AZURE_OPENAI_API_KEY,
-    baseURL: process.env.AZURE_OPENAI_ENDPOINT,
+    apiKey: process.env['AZURE_OPENAI_API_KEY'],
+    baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
+})
+
+const RequestSchema = z.object({
+    urls: z.array(z.string().url()),
 })
 
 export async function POST(req: Request) {
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
                 get: (name: string) => cookies().get(name)?.value,
@@ -21,27 +26,37 @@ export async function POST(req: Request) {
         }
     )
 
-    const { urls } = await req.json() // Array of supplier website URLs
+    let body
+    try {
+        body = await req.json()
+    } catch (e) {
+        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+    }
 
-    const results = []
+    const parse = RequestSchema.safeParse(body)
+    if (!parse.success) {
+        return NextResponse.json({ error: 'Invalid input', details: parse.error }, { status: 400 })
+    }
+    const { urls } = parse.data
 
-    for (const url of urls) {
-        try {
-            // Fetch website content (using Firecrawl or simple fetch)
-            const websiteRes = await fetch(`https://api.firecrawl.dev/v0/scrape`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.FIRECRAWL_API_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url }),
-            })
+    // Process in parallel with concurrency limit (e.g., 5)
+    // Simple Promise.all since typical batches are small (<10)
+    const results = await Promise.all(
+        urls.map(async (url) => {
+            try {
+                const websiteRes = await fetch(`https://api.firecrawl.dev/v0/scrape`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env['FIRECRAWL_API_KEY']}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                })
 
-            const { data } = await websiteRes.json()
-            const scrapedText = data?.markdown || data?.text || ''
+                const { data } = await websiteRes.json()
+                const scrapedText = data?.markdown || data?.text || ''
 
-            // AI extracts structured data
-            const prompt = `Extract supplier information from this website content:
+                const prompt = `Extract supplier information from this website content:
 
 ${scrapedText}
 
@@ -55,33 +70,32 @@ Return ONLY valid JSON:
   "contact_email": "info@company.com"
 }`
 
-            const aiRes = await client.chat.completions.create({
-                model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME!,
-                messages: [{ role: 'user', content: prompt }],
-                response_format: { type: 'json_object' },
-                max_tokens: 500,
-            })
+                const aiRes = await client.chat.completions.create({
+                    model: AZURE_DEPLOYMENT_CHEAP,
+                    messages: [{ role: 'user', content: prompt }],
+                    response_format: { type: 'json_object' },
+                    max_tokens: 500,
+                })
 
-            const extracted = JSON.parse(aiRes.choices[0].message.content!)
+                const extracted = JSON.parse(aiRes.choices[0].message.content!)
 
-            // Save to supplier_scrapes table
-            await supabase.from('supplier_scrapes').insert({
-                source_url: url,
-                company_name: extracted.company_name,
-                location: extracted.location,
-                products: extracted.products,
-                certifications: extracted.certifications,
-                contact_email: extracted.contact_email,
-            })
+                await supabase.from('supplier_scrapes').insert({
+                    source_url: url,
+                    company_name: extracted.company_name,
+                    location: extracted.location,
+                    products: extracted.products,
+                    certifications: extracted.certifications,
+                    contact_email: extracted.contact_email,
+                })
 
-            results.push({ url, success: true, company: extracted.company_name })
-
-            // TODO: Send claim email to extracted.contact_email
-        } catch (error) {
-            console.error(`Scrape error for ${url}:`, error)
-            results.push({ url, success: false, error: error.message })
-        }
-    }
+                return { url, success: true, company: extracted.company_name }
+            } catch (error: any) {
+                console.error(`Scrape error for ${url}:`, error)
+                return { url, success: false, error: error.message || 'Unknown error' }
+            }
+        })
+    )
 
     return NextResponse.json({ results })
 }
+

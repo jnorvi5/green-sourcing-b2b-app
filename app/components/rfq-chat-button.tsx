@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { chatProvider } from "@/lib/chat-provider";
 
 interface ChatButtonProps {
@@ -18,6 +19,7 @@ export default function RFQChatButton({
 }: ChatButtonProps) {
   const [loading, setLoading] = useState(false);
   const [upgradePrompt, setUpgradePrompt] = useState(false);
+  const router = useRouter();
 
   const handleOpenChat = async () => {
     setLoading(true);
@@ -42,7 +44,8 @@ export default function RFQChatButton({
       chatProvider.openChat(rfq_id);
     } catch (error) {
       console.error("Chat error:", error);
-      alert("Failed to open chat");
+      // In a real app, use a Toast here
+      alert("Failed to open chat. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,7 @@ export default function RFQChatButton({
         </p>
         <div className="flex gap-2">
           <button
-            onClick={() => (window.location.href = "/supplier/subscription")}
+            onClick={() => router.push("/supplier/subscription")}
             className="flex-1 px-4 py-2 bg-yellow-600 text-white font-semibold rounded hover:bg-yellow-700"
           >
             Upgrade Now
