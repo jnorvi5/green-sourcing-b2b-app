@@ -30,13 +30,17 @@ export class SocialAgent {
 
             if (task.type === 'new_supplier') {
                 content = SOCIAL_TEMPLATES.newSupplier(
-                    task.metadata.supplierName as string,
-                    task.metadata.productCategory as string
+                    task.metadata['supplierName'] as string,
+                    task.metadata['productCategory'] as string
                 );
             } else if (task.type === 'weekly_update') {
-                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as Record<string, unknown>);
+                content = SOCIAL_TEMPLATES.weeklyUpdate({
+                    suppliers: task.metadata['suppliers'] as number,
+                    architects: task.metadata['architects'] as number,
+                    rfqs: task.metadata['rfqs'] as number
+                });
             } else {
-                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata.topic as string);
+                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata['topic'] as string);
             }
 
             if (task.platform === 'linkedin') {

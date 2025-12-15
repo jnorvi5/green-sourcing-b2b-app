@@ -1,3 +1,9 @@
+declare global {
+    interface Window {
+        Intercom?: (command: string, options?: Record<string, unknown>) => void;
+    }
+}
+
 interface ChatProvider {
     init(userId: string, email: string, name: string): void
     openChat(rfqId: string): void
