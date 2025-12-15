@@ -38,7 +38,7 @@ import { ProductList } from "./ProductList";
 
 // Safe error logging helper - only logs in development
 function logError(message: string, error: unknown): void {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env['NODE_ENV'] === "development") {
     console.error(message, error);
   }
 }

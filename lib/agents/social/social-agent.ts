@@ -40,12 +40,12 @@ export class SocialAgent {
             }
 
             if (task.platform === 'linkedin') {
-                if (!process.env.LINKEDIN_AUTHOR_URN) {
+                if (!process.env['LINKEDIN_AUTHOR_URN']) {
                     console.warn("Skipping LinkedIn post: Missing URN");
                     return { success: false, error: "Missing URN" };
                 }
                 await linkedInClient.createPost({
-                    authorUrn: process.env.LINKEDIN_AUTHOR_URN!,
+                    authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
                     text: content
                 });
             }

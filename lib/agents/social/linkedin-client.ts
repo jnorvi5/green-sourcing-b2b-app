@@ -2,7 +2,7 @@ class LinkedInClient {
     private accessToken: string;
 
     constructor() {
-        this.accessToken = process.env.LINKEDIN_ACCESS_TOKEN!;
+        this.accessToken = process.env['LINKEDIN_ACCESS_TOKEN']!;
     }
 
     async createPost(params: {

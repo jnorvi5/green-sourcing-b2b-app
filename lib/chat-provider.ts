@@ -8,7 +8,7 @@ class IntercomProvider implements ChatProvider {
     init(userId: string, email: string, name: string) {
         if (typeof window !== 'undefined' && window.Intercom) {
             window.Intercom('boot', {
-                app_id: process.env.NEXT_PUBLIC_INTERCOM_APP_ID,
+                app_id: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'],
                 user_id: userId,
                 email,
                 name,
