@@ -4,16 +4,16 @@ import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { z } from 'zod'
 
-const client = new OpenAI({
-    apiKey: process.env['AZURE_OPENAI_API_KEY'],
-    baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-})
-
 const RequestSchema = z.object({
     urls: z.array(z.string().url()),
 })
 
 export async function POST(req: Request) {
+    const client = new OpenAI({
+        apiKey: process.env['AZURE_OPENAI_API_KEY'],
+        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
+    })
+
     const supabase = createServerClient(
         process.env['NEXT_PUBLIC_SUPABASE_URL']!,
         process.env['SUPABASE_SERVICE_ROLE_KEY']!,

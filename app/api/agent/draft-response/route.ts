@@ -5,16 +5,16 @@ import { OpenAI } from 'openai'
 import { z } from 'zod'
 import { getEPDData } from '@/lib/autodesk-sda'
 
-const client = new OpenAI({
-    apiKey: process.env['AZURE_OPENAI_API_KEY'],
-    baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-})
-
 const RequestSchema = z.object({
     rfq_id: z.string().uuid(),
 })
 
 export async function POST(req: Request) {
+    const client = new OpenAI({
+        apiKey: process.env['AZURE_OPENAI_API_KEY'],
+        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
+    })
+
     const supabase = createServerClient(
         process.env['NEXT_PUBLIC_SUPABASE_URL']!,
         process.env['SUPABASE_SERVICE_ROLE_KEY']!,
@@ -82,7 +82,7 @@ Your Company: ${supplier?.name}
 Your Certifications: ${supplier?.certifications?.join(', ') || 'None listed'}
 
 Your Available Products:
-${products?.map((p: any) => `- ${p.name}: ${p.description} (Category: ${p.category})`).join('\n') || 'No products listed'}
+${products?.map((p: { name: string; description: string; category: string }) => `- ${p.name}: ${p.description} (Category: ${p.category})`).join('\n') || 'No products listed'}
 
 Environmental Data (from EPDs):
 ${epdResults.map(e => `- ${e.material}: ${e.embodied_carbon_kg} kg CO2 per unit`).join('\n')}

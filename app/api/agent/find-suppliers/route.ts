@@ -6,12 +6,7 @@ import { z } from 'zod'
 import { calculateDistance, calculateTransportCarbon, calculateTier } from '@/lib/carbon'
 import { getEPDData } from '@/lib/autodesk-sda'
 import { SUPPLIER_CANDIDATE_LIMIT, AZURE_DEPLOYMENT_EXPENSIVE } from '@/lib/constants'
-import { Supplier, Product } from '@/types'
-
-const client = new OpenAI({
-    apiKey: process.env['AZURE_OPENAI_API_KEY'],
-    baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-})
+import type { Supplier, Product } from '@/types/index'
 
 // Input validation schema
 const RequestSchema = z.object({
@@ -79,14 +74,14 @@ export async function POST(req: Request) {
         .eq('status', 'active')
 
     const premiumIds = subscriptions
-        ?.filter((s: { supplier_plans?: { plan_name: string } }) =>
-            ['Basic', 'Enterprise'].includes(s.supplier_plans?.plan_name || '')
+        ?.filter((s: { supplier_plans: { plan_name: string }[] }) =>
+            s.supplier_plans?.[0] && ['Basic', 'Enterprise'].includes(s.supplier_plans[0].plan_name)
         )
         .map((s: { supplier_id: string }) => s.supplier_id) || []
 
     // 2. Sync Calculation: Calculate Distance, Carbon, and Tier for ALL suppliers locally
     // This is fast and cheap.
-    let candidates: Supplier[] = suppliers!.map((supplier: any) => {
+    const candidates: Supplier[] = suppliers!.map((supplier: Supplier) => {
         const distance = calculateDistance(
             rfq.job_site_lat,
             rfq.job_site_lng,
@@ -189,6 +184,11 @@ export async function POST(req: Request) {
 // AI match scoring
 async function calculateMatchScore(materials: string[], products: Product[]) {
     if (!materials || materials.length === 0) return { score: 50, tokens: 0 }
+
+    const client = new OpenAI({
+        apiKey: process.env['AZURE_OPENAI_API_KEY'],
+        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
+    })
 
     const prompt = `Materials needed: ${materials.join(', ')}
 Products available: ${products.map(p => p.name).join(', ')}
