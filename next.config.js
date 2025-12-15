@@ -10,7 +10,7 @@ const nextConfig = {
   },
   experimental: {
     instrumentationHook: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'react-icons', 'recharts'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
