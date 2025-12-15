@@ -1,5 +1,19 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https:;
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  connect-src 'self' https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  upgrade-insecure-requests;
+`;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -10,10 +24,18 @@ const nextConfig = {
   },
   experimental: {
     instrumentationHook: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'react-icons', 'recharts'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+       { protocol: 'https', hostname: 'images.unsplash.com' },
+       { protocol: 'https', hostname: 'tailwindui.com' },
+       { protocol: 'https', hostname: 'plus.unsplash.com' },
+       { protocol: 'https', hostname: 'res.cloudinary.com' },
+       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+       { protocol: 'https', hostname: 'ui-avatars.com' },
+    ]
   },
   compress: true,
   webpack: (config) => {
@@ -24,6 +46,47 @@ const nextConfig = {
     return config
   },
   output: 'standalone',
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspHeader.replace(/\n/g, ''),
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          }
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

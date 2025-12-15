@@ -68,6 +68,12 @@ export async function GET(request: Request) {
   });
 
   return NextResponse.json({
+    success: true,
+    data: filtered,
+    meta: {
+      intent: {
+        isSmartSearch: true
+      }
     results: [],
     source: 'mock'
   }, {
