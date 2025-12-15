@@ -14,7 +14,9 @@
     "deploy:vercel": "vercel --prod",
     "deploy:preview": "vercel",
     "vercel-build": "next build",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "storybook": "cross-env IS_STORYBOOK=true storybook dev -p 6006",
+    "build-storybook": "cross-env IS_STORYBOOK=true storybook build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.478.0",
@@ -22,6 +24,8 @@
     "@azure/identity": "^4.13.0",
     "@azure/openai": "^2.0.0",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@sentry/nextjs": "^10.29.0",
     "@stripe/react-stripe-js": "^5.4.1",
@@ -36,6 +40,7 @@
     "framer-motion": "^12.23.26",
     "fuse.js": "^7.0.0",
     "iconv-lite": "^0.7.0",
+    "lucide-react": "^0.561.0",
     "next": "^14.2.35",
     "nodemailer": "^7.0.11",
     "openai": "^4.104.0",
@@ -56,11 +61,18 @@
     "stripe": "^14.9.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-links": "^8.6.14",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/nextjs": "^8.6.14",
+    "@storybook/react": "^8.6.14",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.6",
     "@types/pdfkit": "^0.13.4",
@@ -71,9 +83,11 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "concurrently": "^8.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
     "jest": "^30.2.0",
+    "storybook": "^8.6.14",
     "ts-jest": "^29.4.6",
     "typescript": "^5.3.3"
   }

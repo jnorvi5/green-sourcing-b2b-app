@@ -87,3 +87,4 @@ main
 debug_output
 tsc_errors.txt
 build_errors.txt
+storybook-static

@@ -102,8 +102,13 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
 }
 
-module.exports = withSentryConfig(nextConfig, {
-  silent: true,
-  org: "your-org",
-  project: "greenchainz-production",
-});
+if (process.env.IS_STORYBOOK) {
+  const { experimental, webpack, ...cleanConfig } = nextConfig;
+  module.exports = cleanConfig;
+} else {
+  module.exports = withSentryConfig(nextConfig, {
+    silent: true,
+    org: "your-org",
+    project: "greenchainz-production",
+  });
+}
