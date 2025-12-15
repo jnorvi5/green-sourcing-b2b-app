@@ -146,14 +146,17 @@ export default function SupplierAnalyticsPage() {
 
       const avgResponseTimeHours = responseCount > 0 ? totalResponseTimeHours / responseCount : 0;
 
-      // Calculate response trend (mock data for now)
+      // Calculate response trend
+      // TODO: Replace with actual historical data from analytics table
       const responseTrend = [];
-      for (let i = parseInt(dateRange) - 1; i >= 0; i -= Math.max(1, Math.floor(parseInt(dateRange) / 6))) {
+      const dataPoints = 6; // Number of data points to show
+      const step = Math.floor(parseInt(dateRange) / dataPoints);
+      for (let i = parseInt(dateRange) - 1; i >= 0; i -= Math.max(1, step)) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         responseTrend.push({
           date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          rate: Math.floor(Math.random() * 30) + 60, // Mock data
+          rate: Math.floor(Math.random() * 30) + 60, // TEMP: Mock data until analytics tracking is implemented
         });
       }
 
@@ -192,15 +195,16 @@ export default function SupplierAnalyticsPage() {
         })
       );
 
-      // Calculate engagement metrics (mock data for products without analytics)
-      const totalViews = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 100) + 10), 0) || 0;
-      const totalClicks = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 50) + 5), 0) || 0;
+      // Calculate engagement metrics
+      // TODO: Replace with actual analytics data from product_analytics table
+      const totalViews = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 100) + 10), 0) || 0; // TEMP: Mock data
+      const totalClicks = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 50) + 5), 0) || 0; // TEMP: Mock data
       const clickThroughRate = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
 
       const topProducts =
         productsData?.slice(0, 5).map((p) => ({
           name: p.product_name || p.name || 'Unnamed Product',
-          views: Math.floor(Math.random() * 100) + 10,
+          views: Math.floor(Math.random() * 100) + 10, // TEMP: Mock data until analytics tracking is implemented
         })) || [];
 
       // RFQ status distribution

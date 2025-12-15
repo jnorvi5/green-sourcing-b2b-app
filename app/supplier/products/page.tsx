@@ -74,7 +74,8 @@ export default function SupplierProductsPage() {
         return;
       }
 
-      // Map to Product type with mock analytics data
+      // Map to Product type
+      // TODO: Join with product_analytics table for real metrics
       const mappedProducts: Product[] = (productsData || []).map((p) => ({
         id: p.id,
         supplier_id: p.supplier_id,
@@ -88,7 +89,7 @@ export default function SupplierProductsPage() {
         images: p.images,
         epd_url: p.epd_url,
         verified: p.verified || false,
-        // Mock analytics (would come from analytics table in real app)
+        // TEMP: Mock analytics until product_analytics table is created
         views_count: Math.floor(Math.random() * 100) + 10,
         clicks_count: Math.floor(Math.random() * 50) + 5,
         rfq_count: Math.floor(Math.random() * 10),

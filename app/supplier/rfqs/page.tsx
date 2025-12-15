@@ -291,11 +291,15 @@ export default function SupplierRfqsPage() {
                           </span>
                         )}
                         {/* Deadline Urgency Indicator */}
-                        {rfq.delivery_deadline && (
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getDeadlineUrgencyColor(rfq.delivery_deadline)}`}>
-                            {getDeadlineUrgencyIcon(rfq.delivery_deadline)} {getDeadlineUrgency(rfq.delivery_deadline) === 'urgent' ? 'URGENT' : getDeadlineUrgency(rfq.delivery_deadline) === 'soon' ? 'SOON' : 'NORMAL'}
-                          </span>
-                        )}
+                        {rfq.delivery_deadline && (() => {
+                          const urgency = getDeadlineUrgency(rfq.delivery_deadline);
+                          const urgencyLabel = urgency === 'urgent' ? 'URGENT' : urgency === 'soon' ? 'SOON' : 'NORMAL';
+                          return (
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getDeadlineUrgencyColor(rfq.delivery_deadline)}`}>
+                              {getDeadlineUrgencyIcon(rfq.delivery_deadline)} {urgencyLabel}
+                            </span>
+                          );
+                        })()}
                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(rfq.status)}`}>
                           {rfq.status.toUpperCase()}
                         </span>

@@ -427,30 +427,33 @@ function DashboardContent() {
         </div>
 
         {/* Urgent RFQs Alert */}
-        {incomingRfqs.filter(rfq => getDeadlineUrgency(rfq.delivery_deadline) === 'urgent').length > 0 && (
-          <Card className="mb-6 bg-red-500/10 border-red-500/20">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                  <FiAlertCircle className="w-6 h-6 text-red-500" />
+        {(() => {
+          const urgentRfqs = incomingRfqs.filter(rfq => getDeadlineUrgency(rfq.delivery_deadline) === 'urgent');
+          return urgentRfqs.length > 0 && (
+            <Card className="mb-6 bg-red-500/10 border-red-500/20">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <FiAlertCircle className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-red-500 mb-1">
+                      {urgentRfqs.length} Urgent RFQ(s)
+                    </h3>
+                    <p className="text-sm text-red-400">
+                      Deadline within 24 hours - respond now to increase win rate!
+                    </p>
+                  </div>
+                  <Link href="/supplier/rfqs">
+                    <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
+                      View RFQs
+                    </Button>
+                  </Link>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-red-500 mb-1">
-                    {incomingRfqs.filter(rfq => getDeadlineUrgency(rfq.delivery_deadline) === 'urgent').length} Urgent RFQ(s)
-                  </h3>
-                  <p className="text-sm text-red-400">
-                    Deadline within 24 hours - respond now to increase win rate!
-                  </p>
-                </div>
-                <Link href="/supplier/rfqs">
-                  <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
-                    View RFQs
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
