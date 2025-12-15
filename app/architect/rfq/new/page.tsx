@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState, useEffect } from "react";
-import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,9 +37,10 @@ function RFQFormContent() {
   const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [projectData, setProjectData] = useState<any>(null);
 
   // Get parameters from URL if present
-  const productId = searchParams.get("product_id");
+  const productId = searchParams?.get("product_id");
   const projectId = searchParams.get("project_id");
   const materialId = searchParams.get("material_id");
 
@@ -50,47 +50,39 @@ function RFQFormContent() {
   const preFillUnit = searchParams.get("unit") as UnitType || "kg";
   const preFillCategory = searchParams.get("cat") as MaterialCategory || "";
 
-  // Project data state
-  const [projectData, setProjectData] = useState<any>(null);
-
-  useEffect(() => {
-    if (projectId) {
-      // Fetch project details to auto-fill location and name
-      async function fetchProject() {
-         const { data } = await supabase.from('projects').select('*').eq('id', projectId).single();
-         if (data) setProjectData(data);
-      }
-      fetchProject();
-    }
-  }, [projectId]);
-  // Get product_id from URL if present
-  const productId = searchParams?.get("product_id");
-
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<RFQFormData>({
     defaultValues: {
       urgency: "medium",
       unit: preFillUnit,
       quantity: preFillQty,
-      project_name: "", // Will update when projectData loads
+      project_name: "",
     },
   });
+
+  useEffect(() => {
+    if (projectId) {
+      async function fetchProject() {
+         const { data } = await supabase.from('projects').select('*').eq('id', projectId).single();
+         if (data) setProjectData(data);
+      }
+      fetchProject();
+    }
+  }, [projectId, supabase]);
 
   useEffect(() => {
     if (projectData) {
       setValue("project_name", projectData.name);
       setValue("location", projectData.location);
     }
-    if (preFillName) {
-      // Could potentially append to description if not matching strictly, but here we assume material details map
-    }
     if (preFillCategory) {
       setValue("material_category", preFillCategory);
     }
-  }, [projectData, preFillName, preFillCategory, setValue]);
+  }, [projectData, preFillCategory, setValue]);
 
   const onSubmit = async (data: RFQFormData) => {
     if (!user) {
@@ -102,7 +94,6 @@ function RFQFormContent() {
     setErrorMessage(null);
 
     try {
-      // Map form data to API schema
       const apiPayload = {
         project_name: data.project_name,
         project_location: data.location,
@@ -113,11 +104,10 @@ function RFQFormContent() {
         },
         budget_range: data.budget_range,
         delivery_deadline: new Date(data.deadline).toISOString(),
-        // Combine description and urgency into message
         message: `Urgency: ${data.urgency}\n\n${data.project_description}`,
         required_certifications: [],
         product_id: productId || null,
-        project_id: projectId || null, // Pass project_id
+        project_id: projectId || null,
       };
 
       const response = await fetch("/api/rfqs", {
@@ -138,7 +128,6 @@ function RFQFormContent() {
         return;
       }
 
-      // If this was from a material, update the material status
       if (materialId) {
         await supabase
           .from("project_materials")
@@ -155,8 +144,8 @@ function RFQFormContent() {
       }
     } catch (error: unknown) {
       console.error("Error submitting RFQ:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
-      setErrorMessage(errorMessage);
+      const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(errorMsg);
       setIsSubmitting(false);
     }
   };
@@ -171,16 +160,13 @@ function RFQFormContent() {
 
   return (
     <>
-      {/* Error Message */}
       {errorMessage && (
         <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400">
           {errorMessage}
         </div>
       )}
 
-      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Project Name */}
         <div>
           <label
             htmlFor="project_name"
@@ -199,7 +185,7 @@ function RFQFormContent() {
               errors.project_name ? "border-red-500" : "border-white/10"
             } text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition`}
             placeholder="e.g., Office Building Renovation"
-            disabled={isSubmitting || !!projectId} // Disable if linked to project
+            disabled={isSubmitting || !!projectId}
           />
           {errors.project_name && (
             <p className="mt-1 text-sm text-red-400">
@@ -208,7 +194,6 @@ function RFQFormContent() {
           )}
         </div>
 
-        {/* Quantity + Unit */}
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label
@@ -262,7 +247,6 @@ function RFQFormContent() {
           </div>
         </div>
 
-        {/* Material Category (Required for API matching) */}
         <div>
           <label
             htmlFor="material_category"
@@ -296,7 +280,6 @@ function RFQFormContent() {
           )}
         </div>
 
-        {/* Delivery Date + Location */}
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label
@@ -349,7 +332,6 @@ function RFQFormContent() {
           </div>
         </div>
 
-        {/* Urgency */}
         <div>
           <label htmlFor="urgency" className="block text-sm font-medium mb-2">
             Urgency
@@ -372,7 +354,6 @@ function RFQFormContent() {
           </select>
         </div>
 
-        {/* Additional Notes */}
         <div>
           <label
             htmlFor="project_description"
@@ -393,7 +374,6 @@ function RFQFormContent() {
           />
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
@@ -407,12 +387,11 @@ function RFQFormContent() {
 }
 
 export default function NewRFQPage() {
-  const router = useRouter(); // Keep generic router outside if needed, but inner uses it too
+  const router = useRouter();
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
