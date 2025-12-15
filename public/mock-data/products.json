@@ -1,0 +1,802 @@
+[
+  {
+    "id": "prod_1",
+    "name": "Low Carbon Concrete - Model 1",
+    "category": "Structural",
+    "supplier_id": "sup_2",
+    "price": 196.8209465228617,
+    "carbon_footprint": 171.32882244963287
+  },
+  {
+    "id": "prod_2",
+    "name": "FSC Oak Flooring - Model 2",
+    "category": "Structural",
+    "supplier_id": "sup_3",
+    "price": 399.17454894245805,
+    "carbon_footprint": 398.060804910727
+  },
+  {
+    "id": "prod_3",
+    "name": "Cork Insulation - Model 3",
+    "category": "Structural",
+    "supplier_id": "sup_4",
+    "price": 177.02651625733574,
+    "carbon_footprint": 248.75043052665094
+  },
+  {
+    "id": "prod_4",
+    "name": "Bamboo Panels - Model 4",
+    "category": "Structural",
+    "supplier_id": "sup_5",
+    "price": 338.44800907757593,
+    "carbon_footprint": 234.02235980206285
+  },
+  {
+    "id": "prod_5",
+    "name": "Recycled Steel Beam - Model 5",
+    "category": "Structural",
+    "supplier_id": "sup_6",
+    "price": 413.60087903521764,
+    "carbon_footprint": 396.4780483986848
+  },
+  {
+    "id": "prod_6",
+    "name": "Low Carbon Concrete - Model 6",
+    "category": "Structural",
+    "supplier_id": "sup_7",
+    "price": 70.86419175034715,
+    "carbon_footprint": 213.74044415652173
+  },
+  {
+    "id": "prod_7",
+    "name": "FSC Oak Flooring - Model 7",
+    "category": "Structural",
+    "supplier_id": "sup_8",
+    "price": 330.2829029720376,
+    "carbon_footprint": 275.8730753830108
+  },
+  {
+    "id": "prod_8",
+    "name": "Cork Insulation - Model 8",
+    "category": "Structural",
+    "supplier_id": "sup_9",
+    "price": 112.47970661278823,
+    "carbon_footprint": 404.1825842638917
+  },
+  {
+    "id": "prod_9",
+    "name": "Bamboo Panels - Model 9",
+    "category": "Structural",
+    "supplier_id": "sup_10",
+    "price": 133.240924358457,
+    "carbon_footprint": 392.29013084218155
+  },
+  {
+    "id": "prod_10",
+    "name": "Recycled Steel Beam - Model 10",
+    "category": "Structural",
+    "supplier_id": "sup_11",
+    "price": 470.15631649763617,
+    "carbon_footprint": 456.81488668983843
+  },
+  {
+    "id": "prod_11",
+    "name": "Low Carbon Concrete - Model 11",
+    "category": "Structural",
+    "supplier_id": "sup_12",
+    "price": 179.13515822964027,
+    "carbon_footprint": 200.3635835785162
+  },
+  {
+    "id": "prod_12",
+    "name": "FSC Oak Flooring - Model 12",
+    "category": "Structural",
+    "supplier_id": "sup_13",
+    "price": 263.3105059789135,
+    "carbon_footprint": 253.72377921491153
+  },
+  {
+    "id": "prod_13",
+    "name": "Cork Insulation - Model 13",
+    "category": "Structural",
+    "supplier_id": "sup_14",
+    "price": 525.2628793946274,
+    "carbon_footprint": 396.5032184415679
+  },
+  {
+    "id": "prod_14",
+    "name": "Bamboo Panels - Model 14",
+    "category": "Structural",
+    "supplier_id": "sup_15",
+    "price": 165.18540709131088,
+    "carbon_footprint": 449.1141006962481
+  },
+  {
+    "id": "prod_15",
+    "name": "Recycled Steel Beam - Model 15",
+    "category": "Structural",
+    "supplier_id": "sup_16",
+    "price": 185.44151950888715,
+    "carbon_footprint": 406.72981114520394
+  },
+  {
+    "id": "prod_16",
+    "name": "Low Carbon Concrete - Model 16",
+    "category": "Structural",
+    "supplier_id": "sup_17",
+    "price": 462.8913475289759,
+    "carbon_footprint": 457.31739765472054
+  },
+  {
+    "id": "prod_17",
+    "name": "FSC Oak Flooring - Model 17",
+    "category": "Structural",
+    "supplier_id": "sup_18",
+    "price": 253.72780401478298,
+    "carbon_footprint": 239.29156470413372
+  },
+  {
+    "id": "prod_18",
+    "name": "Cork Insulation - Model 18",
+    "category": "Structural",
+    "supplier_id": "sup_19",
+    "price": 168.01445787475606,
+    "carbon_footprint": 296.0311934788966
+  },
+  {
+    "id": "prod_19",
+    "name": "Bamboo Panels - Model 19",
+    "category": "Structural",
+    "supplier_id": "sup_20",
+    "price": 238.39628282603005,
+    "carbon_footprint": 287.68498396892176
+  },
+  {
+    "id": "prod_20",
+    "name": "Recycled Steel Beam - Model 20",
+    "category": "Structural",
+    "supplier_id": "sup_21",
+    "price": 377.1054474329483,
+    "carbon_footprint": 147.34734318417298
+  },
+  {
+    "id": "prod_21",
+    "name": "Low Carbon Concrete - Model 21",
+    "category": "Structural",
+    "supplier_id": "sup_22",
+    "price": 305.98849220073583,
+    "carbon_footprint": 196.73660410667884
+  },
+  {
+    "id": "prod_22",
+    "name": "FSC Oak Flooring - Model 22",
+    "category": "Structural",
+    "supplier_id": "sup_23",
+    "price": 258.1758874554961,
+    "carbon_footprint": 483.86748485765463
+  },
+  {
+    "id": "prod_23",
+    "name": "Cork Insulation - Model 23",
+    "category": "Structural",
+    "supplier_id": "sup_24",
+    "price": 528.6613234696574,
+    "carbon_footprint": 434.9560184178254
+  },
+  {
+    "id": "prod_24",
+    "name": "Bamboo Panels - Model 24",
+    "category": "Structural",
+    "supplier_id": "sup_25",
+    "price": 511.8615394475876,
+    "carbon_footprint": 323.1155732511537
+  },
+  {
+    "id": "prod_25",
+    "name": "Recycled Steel Beam - Model 25",
+    "category": "Structural",
+    "supplier_id": "sup_26",
+    "price": 345.169470266154,
+    "carbon_footprint": 226.58106254545132
+  },
+  {
+    "id": "prod_26",
+    "name": "Low Carbon Concrete - Model 26",
+    "category": "Structural",
+    "supplier_id": "sup_27",
+    "price": 497.53498653911174,
+    "carbon_footprint": 301.2109855004114
+  },
+  {
+    "id": "prod_27",
+    "name": "FSC Oak Flooring - Model 27",
+    "category": "Structural",
+    "supplier_id": "sup_28",
+    "price": 245.36793275830522,
+    "carbon_footprint": 470.3648585431722
+  },
+  {
+    "id": "prod_28",
+    "name": "Cork Insulation - Model 28",
+    "category": "Structural",
+    "supplier_id": "sup_29",
+    "price": 290.13495165617115,
+    "carbon_footprint": 399.71681389411697
+  },
+  {
+    "id": "prod_29",
+    "name": "Bamboo Panels - Model 29",
+    "category": "Structural",
+    "supplier_id": "sup_30",
+    "price": 224.506641105723,
+    "carbon_footprint": 296.602039663597
+  },
+  {
+    "id": "prod_30",
+    "name": "Recycled Steel Beam - Model 30",
+    "category": "Structural",
+    "supplier_id": "sup_31",
+    "price": 296.512612965819,
+    "carbon_footprint": 292.4193130343002
+  },
+  {
+    "id": "prod_31",
+    "name": "Low Carbon Concrete - Model 31",
+    "category": "Structural",
+    "supplier_id": "sup_32",
+    "price": 321.6661426282406,
+    "carbon_footprint": 222.00645174005064
+  },
+  {
+    "id": "prod_32",
+    "name": "FSC Oak Flooring - Model 32",
+    "category": "Structural",
+    "supplier_id": "sup_33",
+    "price": 429.88567527131414,
+    "carbon_footprint": 107.12969452546899
+  },
+  {
+    "id": "prod_33",
+    "name": "Cork Insulation - Model 33",
+    "category": "Structural",
+    "supplier_id": "sup_34",
+    "price": 255.43066767103568,
+    "carbon_footprint": 376.22603726848973
+  },
+  {
+    "id": "prod_34",
+    "name": "Bamboo Panels - Model 34",
+    "category": "Structural",
+    "supplier_id": "sup_35",
+    "price": 298.8153368487909,
+    "carbon_footprint": 153.03105979445172
+  },
+  {
+    "id": "prod_35",
+    "name": "Recycled Steel Beam - Model 35",
+    "category": "Structural",
+    "supplier_id": "sup_36",
+    "price": 410.30625713284115,
+    "carbon_footprint": 157.69346904028083
+  },
+  {
+    "id": "prod_36",
+    "name": "Low Carbon Concrete - Model 36",
+    "category": "Structural",
+    "supplier_id": "sup_37",
+    "price": 285.1468142470282,
+    "carbon_footprint": 442.3772587604159
+  },
+  {
+    "id": "prod_37",
+    "name": "FSC Oak Flooring - Model 37",
+    "category": "Structural",
+    "supplier_id": "sup_38",
+    "price": 424.0188544661913,
+    "carbon_footprint": 402.08442904240763
+  },
+  {
+    "id": "prod_38",
+    "name": "Cork Insulation - Model 38",
+    "category": "Structural",
+    "supplier_id": "sup_39",
+    "price": 53.61987947023812,
+    "carbon_footprint": 283.93887080537354
+  },
+  {
+    "id": "prod_39",
+    "name": "Bamboo Panels - Model 39",
+    "category": "Structural",
+    "supplier_id": "sup_40",
+    "price": 155.75898044480857,
+    "carbon_footprint": 363.5176143085856
+  },
+  {
+    "id": "prod_40",
+    "name": "Recycled Steel Beam - Model 40",
+    "category": "Structural",
+    "supplier_id": "sup_41",
+    "price": 100.99942315904116,
+    "carbon_footprint": 272.5896202551926
+  },
+  {
+    "id": "prod_41",
+    "name": "Low Carbon Concrete - Model 41",
+    "category": "Structural",
+    "supplier_id": "sup_42",
+    "price": 57.77885121545263,
+    "carbon_footprint": 379.0921149897451
+  },
+  {
+    "id": "prod_42",
+    "name": "FSC Oak Flooring - Model 42",
+    "category": "Structural",
+    "supplier_id": "sup_43",
+    "price": 298.748052456315,
+    "carbon_footprint": 292.9101330603535
+  },
+  {
+    "id": "prod_43",
+    "name": "Cork Insulation - Model 43",
+    "category": "Structural",
+    "supplier_id": "sup_44",
+    "price": 546.5667710789569,
+    "carbon_footprint": 200.92657913635188
+  },
+  {
+    "id": "prod_44",
+    "name": "Bamboo Panels - Model 44",
+    "category": "Structural",
+    "supplier_id": "sup_45",
+    "price": 442.32209102567526,
+    "carbon_footprint": 153.8322765802892
+  },
+  {
+    "id": "prod_45",
+    "name": "Recycled Steel Beam - Model 45",
+    "category": "Structural",
+    "supplier_id": "sup_46",
+    "price": 384.02742484054346,
+    "carbon_footprint": 348.00105538342734
+  },
+  {
+    "id": "prod_46",
+    "name": "Low Carbon Concrete - Model 46",
+    "category": "Structural",
+    "supplier_id": "sup_47",
+    "price": 447.71765426521335,
+    "carbon_footprint": 267.16777084308507
+  },
+  {
+    "id": "prod_47",
+    "name": "FSC Oak Flooring - Model 47",
+    "category": "Structural",
+    "supplier_id": "sup_48",
+    "price": 475.845770941371,
+    "carbon_footprint": 209.41409896081257
+  },
+  {
+    "id": "prod_48",
+    "name": "Cork Insulation - Model 48",
+    "category": "Structural",
+    "supplier_id": "sup_49",
+    "price": 387.33440579933006,
+    "carbon_footprint": 435.43006109382105
+  },
+  {
+    "id": "prod_49",
+    "name": "Bamboo Panels - Model 49",
+    "category": "Structural",
+    "supplier_id": "sup_50",
+    "price": 540.3295340695881,
+    "carbon_footprint": 381.3525962996113
+  },
+  {
+    "id": "prod_50",
+    "name": "Recycled Steel Beam - Model 50",
+    "category": "Structural",
+    "supplier_id": "sup_51",
+    "price": 282.7027451758634,
+    "carbon_footprint": 337.96026026763695
+  },
+  {
+    "id": "prod_51",
+    "name": "Low Carbon Concrete - Model 51",
+    "category": "Structural",
+    "supplier_id": "sup_52",
+    "price": 504.9856203631725,
+    "carbon_footprint": 298.30937652419254
+  },
+  {
+    "id": "prod_52",
+    "name": "FSC Oak Flooring - Model 52",
+    "category": "Structural",
+    "supplier_id": "sup_53",
+    "price": 527.3413172213088,
+    "carbon_footprint": 465.19905984707003
+  },
+  {
+    "id": "prod_53",
+    "name": "Cork Insulation - Model 53",
+    "category": "Structural",
+    "supplier_id": "sup_54",
+    "price": 345.1795782409325,
+    "carbon_footprint": 284.5052258217739
+  },
+  {
+    "id": "prod_54",
+    "name": "Bamboo Panels - Model 54",
+    "category": "Structural",
+    "supplier_id": "sup_55",
+    "price": 345.11335263484784,
+    "carbon_footprint": 277.3737699789009
+  },
+  {
+    "id": "prod_55",
+    "name": "Recycled Steel Beam - Model 55",
+    "category": "Structural",
+    "supplier_id": "sup_56",
+    "price": 515.8190628709581,
+    "carbon_footprint": 355.07332026337656
+  },
+  {
+    "id": "prod_56",
+    "name": "Low Carbon Concrete - Model 56",
+    "category": "Structural",
+    "supplier_id": "sup_57",
+    "price": 186.8506577141948,
+    "carbon_footprint": 189.22628689677853
+  },
+  {
+    "id": "prod_57",
+    "name": "FSC Oak Flooring - Model 57",
+    "category": "Structural",
+    "supplier_id": "sup_58",
+    "price": 203.10205179481872,
+    "carbon_footprint": 194.11403150456545
+  },
+  {
+    "id": "prod_58",
+    "name": "Cork Insulation - Model 58",
+    "category": "Structural",
+    "supplier_id": "sup_59",
+    "price": 249.58168744726368,
+    "carbon_footprint": 346.3853731255657
+  },
+  {
+    "id": "prod_59",
+    "name": "Bamboo Panels - Model 59",
+    "category": "Structural",
+    "supplier_id": "sup_60",
+    "price": 209.14128231349545,
+    "carbon_footprint": 497.7104757662936
+  },
+  {
+    "id": "prod_60",
+    "name": "Recycled Steel Beam - Model 60",
+    "category": "Structural",
+    "supplier_id": "sup_61",
+    "price": 489.4705479353803,
+    "carbon_footprint": 412.77512752546573
+  },
+  {
+    "id": "prod_61",
+    "name": "Low Carbon Concrete - Model 61",
+    "category": "Structural",
+    "supplier_id": "sup_62",
+    "price": 223.2288863552023,
+    "carbon_footprint": 178.215247872067
+  },
+  {
+    "id": "prod_62",
+    "name": "FSC Oak Flooring - Model 62",
+    "category": "Structural",
+    "supplier_id": "sup_63",
+    "price": 419.43011535411097,
+    "carbon_footprint": 357.55182131994445
+  },
+  {
+    "id": "prod_63",
+    "name": "Cork Insulation - Model 63",
+    "category": "Structural",
+    "supplier_id": "sup_64",
+    "price": 148.01555701386445,
+    "carbon_footprint": 374.09659504329795
+  },
+  {
+    "id": "prod_64",
+    "name": "Bamboo Panels - Model 64",
+    "category": "Structural",
+    "supplier_id": "sup_65",
+    "price": 333.01966507876375,
+    "carbon_footprint": 168.1835212156546
+  },
+  {
+    "id": "prod_65",
+    "name": "Recycled Steel Beam - Model 65",
+    "category": "Structural",
+    "supplier_id": "sup_66",
+    "price": 318.9142345732093,
+    "carbon_footprint": 110.60412614979249
+  },
+  {
+    "id": "prod_66",
+    "name": "Low Carbon Concrete - Model 66",
+    "category": "Structural",
+    "supplier_id": "sup_67",
+    "price": 499.44634509358497,
+    "carbon_footprint": 269.6349882085849
+  },
+  {
+    "id": "prod_67",
+    "name": "FSC Oak Flooring - Model 67",
+    "category": "Structural",
+    "supplier_id": "sup_68",
+    "price": 306.6145681626697,
+    "carbon_footprint": 192.50773578388439
+  },
+  {
+    "id": "prod_68",
+    "name": "Cork Insulation - Model 68",
+    "category": "Structural",
+    "supplier_id": "sup_69",
+    "price": 73.55907586136018,
+    "carbon_footprint": 237.43788614979619
+  },
+  {
+    "id": "prod_69",
+    "name": "Bamboo Panels - Model 69",
+    "category": "Structural",
+    "supplier_id": "sup_70",
+    "price": 473.68564081631365,
+    "carbon_footprint": 225.07404667915054
+  },
+  {
+    "id": "prod_70",
+    "name": "Recycled Steel Beam - Model 70",
+    "category": "Structural",
+    "supplier_id": "sup_71",
+    "price": 137.30033885839663,
+    "carbon_footprint": 220.43882341389676
+  },
+  {
+    "id": "prod_71",
+    "name": "Low Carbon Concrete - Model 71",
+    "category": "Structural",
+    "supplier_id": "sup_72",
+    "price": 261.83646047208504,
+    "carbon_footprint": 492.3340727527528
+  },
+  {
+    "id": "prod_72",
+    "name": "FSC Oak Flooring - Model 72",
+    "category": "Structural",
+    "supplier_id": "sup_73",
+    "price": 106.65656972309985,
+    "carbon_footprint": 450.81926195227487
+  },
+  {
+    "id": "prod_73",
+    "name": "Cork Insulation - Model 73",
+    "category": "Structural",
+    "supplier_id": "sup_74",
+    "price": 188.06281872209368,
+    "carbon_footprint": 250.37888400861908
+  },
+  {
+    "id": "prod_74",
+    "name": "Bamboo Panels - Model 74",
+    "category": "Structural",
+    "supplier_id": "sup_75",
+    "price": 481.4282523500961,
+    "carbon_footprint": 326.14580027429406
+  },
+  {
+    "id": "prod_75",
+    "name": "Recycled Steel Beam - Model 75",
+    "category": "Structural",
+    "supplier_id": "sup_76",
+    "price": 463.20774699875994,
+    "carbon_footprint": 131.09580591758575
+  },
+  {
+    "id": "prod_76",
+    "name": "Low Carbon Concrete - Model 76",
+    "category": "Structural",
+    "supplier_id": "sup_77",
+    "price": 253.645864542917,
+    "carbon_footprint": 164.83909243104506
+  },
+  {
+    "id": "prod_77",
+    "name": "FSC Oak Flooring - Model 77",
+    "category": "Structural",
+    "supplier_id": "sup_78",
+    "price": 191.8585799646388,
+    "carbon_footprint": 420.4378449897975
+  },
+  {
+    "id": "prod_78",
+    "name": "Cork Insulation - Model 78",
+    "category": "Structural",
+    "supplier_id": "sup_79",
+    "price": 352.8268289575834,
+    "carbon_footprint": 143.17466276188728
+  },
+  {
+    "id": "prod_79",
+    "name": "Bamboo Panels - Model 79",
+    "category": "Structural",
+    "supplier_id": "sup_80",
+    "price": 215.50295522136815,
+    "carbon_footprint": 148.31110573585428
+  },
+  {
+    "id": "prod_80",
+    "name": "Recycled Steel Beam - Model 80",
+    "category": "Structural",
+    "supplier_id": "sup_81",
+    "price": 388.9792982134875,
+    "carbon_footprint": 339.68520947065775
+  },
+  {
+    "id": "prod_81",
+    "name": "Low Carbon Concrete - Model 81",
+    "category": "Structural",
+    "supplier_id": "sup_82",
+    "price": 125.76489870736903,
+    "carbon_footprint": 395.31970074012764
+  },
+  {
+    "id": "prod_82",
+    "name": "FSC Oak Flooring - Model 82",
+    "category": "Structural",
+    "supplier_id": "sup_83",
+    "price": 476.91274019263903,
+    "carbon_footprint": 172.86449842453607
+  },
+  {
+    "id": "prod_83",
+    "name": "Cork Insulation - Model 83",
+    "category": "Structural",
+    "supplier_id": "sup_84",
+    "price": 208.00384544472223,
+    "carbon_footprint": 423.3597130896713
+  },
+  {
+    "id": "prod_84",
+    "name": "Bamboo Panels - Model 84",
+    "category": "Structural",
+    "supplier_id": "sup_85",
+    "price": 243.13269782710628,
+    "carbon_footprint": 436.705469232801
+  },
+  {
+    "id": "prod_85",
+    "name": "Recycled Steel Beam - Model 85",
+    "category": "Structural",
+    "supplier_id": "sup_86",
+    "price": 320.26309067166756,
+    "carbon_footprint": 157.89344165192114
+  },
+  {
+    "id": "prod_86",
+    "name": "Low Carbon Concrete - Model 86",
+    "category": "Structural",
+    "supplier_id": "sup_87",
+    "price": 197.54789435538694,
+    "carbon_footprint": 125.91345274393166
+  },
+  {
+    "id": "prod_87",
+    "name": "FSC Oak Flooring - Model 87",
+    "category": "Structural",
+    "supplier_id": "sup_88",
+    "price": 258.332967410111,
+    "carbon_footprint": 190.4417164383264
+  },
+  {
+    "id": "prod_88",
+    "name": "Cork Insulation - Model 88",
+    "category": "Structural",
+    "supplier_id": "sup_89",
+    "price": 295.78804862961,
+    "carbon_footprint": 131.2586933777097
+  },
+  {
+    "id": "prod_89",
+    "name": "Bamboo Panels - Model 89",
+    "category": "Structural",
+    "supplier_id": "sup_90",
+    "price": 295.3090595805073,
+    "carbon_footprint": 277.0524071123714
+  },
+  {
+    "id": "prod_90",
+    "name": "Recycled Steel Beam - Model 90",
+    "category": "Structural",
+    "supplier_id": "sup_91",
+    "price": 258.7392448654365,
+    "carbon_footprint": 145.30878205619945
+  },
+  {
+    "id": "prod_91",
+    "name": "Low Carbon Concrete - Model 91",
+    "category": "Structural",
+    "supplier_id": "sup_92",
+    "price": 385.0911656612553,
+    "carbon_footprint": 135.41348609436284
+  },
+  {
+    "id": "prod_92",
+    "name": "FSC Oak Flooring - Model 92",
+    "category": "Structural",
+    "supplier_id": "sup_93",
+    "price": 185.71876107701385,
+    "carbon_footprint": 275.9499138783299
+  },
+  {
+    "id": "prod_93",
+    "name": "Cork Insulation - Model 93",
+    "category": "Structural",
+    "supplier_id": "sup_94",
+    "price": 428.1696531151748,
+    "carbon_footprint": 237.41163741000494
+  },
+  {
+    "id": "prod_94",
+    "name": "Bamboo Panels - Model 94",
+    "category": "Structural",
+    "supplier_id": "sup_95",
+    "price": 327.58521410679003,
+    "carbon_footprint": 462.9067990324338
+  },
+  {
+    "id": "prod_95",
+    "name": "Recycled Steel Beam - Model 95",
+    "category": "Structural",
+    "supplier_id": "sup_96",
+    "price": 291.1614724303187,
+    "carbon_footprint": 264.0713680958247
+  },
+  {
+    "id": "prod_96",
+    "name": "Low Carbon Concrete - Model 96",
+    "category": "Structural",
+    "supplier_id": "sup_97",
+    "price": 520.2913096871098,
+    "carbon_footprint": 162.01409073208185
+  },
+  {
+    "id": "prod_97",
+    "name": "FSC Oak Flooring - Model 97",
+    "category": "Structural",
+    "supplier_id": "sup_98",
+    "price": 342.2773516906344,
+    "carbon_footprint": 123.07261169293513
+  },
+  {
+    "id": "prod_98",
+    "name": "Cork Insulation - Model 98",
+    "category": "Structural",
+    "supplier_id": "sup_99",
+    "price": 168.36669779912157,
+    "carbon_footprint": 447.2156011335209
+  },
+  {
+    "id": "prod_99",
+    "name": "Bamboo Panels - Model 99",
+    "category": "Structural",
+    "supplier_id": "sup_100",
+    "price": 497.42244661915,
+    "carbon_footprint": 335.73916814993686
+  },
+  {
+    "id": "prod_100",
+    "name": "Recycled Steel Beam - Model 100",
+    "category": "Structural",
+    "supplier_id": "sup_1",
+    "price": 468.10611771617744,
+    "carbon_footprint": 268.3843692835355
+  }
+]
