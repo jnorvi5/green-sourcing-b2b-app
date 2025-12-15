@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { RfqWithResponse, RfqFilter, RfqSort, Rfq, UserProfile, RfqResponse } from '@/types/rfq'
-import { formatMaterialType, formatShortDate, getStatusColor } from '@/lib/utils/formatters'
+import { formatMaterialType, formatShortDate, getStatusColor, getDeadlineUrgency, getDeadlineUrgencyColor, getDeadlineUrgencyIcon } from '@/lib/utils/formatters'
 
 export default function SupplierRfqsPage() {
   const [user, setUser] = useState<{ id: string } | null>(null)
@@ -290,6 +290,16 @@ export default function SupplierRfqsPage() {
                             NEW
                           </span>
                         )}
+                        {/* Deadline Urgency Indicator */}
+                        {rfq.delivery_deadline && (() => {
+                          const urgency = getDeadlineUrgency(rfq.delivery_deadline);
+                          const urgencyLabel = urgency === 'urgent' ? 'URGENT' : urgency === 'soon' ? 'SOON' : 'NORMAL';
+                          return (
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getDeadlineUrgencyColor(rfq.delivery_deadline)}`}>
+                              {getDeadlineUrgencyIcon(rfq.delivery_deadline)} {urgencyLabel}
+                            </span>
+                          );
+                        })()}
                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(rfq.status)}`}>
                           {rfq.status.toUpperCase()}
                         </span>
