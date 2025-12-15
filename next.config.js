@@ -2,7 +2,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app https://*.supabase.co https://*.sentry.io;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self';
@@ -10,36 +10,12 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
+  connect-src 'self' https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
   upgrade-insecure-requests;
 `;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-        ],
-      },
-    ];
-  },
   eslint: {
     ignoreDuringBuilds: true,  // EMERGENCY: Bypass ESLint errors during build for immediate deployment
   },
@@ -52,6 +28,14 @@ const nextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+       { protocol: 'https', hostname: 'images.unsplash.com' },
+       { protocol: 'https', hostname: 'tailwindui.com' },
+       { protocol: 'https', hostname: 'plus.unsplash.com' },
+       { protocol: 'https', hostname: 'res.cloudinary.com' },
+       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+       { protocol: 'https', hostname: 'ui-avatars.com' },
+    ]
   },
   compress: true,
   webpack: (config) => {
@@ -65,8 +49,12 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspHeader.replace(/\n/g, ''),
+          },
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -91,6 +79,10 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          }
         ],
       },
     ];
