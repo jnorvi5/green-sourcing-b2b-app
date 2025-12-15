@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         { role: "system", content: systemPrompt },
         { role: "user", content: JSON.stringify(productData) }
       ],
-      model: process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o",
+      model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
       response_format: { type: "json_object" }
     });
 

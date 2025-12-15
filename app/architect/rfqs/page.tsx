@@ -8,8 +8,13 @@ import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
 import type { Rfq } from "@/types/rfq";
 
+// Extended type for RFQ with quote count
+interface RfqWithQuoteCount extends Rfq {
+  quotes?: { count: number }[];
+}
+
 export default function ArchitectRfqsPage() {
-  const [rfqs, setRfqs] = useState<Rfq[]>([]);
+  const [rfqs, setRfqs] = useState<RfqWithQuoteCount[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -86,7 +91,7 @@ export default function ArchitectRfqsPage() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {rfqs.map((rfq: any) => (
+            {rfqs.map((rfq) => (
               <Link
                 key={rfq.id}
                 href={`/architect/rfqs/${rfq.id}`}
@@ -114,7 +119,7 @@ export default function ArchitectRfqsPage() {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold uppercase
                       ${
-                        rfq.status === "open" || rfq.status === "pending"
+                        rfq.status === "pending"
                           ? "bg-green-500/20 text-green-400"
                           : ""
                       }

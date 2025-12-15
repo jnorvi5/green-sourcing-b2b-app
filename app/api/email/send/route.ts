@@ -7,11 +7,57 @@ import {
     generateCarbonReportEmail,
 } from '../../../../lib/mailerlite';
 
-// Force TypeScript to ignore strict typing for this whole route
+// Email data types for different email types - match the function signatures in mailerlite.ts
+interface WelcomeEmailData {
+    name: string;
+    email: string;
+    role: 'buyer' | 'supplier';
+    company?: string;
+}
+
+interface RfqNotificationData {
+    supplierName: string;
+    rfqNumber: string;
+    productName: string;
+    quantity: number;
+    unit: string;
+    buyerCompany: string;
+    project: string;
+    deliveryLocation: string;
+    deliveryDate: string;
+    expiresIn: string;
+    viewUrl: string;
+}
+
+interface QuoteReceivedData {
+    buyerName: string;
+    rfqNumber: string;
+    productName: string;
+    supplierName: string;
+    unitPrice: number;
+    quantity: number;
+    unit: string;
+    leadTime: number;
+    validUntil: string;
+    viewUrl: string;
+}
+
+interface CarbonReportData {
+    userName: string;
+    reportPeriod: string;
+    totalCo2e: number;
+    comparison: number;
+    projectCount: number;
+    topCategory: string;
+    downloadUrl: string;
+}
+
+type EmailData = WelcomeEmailData | RfqNotificationData | QuoteReceivedData | CarbonReportData | Record<string, unknown>;
+
 interface SendEmailRequest {
     type: string;
     to: string;
-    data: any; // Using 'any' here stops the complaints at the source
+    data: EmailData;
     subject?: string;
     html?: string;
 }
@@ -29,23 +75,23 @@ export async function POST(request: NextRequest) {
 
         switch (body.type) {
             case 'welcome':
-                subject = `Welcome to GreenChainz, ${body.data.name}! 🌱`;
-                html = generateWelcomeEmail(body.data);
+                subject = `Welcome to GreenChainz, ${(body.data as WelcomeEmailData).name}! 🌱`;
+                html = generateWelcomeEmail(body.data as WelcomeEmailData);
                 break;
 
             case 'rfq_notification':
-                subject = `New RFQ: ${body.data.productName}`;
-                html = generateRfqNotificationEmail(body.data);
+                subject = `New RFQ: ${(body.data as RfqNotificationData).productName}`;
+                html = generateRfqNotificationEmail(body.data as RfqNotificationData);
                 break;
 
             case 'quote_received':
                 subject = `Quote Received`;
-                html = generateQuoteReceivedEmail(body.data);
+                html = generateQuoteReceivedEmail(body.data as QuoteReceivedData);
                 break;
 
             case 'carbon_report':
                 subject = `Carbon Report`;
-                html = generateCarbonReportEmail(body.data);
+                html = generateCarbonReportEmail(body.data as CarbonReportData);
                 break;
 
             case 'custom':

@@ -60,14 +60,15 @@ export class ScraperAgent {
             });
 
             return { success: true, supplierId: task.supplierId, data };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Scrape failed for ${task.url}:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
             await logAgentActivity({
                 agentType: 'scraper',
                 action: 'scrape_url',
                 status: 'error',
-                metadata: { url: task.url, supplierId: task.supplierId, error: error.message }
+                metadata: { url: task.url, supplierId: task.supplierId, error: errorMessage }
             });
 
             return { success: false, supplierId: task.supplierId, error };

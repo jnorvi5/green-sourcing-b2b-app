@@ -107,31 +107,32 @@ export async function exportMaterialToRevit(
 /**
  * Map GreenChainz product to Revit material format
  */
-function mapProductToRevitMaterial(product: any): RevitMaterialData {
-  const sustainabilityData = product.sustainability_data || {};
+function mapProductToRevitMaterial(product: Record<string, unknown>): RevitMaterialData {
+  const sustainabilityData = (product['sustainability_data'] as Record<string, unknown>) || {};
+  const suppliers = product['suppliers'] as Record<string, unknown> | undefined;
 
   const properties: MaterialProperties = {
-    name: product.name,
-    manufacturer: product.suppliers?.name || 'Unknown',
-    epd_number: sustainabilityData.epd_number || sustainabilityData.epd_id,
-    carbon_footprint: parseFloat(sustainabilityData.gwp_kg_co2e || sustainabilityData.gwp || 0),
-    carbon_footprint_unit: sustainabilityData.gwp_unit || 'kg CO2e/kg',
-    thermal_conductivity: sustainabilityData.thermal_conductivity,
-    r_value: sustainabilityData.r_value,
-    recycled_content_percent: sustainabilityData.recycled_content_percent,
-    certifications: product.certifications || [],
-    density: sustainabilityData.density,
-    compressive_strength: sustainabilityData.compressive_strength,
-    description: product.description,
+    name: product['name'] as string,
+    manufacturer: (suppliers?.['name'] as string) || 'Unknown',
+    epd_number: (sustainabilityData['epd_number'] as string | undefined) || (sustainabilityData['epd_id'] as string | undefined),
+    carbon_footprint: parseFloat((sustainabilityData['gwp_kg_co2e'] as string | number | undefined)?.toString() || (sustainabilityData['gwp'] as string | number | undefined)?.toString() || '0'),
+    carbon_footprint_unit: (sustainabilityData['gwp_unit'] as string) || 'kg CO2e/kg',
+    thermal_conductivity: sustainabilityData['thermal_conductivity'] as number | undefined,
+    r_value: sustainabilityData['r_value'] as number | undefined,
+    recycled_content_percent: sustainabilityData['recycled_content_percent'] as number | undefined,
+    certifications: (product['certifications'] as string[]) || [],
+    density: sustainabilityData['density'] as number | undefined,
+    compressive_strength: sustainabilityData['compressive_strength'] as number | undefined,
+    description: product['description'] as string | undefined,
   };
 
   return {
-    name: product.name,
-    category: product.material_type || 'General',
+    name: product['name'] as string,
+    category: (product['material_type'] as string) || 'General',
     properties,
     appearance: {
-      color: sustainabilityData.color,
-      texture: sustainabilityData.texture,
+      color: sustainabilityData['color'] as string | undefined,
+      texture: sustainabilityData['texture'] as string | undefined,
     },
   };
 }

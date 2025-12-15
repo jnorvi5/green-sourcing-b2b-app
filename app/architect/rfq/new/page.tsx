@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,7 +9,6 @@ import type {
   RFQFormData,
   MaterialCategory,
   UnitType,
-  BudgetRange,
 } from "@/types/rfq";
 import { createClient } from "@/lib/supabase/client";
 
@@ -29,13 +29,6 @@ const unitTypes: UnitType[] = [
   "kg",
   "m3",
   "m2",
-];
-
-const budgetRanges: BudgetRange[] = [
-  "<$10k",
-  "$10k-50k",
-  "$50k-100k",
-  "$100k+",
 ];
 
 function RFQFormContent() {
@@ -70,11 +63,12 @@ function RFQFormContent() {
       fetchProject();
     }
   }, [projectId]);
+  // Get product_id from URL if present
+  const productId = searchParams?.get("product_id");
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<RFQFormData>({
     defaultValues: {
@@ -159,11 +153,10 @@ function RFQFormContent() {
       } else {
         router.push("/architect/dashboard?rfq=created");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting RFQ:", error);
-      setErrorMessage(
-        error.message || "An unexpected error occurred. Please try again."
-      );
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(errorMessage);
       setIsSubmitting(false);
     }
   };
