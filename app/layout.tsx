@@ -4,7 +4,11 @@ import Script from "next/script";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import IntercomProvider from "@/components/IntercomProvider";
-import AgentChat from "@/components/AgentChat";
+import dynamic from "next/dynamic";
+
+const AgentChat = dynamic(() => import("@/components/AgentChat"), {
+  ssr: false,
+});
 
 const SentryProvider = dynamic(
   () => import("@sentry/nextjs").then((mod) => mod.ErrorBoundary),
