@@ -29,23 +29,30 @@ export class SocialAgent {
             let content: string;
 
             if (task.type === 'new_supplier') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const supplierName = (task.metadata as any)?.supplierName || 'Sustainable Supplier';
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const productCategory = (task.metadata as any)?.productCategory || 'Building Materials';
+
                 content = SOCIAL_TEMPLATES.newSupplier(
-                    task.metadata.supplierName as string,
-                    task.metadata.productCategory as string
+                    supplierName as string,
+                    productCategory as string
                 );
             } else if (task.type === 'weekly_update') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as any);
             } else {
-                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata.topic as string);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                content = SOCIAL_TEMPLATES.thoughtLeadership((task.metadata as any)?.topic as string);
             }
 
             if (task.platform === 'linkedin') {
-                if (!process.env.LINKEDIN_AUTHOR_URN) {
+                if (!process.env['LINKEDIN_AUTHOR_URN']) {
                     console.warn("Skipping LinkedIn post: Missing URN");
                     return { success: false, error: "Missing URN" };
                 }
                 await linkedInClient.createPost({
-                    authorUrn: process.env.LINKEDIN_AUTHOR_URN!,
+                    authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
                     text: content
                 });
             }

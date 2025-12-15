@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
                 get: (name: string) => cookies().get(name)?.value,
@@ -32,7 +32,10 @@ export async function POST(req: Request) {
             .eq('status', 'active')
             .single()
 
-        const isPremium = ['Basic', 'Enterprise'].includes(subscription?.supplier_plans?.plan_name)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const plan = subscription?.supplier_plans as any
+        const planName = Array.isArray(plan) ? plan[0]?.plan_name : plan?.plan_name
+        const isPremium = ['Basic', 'Enterprise'].includes(planName)
 
         // Check existing conversation (architect may have initiated)
         const { data: existing } = await supabase
@@ -80,7 +83,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             conversation_id: conversationId,
-            intercom_app_id: process.env.NEXT_PUBLIC_INTERCOM_APP_ID,
+            intercom_app_id: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'],
         })
     } catch (error) {
         console.error('Chat init error:', error)

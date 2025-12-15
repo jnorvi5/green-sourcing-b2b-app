@@ -1,17 +1,15 @@
-'use client';
+"use client";
 
-'use client'
-
-import { Component, type ReactNode, type ErrorInfo } from 'react'
+import { Component, type ReactNode, type ErrorInfo } from "react";
 
 interface Props {
-  children: ReactNode
-  onReset?: () => void
+  children: ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
-  hasError: boolean
-  error: Error | null
+  hasError: boolean;
+  error: Error | null;
 }
 
 /**
@@ -20,28 +18,28 @@ interface State {
  */
 export class DashboardErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // In production, we could send this to an error tracking service
     // For now, we'll safely handle without console.error in production
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Dashboard Error:', error, errorInfo)
+    if (process.env["NODE_ENV"] === "development") {
+      console.error("Dashboard Error:", error, errorInfo);
     }
   }
 
   handleReset = (): void => {
-    this.setState({ hasError: false, error: null })
+    this.setState({ hasError: false, error: null });
     if (this.props.onReset) {
-      this.props.onReset()
+      this.props.onReset();
     }
-  }
+  };
 
   render(): ReactNode {
     if (this.state.hasError) {
@@ -74,17 +72,19 @@ export class DashboardErrorBoundary extends Component<Props, State> {
                 Something went wrong
               </h2>
               <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">
-                We encountered an unexpected error while loading the dashboard. Please try again.
+                We encountered an unexpected error while loading the dashboard.
+                Please try again.
               </p>
 
               {/* Error Details (Development only) */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="mb-6 p-3 rounded-lg bg-black/40 border border-white/10">
-                  <p className="text-xs text-red-300 font-mono break-all">
-                    {this.state.error.message}
-                  </p>
-                </div>
-              )}
+              {process.env["NODE_ENV"] === "development" &&
+                this.state.error && (
+                  <div className="mb-6 p-3 rounded-lg bg-black/40 border border-white/10">
+                    <p className="text-xs text-red-300 font-mono break-all">
+                      {this.state.error.message}
+                    </p>
+                  </div>
+                )}
 
               {/* Retry Button */}
               <button
@@ -101,9 +101,9 @@ export class DashboardErrorBoundary extends Component<Props, State> {
             </p>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

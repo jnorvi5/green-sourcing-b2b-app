@@ -5,10 +5,11 @@ class AzureAssistant {
     private deployment = 'gpt-4o';
 
     constructor() {
-        if (process.env.AZURE_OPENAI_API_KEY && process.env.AZURE_OPENAI_ENDPOINT) {
+        if (process.env['AZURE_OPENAI_API_KEY'] && process.env['AZURE_OPENAI_ENDPOINT']) {
             this.client = new AzureOpenAI({
-                apiKey: process.env.AZURE_OPENAI_API_KEY!,
-                endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+                apiKey: process.env['AZURE_OPENAI_API_KEY'],
+                endpoint: process.env['AZURE_OPENAI_ENDPOINT'],
+                deployment: process.env['AZURE_OPENAI_DEPLOYMENT'],
                 apiVersion: '2024-02-15-preview'
             });
         } else {
@@ -54,7 +55,7 @@ class AzureAssistant {
         }
     }
 
-    async auditProduct(productId: string) {
+    async auditProduct(_productId: string) {
         if (!this.client) return "Mock Audit: Product looks sustainable.";
 
         // TODO: Integrate with Autodesk SDA API

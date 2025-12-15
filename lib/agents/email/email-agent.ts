@@ -50,12 +50,12 @@ export class EmailAgent {
 
             // Send via Zoho
             // Check if credentials exist before trying, to avoid crashes in dev if not set
-            if (!process.env.ZOHO_CLIENT_ID) {
+            if (!process.env['ZOHO_CLIENT_ID']) {
                 console.warn('Skipping email send: Zoho credentials not set');
                 return { success: false, error: 'Missing credentials' };
             }
 
-            const result = await zohoClient.sendEmail({
+            await zohoClient.sendEmail({
                 to: task.recipientEmail,
                 subject,
                 body
@@ -94,7 +94,7 @@ export class EmailAgent {
     }
 
     async checkResponses() {
-        if (!process.env.ZOHO_CLIENT_ID) {
+        if (!process.env['ZOHO_CLIENT_ID']) {
             return;
         }
 

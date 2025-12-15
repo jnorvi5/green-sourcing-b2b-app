@@ -62,7 +62,7 @@ export async function GET(request: Request) {
   // Simple filter
   const filtered = suppliers.filter(s => {
     if (q && !s.company_name.toLowerCase().includes(q.toLowerCase()) &&
-        !s.matched_products.some(p => p.title.toLowerCase().includes(q.toLowerCase()))) return false;
+      !s.matched_products.some(p => p.title.toLowerCase().includes(q.toLowerCase()))) return false;
     if (location && !s.location.toLowerCase().includes(location.toLowerCase())) return false;
     return true;
   });
@@ -73,9 +73,10 @@ export async function GET(request: Request) {
     meta: {
       intent: {
         isSmartSearch: true
-      }
-    results: [],
-    source: 'mock'
+      },
+      results: [],
+      source: 'mock'
+    }
   }, {
     headers: {
       'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=59',

@@ -10,9 +10,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         message: "AI Audit Agent is currently using mock data (Azure Credentials missing).",
         auditResult: {
-            compliance_score: 85,
-            flags: ["Mock: Missing EPD verification source"],
-            suggestions: ["Upload valid ISO14025 PDF"]
+          compliance_score: 85,
+          flags: ["Mock: Missing EPD verification source"],
+          suggestions: ["Upload valid ISO14025 PDF"]
         }
       });
     }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         { role: "system", content: systemPrompt },
         { role: "user", content: JSON.stringify(productData) }
       ],
-      model: process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o",
+      model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
       response_format: { type: "json_object" }
     });
 

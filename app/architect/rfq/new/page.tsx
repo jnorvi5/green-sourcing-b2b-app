@@ -1,17 +1,12 @@
-'use client';
+"use client";
 
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
-import type {
-  RFQFormData,
-  MaterialCategory,
-  UnitType,
-  BudgetRange,
-} from "@/types/rfq";
+import type { RFQFormData, MaterialCategory, UnitType } from "@/types/rfq";
 
 const materialCategories: MaterialCategory[] = [
   "Lumber",
@@ -32,13 +27,6 @@ const unitTypes: UnitType[] = [
   "m2",
 ];
 
-const budgetRanges: BudgetRange[] = [
-  "<$10k",
-  "$10k-50k",
-  "$50k-100k",
-  "$100k+",
-];
-
 function RFQFormContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -47,12 +35,11 @@ function RFQFormContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Get product_id from URL if present
-  const productId = searchParams.get("product_id");
+  const productId = searchParams?.get("product_id");
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<RFQFormData>({
     defaultValues: {

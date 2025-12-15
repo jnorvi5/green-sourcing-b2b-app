@@ -1,17 +1,38 @@
-'use client';
+"use client";
 
 // components/ImageUpload.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-export default function ImageUpload() {
+interface ImageUploadProps {
+  onUploadComplete?: (url: string) => void;
+  className?: string;
+}
+
+export default function ImageUpload({
+  onUploadComplete,
+  className,
+}: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+
+      // If used as invisible trigger with auto-upload
+      if (className && onUploadComplete) {
+        setUploading(true);
+        // Simulate upload
+        setTimeout(() => {
+          // Mock URL
+          const mockUrl = URL.createObjectURL(selectedFile);
+          onUploadComplete(mockUrl);
+          setUploading(false);
+        }, 1000);
+      }
     }
   };
 
@@ -23,16 +44,30 @@ export default function ImageUpload() {
     setUploading(true);
     // Placeholder for S3 upload logic
     console.log("Simulating upload for:", file.name);
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate network delay
     setUploading(false);
     alert("Placeholder: Upload complete!");
+    if (onUploadComplete) onUploadComplete("https://placeholder.com/image.jpg");
   };
+
+  if (className) {
+    return (
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className={className}
+        disabled={uploading}
+      />
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto border rounded-lg p-6 bg-white shadow-md">
       <h2 className="text-xl font-semibold mb-4">S3 Asset Uploader</h2>
       <p className="text-sm text-gray-500 mb-4">
-        This component is a placeholder for testing the S3 asset pipeline. Select a file and click upload.
+        This component is a placeholder for testing the S3 asset pipeline.
+        Select a file and click upload.
       </p>
       <div className="flex items-center space-x-4">
         <input
@@ -45,7 +80,7 @@ export default function ImageUpload() {
           disabled={uploading || !file}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {uploading ? 'Uploading...' : 'Upload'}
+          {uploading ? "Uploading..." : "Upload"}
         </button>
       </div>
     </div>
