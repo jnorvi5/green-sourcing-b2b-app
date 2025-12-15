@@ -22,6 +22,7 @@ export const EmailTypeSchema = z.enum([
   'account_verification',
   'supplier_approval',
   'supplier_rejection',
+  'supplier_claim',
   'critical_update',
   // Marketing (MailerLite)
   'newsletter_weekly',
@@ -64,6 +65,7 @@ export const EMAIL_ROUTING: Record<EmailType, { provider: EmailProvider; categor
   account_verification: { provider: 'zoho', category: 'transactional' },
   supplier_approval: { provider: 'zoho', category: 'transactional' },
   supplier_rejection: { provider: 'zoho', category: 'transactional' },
+  supplier_claim: { provider: 'zoho', category: 'transactional' },
   critical_update: { provider: 'zoho', category: 'transactional' },
   // Marketing emails (MailerLite)
   newsletter_weekly: { provider: 'mailerlite', category: 'marketing' },
@@ -381,6 +383,12 @@ export const SupplierRejectionDataSchema = z.object({
   contactEmail: z.string().email(),
 });
 export type SupplierRejectionData = z.infer<typeof SupplierRejectionDataSchema>;
+
+export const SupplierClaimDataSchema = z.object({
+  companyName: z.string(),
+  claimUrl: z.string().url(),
+});
+export type SupplierClaimData = z.infer<typeof SupplierClaimDataSchema>;
 
 // =============================================================================
 // Email Service Result Types

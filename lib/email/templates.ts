@@ -10,6 +10,7 @@ import type {
   RfqConfirmationData,
   SupplierApprovalData,
   SupplierRejectionData,
+  SupplierClaimData,
 } from './types';
 
 // =============================================================================
@@ -634,6 +635,53 @@ export function generateSupplierFollowUpDay7Email(data: {
 }
 
 // =============================================================================
+// Supplier Claim Email
+// =============================================================================
+
+export function generateSupplierClaimEmail(data: SupplierClaimData): string {
+  const content = `
+    <!-- Alert Banner -->
+    <div style="${STYLES.alertSuccess}">
+      <span style="color: #6ee7b7; font-size: 14px; font-weight: 600;">👋 CLAIM YOUR PROFILE</span>
+    </div>
+
+    <h1 style="${STYLES.h1}">
+      Is ${data.companyName} on GreenChainz?
+    </h1>
+
+    <p style="${STYLES.text}">
+      We've listed <strong>${data.companyName}</strong> on GreenChainz, the leading marketplace for sustainable building materials.
+    </p>
+
+    <p style="${STYLES.text}">
+      Architects and contractors are already searching for verified green suppliers. Claim your free profile to start receiving quote requests today.
+    </p>
+
+    <!-- Benefits Card -->
+    <div style="${STYLES.card}">
+      <h2 style="${STYLES.h2}">✨ Why Claim Your Profile?</h2>
+      <ul style="color: #9ca3af; margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li><strong style="color: #ffffff;">Get Verified</strong> - Build trust with verified sustainability data</li>
+        <li><strong style="color: #ffffff;">Receive RFQs</strong> - Get quote requests directly from buyers</li>
+        <li><strong style="color: #ffffff;">Showcase Products</strong> - Display your full catalog with EPDs</li>
+      </ul>
+    </div>
+
+    <a href="${data.claimUrl}" style="${STYLES.buttonBlock}">
+      Claim My Profile Now →
+    </a>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <p style="${STYLES.textSmall}">
+        If you are not the right person to manage this profile, please forward this email to the appropriate contact.
+      </p>
+    </div>
+  `;
+
+  return wrapTemplate(content);
+}
+
+// =============================================================================
 // Export All Templates
 // =============================================================================
 
@@ -648,6 +696,7 @@ const emailTemplates = {
   generateArchitectWelcomeEmail,
   generateSupplierFollowUpDay2Email,
   generateSupplierFollowUpDay7Email,
+  generateSupplierClaimEmail,
 };
 
 export default emailTemplates;

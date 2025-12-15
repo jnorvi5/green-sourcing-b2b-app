@@ -19,6 +19,7 @@ import {
   type RfqConfirmationData,
   type SupplierApprovalData,
   type SupplierRejectionData,
+  type SupplierClaimData,
 } from './types';
 import {
   generateRfqNotificationEmail,
@@ -27,6 +28,7 @@ import {
   generateSupplierRejectionEmail,
   generateAccountVerificationEmail,
   generatePasswordResetEmail,
+  generateSupplierClaimEmail,
 } from './templates';
 
 // =============================================================================
@@ -402,6 +404,24 @@ export class EmailService {
   }
 
   /**
+   * Sends a supplier claim email.
+   */
+  public async sendSupplierClaimEmail(
+    email: string,
+    data: SupplierClaimData
+  ): Promise<SendEmailResult> {
+    const html = generateSupplierClaimEmail(data);
+
+    return this.sendEmail({
+      recipientEmail: email,
+      emailType: 'supplier_claim',
+      subject: `Claim your ${data.companyName} profile on GreenChainz`,
+      htmlContent: html,
+      templateData: data,
+    });
+  }
+
+  /**
    * Triggers the onboarding email sequence for a new user.
    */
   public async triggerOnboardingSequence(
@@ -472,6 +492,13 @@ export async function sendSupplierApprovalNotice(
   data: SupplierApprovalData
 ): Promise<SendEmailResult> {
   return getEmailService().sendSupplierApprovalNotice(supplierEmail, supplierId, data);
+}
+
+export async function sendSupplierClaimEmail(
+  email: string,
+  data: SupplierClaimData
+): Promise<SendEmailResult> {
+  return getEmailService().sendSupplierClaimEmail(email, data);
 }
 
 export async function triggerOnboardingSequence(

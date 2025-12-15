@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { z } from 'zod'
 import { AZURE_DEPLOYMENT_CHEAP } from '@/lib/constants'
+import { sendSupplierClaimEmail } from '@/lib/email/email-service'
 
 const RequestSchema = z.object({
     urls: z.array(z.string().url()),
@@ -88,6 +89,19 @@ Return ONLY valid JSON:
                     certifications: extracted.certifications,
                     contact_email: extracted.contact_email,
                 })
+
+                if (extracted.contact_email) {
+                    try {
+                        const claimUrl = `${process.env['NEXT_PUBLIC_APP_URL']}/claim?email=${encodeURIComponent(extracted.contact_email)}`
+                        await sendSupplierClaimEmail(extracted.contact_email, {
+                            companyName: extracted.company_name || 'your company',
+                            claimUrl,
+                        })
+                    } catch (emailError) {
+                        console.error(`Failed to send claim email to ${extracted.contact_email}:`, emailError)
+                        // Don't fail the scrape if email sending fails
+                    }
+                }
 
                 return { url, success: true, company: extracted.company_name }
             } catch (error: unknown) {
