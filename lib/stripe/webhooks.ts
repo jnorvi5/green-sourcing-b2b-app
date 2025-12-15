@@ -259,3 +259,112 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
 
   console.log(`🔄 Subscription updated: ${subscriptionId} - Status: ${subscription.status}`);
 }
+
+/**
+ * Handle invoice.finalized event
+ * When invoice is ready to be paid
+ */
+export async function handleInvoiceFinalized(invoice: Stripe.Invoice): Promise<void> {
+  const supabase = createClient(
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
+  );
+
+  // Update invoice status in database
+  await supabase
+    .from('invoices')
+    .update({
+      status: 'open',
+      invoice_pdf_url: invoice.invoice_pdf || undefined,
+      invoice_hosted_url: invoice.hosted_invoice_url || undefined,
+    })
+    .eq('stripe_invoice_id', invoice.id);
+
+  console.log(`📄 Invoice finalized: ${invoice.id}`);
+}
+
+/**
+ * Handle invoice.payment_succeeded event
+ * When invoice is paid (for success fees)
+ */
+export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
+  const supabase = createClient(
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
+  );
+
+  // Update invoice status to paid
+  await supabase
+    .from('invoices')
+    .update({
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+    })
+    .eq('stripe_invoice_id', invoice.id);
+
+  console.log(`💰 Invoice payment succeeded: ${invoice.id} - Amount: $${(invoice.amount_paid || 0) / 100}`);
+}
+
+/**
+ * Handle payment_method.attached event
+ * When customer adds new payment method
+ */
+export async function handlePaymentMethodAttached(paymentMethod: Stripe.PaymentMethod): Promise<void> {
+  const supabase = createClient(
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
+  );
+
+  const customerId = paymentMethod.customer as string;
+
+  // Get supplier by customer ID
+  const { data: supplier } = await supabase
+    .from('suppliers')
+    .select('id, name')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
+  if (!supplier) {
+    console.log(`Payment method attached for unknown customer: ${customerId}`);
+    return;
+  }
+
+  console.log(`💳 Payment method attached for supplier ${supplier.name} - Type: ${paymentMethod.type}`);
+}
+
+/**
+ * Handle customer.subscription.trial_will_end event
+ * 3 days before trial ends
+ */
+export async function handleTrialWillEnd(subscription: Stripe.Subscription): Promise<void> {
+  const supabase = createClient(
+    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+    process.env['SUPABASE_SERVICE_ROLE_KEY']!
+  );
+
+  const customerId = subscription.customer as string;
+
+  // Get supplier
+  const { data: supplier } = await supabase
+    .from('suppliers')
+    .select('id, name, user_id')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
+  if (!supplier) {
+    console.log(`Trial ending for unknown customer: ${customerId}`);
+    return;
+  }
+
+  // Get user email
+  const { data: userData } = await supabase.auth.admin.getUserById(supplier.user_id);
+
+  const trialEndDate = subscription.trial_end
+    ? new Date(subscription.trial_end * 1000).toLocaleDateString()
+    : 'soon';
+
+  console.log(`⏰ Trial will end for supplier ${supplier.name} on ${trialEndDate}`);
+  
+  // TODO: Send email notification via Zoho or email service
+  // This would integrate with lib/email/templates.ts or lib/zoho-smtp.ts
+}

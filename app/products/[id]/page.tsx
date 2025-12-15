@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MaterialPassportCard from "@/components/MaterialPassportCard";
-import { FaArrowLeft, FaIndustry, FaRulerCombined } from "react-icons/fa";
+import { FaArrowLeft, FaIndustry, FaRulerCombined, FaLeaf, FaRecycle } from "react-icons/fa";
+import { Product } from "@/types/schema";
 
 export default async function ProductPage({
   params,
@@ -21,16 +22,16 @@ export default async function ProductPage({
       suppliers (
         id,
         company_name,
-        tier,
-        epd_verified,
-        verification_source
+        tier
       ),
       epd_data (
         id,
         data_source,
         gwp_a1a3_kgco2e,
         gwp_total_kgco2e,
-        validity_end
+        validity_end,
+        epd_number,
+        pcr_reference
       )
     `
     )
@@ -42,14 +43,6 @@ export default async function ProductPage({
     notFound();
   }
 
-  // Determine verification status
-  // Note: Schema says `tier` is enum, and `products` has `epd_verified` isn't in products but likely in suppliers or derived.
-  // The schema shows `suppliers` table has `tier` (free, standard, verified).
-  // `epd_verified` was seen in search page types but not explicitly in schema for suppliers,
-  // but let's check `suppliers` table definition again in memory.
-  // Ah, schema says `tier` enum. Search page used `epd_verified`.
-  // I'll use `tier === 'verified'` for now, or check if EPD exists.
-
   const isVerified =
     product.suppliers?.tier === "verified" || !!product.epd_data;
 
@@ -57,15 +50,9 @@ export default async function ProductPage({
   const carbonFootprint =
     product.epd_data?.gwp_a1a3_kgco2e ?? product.carbon_footprint_a1a3 ?? null;
 
-  // Certifications might be JSONB, need to handle parsing if it's not automatically done or if it's an object array
-  // Schema says `certifications JSONB DEFAULT '[]'::jsonb`.
-  // In search page it was string[]. In schema comment it says "JSONB array of certification objects" for suppliers,
-  // but "JSONB array of product-specific certifications" for products.
-  // Let's assume it's an array of strings or objects. I'll cast safely.
-
   let certifications: string[] = [];
   if (Array.isArray(product.certifications)) {
-    certifications = product.certifications.map((c: unknown) => {
+    certifications = product.certifications.map((c: any) => {
       if (typeof c === "string") return c;
       if (typeof c === "object" && c !== null && "name" in c)
         return (c as { name: string }).name;
@@ -77,10 +64,10 @@ export default async function ProductPage({
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
       <div className="container mx-auto max-w-6xl">
         <Link
-          href="/search"
+          href="/products"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-teal-400 transition mb-6"
         >
-          <FaArrowLeft /> Back to Search
+          <FaArrowLeft /> Back to Catalog
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -89,7 +76,7 @@ export default async function ProductPage({
             {/* Header */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-white/10 px-3 py-1 rounded-full text-sm text-teal-300">
+                <span className="bg-white/10 px-3 py-1 rounded-full text-sm text-teal-300 capitalize">
                   {product.material_type}
                 </span>
                 {isVerified && (
@@ -104,7 +91,7 @@ export default async function ProductPage({
               <div className="flex items-center gap-2 text-gray-400">
                 <FaIndustry />
                 <Link
-                  href={`/supplier/${product.supplier_id}`}
+                  href={`/suppliers/${product.supplier_id}`}
                   className="hover:text-white transition underline decoration-gray-600 underline-offset-4"
                 >
                   {product.suppliers?.company_name || "Unknown Supplier"}
@@ -121,6 +108,55 @@ export default async function ProductPage({
               </p>
             </div>
 
+            {/* Sustainability Section (New Tab/Section) */}
+            <div className="bg-emerald-950/30 border border-emerald-500/20 rounded-xl p-6">
+               <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-emerald-400">
+                 <FaLeaf />
+                 Sustainability Data
+               </h2>
+
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 {/* GWP A1-A3 */}
+                 <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-gray-400 text-sm mb-1">GWP (A1-A3)</p>
+                    <p className="text-2xl font-bold text-white">
+                        {carbonFootprint ? `${carbonFootprint} kg CO2e` : "N/A"}
+                    </p>
+                    {product.unit_type && <p className="text-xs text-gray-500">per {product.unit_type}</p>}
+                 </div>
+
+                 {/* Recycled Content */}
+                 <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-gray-400 text-sm mb-1">Recycled Content</p>
+                    <div className="flex items-center gap-2">
+                        <FaRecycle className="text-teal-400" />
+                        <p className="text-2xl font-bold text-white">
+                            {product.recycled_content_pct !== null ? `${product.recycled_content_pct}%` : "N/A"}
+                        </p>
+                    </div>
+                 </div>
+
+                 {/* EPD Status */}
+                 <div className="bg-black/20 p-4 rounded-lg border border-white/5">
+                    <p className="text-gray-400 text-sm mb-1">EPD Verification</p>
+                    <p className={`text-lg font-bold ${product.epd_id ? "text-emerald-400" : "text-gray-500"}`}>
+                        {product.epd_id ? "Verified EPD" : "None"}
+                    </p>
+                    {product.epd_data?.epd_number && (
+                        <p className="text-xs text-gray-500 mt-1">Ref: {product.epd_data.epd_number}</p>
+                    )}
+                 </div>
+               </div>
+
+               {product.epd_data && (
+                   <div className="mt-6 pt-6 border-t border-emerald-500/10 text-sm text-gray-400">
+                       <p><strong>Data Source:</strong> {product.epd_data.data_source}</p>
+                       <p><strong>PCR Reference:</strong> {product.epd_data.pcr_reference || "N/A"}</p>
+                       <p><strong>Validity End:</strong> {product.epd_data.validity_end}</p>
+                   </div>
+               )}
+            </div>
+
             {/* Specifications */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -128,7 +164,7 @@ export default async function ProductPage({
                 Technical Specifications
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {product.thermal_conductivity && (
+                {product.thermal_conductivity !== undefined && product.thermal_conductivity !== null && (
                   <div className="flex justify-between border-b border-white/5 pb-2">
                     <span className="text-gray-400">Thermal Conductivity</span>
                     <span>{product.thermal_conductivity}</span>
@@ -186,9 +222,11 @@ export default async function ProductPage({
               <button className="w-full bg-teal-500 hover:bg-teal-400 text-black font-bold py-3 rounded-lg transition mb-3">
                 Request Quote
               </button>
-              <button className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg transition">
-                Download EPD
-              </button>
+              {product.epd_id && (
+                  <button className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg transition">
+                    Download EPD
+                  </button>
+              )}
             </div>
           </div>
         </div>

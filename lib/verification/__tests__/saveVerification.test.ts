@@ -26,9 +26,8 @@ describe('saveVerification', () => {
     mockFrom = jest.fn().mockReturnValue({ update: mockUpdate });
 
     // Mock createClient
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { createClient } = require('@supabase/supabase-js');
-    mockCreateClient = createClient as jest.Mock;
+    const supabaseModule = await import('@supabase/supabase-js');
+    mockCreateClient = supabaseModule.createClient as unknown as jest.Mock;
     mockCreateClient.mockReturnValue({ from: mockFrom });
 
     // Set required environment variables

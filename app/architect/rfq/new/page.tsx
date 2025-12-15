@@ -1,8 +1,6 @@
 'use client';
 
-"use client";
-
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +8,6 @@ import type {
   RFQFormData,
   MaterialCategory,
   UnitType,
-  BudgetRange,
 } from "@/types/rfq";
 
 const materialCategories: MaterialCategory[] = [
@@ -32,13 +29,6 @@ const unitTypes: UnitType[] = [
   "m2",
 ];
 
-const budgetRanges: BudgetRange[] = [
-  "<$10k",
-  "$10k-50k",
-  "$50k-100k",
-  "$100k+",
-];
-
 function RFQFormContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -52,7 +42,6 @@ function RFQFormContent() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<RFQFormData>({
     defaultValues: {
@@ -111,7 +100,7 @@ function RFQFormContent() {
       } else {
         router.push("/architect/dashboard?rfq=created");
       }
-    } catch (error: any) {
+    } catch (error: Record<string, unknown>) {
       console.error("Error submitting RFQ:", error);
       setErrorMessage(
         error.message || "An unexpected error occurred. Please try again."

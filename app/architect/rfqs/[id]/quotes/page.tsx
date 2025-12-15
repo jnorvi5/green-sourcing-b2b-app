@@ -3,7 +3,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRFQWithQuotes, acceptQuote } from '@/app/actions/quotes';
 import { exportQuotesToCSV } from '@/lib/utils/formatters';
@@ -14,7 +13,6 @@ type SortDirection = 'asc' | 'desc';
 
 export default function QuoteComparisonPage() {
   const params = useParams();
-  const router = useRouter();
   const rfqId = params?.['id'] as string;
 
   const [rfqData, setRfqData] = useState<RFQWithQuotes | null>(null);

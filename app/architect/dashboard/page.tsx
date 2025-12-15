@@ -15,7 +15,6 @@ import {
   FaBalanceScale,
   FaPaperPlane,
   FaCheckSquare,
-  FaSquare,
   FaTimes,
 } from "react-icons/fa";
 
@@ -26,7 +25,7 @@ interface Product {
   description?: string;
   image_url?: string;
   gwp?: number; // Global Warming Potential
-  specifications?: any;
+  specifications?: unknown;
   supplier?: {
     company_name: string;
     location?: string;
@@ -46,9 +45,9 @@ interface RFQ {
 }
 
 function ArchitectDashboardInner() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [sentRFQs, setSentRFQs] = useState<RFQ[]>([]);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [profile, setProfile] = useState<{ full_name?: string } | null>(null);
+  const [, setSentRFQs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTestMode, setIsTestMode] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -261,7 +260,7 @@ function ArchitectDashboardInner() {
         // 2. Fetch Suppliers for these products
         // Collect supplier IDs (which are user IDs)
         const supplierIds = Array.from(
-          new Set(productData.map((p: any) => p.supplier_id).filter(Boolean))
+          new Set(productData.map((p: Record<string, unknown>) => p['supplier_id']).filter(Boolean))
         );
 
         // Fetch from 'suppliers' table first, fall back to 'profiles'
@@ -271,25 +270,28 @@ function ArchitectDashboardInner() {
           .in("id", supplierIds);
 
         const supplierMap = new Map();
-        supplierData?.forEach((s: any) => supplierMap.set(s.id, s));
+        supplierData?.forEach((s: Record<string, unknown>) => supplierMap.set(s['id'], s));
 
         // Map data to Product interface
-        let products: Product[] = productData.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          image_url: item.image_url,
-          gwp: item.sustainability_data?.carbon_footprint || item.gwp || 0,
-          specifications: item.specifications,
-          supplier_id: item.supplier_id,
-          supplier: {
-            company_name:
-              supplierMap.get(item.supplier_id)?.company_name ||
-              "Unknown Supplier",
-            location: supplierMap.get(item.supplier_id)?.location || "Global",
-          },
-          certifications: item.certifications || [],
-        }));
+        let products: Product[] = productData.map((item: Record<string, unknown>) => {
+          const sustainabilityData = item['sustainability_data'] as Record<string, unknown> | null | undefined;
+          return {
+            id: item['id'] as string,
+            name: item['name'] as string,
+            description: item['description'] as string | null,
+            image_url: item['image_url'] as string,
+            gwp: (sustainabilityData?.['carbon_footprint'] as number) || (item['gwp'] as number) || 0,
+            specifications: item['specifications'],
+            supplier_id: item['supplier_id'] as string,
+            supplier: {
+              company_name:
+                (supplierMap.get(item['supplier_id']) as Record<string, unknown> | undefined)?.['company_name'] as string ||
+                "Unknown Supplier",
+              location: (supplierMap.get(item['supplier_id']) as Record<string, unknown> | undefined)?.['location'] as string || "Global",
+            },
+            certifications: (item['certifications'] as string[]) || [],
+          } as Product;
+        });
 
         // Client-side carbon filter
         if (carbonThreshold !== "") {

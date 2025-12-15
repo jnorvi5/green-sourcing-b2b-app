@@ -35,7 +35,7 @@ export interface SustainabilityData {
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function callEC3API(query: string): Promise<any> {
+async function callEC3API(query: string): Promise<{ gwp: string; source: string; raw: unknown } | null> {
   const results = await searchEC3Materials(query, 1);
   if (results.length > 0) {
     const bestMatch = results[0];
@@ -48,7 +48,7 @@ async function callEC3API(query: string): Promise<any> {
   return null;
 }
 
-async function callEPDAPI(productId: string): Promise<any> {
+async function callEPDAPI(productId: string): Promise<{ certified: boolean; data: unknown } | null> {
     const apiKey = process.env['EPD_API_KEY'];
     if (!apiKey && process.env.NODE_ENV === 'production') {
         console.warn('[DataAgent] EPD_API_KEY missing in production');
@@ -79,11 +79,11 @@ async function callEPDAPI(productId: string): Promise<any> {
     }
 }
 
-async function callFSCAPI(productId: string): Promise<any> {
+async function callFSCAPI(productId: string): Promise<unknown> {
   return await checkFSCCertification(productId);
 }
 
-async function callAutodeskAPI(productId: string, category: string): Promise<any> {
+async function callAutodeskAPI(productId: string, category: string): Promise<{ carbon_score: string; gwp: number; unit: string } | null> {
    const data = await getEmbodiedCarbon(productId, { category });
    if (data) {
      return {

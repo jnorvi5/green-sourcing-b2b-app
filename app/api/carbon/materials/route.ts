@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET() {
   // Mock response - MongoDB disabled
   return NextResponse.json({
     materials: [], // or some mock data if needed

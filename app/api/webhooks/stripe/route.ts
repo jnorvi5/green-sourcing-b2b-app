@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     try {
         if (!endpointSecret) throw new Error('Missing Stripe Webhook Secret')
         event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-    } catch (err: any) {
+    } catch (err: Record<string, unknown>) {
         console.error(`Webhook Error: ${err.message}`)
         return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
     }
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
         {
             cookies: {
                 get: (name: string) => cookieStore.get(name)?.value,
-                set: (_name: string, _value: string) => { },
-                remove: (_name: string) => { },
+                set: () => { },
+                remove: () => { },
             },
         }
     )

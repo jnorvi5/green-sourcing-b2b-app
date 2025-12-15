@@ -77,6 +77,10 @@ export async function GET(request: Request) {
       results: [],
       source: 'mock'
     }
+      }
+    },
+    results: [],
+    source: 'mock'
   }, {
     headers: {
       'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=59',

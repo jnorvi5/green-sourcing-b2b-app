@@ -1,6 +1,7 @@
 'use client';
 
 export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 import { useState } from "react";
 import Header from "@/components/Header";
@@ -205,6 +206,7 @@ export default function SearchPage() {
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );

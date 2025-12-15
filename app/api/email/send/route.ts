@@ -11,7 +11,7 @@ import {
 interface SendEmailRequest {
     type: string;
     to: string;
-    data: any; // Using 'any' here stops the complaints at the source
+    data: unknown; // Using 'any' here stops the complaints at the source
     subject?: string;
     html?: string;
 }
