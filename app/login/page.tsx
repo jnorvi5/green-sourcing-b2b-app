@@ -1,28 +1,35 @@
-'use client';
+"use client";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
-import { FcGoogle } from 'react-icons/fc';
-import { FaGithub, FaLinkedin, FaMicrosoft } from 'react-icons/fa';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub, FaLinkedin, FaMicrosoft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { FiEye, FiEyeOff, FiCheckSquare } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [debugMode, setDebugMode] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
 
@@ -30,18 +37,23 @@ export default function LoginPage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           // User is already logged in, redirect based on user type
-          const userType = user.user_metadata?.['user_type'] || user.user_metadata?.['role'] || 'architect';
-          if (userType === 'supplier') {
-            router.push('/supplier/dashboard');
+          const userType =
+            user.user_metadata?.["user_type"] ||
+            user.user_metadata?.["role"] ||
+            "architect";
+          if (userType === "supplier") {
+            router.push("/supplier/dashboard");
           } else {
-            router.push('/architect/dashboard');
+            router.push("/architect/dashboard");
           }
         }
       } catch (err) {
-        console.error('Session check error:', err);
+        console.error("Session check error:", err);
       } finally {
         setCheckingSession(false);
       }
@@ -52,66 +64,67 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     if (debugMode) {
-      console.log('🔍 Login attempt for:', formData.email);
+      console.log("🔍 Login attempt for:", formData.email);
     }
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-        credentials: 'include', // Important: include cookies in request
+        credentials: "include", // Important: include cookies in request
       });
 
       const data = await response.json();
 
       if (debugMode) {
-        console.log('🔍 Response status:', response.status);
-        console.log('🔍 Response body:', data);
+        console.log("🔍 Response status:", response.status);
+        console.log("🔍 Response body:", data);
       }
 
       if (response.ok) {
         // Session cookies are set by the API, just redirect
-        if (data.user.user_type === 'supplier') {
-          router.push('/supplier/dashboard');
+        if (data.user.user_type === "supplier") {
+          router.push("/supplier/dashboard");
         } else {
-          router.push('/architect/dashboard');
+          router.push("/architect/dashboard");
         }
         // Force a refresh to ensure cookies are recognized
         router.refresh();
       } else {
-        let errorMsg = data.error || 'Login failed';
+        let errorMsg = data.error || "Login failed";
         if (data.details) {
           if (data.details.msg) errorMsg = data.details.msg;
           if (data.details.error) errorMsg = data.details.error;
-          if (data.details.error_code) errorMsg += ` (Code: ${data.details.error_code})`;
+          if (data.details.error_code)
+            errorMsg += ` (Code: ${data.details.error_code})`;
         }
         setError(errorMsg);
         if (debugMode) {
-          console.log('🔍 Error details:', data.details);
+          console.log("🔍 Error details:", data.details);
         }
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Network error. Please check your connection.');
+      console.error("Login error:", err);
+      setError("Network error. Please check your connection.");
     } finally {
       setLoading(false);
     }
   };
 
-  const fillDemo = (type: 'architect' | 'supplier') => {
-    if (type === 'architect') {
+  const fillDemo = (type: "architect" | "supplier") => {
+    if (type === "architect") {
       setFormData({
-        email: 'demo@architect.com',
-        password: 'demo123',
+        email: "demo@architect.com",
+        password: "demo123",
       });
     } else {
       setFormData({
-        email: 'demo@supplier.com',
-        password: 'demo123',
+        email: "demo@supplier.com",
+        password: "demo123",
       });
     }
   };
@@ -119,17 +132,17 @@ export default function LoginPage() {
   async function signInWithGoogle() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        }
-      }
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
     });
     if (error) {
-      console.error('Google login error:', error);
+      console.error("Google login error:", error);
       setError(error.message);
       setLoading(false);
     }
@@ -138,13 +151,13 @@ export default function LoginPage() {
   async function signInWithGitHub() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) {
-      console.error('GitHub login error:', error);
+      console.error("GitHub login error:", error);
       setError(error.message);
       setLoading(false);
     }
@@ -153,13 +166,13 @@ export default function LoginPage() {
   async function signInWithLinkedIn() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'linkedin_oidc',
+      provider: "linkedin_oidc",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) {
-      console.error('LinkedIn login error:', error);
+      console.error("LinkedIn login error:", error);
       setError(error.message);
       setLoading(false);
     }
@@ -168,14 +181,14 @@ export default function LoginPage() {
   async function signInWithMicrosoft() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'azure',
+      provider: "azure",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: 'email profile openid',
-      }
+        scopes: "email profile openid",
+      },
     });
     if (error) {
-      console.error('Microsoft login error:', error);
+      console.error("Microsoft login error:", error);
       setError(error.message);
       setLoading(false);
     }
@@ -205,7 +218,9 @@ export default function LoginPage() {
 
       <Card className="max-w-md w-full shadow-2xl border-border/50 relative z-10">
         <CardHeader className="text-center pb-2">
-          <CardTitle className="text-3xl font-bold text-foreground mb-2">Welcome Back</CardTitle>
+          <CardTitle className="text-3xl font-bold text-foreground mb-2">
+            Welcome Back
+          </CardTitle>
           <CardDescription>Sign in to GreenChainz</CardDescription>
         </CardHeader>
 
@@ -269,14 +284,19 @@ export default function LoginPage() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+              <span className="bg-card px-2 text-muted-foreground">
+                Or continue with email
+              </span>
             </div>
           </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
+              <label
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="email"
+              >
                 Email Address
               </label>
               <Input
@@ -284,23 +304,30 @@ export default function LoginPage() {
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 placeholder="demo@architect.com"
                 disabled={loading}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
+              <label
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="password"
+              >
                 Password
               </label>
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="••••••••"
                   disabled={loading}
                   className="pr-10"
@@ -326,27 +353,38 @@ export default function LoginPage() {
                 <div className="w-4 h-4 border border-primary rounded flex items-center justify-center peer-checked:bg-primary peer-checked:text-primary-foreground text-transparent">
                   <FiCheckSquare className="w-3 h-3" />
                 </div>
-                 {/* Fallback checkbox if custom one is tricky */}
-                 <span className="text-sm text-muted-foreground">Remember me</span>
+                {/* Fallback checkbox if custom one is tricky */}
+                <span className="text-sm text-muted-foreground">
+                  Remember me
+                </span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full h-11 text-lg">
-              {loading ? 'Signing in...' : 'Sign In'}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 text-lg"
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
           {/* Demo Credentials */}
           <div className="pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground text-center mb-3 font-medium">DEMO ACCOUNTS</p>
+            <p className="text-xs text-muted-foreground text-center mb-3 font-medium">
+              DEMO ACCOUNTS
+            </p>
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => fillDemo('architect')}
+                onClick={() => fillDemo("architect")}
                 disabled={loading}
                 size="sm"
                 className="text-xs"
@@ -356,7 +394,7 @@ export default function LoginPage() {
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => fillDemo('supplier')}
+                onClick={() => fillDemo("supplier")}
                 disabled={loading}
                 size="sm"
                 className="text-xs"
@@ -364,15 +402,20 @@ export default function LoginPage() {
                 🏭 Supplier
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground text-center mt-2">Password: demo123</p>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Password: demo123
+            </p>
           </div>
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4 border-t border-border p-6 bg-muted/20">
-             <div className="text-center w-full">
+          <div className="text-center w-full">
             <p className="text-muted-foreground text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-primary hover:underline font-medium">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/signup"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign up
               </Link>
             </p>
@@ -385,7 +428,7 @@ export default function LoginPage() {
               onClick={() => setDebugMode(!debugMode)}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              {debugMode ? '🔍 Debug ON' : '🔍 Debug'}
+              {debugMode ? "🔍 Debug ON" : "🔍 Debug"}
             </button>
           </div>
         </CardFooter>
