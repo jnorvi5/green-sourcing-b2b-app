@@ -136,6 +136,42 @@ export default function AboutPage() {
                </div>
             </Card>
 
+            {/* Team Section */}
+            <div>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-foreground mb-4">Meet the Team</h2>
+                <p className="text-lg text-muted-foreground">
+                  Experts in construction, sustainability, and technology.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-card p-6 rounded-xl border border-border text-center">
+                  <div className="w-24 h-24 mx-auto rounded-full bg-slate-200 flex items-center justify-center mb-4">
+                    <span className="text-2xl font-bold text-slate-500">JN</span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-1">Jerit Norville</h3>
+                  <p className="text-sm text-primary font-medium mb-3">Founder & CEO</p>
+                  <p className="text-sm text-muted-foreground">Visionary leader with deep roots in construction and a passion for sustainable innovation.</p>
+                </div>
+                <div className="bg-card p-6 rounded-xl border border-border text-center">
+                  <div className="w-24 h-24 mx-auto rounded-full bg-slate-200 flex items-center justify-center mb-4">
+                     <span className="text-2xl font-bold text-slate-500">AS</span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-1">Alex Smith</h3>
+                  <p className="text-sm text-primary font-medium mb-3">CTO</p>
+                  <p className="text-sm text-muted-foreground">Tech veteran building scalable platforms for data-heavy industries.</p>
+                </div>
+                <div className="bg-card p-6 rounded-xl border border-border text-center">
+                   <div className="w-24 h-24 mx-auto rounded-full bg-slate-200 flex items-center justify-center mb-4">
+                     <span className="text-2xl font-bold text-slate-500">LM</span>
+                   </div>
+                  <h3 className="font-bold text-lg mb-1">Lisa Martinez</h3>
+                  <p className="text-sm text-primary font-medium mb-3">Head of Sustainability</p>
+                  <p className="text-sm text-muted-foreground">LEED Accredited Professional with 15+ years of experience in green building.</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
       </main>

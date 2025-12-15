@@ -73,6 +73,10 @@ export async function GET(request: Request) {
     meta: {
       intent: {
         isSmartSearch: true
+      },
+      results: [],
+      source: 'mock'
+    }
       }
     },
     results: [],

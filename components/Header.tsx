@@ -39,6 +39,18 @@ export default function Header() {
             >
               About
             </Link>
+            <Link
+              href="/how-it-works"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              How It Works
+            </Link>
+            <Link
+              href="/founding-50"
+              className="text-sm font-medium text-amber-500 hover:text-amber-600 transition-colors"
+            >
+              Founding 50
+            </Link>
           </nav>
           <div className="flex items-center gap-4">
             <Link href="/login">
