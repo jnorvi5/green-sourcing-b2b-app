@@ -35,58 +35,69 @@ export class SocialAgent {
                 const productCategory = (task.metadata as any)?.productCategory || 'Building Materials';
 
                 content = SOCIAL_TEMPLATES.newSupplier(
+                    task.metadata['supplierName'] as string,
+                    task.metadata['productCategory'] as string
                     supplierName as string,
                     productCategory as string
                 );
             } else if (task.type === 'weekly_update') {
+                content = SOCIAL_TEMPLATES.weeklyUpdate({
+                    suppliers: task.metadata['suppliers'] as number,
+                    architects: task.metadata['architects'] as number,
+                    rfqs: task.metadata['rfqs'] as number
+                });
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as any);
             } else {
+                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata['topic'] as string);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 content = SOCIAL_TEMPLATES.thoughtLeadership((task.metadata as any)?.topic as string);
             }
 
             if (task.platform === 'linkedin') {
                 if (!process.env['LINKEDIN_AUTHOR_URN']) {
-                    console.warn("Skipping LinkedIn post: Missing URN");
-                    return { success: false, error: "Missing URN" };
+                    if (!process.env['LINKEDIN_AUTHOR_URN']) {
+                        console.warn("Skipping LinkedIn post: Missing URN");
+                        return { success: false, error: "Missing URN" };
+                    }
+                    await linkedInClient.createPost({
+                        authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
+                        authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
+                        text: content
+                    });
                 }
-                await linkedInClient.createPost({
-                    authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
-                    text: content
+
+                // Log to Supabase
+                await supabase.from('social_posts').insert({
+                    platform: task.platform,
+                    type: task.type,
+                    content,
+                    posted_at: new Date().toISOString(),
+                    status: 'posted'
                 });
+
+                await logAgentActivity({
+                    agentType: 'social',
+                    action: 'create_post',
+                    status: 'success',
+                    metadata: { platform: task.platform, type: task.type }
+                });
+
+                return { success: true, platform: task.platform, type: task.type };
+            } catch (error: unknown) {
+                console.error(`Social post failed:`, error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+                await logAgentActivity({
+                    agentType: 'social',
+                    action: 'create_post',
+                    status: 'error',
+                    metadata: { platform: task.platform, error: errorMessage }
+                });
+
+                return { success: false, platform: task.platform, error };
             }
-
-            // Log to Supabase
-            await supabase.from('social_posts').insert({
-                platform: task.platform,
-                type: task.type,
-                content,
-                posted_at: new Date().toISOString(),
-                status: 'posted'
-            });
-
-            await logAgentActivity({
-                agentType: 'social',
-                action: 'create_post',
-                status: 'success',
-                metadata: { platform: task.platform, type: task.type }
-            });
-
-            return { success: true, platform: task.platform, type: task.type };
-        } catch (error: any) {
-            console.error(`Social post failed:`, error);
-
-            await logAgentActivity({
-                agentType: 'social',
-                action: 'create_post',
-                status: 'error',
-                metadata: { platform: task.platform, error: error.message }
-            });
-
-            return { success: false, platform: task.platform, error };
         }
-    }
 }
 
-export const socialAgent = new SocialAgent();
+    export const socialAgent = new SocialAgent();

@@ -32,10 +32,9 @@ export async function POST(req: Request) {
             .eq('status', 'active')
             .single()
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const plan = subscription?.supplier_plans as any
-        const planName = Array.isArray(plan) ? plan[0]?.plan_name : plan?.plan_name
-        const isPremium = ['Basic', 'Enterprise'].includes(planName)
+        // supplier_plans is an array due to the join
+        const supplierPlans = subscription?.supplier_plans as { plan_name: string }[] | null;
+        const isPremium = supplierPlans?.[0] && ['Basic', 'Enterprise'].includes(supplierPlans[0].plan_name)
 
         // Check existing conversation (architect may have initiated)
         const { data: existing } = await supabase

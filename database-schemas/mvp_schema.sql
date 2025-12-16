@@ -1,16 +1,20 @@
 -- GreenChainz MVP Schema
--- This script initializes the database schema for the GreenChainz MVP.
--- It is idempotent and can be run multiple times safely.
+-- Updated for Custom Auth & Role Management
 
--- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Role ENUM types for users and RFQs
+-- Role ENUM types
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
-        CREATE TYPE user_role AS ENUM ('buyer', 'supplier');
+        CREATE TYPE user_role AS ENUM ('architect', 'supplier', 'admin');
+    ELSE
+        -- Attempt to add values if they don't exist (Postgres 9.1+)
+        ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'architect';
+        ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'admin';
+        -- Note: We are keeping 'buyer' if it exists to avoid errors, but code will use 'architect'
     END IF;
+
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'rfq_status') THEN
         CREATE TYPE rfq_status AS ENUM ('pending', 'responded', 'closed');
     END IF;
@@ -18,30 +22,71 @@ END
 $$;
 
 -- Suppliers Table
--- Stores information about material suppliers
 CREATE TABLE IF NOT EXISTS suppliers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     description TEXT,
     location TEXT,
     logo_url TEXT,
+    contact_email TEXT,
+    website TEXT,
+    phone TEXT,
+    epd_count INTEGER DEFAULT 0,
+    materials TEXT[],
+    source TEXT,
+    verification_status TEXT DEFAULT 'pending',
+    tier TEXT DEFAULT 'free',
+    scraped_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE suppliers IS 'Stores information about material suppliers.';
 
--- Users Table
--- Stores user account information for both buyers and suppliers
+-- Users Table (Custom Auth)
+-- Note: If table exists from previous schema, we should alter it or recreate it carefully.
+-- For MVP dev, we assume we can create if not exists, but we need the new columns.
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    role user_role NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    password_hash TEXT, -- Nullable for OAuth users
+    role TEXT NOT NULL CHECK (role IN ('architect', 'supplier', 'admin')), -- Using TEXT with CHECK for flexibility over ENUM sometimes
+    full_name TEXT,
+    company_name TEXT,
+
+    -- Verification
+    email_verified BOOLEAN DEFAULT FALSE,
+    verification_code TEXT,
+    verification_code_expiry TIMESTAMPTZ,
+
+    -- Corporate Verification
+    corporate_verified BOOLEAN DEFAULT FALSE,
+    verification_method TEXT, -- 'corporate_email', 'manual', etc.
+    trust_score INTEGER DEFAULT 30,
+
+    -- OAuth
+    linkedin_id TEXT,
+    avatar_url TEXT,
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE users IS 'Stores user account information for both buyers and suppliers.';
+
+-- Ensure columns exist if table already existed
+DO $$
+BEGIN
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS company_name TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_code TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_code_expiry TIMESTAMPTZ;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS corporate_verified BOOLEAN DEFAULT FALSE;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_method TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS trust_score INTEGER DEFAULT 30;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin_id TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+    ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+END
+$$;
 
 -- Products Table
--- Stores information about building materials
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     supplier_id UUID NOT NULL,
@@ -57,40 +102,23 @@ CREATE TABLE IF NOT EXISTS products (
     verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE products IS 'Stores information about building materials.';
 
--- Add foreign key constraint from products to suppliers
--- Note: Dropping and adding constraints makes the script idempotent.
-ALTER TABLE products DROP CONSTRAINT IF EXISTS fk_products_supplier;
-ALTER TABLE products ADD CONSTRAINT fk_products_supplier
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE;
+-- Link Users to Suppliers (Profile)
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id);
 
--- RFQs (Request for Quotes) Table
--- Stores RFQs submitted by buyers
+-- RFQs Table
 CREATE TABLE IF NOT EXISTS rfqs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    buyer_email TEXT NOT NULL,
-    product_id UUID NOT NULL,
-    supplier_id UUID NOT NULL,
+    buyer_id UUID REFERENCES users(id), -- Changed from buyer_email to buyer_id
+    product_id UUID REFERENCES products(id),
+    supplier_id UUID,
     message TEXT,
+    quantity INTEGER,
     project_details JSONB,
     status rfq_status DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE rfqs IS 'Stores RFQs submitted by buyers.';
 
--- Add foreign key constraints for RFQs
-ALTER TABLE rfqs DROP CONSTRAINT IF EXISTS fk_rfqs_product;
-ALTER TABLE rfqs ADD CONSTRAINT fk_rfqs_product
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-
-ALTER TABLE rfqs DROP CONSTRAINT IF EXISTS fk_rfqs_supplier;
-ALTER TABLE rfqs ADD CONSTRAINT fk_rfqs_supplier
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE;
-
--- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_products_material_type ON products(material_type);
-CREATE INDEX IF NOT EXISTS idx_products_certifications ON products USING GIN(certifications);
-CREATE INDEX IF NOT EXISTS idx_rfqs_status ON rfqs(status);
-CREATE INDEX IF NOT EXISTS idx_rfqs_supplier_id ON rfqs(supplier_id);
-CREATE INDEX IF NOT EXISTS idx_rfqs_product_id ON rfqs(product_id);
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_linkedin_id ON users(linkedin_id);

@@ -8,8 +8,13 @@ import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
 import type { Rfq } from "@/types/rfq";
 
+// Extended type for RFQ with quote count
+interface RfqWithQuoteCount extends Rfq {
+  quotes?: { count: number }[];
+}
+
 export default function ArchitectRfqsPage() {
-  const [rfqs, setRfqs] = useState<Rfq[]>([]);
+  const [rfqs, setRfqs] = useState<RfqWithQuoteCount[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -29,7 +34,8 @@ export default function ArchitectRfqsPage() {
         .select(
           `
           *,
-          quotes:rfq_responses(count)
+          quotes:rfq_responses(count),
+          projects(name)
         `
         )
         .eq("architect_id", user.id)
@@ -85,7 +91,7 @@ export default function ArchitectRfqsPage() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {rfqs.map((rfq: any) => (
+            {rfqs.map((rfq) => (
               <Link
                 key={rfq.id}
                 href={`/architect/rfqs/${rfq.id}`}
@@ -94,7 +100,7 @@ export default function ArchitectRfqsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-xl font-semibold mb-2 group-hover:text-green-400 transition">
-                      {rfq.project_name}
+                      {rfq.projects?.name ? `${rfq.projects.name} - ` : ''}{rfq.project_name}
                     </h3>
                     <div className="flex gap-4 text-sm text-gray-400">
                       <span>{rfq.material_specs.material_type}</span>
@@ -113,7 +119,7 @@ export default function ArchitectRfqsPage() {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold uppercase
                       ${
-                        rfq.status === "open" || rfq.status === "pending"
+                        rfq.status === "pending"
                           ? "bg-green-500/20 text-green-400"
                           : ""
                       }

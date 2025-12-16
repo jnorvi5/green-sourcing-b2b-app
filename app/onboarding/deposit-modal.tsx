@@ -12,7 +12,7 @@ const stripePromise = loadStripe(
   process.env["NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"]!
 );
 
-export default function DepositModal({ userId: _userId }: { userId: string }) {
+export default function DepositModal({ }: { userId: string }) {
   const [selected, setSelected] = useState<"deposit" | "skip" | null>(null);
   const [loading, setLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);

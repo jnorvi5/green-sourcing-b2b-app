@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { QuoteSubmissionSchema } from '@/types/rfq';
+// import { QuoteSubmissionSchema } from '@/types/rfq';
 
 export async function POST(request: NextRequest) {
   try {

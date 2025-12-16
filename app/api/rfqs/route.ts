@@ -34,6 +34,7 @@ const createRfqSchema = z.object({
   required_certifications: z.array(z.string()).optional(),
   message: z.string().max(2000).optional(),
   product_id: z.string().uuid().optional().nullable(),
+  project_id: z.string().uuid().optional().nullable(),
 });
 
 type CreateRfqInput = z.infer<typeof createRfqSchema>;
@@ -155,6 +156,7 @@ export async function POST(request: NextRequest) {
       .insert({
         architect_id: user.id,
         product_id: rfqData.product_id || null,
+        project_id: rfqData.project_id || null,
         project_name: rfqData.project_name,
         project_location: rfqData.project_location,
         material_specs: rfqData.material_specs,

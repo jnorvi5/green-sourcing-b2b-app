@@ -27,12 +27,14 @@ import {
   FiCheckCircle,
   FiClock,
   FiAlertCircle,
-  FiTrendingUp,
   FiBarChart2,
 } from "react-icons/fi";
 import { FaLeaf } from "react-icons/fa";
 import { ProductList } from "./ProductList";
-import { getDeadlineUrgency, getDeadlineUrgencyIcon } from "@/lib/utils/formatters";
+import {
+  getDeadlineUrgency,
+  getDeadlineUrgencyIcon,
+} from "@/lib/utils/formatters";
 
 // ... (skipping to next chunk in file content for clarity in tool usage, but tool requires contiguous block or use multi_replace)
 // I will use multi_replace for this file as there are multiple separated conflicts.
@@ -167,35 +169,39 @@ function DashboardContent() {
       }
 
       const respondedRfqIds = new Set(
-        existingResponses?.map((r) => r.rfq_id) || []
+        existingResponses?.map((r: { rfq_id: string }) => r.rfq_id) || []
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const unquotedRfqs = (rfqsData || []).filter(
-        (rfq: any) => !respondedRfqIds.has(rfq.id)
+        (rfq: Record<string, unknown>) =>
+          !respondedRfqIds.has(rfq["id"] as string)
       );
 
       // Transform RFQs data
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map((rfq: any) => {
-        const users = Array.isArray(rfq.users) ? rfq.users[0] : rfq.users;
-        return {
-          id: rfq.id,
-          project_name: rfq.project_name,
-          material_type:
-            (rfq.material_specs as { material_type?: string })?.material_type ||
-            "N/A",
-          delivery_deadline: rfq.delivery_deadline,
-          match_score: 85, // Placeholder - would need actual matching algorithm
-          created_at: rfq.created_at,
-          architect: {
-            full_name:
-              (users as { full_name: string | null } | null)?.full_name || null,
-            company_name:
-              (users as { company_name: string | null } | null)?.company_name ||
-              null,
-          },
-        };
-      });
+      const transformedRfqs: IncomingRfq[] = unquotedRfqs.map(
+        (rfq: Record<string, unknown>) => {
+          const users = Array.isArray(rfq["users"])
+            ? rfq["users"][0]
+            : rfq["users"];
+          return {
+            id: rfq["id"] as string,
+            project_name: rfq["project_name"] as string,
+            material_type:
+              (rfq["material_specs"] as { material_type?: string })
+                ?.material_type || "N/A",
+            delivery_deadline: rfq["delivery_deadline"] as string | null,
+            match_score: 85, // Placeholder - would need actual matching algorithm
+            created_at: rfq["created_at"] as string,
+            architect: {
+              full_name:
+                (users as { full_name: string | null } | null)?.full_name ||
+                null,
+              company_name:
+                (users as { company_name: string | null } | null)
+                  ?.company_name || null,
+            },
+          };
+        }
+      );
 
       setIncomingRfqs(transformedRfqs);
 
@@ -219,16 +225,17 @@ function DashboardContent() {
         logError("Error loading quotes:", quotesError);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const transformedQuotes: SupplierQuote[] = (quotesData || []).map(
-        (quote: any) => {
-          const rfqs = Array.isArray(quote.rfqs) ? quote.rfqs[0] : quote.rfqs;
+        (quote: Record<string, unknown>) => {
+          const rfqs = Array.isArray(quote["rfqs"])
+            ? quote["rfqs"][0]
+            : quote["rfqs"];
           return {
-            id: quote.id,
-            rfq_id: quote.rfq_id,
-            quote_amount: quote.quote_amount,
-            status: quote.status as "submitted" | "accepted" | "rejected",
-            responded_at: quote.responded_at,
+            id: quote["id"] as string,
+            rfq_id: quote["rfq_id"] as string,
+            quote_amount: quote["quote_amount"] as number,
+            status: quote["status"] as "submitted" | "accepted" | "rejected",
+            responded_at: quote["responded_at"] as string,
             rfq: {
               project_name:
                 (rfqs as { project_name: string } | null)?.project_name ||
@@ -426,30 +433,38 @@ function DashboardContent() {
 
         {/* Urgent RFQs Alert */}
         {(() => {
-          const urgentRfqs = incomingRfqs.filter(rfq => getDeadlineUrgency(rfq.delivery_deadline) === 'urgent');
-          return urgentRfqs.length > 0 && (
-            <Card className="mb-6 bg-red-500/10 border-red-500/20">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <FiAlertCircle className="w-6 h-6 text-red-500" />
+          const urgentRfqs = incomingRfqs.filter(
+            (rfq) => getDeadlineUrgency(rfq.delivery_deadline) === "urgent"
+          );
+          return (
+            urgentRfqs.length > 0 && (
+              <Card className="mb-6 bg-red-500/10 border-red-500/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                      <FiAlertCircle className="w-6 h-6 text-red-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-red-500 mb-1">
+                        {urgentRfqs.length} Urgent RFQ(s)
+                      </h3>
+                      <p className="text-sm text-red-400">
+                        Deadline within 24 hours - respond now to increase win
+                        rate!
+                      </p>
+                    </div>
+                    <Link href="/supplier/rfqs">
+                      <Button
+                        size="sm"
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                      >
+                        View RFQs
+                      </Button>
+                    </Link>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-red-500 mb-1">
-                      {urgentRfqs.length} Urgent RFQ(s)
-                    </h3>
-                    <p className="text-sm text-red-400">
-                      Deadline within 24 hours - respond now to increase win rate!
-                    </p>
-                  </div>
-                  <Link href="/supplier/rfqs">
-                    <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
-                      View RFQs
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )
           );
         })()}
 
@@ -615,13 +630,20 @@ function DashboardContent() {
                           >
                             <td className="py-4 px-4">
                               <div className="flex items-start gap-2">
-                                {getDeadlineUrgency(rfq.delivery_deadline) !== 'normal' && (
-                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                    getDeadlineUrgency(rfq.delivery_deadline) === 'urgent'
-                                      ? 'bg-red-500 text-white'
-                                      : 'bg-yellow-500 text-black'
-                                  }`}>
-                                    {getDeadlineUrgencyIcon(rfq.delivery_deadline)}
+                                {getDeadlineUrgency(rfq.delivery_deadline) !==
+                                  "normal" && (
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                      getDeadlineUrgency(
+                                        rfq.delivery_deadline
+                                      ) === "urgent"
+                                        ? "bg-red-500 text-white"
+                                        : "bg-yellow-500 text-black"
+                                    }`}
+                                  >
+                                    {getDeadlineUrgencyIcon(
+                                      rfq.delivery_deadline
+                                    )}
                                   </span>
                                 )}
                                 {isNewRfq(rfq.created_at) && (

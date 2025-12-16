@@ -5,7 +5,6 @@
  * Supports both ILCD/EPD XML and JSON response formats with automatic parsing and normalization.
  */
 
-import { z } from 'zod';
 import { epdApiResponseSchema, type EPDApiResponse, type NormalizedEPD } from '@/lib/validations/epd-sync';
 
 interface EPDInternationalClientConfig {
@@ -18,6 +17,8 @@ interface FetchEPDsOptions {
   page?: number;
   perPage?: number;
   limit?: number; // For testing: cap total fetches
+  search?: string;
+  manufacturer?: string;
 }
 
 interface PaginatedResponse {
@@ -204,6 +205,13 @@ export class EPDInternationalClient {
       page: page.toString(),
       per_page: perPage.toString(),
     });
+
+    if (options.search) {
+      params.append('search', options.search);
+    }
+    if (options.manufacturer) {
+      params.append('manufacturer', options.manufacturer);
+    }
 
     const endpoint = `/epds?${params.toString()}`;
     

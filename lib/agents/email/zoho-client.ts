@@ -15,6 +15,10 @@ class ZohoMailClient {
             clientSecret: process.env['ZOHO_CLIENT_SECRET']!,
             refreshToken: process.env['ZOHO_REFRESH_TOKEN']!,
             accountId: process.env['ZOHO_ACCOUNT_ID']!
+            clientId: process.env['ZOHO_CLIENT_ID']!,
+            clientSecret: process.env['ZOHO_CLIENT_SECRET']!,
+            refreshToken: process.env['ZOHO_REFRESH_TOKEN']!,
+            accountId: process.env['ZOHO_ACCOUNT_ID']!
         };
     }
 
@@ -34,6 +38,10 @@ class ZohoMailClient {
 
         const data = await response.json();
         this.accessToken = data.access_token;
+        if (!this.accessToken) {
+            throw new Error('Failed to obtain Zoho access token');
+        }
+        return this.accessToken;
         return this.accessToken || '';
     }
 

@@ -13,7 +13,9 @@ export default function SignupPage() {
         <div className="w-96 h-96 rounded-full bg-emerald-600 blur-3xl"></div>
       </div>
 
-      <SignupForm />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignupForm />
+      </Suspense>
     </div>
   );
 }
