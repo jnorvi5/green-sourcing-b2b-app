@@ -56,11 +56,12 @@ export const createClient = async () => {
   const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
   const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
   
-  // During build time, return a placeholder client that won't throw
+  // During build time without env vars, return a placeholder client that won't throw
+  // This allows static pages to be generated even without real credentials
   if (!supabaseUrl || !supabaseKey) {
-    if (process.env['NODE_ENV'] === 'production' && typeof window === 'undefined') {
-      // Build-time: return noop client
-      console.warn('Supabase credentials not available during build - using placeholder');
+    // Only use placeholder during server-side build process
+    if (typeof window === 'undefined') {
+      console.warn('Supabase credentials not available - using placeholder for build');
       return createBuildTimeClient();
     }
     throw new Error('Missing Supabase environment variables');
