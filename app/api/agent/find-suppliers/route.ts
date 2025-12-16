@@ -6,7 +6,6 @@ import { z } from 'zod'
 import { calculateDistance, calculateTransportCarbon, calculateTier } from '@/lib/carbon'
 import { getEPDData } from '@/lib/autodesk-sda'
 import { SUPPLIER_CANDIDATE_LIMIT, AZURE_DEPLOYMENT_EXPENSIVE } from '@/lib/constants'
-import type { Supplier, Product } from '@/types/index'
 
 // Input validation schema
 const RequestSchema = z.object({
@@ -79,9 +78,22 @@ export async function POST(req: Request) {
         )
         .map((s: { supplier_id: string }) => s.supplier_id) || []
 
+    // Define the shape of supplier data from our query
+    type SupplierQueryResult = {
+      id: string;
+      name: string;
+      location: string;
+      lat: number;
+      lng: number;
+      verification_status: string;
+      certifications: unknown[];
+      description: string;
+      products: { id: string; name: string; category: string; epd_data: unknown }[];
+    };
+
     // 2. Sync Calculation: Calculate Distance, Carbon, and Tier for ALL suppliers locally
     // This is fast and cheap.
-    const candidates: Supplier[] = suppliers!.map((supplier: Supplier) => {
+    const candidates = (suppliers as SupplierQueryResult[] || []).map((supplier) => {
         const distance = calculateDistance(
             rfq.job_site_lat,
             rfq.job_site_lng,
@@ -106,7 +118,7 @@ export async function POST(req: Request) {
             is_premium: isPremium,
             tier,
             match_score: 50, // Default score before AI
-        } as Supplier
+        }
     })
 
     // 3. Pre-sort by Tier (asc) then Distance (asc)
@@ -182,7 +194,7 @@ export async function POST(req: Request) {
 }
 
 // AI match scoring
-async function calculateMatchScore(materials: string[], products: Product[]) {
+async function calculateMatchScore(materials: string[], products: { id: string; name: string; category: string; epd_data: unknown }[]) {
     if (!materials || materials.length === 0) return { score: 50, tokens: 0 }
 
     const client = new OpenAI({

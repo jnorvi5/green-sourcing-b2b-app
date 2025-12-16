@@ -357,7 +357,7 @@ export async function handleTrialWillEnd(subscription: Stripe.Subscription): Pro
   }
 
   // Get user email
-  const { data: userData } = await supabase.auth.admin.getUserById(supplier.user_id);
+  await supabase.auth.admin.getUserById(supplier.user_id);
 
   const trialEndDate = subscription.trial_end
     ? new Date(subscription.trial_end * 1000).toLocaleDateString()

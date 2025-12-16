@@ -29,7 +29,6 @@ import {
   FiCheckCircle,
   FiClock,
   FiAlertCircle,
-  FiTrendingUp,
   FiBarChart2,
 } from "react-icons/fi";
 import { FaLeaf } from "react-icons/fa";
@@ -172,21 +171,21 @@ function DashboardContent() {
         existingResponses?.map((r) => r.rfq_id) || []
       );
       const unquotedRfqs = (rfqsData || []).filter(
-        (rfq: Record<string, unknown>) => !respondedRfqIds.has(rfq.id as string)
+        (rfq: Record<string, unknown>) => !respondedRfqIds.has(rfq['id'] as string)
       );
 
       // Transform RFQs data
       const transformedRfqs: IncomingRfq[] = unquotedRfqs.map((rfq: Record<string, unknown>) => {
-        const users = Array.isArray(rfq.users) ? rfq.users[0] : rfq.users;
+        const users = Array.isArray(rfq['users']) ? rfq['users'][0] : rfq['users'];
         return {
-          id: rfq.id,
-          project_name: rfq.project_name,
+          id: rfq['id'] as string,
+          project_name: rfq['project_name'] as string,
           material_type:
-            (rfq.material_specs as { material_type?: string })?.material_type ||
+            (rfq['material_specs'] as { material_type?: string })?.material_type ||
             "N/A",
-          delivery_deadline: rfq.delivery_deadline,
+          delivery_deadline: rfq['delivery_deadline'] as string | null,
           match_score: 85, // Placeholder - would need actual matching algorithm
-          created_at: rfq.created_at,
+          created_at: rfq['created_at'] as string,
           architect: {
             full_name:
               (users as { full_name: string | null } | null)?.full_name || null,
@@ -221,13 +220,13 @@ function DashboardContent() {
 
       const transformedQuotes: SupplierQuote[] = (quotesData || []).map(
         (quote: Record<string, unknown>) => {
-          const rfqs = Array.isArray(quote.rfqs) ? quote.rfqs[0] : quote.rfqs;
+          const rfqs = Array.isArray(quote['rfqs']) ? quote['rfqs'][0] : quote['rfqs'];
           return {
-            id: quote.id,
-            rfq_id: quote.rfq_id,
-            quote_amount: quote.quote_amount,
-            status: quote.status as "submitted" | "accepted" | "rejected",
-            responded_at: quote.responded_at,
+            id: quote['id'] as string,
+            rfq_id: quote['rfq_id'] as string,
+            quote_amount: quote['quote_amount'] as number,
+            status: quote['status'] as "submitted" | "accepted" | "rejected",
+            responded_at: quote['responded_at'] as string,
             rfq: {
               project_name:
                 (rfqs as { project_name: string } | null)?.project_name ||

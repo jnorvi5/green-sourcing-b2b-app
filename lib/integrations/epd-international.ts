@@ -17,6 +17,8 @@ interface FetchEPDsOptions {
   page?: number;
   perPage?: number;
   limit?: number; // For testing: cap total fetches
+  search?: string;
+  manufacturer?: string;
 }
 
 interface PaginatedResponse {
@@ -203,6 +205,13 @@ export class EPDInternationalClient {
       page: page.toString(),
       per_page: perPage.toString(),
     });
+
+    if (options.search) {
+      params.append('search', options.search);
+    }
+    if (options.manufacturer) {
+      params.append('manufacturer', options.manufacturer);
+    }
 
     const endpoint = `/epds?${params.toString()}`;
     

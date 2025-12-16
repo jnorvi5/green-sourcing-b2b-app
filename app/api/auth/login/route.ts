@@ -1,89 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import bcrypt from 'bcryptjs';
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { generateToken } from '@/lib/auth/jwt';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const email = body.email?.trim();
-    const password = body.password;
+    const { email, password } = await req.json();
 
     if (!email || !password) {
-      console.log('[AUTH] Missing credentials');
-      return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
-    const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-    const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+    // 1. Find user
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
 
-    if (!supabaseUrl || !supabaseKey) {
-      console.log('[AUTH] Missing env');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    if (error || !user) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    console.log('[AUTH] Attempt for:', email);
+    // 2. Validate password
+    // If user is OAuth only (no password_hash), this will fail correctly or we handle it.
+    if (!user.password_hash) {
+       return NextResponse.json({ error: 'Please login with LinkedIn' }, { status: 400 });
+    }
 
-    // Get cookie store for setting auth cookies
-    const cookieStore = await cookies();
+    const isValid = await bcrypt.compare(password, user.password_hash);
+    if (!isValid) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
 
-    // Create Supabase client with cookie handling
-    const supabase = createServerClient(
-      supabaseUrl,
-      supabaseKey,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          },
-        },
-      }
-    );
+    // Check if email verified? Prompt implies strict security but MVP might allow login without it?
+    // Usually strict. Let's check verify-email flow.
+    // If not verified, maybe return 403?
+    if (!user.email_verified) {
+        return NextResponse.json({ error: 'Email not verified' }, { status: 403 });
+    }
 
-    // Sign in with email and password - this sets the session cookies automatically
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // 3. Generate Token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role
     });
 
-    if (error) {
-      console.log('[AUTH] FAILED:', error.message);
-      return NextResponse.json(
-        { error: error.message, details: { error_code: error.status } },
-        { status: 401 }
-      );
-    }
-
-    if (!data.session || !data.user) {
-      console.log('[AUTH] FAILED: No session returned');
-      return NextResponse.json(
-        { error: 'Authentication failed - no session returned' },
-        { status: 401 }
-      );
-    }
-
-    console.log('[AUTH] SUCCESS for:', email);
-
-    // Get user type from metadata
-    const userType = data.user.user_metadata?.['user_type'] || 
-                     data.user.user_metadata?.['role'] || 
-                     'architect';
-
-    return NextResponse.json({
-      token: data.session.access_token,
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        user_type: userType,
-      },
+    // 4. Set HttpOnly Cookie
+    const response = NextResponse.json({
+      userId: user.id,
+      email: user.email,
+      accountType: user.role,
+      token // Return token in body as well for client convenience (though cookie is safer)
     });
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+
+    return response;
+
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    console.log('[AUTH] EXCEPTION:', msg.substring(0, 80));
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error('Login error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

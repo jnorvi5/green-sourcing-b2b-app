@@ -4,6 +4,7 @@
  * POST /api/stripe/cancel-subscription - Cancel subscription
  */
 
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cancelSubscription, reactivateSubscription } from '@/lib/stripe/checkout';
 import { TIER_LIMITS, type SubscriptionTier } from '@/types/stripe';

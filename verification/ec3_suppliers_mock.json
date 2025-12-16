@@ -1,0 +1,26 @@
+[
+  {
+    "supplier_name": "Armstrong Ceilings",
+    "epd_product_name": "Ultima Ceiling Tile",
+    "epd_url": "https://www.armstrongceilings.com/content/dam/armstrongceilings/commercial/north-america/epds/ultima-ceiling-tile-epd.pdf",
+    "gwp": "4.2 kgCO2e",
+    "material_type": "Ceiling",
+    "source": "EC3"
+  },
+  {
+    "supplier_name": "USG Corp",
+    "epd_product_name": "Sheetrock Brand EcoSmart",
+    "epd_url": "https://www.usg.com/content/dam/USG_Marketing_Communications/united_states/product_promotional_materials/finished_assets/sheetrock-ecosmart-panels-firecode-x-epd-en-usa.pdf",
+    "gwp": "2.8 kgCO2e",
+    "material_type": "Gypsum",
+    "source": "EC3"
+  },
+  {
+    "supplier_name": "Owens Corning",
+    "epd_product_name": "EcoTouch Insulation",
+    "epd_url": "https://dcpd6wotaa0mb.cloudfront.net/mdms/dms/Sustainability/10023677/10023677-EcoTouch-Pink-Fiberglas-Insulation-Unfaced-EPD.pdf",
+    "gwp": "1.1 kgCO2e",
+    "material_type": "Insulation",
+    "source": "EC3"
+  }
+]

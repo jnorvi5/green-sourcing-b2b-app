@@ -46,7 +46,7 @@ interface RFQ {
 
 function ArchitectDashboardInner() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [profile, setProfile] = useState<{ full_name?: string } | null>(null);
+  const [profile, setProfile] = useState<{ id?: string; full_name?: string; role?: string } | null>(null);
   const [, setSentRFQs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTestMode, setIsTestMode] = useState(false);
@@ -480,6 +480,33 @@ function ArchitectDashboardInner() {
               <div>
                 <h3 className="font-semibold text-white">Search Products</h3>
                 <p className="text-sm text-gray-400">Find green materials</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/projects"
+            className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">My Projects</h3>
+                <p className="text-sm text-gray-400">Manage projects & materials</p>
               </div>
             </div>
           </Link>

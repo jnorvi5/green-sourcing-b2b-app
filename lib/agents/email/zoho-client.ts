@@ -34,6 +34,9 @@ class ZohoMailClient {
 
         const data = await response.json();
         this.accessToken = data.access_token;
+        if (!this.accessToken) {
+            throw new Error('Failed to obtain Zoho access token');
+        }
         return this.accessToken;
     }
 

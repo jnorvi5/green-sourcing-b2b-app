@@ -197,8 +197,8 @@ export default function SupplierAnalyticsPage() {
 
       // Calculate engagement metrics
       // TODO: Replace with actual analytics data from product_analytics table
-      const totalViews = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 100) + 10), 0) || 0; // TEMP: Mock data
-      const totalClicks = productsData?.reduce((sum, p) => sum + (Math.floor(Math.random() * 50) + 5), 0) || 0; // TEMP: Mock data
+      const totalViews = productsData?.reduce((sum) => sum + (Math.floor(Math.random() * 100) + 10), 0) || 0; // TEMP: Mock data
+      const totalClicks = productsData?.reduce((sum) => sum + (Math.floor(Math.random() * 50) + 5), 0) || 0; // TEMP: Mock data
       const clickThroughRate = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
 
       const topProducts =
