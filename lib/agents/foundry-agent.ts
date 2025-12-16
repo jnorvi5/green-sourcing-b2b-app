@@ -6,6 +6,7 @@
  */
 
 import { AzureOpenAI } from 'openai';
+import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
 import { searchMaterials as searchAutodesk } from '@/lib/integrations/autodesk/material-matcher';
 import { EPDInternationalClient } from '@/lib/integrations/epd-international';
 import { searchEC3Materials } from '@/lib/integrations/ec3/client';
@@ -13,9 +14,9 @@ import { searchEC3Materials } from '@/lib/integrations/ec3/client';
 // Initialize Azure OpenAI Client
 // Note: This requires AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT env vars
 const getClient = () => {
-  const apiKey = process.env.AZURE_OPENAI_API_KEY;
-  const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4';
+  const apiKey = process.env['AZURE_OPENAI_API_KEY'];
+  const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+  const deployment = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'gpt-4';
   
   if (!apiKey || !endpoint) {
     console.warn('Azure OpenAI credentials not configured');
@@ -85,19 +86,30 @@ const tools = [
   },
 ] as const;
 
+export interface ToolCall {
+  id: string;
+  type: 'function';
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
 export interface AgentMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | null;
-  tool_calls?: any[];
+  tool_calls?: ToolCall[];
   tool_call_id?: string;
   name?: string;
 }
 
 export class FoundryAgent {
   private client: AzureOpenAI | null;
+  private deployment: string;
 
   constructor() {
     this.client = getClient();
+    this.deployment = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'gpt-4';
   }
 
   /**
@@ -140,8 +152,9 @@ export class FoundryAgent {
     try {
       // First call to LLM
       const response = await this.client.chat.completions.create({
-        messages: messages as any,
-        tools: tools as any,
+        model: this.deployment,
+        messages: messages as ChatCompletionMessageParam[],
+        tools: [...tools] as ChatCompletionTool[],
         tool_choice: 'auto',
       });
 
@@ -171,7 +184,7 @@ export class FoundryAgent {
               toolResult = JSON.stringify(results.slice(0, 5)); // Limit to 5 results
             } else if (functionName === 'search_epd') {
               const epdClient = new EPDInternationalClient({
-                apiKey: process.env.EPD_API_KEY || '',
+                apiKey: process.env['EPD_API_KEY'] || '',
               });
               // Note: fetchEPDs expects pagination options, but we want a search.
               // The client doesn't have a direct search method exposed in the interface I saw,
@@ -209,7 +222,8 @@ export class FoundryAgent {
 
         // Second call to LLM to summarize results
         const secondResponse = await this.client.chat.completions.create({
-          messages: [...messages, ...newMessages] as any,
+          model: this.deployment,
+          messages: [...messages, ...newMessages] as ChatCompletionMessageParam[],
         });
 
         newMessages.push({

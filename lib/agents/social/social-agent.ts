@@ -30,22 +30,26 @@ export class SocialAgent {
 
             if (task.type === 'new_supplier') {
                 content = SOCIAL_TEMPLATES.newSupplier(
-                    task.metadata.supplierName as string,
-                    task.metadata.productCategory as string
+                    task.metadata['supplierName'] as string,
+                    task.metadata['productCategory'] as string
                 );
             } else if (task.type === 'weekly_update') {
-                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as any);
+                content = SOCIAL_TEMPLATES.weeklyUpdate({
+                    suppliers: task.metadata['suppliers'] as number,
+                    architects: task.metadata['architects'] as number,
+                    rfqs: task.metadata['rfqs'] as number
+                });
             } else {
-                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata.topic as string);
+                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata['topic'] as string);
             }
 
             if (task.platform === 'linkedin') {
-                if (!process.env.LINKEDIN_AUTHOR_URN) {
+                if (!process.env['LINKEDIN_AUTHOR_URN']) {
                     console.warn("Skipping LinkedIn post: Missing URN");
                     return { success: false, error: "Missing URN" };
                 }
                 await linkedInClient.createPost({
-                    authorUrn: process.env.LINKEDIN_AUTHOR_URN!,
+                    authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
                     text: content
                 });
             }
@@ -67,14 +71,15 @@ export class SocialAgent {
             });
 
             return { success: true, platform: task.platform, type: task.type };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Social post failed:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
             await logAgentActivity({
                 agentType: 'social',
                 action: 'create_post',
                 status: 'error',
-                metadata: { platform: task.platform, error: error.message }
+                metadata: { platform: task.platform, error: errorMessage }
             });
 
             return { success: false, platform: task.platform, error };

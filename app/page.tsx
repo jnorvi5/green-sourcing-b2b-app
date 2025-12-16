@@ -30,6 +30,13 @@ const PricingSection = dynamic(
   }
 );
 
+const TestimonialsSection = dynamic(
+  () => import("@/components/home/TestimonialsSection"),
+  {
+    loading: () => <div className="py-20 min-h-[400px]" />,
+  }
+);
+
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -38,6 +45,7 @@ export default function HomePage() {
       <StatsSection />
       <ProblemSolutionSection />
       <HowItWorksSection />
+      <TestimonialsSection />
       <PricingSection />
       <Footer />
     </div>

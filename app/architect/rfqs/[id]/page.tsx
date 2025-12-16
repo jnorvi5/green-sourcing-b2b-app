@@ -1,22 +1,19 @@
 'use client';
 
-"use client";
-
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
+import type { Rfq, RfqResponse } from "@/types/rfq";
 
 export default function ArchitectRfqDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const [rfq, setRfq] = useState<any>(null);
-  const [quotes, setQuotes] = useState<any[]>([]);
+  const [rfq, setRfq] = useState<Rfq | null>(null);
+  const [quotes, setQuotes] = useState<RfqResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
@@ -28,7 +25,7 @@ export default function ArchitectRfqDetailPage({
       // 1. Fetch RFQ
       const { data: rfqData, error: rfqError } = await supabase
         .from("rfqs")
-        .select("*")
+        .select("*, projects(id, name)")
         .eq("id", params.id)
         .single();
 
@@ -103,6 +100,15 @@ export default function ArchitectRfqDetailPage({
         >
           ← Back to Requests
         </Link>
+
+        {rfq.projects && (
+          <Link
+            href={`/projects/${rfq.projects.id}`}
+            className="text-teal-400 hover:text-teal-300 mb-6 ml-4 inline-block"
+          >
+            Go to Project: {rfq.projects.name} →
+          </Link>
+        )}
 
         <div className="flex justify-between items-start mb-8">
           <div>
@@ -197,7 +203,7 @@ export default function ArchitectRfqDetailPage({
                     </div>
                     {quote.message && (
                       <div className="mt-4 p-3 bg-black/20 rounded text-sm text-gray-300">
-                        "{quote.message}"
+                        &ldquo;{quote.message}&rdquo;
                       </div>
                     )}
                   </div>
