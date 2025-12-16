@@ -4,8 +4,8 @@ async function getAutodeskToken() {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-            client_id: process.env.AUTODESK_CLIENT_ID!,
-            client_secret: process.env.AUTODESK_CLIENT_SECRET!,
+            client_id: process.env['AUTODESK_CLIENT_ID']!,
+            client_secret: process.env['AUTODESK_CLIENT_SECRET']!,
             grant_type: 'client_credentials',
             scope: 'data:read',
         }),

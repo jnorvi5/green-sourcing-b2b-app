@@ -244,7 +244,6 @@ export async function getPresignedPostUrl(
   fields: Record<string, string>;
   key: string;
 }> {
-  const bucket = getBucketName(bucketType);
   const key = generateUniqueKey(
     options.prefix ?? bucketType,
     options.contentType

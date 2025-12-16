@@ -28,14 +28,14 @@ describe('resendClient', () => {
   let mockSend: jest.Mock;
   let mockBatchSend: jest.Mock;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     
     // Reset the singleton instance
     __resetResendClient();
     
     // Get mock functions
-    const resendModule = require('resend');
+    const resendModule = await import('resend') as { __mockSend: jest.Mock; __mockBatchSend: jest.Mock };
     mockSend = resendModule.__mockSend;
     mockBatchSend = resendModule.__mockBatchSend;
 

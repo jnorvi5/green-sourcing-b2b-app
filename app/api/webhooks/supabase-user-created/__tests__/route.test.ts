@@ -19,10 +19,18 @@ jest.mock('@/lib/email/templates', () => ({
 }));
 
 describe('Supabase User Created Webhook', () => {
-  // Get mocked functions
-  const mockSendEmail = require('@/lib/email/resend-client').sendEmail as jest.Mock;
-  const mockSendBatchEmails = require('@/lib/email/resend-client')
-    .sendBatchEmails as jest.Mock;
+  // Get mocked functions - using dynamic import at module level
+  let mockSendEmail: jest.Mock;
+  let mockSendBatchEmails: jest.Mock;
+  
+  beforeAll(async () => {
+    const emailModule = await import('@/lib/email/resend-client') as { 
+      sendEmail: jest.Mock; 
+      sendBatchEmails: jest.Mock;
+    };
+    mockSendEmail = emailModule.sendEmail;
+    mockSendBatchEmails = emailModule.sendBatchEmails;
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

@@ -110,21 +110,28 @@ export async function searchEC3Materials(
     
     // Map response to simplified structure
     // Note: Adjust mapping based on actual EC3 API response structure
-    return (data.results || []).map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description || '',
-      category: item.category?.name || 'Unknown',
-      gwp: {
-        value: item.gwp?.value || 0,
-        unit: item.gwp?.unit || 'kgCO2e'
-      },
-      manufacturer: {
-        name: item.manufacturer?.name || 'Unknown',
-        country: item.manufacturer?.address?.country || 'Unknown'
-      },
-      epd_url: item.epd_url
-    }));
+    return (data.results || []).map((item: Record<string, unknown>) => {
+      const category = item['category'] as Record<string, unknown> | undefined;
+      const gwp = item['gwp'] as Record<string, unknown> | undefined;
+      const manufacturer = item['manufacturer'] as Record<string, unknown> | undefined;
+      const address = manufacturer?.['address'] as Record<string, unknown> | undefined;
+      
+      return {
+        id: item['id'],
+        name: item['name'],
+        description: item['description'] || '',
+        category: (category?.['name'] as string) || 'Unknown',
+        gwp: {
+          value: (gwp?.['value'] as number) || 0,
+          unit: (gwp?.['unit'] as string) || 'kgCO2e'
+        },
+        manufacturer: {
+          name: (manufacturer?.['name'] as string) || 'Unknown',
+          country: (address?.['country'] as string) || 'Unknown'
+        },
+        epd_url: item['epd_url']
+      };
+    });
 
   } catch (error) {
     console.error('Error searching EC3:', error);
