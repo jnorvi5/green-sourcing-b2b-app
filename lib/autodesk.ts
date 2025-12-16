@@ -60,8 +60,8 @@ export async function getAutodeskToken(): Promise<string> {
  * Get Embodied Carbon (GWP) for a material
  */
 export async function getEmbodiedCarbon(
-  materialId: string,
-  options?: { category?: string; name?: string }
+  materialId: string
+  // Options parameter removed as it's not used in mock implementation
 ) {
   try {
     // Return structured mock data
@@ -143,36 +143,26 @@ export async function translateModel(urn: string): Promise<{ urn: string; status
   // ADDITIONAL HELPERS (Previously Cached)
   // ============================================
 
-  export async function getCarbonFactor(
-    type: 'electricity' | 'transport' | 'fuel',
-    options: { country?: string; region?: string; subregion?: string; mode?: string }
-  ) {
+  export async function getCarbonFactor() {
       // Mock return null as we removed DB
+      // Parameters removed: type, options - not used in mock
       return null;
   }
 
-  export async function getLowCarbonAlternatives(
-    category: string,
-    options?: { minReduction?: number; maxResults?: number }
-  ) {
+  export async function getLowCarbonAlternatives() {
       // Mock result
+      // Parameters removed: category, options - not used in mock
       return [];
   }
 
-  export async function searchMaterials(
-    query: string,
-    options?: { category?: string; maxGwp?: number; limit?: number }
-  ) {
+  export async function searchMaterials() {
       // Mock result
+      // Parameters removed: query, options - not used in mock
       return [];
   }
 
-  export async function convertUnits(
-    category: string,
-    value: number,
-    fromUnit: string,
-    toUnit: string
-  ) {
+  export async function convertUnits() {
       // Stub
+      // Parameters removed: category, value, fromUnit, toUnit - not used in mock
       return null;
   }

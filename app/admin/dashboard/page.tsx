@@ -10,7 +10,7 @@ interface DashboardStats {
   totalBuyers: number;
   totalRFQs: number;
   pendingApprovals: number;
-  recentActivity: any[];
+  recentActivity: Record<string, unknown>[];
 }
 
 export default function AdminDashboard() {

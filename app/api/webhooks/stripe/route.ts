@@ -19,9 +19,10 @@ export async function POST(req: Request) {
     try {
         if (!endpointSecret) throw new Error('Missing Stripe Webhook Secret')
         event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-    } catch (err: any) {
-        console.error(`Webhook Error: ${err.message}`)
-        return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error(`Webhook Error: ${errorMessage}`)
+        return NextResponse.json({ error: `Webhook Error: ${errorMessage}` }, { status: 400 })
     }
 
     const cookieStore = cookies()
@@ -31,8 +32,8 @@ export async function POST(req: Request) {
         {
             cookies: {
                 get: (name: string) => cookieStore.get(name)?.value,
-                set: (_name: string, _value: string) => { },
-                remove: (_name: string) => { },
+                set: () => { },
+                remove: () => { },
             },
         }
     )

@@ -28,6 +28,15 @@ CREATE TABLE IF NOT EXISTS suppliers (
     description TEXT,
     location TEXT,
     logo_url TEXT,
+    contact_email TEXT,
+    website TEXT,
+    phone TEXT,
+    epd_count INTEGER DEFAULT 0,
+    materials TEXT[],
+    source TEXT,
+    verification_status TEXT DEFAULT 'pending',
+    tier TEXT DEFAULT 'free',
+    scraped_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

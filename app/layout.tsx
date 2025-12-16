@@ -6,12 +6,24 @@ import { PostHogProvider } from "@/components/PostHogProvider";
 import IntercomProvider from "@/components/IntercomProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
-const AgentChat = dynamic(() => import("@/components/AgentChat"), {
-  ssr: false,
-});
+// Dynamically import providers with error boundaries
+const PostHogProvider = dynamic(
+  () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
+  { ssr: false }
+);
 
-const SentryProvider = dynamic(
-  () => import("@sentry/nextjs").then((mod) => mod.ErrorBoundary),
+const IntercomProvider = dynamic(
+  () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
+  { ssr: false }
+);
+
+const GoogleAnalytics = dynamic(
+  () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
+  { ssr: false }
+);
+
+const AgentChat = dynamic(
+  () => import("@/components/AgentChat").catch(() => ({ default: () => null })),
   { ssr: false }
 );
 
@@ -34,11 +46,11 @@ export default function RootLayout({
       <head>
         <link
           rel="preconnect"
-          href="https://jfexzdhacbguleutgdwq.supabase.co"
+          href="https://ezgnhyymoqxaplungbabj.supabase.co"
         />
         <link
           rel="dns-prefetch"
-          href="https://jfexzdhacbguleutgdwq.supabase.co"
+          href="https://ezgnhyymoqxaplungbabj.supabase.co"
         />
       </head>
       <body className="bg-slate-950 text-white">
@@ -51,6 +63,12 @@ export default function RootLayout({
             </AuthProvider>
           </PostHogProvider>
         </SentryProvider>
+        <PostHogProvider>
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
+        </PostHogProvider>
+        <AgentChat />
       </body>
     </html>
   );

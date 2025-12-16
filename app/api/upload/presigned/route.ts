@@ -29,7 +29,6 @@ const ALLOWED_CONTENT_TYPES = [
 ];
 
 // Max file size (10MB)
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 /**
  * POST /api/upload/presigned

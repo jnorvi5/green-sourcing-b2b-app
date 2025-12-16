@@ -7,7 +7,7 @@ export default function IntercomProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => {
+        (window as Window & { requestIdleCallback: (callback: () => void) => void }).requestIdleCallback(() => {
           initIntercom();
         });
       } else {

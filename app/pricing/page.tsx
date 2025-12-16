@@ -53,9 +53,10 @@ export default function PricingPage() {
       if (data.checkout_url) {
         window.location.href = data.checkout_url;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Subscription error:", error);
-      alert(error.message || "Something went wrong. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      alert(errorMessage);
       setLoading(null);
     }
   };

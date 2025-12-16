@@ -1,0 +1,10 @@
+-- Add EC3 scraping columns to suppliers table
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS contact_email TEXT;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS epd_count INTEGER DEFAULT 0;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS materials TEXT[];
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'pending';
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS tier TEXT DEFAULT 'free';
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS scraped_at TIMESTAMPTZ;
