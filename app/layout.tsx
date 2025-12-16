@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import "./globals.css";
+import { AuthProvider } from "@/hooks/useAuth";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import IntercomProvider from "@/components/IntercomProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
@@ -44,8 +45,10 @@ export default function RootLayout({
         <GoogleAnalytics />
         <SentryProvider>
           <PostHogProvider>
-            <IntercomProvider>{children}</IntercomProvider>
-            <AgentChat />
+            <AuthProvider>
+              <IntercomProvider>{children}</IntercomProvider>
+              <AgentChat />
+            </AuthProvider>
           </PostHogProvider>
         </SentryProvider>
       </body>
