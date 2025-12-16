@@ -1,7 +1,10 @@
 import { AzureOpenAI } from 'openai';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { getEPDData } from '../../autodesk-sda';
 
-class AzureAssistant {
+export class AzureAssistant {
     private client: AzureOpenAI | null = null;
+    private supabase: SupabaseClient;
     private deployment = 'gpt-4o';
 
     constructor() {
@@ -14,6 +17,11 @@ class AzureAssistant {
         } else {
             console.warn('Azure OpenAI credentials missing');
         }
+
+        this.supabase = createClient(
+            process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+            process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
+        );
     }
 
     async chat(params: {
@@ -54,21 +62,45 @@ class AzureAssistant {
         }
     }
 
-    async auditProduct() {
+    async auditProduct(productId: string) {
         if (!this.client) return "Mock Audit: Product looks sustainable.";
 
-        // TODO: Integrate with Autodesk SDA API
-        // See mission_ai_audit.md for full spec
+        // Fetch product details
+        const { data: product, error } = await this.supabase
+            .from('products')
+            .select('name, description, certifications')
+            .eq('id', productId)
+            .single();
+
+        if (error || !product) {
+            console.error('Error fetching product:', error);
+            return "Error: Could not find product to audit.";
+        }
+
+        // Integrate with Autodesk SDA API
+        const epdData = await getEPDData(product.name);
+
         const response = await this.client.chat.completions.create({
             model: this.deployment,
             messages: [{
                 role: 'system',
-                content: 'Analyze this product for sustainability compliance...'
+                content: `Analyze this product for sustainability compliance.
+
+                Product: ${product.name}
+                Description: ${product.description || 'N/A'}
+                Certifications: ${(product.certifications || []).join(', ') || 'None'}
+
+                Autodesk SDA Data:
+                - Carbon Footprint: ${epdData.embodied_carbon_kg} kg CO2e
+                - Source: ${epdData.source}
+                - EPD URL: ${epdData.epd_url || 'Not available'}
+
+                Provide a sustainability audit, highlighting pros, cons, and EPD verification status.`
             }],
             max_tokens: 1500
         });
 
-        return response.choices[0].message.content;
+        return response.choices[0].message.content || "I couldn't generate a response.";
     }
 }
 

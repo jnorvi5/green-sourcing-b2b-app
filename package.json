@@ -29,6 +29,7 @@
     "@stripe/stripe-js": "^8.5.3",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.87.3",
     "@supabase/supabase-js": "^2.87.1",
     "@types/fast-levenshtein": "^0.0.4",
     "@supabase/supabase-js": "^2.87.2",
