@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getStripe } from '@/lib/stripe/config';
 import type Stripe from 'stripe';
 
+export const dynamic = 'force-dynamic';
+
 interface InvoiceWithDetails {
   id: string;
   stripe_invoice_id: string;
