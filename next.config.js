@@ -38,12 +38,30 @@ const nextConfig = {
     ]
   },
   compress: true,
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.externals.push({
       'utf-8-validate': 'commonjs utf-8-validate',
       'bufferutil': 'commonjs bufferutil',
-    })
-    return config
+    });
+    
+    // Ignore Supabase module resolution errors
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      crypto: false,
+    };
+    
+    // Suppress the Supabase wrapper.mjs error
+    const originalWarnings = config.ignoreWarnings || [];
+    config.ignoreWarnings = [
+      ...originalWarnings,
+      { module: /@supabase\/supabase-js/ },
+      /Failed to parse source map/,
+    ];
+    
+    return config;
   },
   output: 'standalone',
   async headers() {
