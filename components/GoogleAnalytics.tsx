@@ -2,7 +2,7 @@
 
 import Script from 'next/script';
 
-const GA_MEASUREMENT_ID = process.env['NEXT_PUBLIC_GA_ID'];
+const GA_MEASUREMENT_ID = process.env['NEXT_PUBLIC_GA_MEASUREMENT_ID'] || 'G-JKWQGNDFVP';
 
 // Validate GA Measurement ID format (G-XXXXXXXXXX)
 const isValidGAId = (id: string | undefined): id is string => {
