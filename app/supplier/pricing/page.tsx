@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+// Unused: import { useRouter } from 'next/navigation';
 import { TIER_LIMITS, TIER_PRICES } from '@/types/stripe';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -17,7 +17,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FiCheck } from 'react-icons/fi';
 
 export default function PricingPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

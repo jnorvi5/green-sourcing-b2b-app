@@ -6,5 +6,5 @@ export const AI_TOKENS_ESTIMATE_SMALL = 500
 export const AI_TOKENS_ESTIMATE_LARGE = 1000
 
 // Azure OpenAI Deployments (Update these names to match your Azure setup if different)
-export const AZURE_DEPLOYMENT_EXPENSIVE = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4o'
+export const AZURE_DEPLOYMENT_EXPENSIVE = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'gpt-4o'
 export const AZURE_DEPLOYMENT_CHEAP = 'gpt-4o-mini' // Assuming this deployment exists or fallback to standard

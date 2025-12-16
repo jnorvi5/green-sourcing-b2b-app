@@ -49,7 +49,7 @@ export default function RespondToRfqPage({
 
       if (error) throw error;
       setRfq(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error loading RFQ:", err);
       setError("Failed to load RFQ details");
     } finally {
@@ -96,9 +96,10 @@ export default function RespondToRfqPage({
 
       router.push("/supplier/rfqs");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error submitting quote:", err);
-      setError(err.message || "Failed to submit quote");
+      const errorMsg = err instanceof Error ? err.message : "Failed to submit quote";
+      setError(errorMsg);
     } finally {
       setSubmitting(false);
     }

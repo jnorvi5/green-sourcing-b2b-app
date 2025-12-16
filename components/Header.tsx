@@ -11,11 +11,10 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image
-              src="/logos/greenchainz-logo.png"
-              alt="GreenChainz Logo"
+              src="/favicon.ico"
+              alt="GreenChainz"
               width={32}
               height={32}
-              className="rounded-lg"
             />
             <Link href="/" className="text-xl font-bold tracking-tight text-foreground">
               GreenChainz
@@ -39,6 +38,18 @@ export default function Header() {
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               About
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              How It Works
+            </Link>
+            <Link
+              href="/founding-50"
+              className="text-sm font-medium text-amber-500 hover:text-amber-600 transition-colors"
+            >
+              Founding 50
             </Link>
           </nav>
           <div className="flex items-center gap-4">

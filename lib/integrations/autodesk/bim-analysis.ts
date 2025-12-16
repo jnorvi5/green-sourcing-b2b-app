@@ -348,18 +348,18 @@ async function extractMaterialsFromModel(
   >();
 
   properties.data.collection.forEach((obj) => {
-    const props = obj.properties as any;
+    const props = obj.properties as Record<string, unknown>;
 
     // Look for material-related properties
     const materialName =
-      props.Material || props['Material Name'] || props.material || 'Unknown Material';
-    const category = props.Category || props.category || 'General';
-    const volume = parseFloat(props.Volume || props.volume || 0);
-    const area = parseFloat(props.Area || props.area || 0);
+      (props['Material'] as string) || (props['Material Name'] as string) || (props['material'] as string) || 'Unknown Material';
+    const category = (props['Category'] as string) || (props['category'] as string) || 'General';
+    const volume = parseFloat((props['Volume'] as string) || (props['volume'] as string) || '0');
+    const area = parseFloat((props['Area'] as string) || (props['area'] as string) || '0');
 
     // Determine quantity and unit
-    let quantity = volume || area || 1;
-    let unit = volume ? 'm³' : area ? 'm²' : 'unit';
+    const quantity = volume || area || 1;
+    const unit = volume ? 'm³' : area ? 'm²' : 'unit';
 
     const materialKey = `${materialName}-${category}`;
 
