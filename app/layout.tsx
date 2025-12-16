@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
-import { PostHogProvider } from "@/components/PostHogProvider";
-import IntercomProvider from "@/components/IntercomProvider";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 // Dynamically import providers with error boundaries
 const PostHogProvider = dynamic(
@@ -55,18 +52,12 @@ export default function RootLayout({
       </head>
       <body className="bg-slate-950 text-white">
         <GoogleAnalytics />
-        <SentryProvider>
-          <PostHogProvider>
-            <AuthProvider>
-              <IntercomProvider>{children}</IntercomProvider>
-              <AgentChat />
-            </AuthProvider>
-          </PostHogProvider>
-        </SentryProvider>
         <PostHogProvider>
-          <IntercomProvider>
-            {children}
-          </IntercomProvider>
+          <AuthProvider>
+            <IntercomProvider>
+              {children}
+            </IntercomProvider>
+          </AuthProvider>
         </PostHogProvider>
         <AgentChat />
       </body>
