@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { SustainabilityDataBadge } from '@/components/SustainabilityDataBadge';
 export const dynamic = 'force-dynamic';
 
 // Lazy load the AgentChat component
-const AgentChat = dynamic(() => import("@/components/AgentChat"), {
+const AgentChat = nextDynamic(() => import("@/components/AgentChat"), {
   ssr: false,
   loading: () => <Skeleton className="h-[600px] w-full rounded-xl" />,
 });
