@@ -1,3 +1,4 @@
+const path = require('path');
 const { withSentryConfig } = require("@sentry/nextjs");
 
 const cspHeader = `
@@ -25,6 +26,7 @@ const nextConfig = {
   experimental: {
     instrumentationHook: true,
     optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'react-icons', 'recharts'],
+    serverComponentsExternalPackages: ['@supabase/supabase-js', '@supabase/ssr'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -51,6 +53,12 @@ const nextConfig = {
       net: false,
       tls: false,
       crypto: false,
+    };
+    
+    // Fix Supabase ESM wrapper issue - alias to main CJS build
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@supabase/supabase-js': path.resolve(__dirname, 'node_modules/@supabase/supabase-js/dist/main/index.js'),
     };
     
     // Suppress the Supabase wrapper.mjs error

@@ -4,10 +4,13 @@ import { getEPDData } from '../../autodesk-sda';
 
 export class AzureAssistant {
     private client: AzureOpenAI | null = null;
-    private supabase: SupabaseClient;
+    private _supabase: SupabaseClient | null = null;
     private deployment = 'gpt-4o';
+    private initialized = false;
 
-    constructor() {
+    private initialize() {
+        if (this.initialized) return;
+        
         if (process.env['AZURE_OPENAI_API_KEY'] && process.env['AZURE_OPENAI_ENDPOINT']) {
             this.client = new AzureOpenAI({
                 apiKey: process.env['AZURE_OPENAI_API_KEY']!,
@@ -15,13 +18,26 @@ export class AzureAssistant {
                 apiVersion: '2024-02-15-preview'
             });
         } else {
-            console.warn('Azure OpenAI credentials missing');
+            console.warn('Azure OpenAI credentials not set. AI features will use mock data.');
         }
 
-        this.supabase = createClient(
-            process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-            process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
-        );
+        // Only initialize Supabase if env vars are available
+        const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+        const supabaseKey = process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+        
+        if (supabaseUrl && supabaseKey) {
+            this._supabase = createClient(supabaseUrl, supabaseKey);
+        }
+        
+        this.initialized = true;
+    }
+    
+    private get supabase(): SupabaseClient {
+        this.initialize();
+        if (!this._supabase) {
+            throw new Error('Supabase client not initialized. Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.');
+        }
+        return this._supabase;
     }
 
     async chat(params: {
@@ -29,6 +45,8 @@ export class AzureAssistant {
         userId: string;
         context?: Record<string, unknown>;
     }) {
+        this.initialize();
+        
         if (!this.client) {
             return "Using mock response (Azure not configured): I found 3 recycled steel suppliers for you.";
         }
@@ -63,6 +81,8 @@ export class AzureAssistant {
     }
 
     async auditProduct(productId: string) {
+        this.initialize();
+        
         if (!this.client) return "Mock Audit: Product looks sustainable.";
 
         // Fetch product details
