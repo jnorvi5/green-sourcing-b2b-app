@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 
+// Force dynamic rendering - this page fetches data from Supabase
+export const dynamic = 'force-dynamic';
+
 export default async function AdminEmailsPage() {
   const supabase = await createClient();
 
