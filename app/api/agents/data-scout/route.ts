@@ -1,43 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { EPDInternationalClient, normalizeEPD } from '@/lib/integrations/epd-international';
 
-// Interfaces for EPD International API Response (Approximation)
-interface EPDInternationalResponse {
-  data: EPDItem[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-  };
-}
-
-interface EPDItem {
-  id: string;
-  uuid: string;
-  name: string;
-  registrationNumber: string; // e.g., "S-P-01234"
-  publicationDate: string;
-  validUntil: string;
-  manufacturer: {
-    name: string;
-    country: string;
-    website?: string;
-  };
-  product: {
-    name: string;
-    description: string;
-  };
-  classification: {
-    cpc?: string;
-    classification?: string;
-  };
-  indicators?: { // Simplified indicator structure
-    gwp?: {
-      a1a3: number;
-      unit: string;
-    };
-    recycledContent?: number;
-  };
-  url?: string; // Link to PDF or page
+interface AgentEPDData {
+  productName: string;
+  manufacturer: string;
+  epdNumber: string;
+  gwpFossilA1A3: number | null;
+  recycledContentPct: number;
+  certifications: string[];
+  validityStart: string;
+  validityEnd: string;
+  verifiedBy: string;
+  dataSourceUrl: string;
+  confidenceScore: number;
+  fetched: string;
 }
 
 // Data Scout Agent - EPD International Integration
@@ -45,10 +21,11 @@ export async function POST(request: NextRequest) {
   try {
     const { productName, manufacturer, certType } = await request.json();
 
+    // Connect to actual EPD International API
+    // Register at: https://epd-apim.developer.azure-api.net
     const EPD_API_KEY = process.env['EPD_INTERNATIONAL_API_KEY'];
-    const API_BASE_URL = 'https://epd-apim.azure-api.net/api/v1'; // Assumed base URL
 
-    let epdData = null;
+    let epdData: AgentEPDData | null = null;
     let source = 'mock';
 
     // 1. Try to fetch from actual API if key exists
@@ -56,52 +33,40 @@ export async function POST(request: NextRequest) {
       try {
         console.log(`Attempting to fetch EPD for ${productName} from EPD International API...`);
 
-        // Construct search query
-        const queryParams = new URLSearchParams();
-        if (productName) queryParams.append('search', productName);
-        if (manufacturer) queryParams.append('manufacturer', manufacturer);
-        queryParams.append('limit', '1'); // Get top result
-
-        const response = await fetch(`${API_BASE_URL}/epds?${queryParams.toString()}`, {
-          method: 'GET',
-          headers: {
-            'Ocp-Apim-Subscription-Key': EPD_API_KEY,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+        const client = new EPDInternationalClient({
+            apiKey: EPD_API_KEY
         });
 
-        if (response.ok) {
-          const result: EPDInternationalResponse = await response.json();
-          if (result.data && result.data.length > 0) {
-            const item = result.data[0];
+        // Use the updated client which supports search and manufacturer
+        const result = await client.fetchEPDs({
+            search: productName,
+            manufacturer: manufacturer,
+            perPage: 1
+        });
 
-            // Map external API data to internal schema
-            epdData = {
-              productName: item.product.name,
-              manufacturer: item.manufacturer.name,
-              epdNumber: item.registrationNumber,
-              gwpFossilA1A3: item.indicators?.gwp?.a1a3 || null, // Might be null if not in search result
-              recycledContentPct: item.indicators?.recycledContent || 0,
-              certifications: ['EPD International'], // Base cert
-              validityStart: item.publicationDate,
-              validityEnd: item.validUntil,
-              verifiedBy: 'EPD International',
-              dataSourceUrl: item.url || `https://www.environdec.com/library/epd${item.registrationNumber}`,
-              confidenceScore: 1.0, // Real data
-              fetched: new Date().toISOString()
-            };
+        if (result.data && result.data.length > 0) {
+            const apiItem = result.data[0];
+            const normalizedItem = normalizeEPD(apiItem);
 
-            // Add other certs if inferred or present (simplified logic)
-            if (certType && epdData.certifications.indexOf(certType) === -1) {
-               // In a real scenario, we'd check if the EPD mentions the cert
-               // For now, we rely on the search result
+            if (normalizedItem) {
+                // Map normalized data to agent schema
+                epdData = {
+                    productName: normalizedItem.product_name,
+                    manufacturer: normalizedItem.manufacturer,
+                    epdNumber: normalizedItem.epd_number,
+                    gwpFossilA1A3: normalizedItem.gwp_fossil_a1a3,
+                    recycledContentPct: normalizedItem.recycled_content_pct || 0,
+                    certifications: normalizedItem.certifications.length > 0 ? normalizedItem.certifications : ['EPD International'],
+                    validityStart: normalizedItem.valid_from,
+                    validityEnd: normalizedItem.valid_until,
+                    verifiedBy: normalizedItem.data_source,
+                    dataSourceUrl: `https://www.environdec.com/library/epd/${normalizedItem.epd_number}`, // Fallback/constructed URL
+                    confidenceScore: 1.0, // Real data
+                    fetched: new Date().toISOString()
+                };
+
+                source = 'epd_international_api';
             }
-
-            source = 'epd_international_api';
-          }
-        } else {
-          console.warn(`EPD API request failed: ${response.status} ${response.statusText}`);
         }
       } catch (apiError) {
         console.error('Error fetching from EPD API:', apiError);
