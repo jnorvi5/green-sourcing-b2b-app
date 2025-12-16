@@ -1,18 +1,11 @@
 'use client';
 
-export const dynamic = 'force-dynamic'
-export const dynamic = 'force-dynamic';
-
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { FiSearch } from "react-icons/fi";
-
-export default function SearchPage() {
-  const [query, setQuery] = useState("");
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FiSearch, FiFilter } from "react-icons/fi";
@@ -20,8 +13,10 @@ import { FadeIn } from "@/components/ui/motion-wrapper";
 import { FaLeaf } from 'react-icons/fa';
 import { SustainabilityDataBadge } from '@/components/SustainabilityDataBadge';
 
+export const dynamic = 'force-dynamic';
+
 // Lazy load the AgentChat component
-const AgentChat = nextDynamic(() => import("@/components/AgentChat"), {
+const AgentChat = dynamic(() => import("@/components/AgentChat"), {
   ssr: false,
   loading: () => <Skeleton className="h-[600px] w-full rounded-xl" />,
 });
@@ -83,7 +78,7 @@ export default function SearchPage() {
         </div>
         <Card className="mb-12 shadow-md">
           <CardContent className="p-6">
-            <div className="flex gap-4">
+            <form onSubmit={handleSearch} className="flex gap-4">
               <div className="relative flex-1">
                 <FiSearch className="absolute left-3 top-3 text-muted-foreground w-5 h-5" />
                 <Input
@@ -94,14 +89,12 @@ export default function SearchPage() {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <Button size="lg" className="h-12 px-8 text-lg">
-                Search
+              <Button type="submit" size="lg" className="h-12 px-8 text-lg" disabled={isSearching}>
+                {isSearching ? 'Searching...' : 'Search'}
               </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
-        <p className="text-center text-muted-foreground">Search functionality is currently being updated.</p>
-      </main>
 
         {/* Results Section */}
         {results.length > 0 && (
