@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Anthropic } from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 /**
  * POST /api/audit/extract-materials
- * Extract building materials from Revit/model file
+ * Extract building materials from Revit/model file using Perplexity API
  * 
  * Body: {
- *   fileUrl: string,  // URL of .rvt file or file upload
+ *   fileContent: string,  // Decoded file content or description
  *   fileName: string,
- *   fileContent: string (base64) // Optional: direct file content
+ *   description: string // Building material description
  * }
  * 
  * Returns: {
@@ -43,8 +38,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mock file parsing - in production, parse actual Revit/IFC format
-    // For MVP: Accept description or base64 file, extract via Claude
+    const apiKey = process.env.PERPLEXITY_API_KEY;
+    if (!apiKey) {
+      console.error('PERPLEXITY_API_KEY not configured');
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Build the prompt for Perplexity
     const prompt = `You are a sustainability expert analyzing building material specifications.
 
 Analyze the following building material data and extract:
@@ -52,8 +55,9 @@ Analyze the following building material data and extract:
 2. Sustainability scores (0-100, where 100 is most sustainable)
 3. Environmental certifications (FSC, LEED, EPD, ISO 14001, etc.)
 4. Estimated carbon footprint per unit
+5. Alternative sustainable materials
 
-Build a JSON response with this structure:
+Respond ONLY with valid JSON in this structure (no markdown, no extra text):
 {
   "materials": [
     {
@@ -76,46 +80,64 @@ Build a JSON response with this structure:
   "recommendations": ["Use more recycled content", "Source from certified suppliers"]
 }
 
-Material Data:
+Material Data to Analyze:
 ${description || `File: ${fileName}`}
 
-Extract and analyze now:`;
+Respond ONLY with the JSON, nothing else.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 2000,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+    // Call Perplexity API
+    const response = await fetch('https://api.perplexity.ai/openai/deployments/llm/chat/completions?api-version=2024-02-15-preview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-large-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a sustainability expert. Respond ONLY with valid JSON, no markdown or extra text.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        max_tokens: 2000,
+        temperature: 0.7,
+      }),
     });
 
-    // Parse Claude's response
-    const responseText =
-      message.content[0].type === 'text' ? message.content[0].text : '';
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('Perplexity API error:', error);
+      return NextResponse.json(
+        { error: 'Perplexity API error', details: error },
+        { status: response.status }
+      );
+    }
 
-    // Extract JSON from response
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    const data = await response.json();
+    const responseText = data.choices?.[0]?.message?.content || '';
+
+    // Parse JSON response
     let auditResult;
-
-    if (jsonMatch) {
-      try {
-        auditResult = JSON.parse(jsonMatch[0]);
-      } catch (e) {
-        auditResult = {
-          materials: [],
-          summary: responseText,
-          overall_audit_score: 0,
-          error: 'Could not parse detailed response',
-        };
-      }
-    } else {
+    try {
+      // Remove markdown code blocks if present
+      const cleanedText = responseText
+        .replace(/^```json\n?/, '')
+        .replace(/\n?```$/, '')
+        .trim();
+      auditResult = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError, 'Response:', responseText);
       auditResult = {
         materials: [],
         summary: responseText,
         overall_audit_score: 0,
+        recommendations: ['Could not parse detailed analysis'],
+        error: 'Response parsing issue',
       };
     }
 
@@ -149,9 +171,12 @@ Extract and analyze now:`;
  * Health check + example response
  */
 export async function GET(request: NextRequest) {
+  const hasKey = !!process.env.PERPLEXITY_API_KEY;
+  
   return NextResponse.json({
     service: 'GreenChainZ Material Extraction Audit',
-    status: 'active',
+    status: hasKey ? 'active' : 'unconfigured',
+    api_configured: hasKey,
     capabilities: [
       'Extract materials from building models',
       'Assess sustainability scores',
@@ -163,8 +188,7 @@ export async function GET(request: NextRequest) {
       method: 'POST',
       endpoint: '/api/audit/extract-materials',
       body: {
-        description:
-          'String describing building materials (for MVP testing)',
+        description: 'String describing building materials',
         fileContent: 'Base64 encoded file content (future)',
         fileName: 'model.rvt',
       },
