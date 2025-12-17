@@ -41,9 +41,12 @@ export default async function ComparePage({
     return <div>Error loading comparison.</div>;
   }
 
-  // Ensure order matches the requested IDs (optional, but good for UX)
+  // Build a Map for O(1) lookup instead of O(n) find() calls
+  const productMap = new Map(products.map((p) => [p.id, p]));
+  
+  // Ensure order matches the requested IDs using Map lookup (O(n) instead of O(n²))
   const orderedProducts = ids
-    .map((id) => products.find((p) => p.id === id))
+    .map((id) => productMap.get(id))
     .filter((p): p is Product => !!p);
 
   return (

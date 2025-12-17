@@ -11,16 +11,18 @@ export async function POST(req: NextRequest) {
         .select('id, name, contact_email, contact_name')
         .in('id', supplierIds);
 
-    // Queue emails
-    for (const supplier of suppliers || []) {
-        await emailAgent.addTask({
-            type: campaignType,
-            recipientEmail: supplier.contact_email,
-            recipientName: supplier.contact_name,
-            companyName: supplier.name,
-            supplierId: supplier.id
-        });
-    }
+    // Queue emails in parallel
+    await Promise.all(
+        (suppliers || []).map(supplier =>
+            emailAgent.addTask({
+                type: campaignType,
+                recipientEmail: supplier.contact_email,
+                recipientName: supplier.contact_name,
+                companyName: supplier.name,
+                supplierId: supplier.id
+            })
+        )
+    );
 
     // Process batch
     const results = await emailAgent.processBatch(10);

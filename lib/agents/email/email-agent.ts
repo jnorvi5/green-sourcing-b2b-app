@@ -101,18 +101,22 @@ export class EmailAgent {
 
         const inbox = await zohoClient.checkInbox();
 
-        // Parse responses and update supplier status
+        // Parse responses and update supplier status in parallel
         const supabase = await createClient();
-        for (const email of inbox.data || []) {
-            if (email.subject.includes('GreenChainz') || email.subject.includes('Founding 50')) {
-                await supabase.from('email_log').insert({
+        const relevantEmails = (inbox.data || []).filter(
+            email => email.subject.includes('GreenChainz') || email.subject.includes('Founding 50')
+        );
+
+        await Promise.all(
+            relevantEmails.map(email =>
+                supabase.from('email_log').insert({
                     type: 'response_received',
                     recipient_email: email.fromAddress,
                     subject: email.subject,
                     received_at: new Date().toISOString()
-                });
-            }
-        }
+                })
+            )
+        );
     }
 }
 

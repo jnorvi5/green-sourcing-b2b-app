@@ -13,16 +13,18 @@ export async function runDailyScrape() {
 
     if (!suppliers) return;
 
-    // Queue scrape tasks
-    for (const supplier of suppliers) {
-        if (supplier.website) {
-            await scraperAgent.addTask({
-                url: supplier.website,
-                supplierId: supplier.id,
-                dataType: 'epd'
-            });
-        }
-    }
+    // Queue scrape tasks in parallel
+    await Promise.all(
+        suppliers
+            .filter(supplier => supplier.website)
+            .map(supplier =>
+                scraperAgent.addTask({
+                    url: supplier.website,
+                    supplierId: supplier.id,
+                    dataType: 'epd'
+                })
+            )
+    );
 
     // Process in batches to avoid overwhelming
     while (scraperAgent.queue.length > 0) {

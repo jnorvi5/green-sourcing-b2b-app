@@ -43,18 +43,17 @@ export async function sendEmail({ to, subject, html }: SendParams): Promise<Send
 
 export async function sendBulkEmail({ recipients, subject, html }: BulkParams): Promise<SendResponse[]> {
   const resend = getClient();
-  const outputs: SendResponse[] = [];
-  // Resend batch API is limited; fall back to loop
-  for (const to of recipients) {
-    try {
-      const res = await resend.emails.send({ from: FROM, to, subject, html });
-      outputs.push(res);
-    } catch (err) {
-      console.error('Resend sendBulkEmail error:', { to, err });
-      throw err;
-    }
-  }
-  return outputs;
+  
+  // Send emails in parallel for better performance
+  const promises = recipients.map(to =>
+    resend.emails.send({ from: FROM, to, subject, html })
+      .catch(err => {
+        console.error('Resend sendBulkEmail error:', { to, err });
+        throw err;
+      })
+  );
+  
+  return Promise.all(promises);
 }
 
 export async function scheduleEmail({ to, subject, html, sendAt }: ScheduleParams): Promise<SendResponse> {
