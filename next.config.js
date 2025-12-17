@@ -56,16 +56,16 @@ const nextConfig = {
     };
     
     // Fix Supabase ESM wrapper issue - alias to main CJS build
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@supabase/supabase-js': path.resolve(__dirname, 'node_modules/@supabase/supabase-js/dist/main/index.js'),
-    };
+    // config.resolve.alias = {
+    //   ...config.resolve.alias,
+    //   '@supabase/supabase-js': path.resolve(__dirname, 'node_modules/@supabase/supabase-js/dist/main/index.js'),
+    // };
     
     // Suppress the Supabase wrapper.mjs error
     const originalWarnings = config.ignoreWarnings || [];
     config.ignoreWarnings = [
       ...originalWarnings,
-      { module: /@supabase\/supabase-js/ },
+      // { module: /@supabase\/supabase-js/ },
       /Failed to parse source map/,
     ];
     

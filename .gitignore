@@ -80,6 +80,8 @@ scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
 scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
+scripts/*.csv
+scripts/*.json
 
 # Generated Junk
 *.txt

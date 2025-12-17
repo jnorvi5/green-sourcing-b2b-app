@@ -1,29 +1,28 @@
 # Proposed Major Changes (Pull Request #2 Candidate)
 
-I have implemented the **Safe/Small Changes** (Cleanups, Security Headers, Secret fixes) in the current update.
+The following changes are recommended to be performed in a separate Pull Request to minimize risk and allow for focused review.
 
-The following **Major Changes** are recommended for the next phase. These involve structural refactoring and dependency updates.
+## 1. Structural Refactoring
+**Goal:** Organize the codebase for scalability.
+- [ ] **Move Infra:** Move `aws/`, `azure-functions/`, `terraform/`, `lambda/` into a new `infrastructure/` directory.
+- [ ] **Move Tools:** Move `scripts/` to `tools/` and delete unused scripts.
+- [ ] **Delete Junk:** Delete `.amazonq/`, `.kiro/`, `.snapshots/` directories (Tool artifacts).
 
-## 1. Structural Refactoring: Standardize on `src/` Directory
-**Current State:** Project root is cluttered (`app/`, `pages/`, `components/`, etc.).
-**Proposed Change:** Move all source code into `src/`.
+## 2. Enable Strict Mode
+**Goal:** Ensure code quality and catch bugs early.
+- [ ] **Action:** Set `typescript.ignoreBuildErrors: false` and `eslint.ignoreDuringBuilds: false` in `next.config.js`.
+- [ ] **Prerequisite:** Run `npm run type-check` and fix all remaining errors (reported in `CODE_REVIEW_REPORT.md` as "integration file errors").
 
-## 2. Supabase Client Migration
-**Current State:** Mix of `@supabase/supabase-js`, `@supabase/auth-helpers-nextjs`, and `@supabase/ssr`.
-**Proposed Change:** Standardize on `@supabase/ssr`.
+## 3. Client Migration Validation
+**Goal:** Ensure complete removal of legacy Supabase clients.
+- [ ] **Action:** Grep for any remaining imports of `@supabase/auth-helpers-nextjs` (already uninstalled) to ensure no dead import statements remain.
+- [ ] **Action:** Verify `lib/supabase/*` files all use `@supabase/ssr` correctly.
 
-## 3. Strict Mode & Error Handling
-**Current State:** `next.config.js` ignores TypeScript and ESLint errors (`ignoreDuringBuilds: true`).
-**Proposed Change:**
-1. Fix the underlying Type and Lint errors.
-2. Remove the ignore flags in `next.config.js`.
+## 4. Environment Cleanup
+**Goal:** Reduce confusion.
+- [ ] **Action:** Audit `.env.example` vs `vercel.json` vs actual usage.
+- [ ] **Action:** Remove `lib/aws/cloudfront.ts.disabled` and `lib/aws/ses-client.ts.disabled` if not needed.
 
-## 4. Infrastructure Cleanup
-**Current State:** `aws/`, `azure-functions/`, `lambda/`, `terraform/` folders exist.
-**Action:**
-- Confirm if these are legacy/unused.
-- Delete if not needed for the Vercel deployment.
-
-## 5. Dependency Updates
-**Current State:** Some packages might be outdated.
-**Action:** Run `npm update` and test.
+## 5. Security Headers
+**Goal:** harden the application.
+- [ ] **Action:** Review CSP in `next.config.js` to ensure it's not too permissive (currently allows `unsafe-inline`).
