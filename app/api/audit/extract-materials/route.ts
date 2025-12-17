@@ -1,53 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { AzureOpenAI } from '@azure/openai';
+
+const client = new AzureOpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  apiVersion: '2024-08-01-preview',
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+});
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 /**
  * POST /api/audit/extract-materials
- * Extract building materials from Revit/model file using Perplexity API
+ * Extract building materials from Revit/model file using Azure OpenAI
+ * Powered by your founder's credits (FREE)
  * 
  * Body: {
- *   fileContent: string,  // Decoded file content or description
- *   fileName: string,
  *   description: string // Building material description
  * }
  * 
  * Returns: {
- *   materials: Array<{
- *     name: string,
- *     quantity: number,
- *     unit: string,
- *     specifications: object,
- *     sustainability_score: number (0-100),
- *     certifications: string[],
- *     estimated_carbon_footprint: string
- *   }>,
+ *   materials: Array<Material>,
  *   summary: string,
  *   audit_score: number (0-100)
  * }
  */
 export async function POST(request: NextRequest) {
   try {
-    const { fileContent, fileName, description } = await request.json();
+    const { description } = await request.json();
 
-    if (!fileContent && !description) {
+    if (!description) {
       return NextResponse.json(
-        { error: 'Provide fileContent (base64) or description of building materials' },
+        { error: 'Provide description of building materials' },
         { status: 400 }
       );
     }
 
-    const apiKey = process.env.PERPLEXITY_API_KEY;
-    if (!apiKey) {
-      console.error('PERPLEXITY_API_KEY not configured');
+    // Check env vars
+    if (!process.env.AZURE_OPENAI_API_KEY || !process.env.AZURE_OPENAI_ENDPOINT) {
       return NextResponse.json(
-        { error: 'API key not configured' },
+        { error: 'Azure OpenAI not configured' },
         { status: 500 }
       );
     }
 
-    // Build the prompt for Perplexity
     const prompt = `You are a sustainability expert analyzing building material specifications.
 
 Analyze the following building material data and extract:
@@ -81,50 +77,31 @@ Respond ONLY with valid JSON in this structure (no markdown, no extra text):
 }
 
 Material Data to Analyze:
-${description || `File: ${fileName}`}
+${description}
 
 Respond ONLY with the JSON, nothing else.`;
 
-    // Call Perplexity API
-    const response = await fetch('https://api.perplexity.ai/openai/deployments/llm/chat/completions?api-version=2024-02-15-preview', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a sustainability expert. Respond ONLY with valid JSON, no markdown or extra text.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        max_tokens: 2000,
-        temperature: 0.7,
-      }),
+    const response = await client.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a sustainability expert. Respond ONLY with valid JSON, no markdown or extra text.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 2000,
+      temperature: 0.7,
     });
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('Perplexity API error:', error);
-      return NextResponse.json(
-        { error: 'Perplexity API error', details: error },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-    const responseText = data.choices?.[0]?.message?.content || '';
+    const responseText = response.choices[0]?.message?.content || '';
 
     // Parse JSON response
     let auditResult;
     try {
-      // Remove markdown code blocks if present
       const cleanedText = responseText
         .replace(/^```json\n?/, '')
         .replace(/\n?```$/, '')
@@ -137,7 +114,6 @@ Respond ONLY with the JSON, nothing else.`;
         summary: responseText,
         overall_audit_score: 0,
         recommendations: ['Could not parse detailed analysis'],
-        error: 'Response parsing issue',
       };
     }
 
@@ -167,16 +143,18 @@ Respond ONLY with the JSON, nothing else.`;
 }
 
 /**
- * GET /api/audit/extract-materials?fileName=test.rvt
+ * GET /api/audit/extract-materials
  * Health check + example response
  */
 export async function GET(request: NextRequest) {
-  const hasKey = !!process.env.PERPLEXITY_API_KEY;
-  
+  const configured =
+    !!process.env.AZURE_OPENAI_API_KEY && !!process.env.AZURE_OPENAI_ENDPOINT;
+
   return NextResponse.json({
     service: 'GreenChainZ Material Extraction Audit',
-    status: hasKey ? 'active' : 'unconfigured',
-    api_configured: hasKey,
+    provider: 'Azure OpenAI (Founder Credits)',
+    status: configured ? 'active' : 'unconfigured',
+    cost: 'FREE (using your Microsoft Founder credits)',
     capabilities: [
       'Extract materials from building models',
       'Assess sustainability scores',
@@ -184,15 +162,6 @@ export async function GET(request: NextRequest) {
       'Estimate carbon footprint',
       'Recommend alternatives',
     ],
-    usage: {
-      method: 'POST',
-      endpoint: '/api/audit/extract-materials',
-      body: {
-        description: 'String describing building materials',
-        fileContent: 'Base64 encoded file content (future)',
-        fileName: 'model.rvt',
-      },
-    },
     example_response: {
       success: true,
       audit: {
@@ -201,23 +170,14 @@ export async function GET(request: NextRequest) {
             name: 'FSC Bamboo Flooring',
             quantity: 500,
             unit: 'sq ft',
-            specifications: {
-              type: 'hardwood flooring',
-              grade: 'premium',
-              finish: 'matte',
-            },
+            specifications: { type: 'hardwood', grade: 'premium' },
             sustainability_score: 92,
             certifications: ['FSC', 'LEED approved'],
             estimated_carbon_footprint_kg_co2: 750,
-            alternatives: ['Recycled wood composite', 'Cork flooring'],
           },
         ],
         summary: 'High-sustainability material profile',
         overall_audit_score: 88,
-        recommendations: [
-          'Excellent choice for green building',
-          'Verify FSC certification with supplier',
-        ],
       },
     },
   });
