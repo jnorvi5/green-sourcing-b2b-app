@@ -128,12 +128,9 @@ export default function SupplierAnalyticsPage() {
       const responseRate = totalRfqs > 0 ? (totalResponses / totalRfqs) * 100 : 0;
 
       // Build a lookup Map for O(1) access instead of O(n) find() calls
-      const rfqMap = new Map<string, { created_at: string; material_specs: unknown }>();
-      if (rfqsData) {
-        rfqsData.forEach((rfq) => {
-          rfqMap.set(rfq.id, { created_at: rfq.created_at, material_specs: rfq.material_specs });
-        });
-      }
+      const rfqMap = new Map(
+        (rfqsData || []).map(rfq => [rfq.id, { created_at: rfq.created_at, material_specs: rfq.material_specs }])
+      );
 
       // Calculate avg response time using Map lookup (O(n) instead of O(n²))
       let totalResponseTimeHours = 0;

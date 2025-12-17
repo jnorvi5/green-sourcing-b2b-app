@@ -37,6 +37,7 @@ async function seed() {
     console.log(`Created supplier with id: ${supplierId}`);
 
     // Generate 20 dummy products data
+    const PRODUCT_COLUMNS = 11; // Number of columns in the products table
     const productValues: unknown[][] = [];
     for (let i = 0; i < 20; i++) {
       productValues.push([
@@ -62,7 +63,7 @@ async function seed() {
 
     // Insert all products in a single batch query for better performance
     const placeholders = productValues.map((_, idx) => {
-      const baseIdx = idx * 11;
+      const baseIdx = idx * PRODUCT_COLUMNS;
       return `($${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${baseIdx + 4}, $${baseIdx + 5}, $${baseIdx + 6}, $${baseIdx + 7}, $${baseIdx + 8}, $${baseIdx + 9}, $${baseIdx + 10}, $${baseIdx + 11})`;
     }).join(', ');
     
