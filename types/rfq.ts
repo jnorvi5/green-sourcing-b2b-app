@@ -60,6 +60,7 @@ export interface UserProfile {
  * RFQ data from database
  */
 export interface Rfq {
+  projects: any;
   id: string;
   architect_id: string;
   product_id: string | null;

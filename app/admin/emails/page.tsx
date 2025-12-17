@@ -50,7 +50,7 @@ export default async function AdminEmailsPage() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {logs && logs.length > 0 ? (
-              logs.map((log) => (
+              logs.map((log: { id: string; recipient: string; template_name?: string; status: string; sent_at?: string; error_message?: string }) => (
                 <tr key={log.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {log.recipient}

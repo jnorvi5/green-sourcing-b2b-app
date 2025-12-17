@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default function ArchitectRfqDetailPage({
 
   useEffect(() => {
     loadData();
-  }, [params.id]);
+  }, [loadData, params.id]);
 
   async function loadData() {
     try {

@@ -29,75 +29,58 @@ export class SocialAgent {
             let content: string;
 
             if (task.type === 'new_supplier') {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const supplierName = (task.metadata as any)?.supplierName || 'Sustainable Supplier';
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const productCategory = (task.metadata as any)?.productCategory || 'Building Materials';
-
-                content = SOCIAL_TEMPLATES.newSupplier(
-                    task.metadata['supplierName'] as string,
-                    task.metadata['productCategory'] as string
-                    supplierName as string,
-                    productCategory as string
-                );
+                const supplierName = (task.metadata as { supplierName?: string })?.supplierName || 'Sustainable Supplier';
+                const productCategory = (task.metadata as { productCategory?: string })?.productCategory || 'Building Materials';
+                content = SOCIAL_TEMPLATES.newSupplier(supplierName, productCategory);
             } else if (task.type === 'weekly_update') {
-                content = SOCIAL_TEMPLATES.weeklyUpdate({
-                    suppliers: task.metadata['suppliers'] as number,
-                    architects: task.metadata['architects'] as number,
-                    rfqs: task.metadata['rfqs'] as number
-                });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as any);
+                content = SOCIAL_TEMPLATES.weeklyUpdate(task.metadata as { suppliers: number; architects: number; rfqs: number });
             } else {
-                content = SOCIAL_TEMPLATES.thoughtLeadership(task.metadata['topic'] as string);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                content = SOCIAL_TEMPLATES.thoughtLeadership((task.metadata as any)?.topic as string);
+                content = SOCIAL_TEMPLATES.thoughtLeadership((task.metadata as { topic?: string })?.topic || 'Sustainability');
             }
 
             if (task.platform === 'linkedin') {
                 if (!process.env['LINKEDIN_AUTHOR_URN']) {
-                    if (!process.env['LINKEDIN_AUTHOR_URN']) {
-                        console.warn("Skipping LinkedIn post: Missing URN");
-                        return { success: false, error: "Missing URN" };
-                    }
-                    await linkedInClient.createPost({
-                        authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
-                        authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
-                        text: content
-                    });
+                    console.warn("Skipping LinkedIn post: Missing URN");
+                    return { success: false, error: "Missing URN" };
                 }
-
-                // Log to Supabase
-                await supabase.from('social_posts').insert({
-                    platform: task.platform,
-                    type: task.type,
-                    content,
-                    posted_at: new Date().toISOString(),
-                    status: 'posted'
+                await linkedInClient.createPost({
+                    authorUrn: process.env['LINKEDIN_AUTHOR_URN']!,
+                    text: content
                 });
 
-                await logAgentActivity({
-                    agentType: 'social',
-                    action: 'create_post',
-                    status: 'success',
-                    metadata: { platform: task.platform, type: task.type }
-                });
-
-                return { success: true, platform: task.platform, type: task.type };
-            } catch (error: unknown) {
-                console.error(`Social post failed:`, error);
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-                await logAgentActivity({
-                    agentType: 'social',
-                    action: 'create_post',
-                    status: 'error',
-                    metadata: { platform: task.platform, error: errorMessage }
-                });
-
-                return { success: false, platform: task.platform, error };
             }
+
+            // Log to Supabase
+            await supabase.from('social_posts').insert({
+                platform: task.platform,
+                type: task.type,
+                content,
+                posted_at: new Date().toISOString(),
+                status: 'posted'
+            });
+
+            await logAgentActivity({
+                agentType: 'social',
+                action: 'create_post',
+                status: 'success',
+                metadata: { platform: task.platform, type: task.type }
+            });
+
+            return { success: true, platform: task.platform, type: task.type };
+        } catch (error: unknown) {
+            console.error(`Social post failed:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+            await logAgentActivity({
+                agentType: 'social',
+                action: 'create_post',
+                status: 'error',
+                metadata: { platform: task.platform, error: errorMessage }
+            });
+
+            return { success: false, platform: task.platform, error };
         }
+    }
 }
 
     export const socialAgent = new SocialAgent();
