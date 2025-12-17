@@ -127,13 +127,18 @@ export default function SupplierAnalyticsPage() {
       const totalResponses = responsesData?.length || 0;
       const responseRate = totalRfqs > 0 ? (totalResponses / totalRfqs) * 100 : 0;
 
-      // Calculate avg response time
+      // Build a lookup Map for O(1) access instead of O(n) find() calls
+      const rfqMap = new Map(
+        (rfqsData || []).map(rfq => [rfq.id, { created_at: rfq.created_at, material_specs: rfq.material_specs }])
+      );
+
+      // Calculate avg response time using Map lookup (O(n) instead of O(n²))
       let totalResponseTimeHours = 0;
       let responseCount = 0;
 
       if (responsesData && rfqsData) {
         responsesData.forEach((response) => {
-          const rfq = rfqsData.find((r) => r.id === response.rfq_id);
+          const rfq = rfqMap.get(response.rfq_id);
           if (rfq) {
             const rfqCreated = new Date(rfq.created_at).getTime();
             const responseTime = new Date(response.responded_at).getTime();
@@ -170,11 +175,11 @@ export default function SupplierAnalyticsPage() {
           ? acceptedResponses.reduce((sum, r) => sum + (r.quote_amount || 0), 0) / totalWins
           : 0;
 
-      // Group wins by material type
+      // Group wins by material type using Map lookup (O(n) instead of O(n²))
       const winsByMaterialMap = new Map<string, { wins: number; total: number }>();
       if (rfqsData && responsesData) {
         responsesData.forEach((response) => {
-          const rfq = rfqsData.find((r) => r.id === response.rfq_id);
+          const rfq = rfqMap.get(response.rfq_id);
           if (rfq && rfq.material_specs && typeof rfq.material_specs === 'object') {
             const materialType = (rfq.material_specs as { material_type?: string }).material_type || 'Other';
             const current = winsByMaterialMap.get(materialType) || { wins: 0, total: 0 };

@@ -5,10 +5,10 @@ import { createClient } from '@/lib/supabase/server';
 export async function POST(req: NextRequest) {
     const { supplierId, urls, dataType } = await req.json();
 
-    // Add tasks to queue
-    for (const url of urls) {
-        await scraperAgent.addTask({ url, supplierId, dataType });
-    }
+    // Add tasks to queue in parallel
+    await Promise.all(
+        urls.map((url: string) => scraperAgent.addTask({ url, supplierId, dataType }))
+    );
 
     // Process batch
     const results = await scraperAgent.processBatch(5);
