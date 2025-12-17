@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
@@ -16,11 +16,7 @@ export default function ArchitectRfqDetailPage({
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
-  useEffect(() => {
-    loadData();
-  }, [loadData, params.id]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       // 1. Fetch RFQ
       const { data: rfqData, error: rfqError } = await supabase
@@ -55,7 +51,11 @@ export default function ArchitectRfqDetailPage({
     } finally {
       setLoading(false);
     }
-  }
+  }, [params.id, supabase]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   async function handleStatusUpdate(
     quoteId: string,
