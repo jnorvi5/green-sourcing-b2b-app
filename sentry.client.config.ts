@@ -30,8 +30,15 @@ Sentry.init({
 
   // Configure error filtering
   beforeSend(event, hint) {
+    // Filter out localhost errors
+    if (typeof window !== 'undefined' &&
+       (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1')) {
+      return null;
+    }
+
     // Filter out known non-critical errors
-    const error = hint.originalException as Error;
+    const error = hint.originalException as any;
     
     // Ignore hydration errors (common in development)
     if (error?.message?.includes('Hydration')) {
@@ -41,6 +48,26 @@ Sentry.init({
     // Ignore network errors from ad blockers
     if (error?.message?.includes('Failed to fetch')) {
       return null;
+    }
+
+    // Supabase error integration
+    // Check for common Supabase/Postgrest error properties
+    // Stricter check: must have code AND (details OR hint)
+    // We avoid checking message as generic errors have it
+    if (error && typeof error === 'object') {
+      if (error.code && (error.details || error.hint)) {
+        event.tags = {
+          ...event.tags,
+          'supabase.error_code': error.code,
+          'db.system': 'supabase'
+        };
+        event.extra = {
+          ...event.extra,
+          'supabase.details': error.details,
+          'supabase.hint': error.hint,
+          'supabase.message': error.message
+        };
+      }
     }
     
     return event;
