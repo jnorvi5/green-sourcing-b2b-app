@@ -28,7 +28,7 @@
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.39.8",
+    "@supabase/supabase-js": "^2.89.0",
     "@types/fast-levenshtein": "^0.0.4",
     "@types/nodemailer": "^7.0.4",
     "autoprefixer": "^10.4.16",
