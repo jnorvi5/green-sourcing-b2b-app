@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
 
 // Dynamically import providers with error boundaries
-const PostHogProvider = dynamic(
-  () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
-  { ssr: false }
-);
+// const PostHogProvider = dynamic(
+//   () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
+//   { ssr: false }
+// );
 
-const IntercomProvider = dynamic(
-  () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
-  { ssr: false }
-);
+// const IntercomProvider = dynamic(
+//   () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
+//   { ssr: false }
+// );
 
-const GoogleAnalytics = dynamic(
-  () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
-  { ssr: false }
-);
+// const GoogleAnalytics = dynamic(
+//   () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
+//   { ssr: false }
+// );
 
-const AgentChat = dynamic(
-  () => import("@/components/AgentChat").catch(() => ({ default: () => null })),
-  { ssr: false }
-);
+// const AgentChat = dynamic(
+//   () => import("@/components/AgentChat").catch(() => ({ default: () => null })),
+//   { ssr: false }
+// );
 
 export const metadata: Metadata = {
   title: "GreenChainz - Sustainable Building Materials Marketplace",
@@ -60,15 +60,15 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
         {/* ✅ END COOKIEYES BANNER */}
-        <GoogleAnalytics />
-        <PostHogProvider>
+        {/* <GoogleAnalytics /> */}
+        {/* <PostHogProvider> */}
           <AuthProvider>
-            <IntercomProvider>
+            {/* <IntercomProvider> */}
               {children}
-            </IntercomProvider>
+            {/* </IntercomProvider> */}
           </AuthProvider>
-        </PostHogProvider>
-        <AgentChat />
+        {/* </PostHogProvider> */}
+        {/* <AgentChat /> */}
       </body>
     </html>
   );
