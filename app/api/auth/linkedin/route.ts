@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const clientId = process.env.LINKEDIN_CLIENT_ID;
   const callbackUrl = process.env.LINKEDIN_CALLBACK_URL;
 

@@ -16,7 +16,7 @@ describe('saveVerification', () => {
   let mockFrom: jest.Mock;
   let mockCreateClient: jest.Mock;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear all mocks
     jest.clearAllMocks();
 

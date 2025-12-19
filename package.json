@@ -69,6 +69,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@fullhuman/postcss-purgecss": "^7.0.2",
     "@playwright/test": "^1.57.0",
     "@types/bcryptjs": "^2.4.6",

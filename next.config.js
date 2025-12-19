@@ -18,10 +18,10 @@ const cspHeader = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true, // Changed to true for MVP
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true, // Changed to true for MVP
+    ignoreBuildErrors: false,
   },
   experimental: {
     instrumentationHook: true,

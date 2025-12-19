@@ -9,7 +9,7 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   preset: 'ts-jest',
   setupFilesAfterEnv: ['<rootDir>/test-env.js'],
-  testEnvironment: 'node', // Use node for API route testing
+  testEnvironment: 'node', testPathIgnorePatterns: ['<rootDir>/tests/', '<rootDir>/infrastructure/', '<rootDir>/node_modules/'], // Use node for API route testing
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',

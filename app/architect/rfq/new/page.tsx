@@ -29,10 +29,8 @@ function RFQFormContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [projectData, setProjectData] = useState<any>(null);
 
   // Get product_id from URL if present
   const productId = searchParams?.get("product_id");
