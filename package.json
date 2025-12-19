@@ -30,6 +30,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.89.0",
     "@types/fast-levenshtein": "^0.0.4",
+    "@types/mongodb": "^4.0.6",
     "@types/nodemailer": "^7.0.4",
     "autoprefixer": "^10.4.16",
     "axios": "^1.13.2",
@@ -90,6 +91,7 @@
     "eslint-config-next": "14.0.4",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
