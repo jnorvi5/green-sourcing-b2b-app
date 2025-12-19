@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin } from '@/lib/supabase/admin';
-import { generateToken } from '@/lib/auth/jwt';
 import { isCorporateEmail, getTrustScoreForEmail } from '@/lib/auth/corporate-domains';
 import { z } from 'zod';
 // import { Resend } from 'resend';

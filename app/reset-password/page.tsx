@@ -21,7 +21,7 @@ export default function ResetPasswordPage() {
     const supabase = createClient();
 
     // Check if user came from password reset email
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange(async (event, _session) => {
       if (event === 'PASSWORD_RECOVERY') {
         // User is valid, show reset form
       }
