@@ -6,9 +6,11 @@ import json
 import re
 import argparse
 import sys
+import os
+from datetime import datetime, timezone
+from pymongo import MongoClient
 
 BASE_URL = "https://www.environdec.com/library"
-OUTPUT_FILE = "epd_raw_data.json"
 
 def get_soup(url):
     try:
@@ -91,10 +93,16 @@ def main():
     parser.add_argument("--start-page", type=int, default=1, help="Start page number")
     args = parser.parse_args()
 
-    all_data = []
+    # MongoDB connection
+    mongo_conn_str = os.getenv("MONGO_CONNECTION_STRING", "YOUR_MONGO_CONNECTION_STRING")
+    client = MongoClient(mongo_conn_str)
+    db = client.greenchainz_raw_lake
+
     page = args.start_page
+    total_items = 0
 
     print(f"Starting scraper at {BASE_URL}")
+    print(f"Targeting MongoDB")
 
     while True:
         if args.limit and (page - args.start_page + 1) > args.limit:
@@ -113,15 +121,21 @@ def main():
             print("No data found on this page. Stopping.")
             break
 
-        all_data.extend(page_data)
-        print(f"Found {len(page_data)} items on page {page}")
+        # Insert into MongoDB
+        for item in page_data:
+            doc = {
+                "source": "epd_intl",
+                "data": item,
+                "timestamp": datetime.now(timezone.utc)
+            }
+            try:
+                db.raw_products.insert_one(doc)
+            except Exception as e:
+                 print(f"Error inserting document: {e}")
 
-        # Check for next page button
-        # The next button usually has an SVG arrow and points to the next page number
-        # Or we can just check if we found items. If the page is empty, we stop.
-        # But let's check the next button to be safe.
-        # <a class="createPaginationComponent-module__92AOpa__cell" href="/library?page=2">...</a>
-        # Actually checking for items is robust enough for now.
+        count = len(page_data)
+        total_items += count
+        print(f"Inserted {count} items from page {page}")
 
         # Random delay
         sleep_time = random.uniform(2, 5)
@@ -130,12 +144,7 @@ def main():
 
         page += 1
 
-    print(f"Scraping complete. Total items: {len(all_data)}")
-
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(all_data, f, indent=2, ensure_ascii=False)
-
-    print(f"Data saved to {OUTPUT_FILE}")
+    print(f"Scraping complete. Total items inserted: {total_items}")
 
 if __name__ == "__main__":
     main()
