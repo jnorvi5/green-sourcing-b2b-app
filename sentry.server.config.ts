@@ -5,10 +5,10 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://7eaf7cc60234118db714b516e9228e49@o4510491318484992.ingest.us.sentry.io/4510491318681600",
+  dsn: process.env['NEXT_PUBLIC_SENTRY_DSN'] || "https://7eaf7cc60234118db714b516e9228e49@o4510491318484992.ingest.us.sentry.io/4510491318681600",
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  tracesSampleRate: 1.0,
 
   // Enable logs to be sent to Sentry
   enableLogs: true,
@@ -16,4 +16,33 @@ Sentry.init({
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
+
+  beforeSend(event, hint) {
+    // Filter out localhost errors (development environment)
+    if (process.env.NODE_ENV === 'development') {
+        return null;
+    }
+
+    const error = hint.originalException as any;
+
+    // Supabase error integration
+    // Stricter check: must have code AND (details OR hint)
+    if (error && typeof error === 'object') {
+      if (error.code && (error.details || error.hint)) {
+        event.tags = {
+          ...event.tags,
+          'supabase.error_code': error.code,
+          'db.system': 'supabase'
+        };
+        event.extra = {
+          ...event.extra,
+          'supabase.details': error.details,
+          'supabase.hint': error.hint,
+          'supabase.message': error.message
+        };
+      }
+    }
+
+    return event;
+  }
 });
