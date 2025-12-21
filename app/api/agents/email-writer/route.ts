@@ -15,56 +15,28 @@ export async function POST(request: NextRequest) {
         warning: 'Generated with static template (OpenAI API key missing)'
       });
     }
+    // Default mock response
+    let emailTemplate: any = {
+      subject: `GreenChainz - ${purpose}`,
+      body: `Hi [Name],
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified sustainable building materials.
 
-    const prompt = `Write a professional B2B email for GreenChainz:
-    Recipient: ${recipientType}
-    Purpose: ${purpose}
-    Context: ${context}
-
-    Instructions:
-    - Start your response exactly with "Subject: <Your Subject Here>"
-    - Then provide the email body.
-    - Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-    - Keep it concise and professional.
-    `;
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-    });
-
-    const generatedText = completion.choices[0]?.message?.content || '';
-
-    // Parse the generated text to extract subject and body
-    let subject = `GreenChainz - ${purpose}`;
-    let body = generatedText;
+${context}
 
     // Robustly extract the subject line
     const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
+We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
 
-    if (subjectMatch) {
-      subject = subjectMatch[1].trim();
-      // Remove the subject line (and any preceding label) from the body
-      body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-    }
+Would you be open to a 15-minute call this week?
 
     let emailTemplate = {
       subject,
       body,
+Best,
+Jerit Norville
+Founder, GreenChainz
+founder@greenchainz.com`,
       metadata: {
         generatedAt: new Date().toISOString(),
         recipientType,
