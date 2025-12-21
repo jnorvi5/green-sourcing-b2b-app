@@ -3,81 +3,39 @@ import OpenAI from 'openai';
 import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export async function POST(request: NextRequest) {
+  let recipientType = '';
+  let purpose = '';
+  let context = '';
+
   try {
-    const { recipientType, purpose, context } = await request.json();
+    const body = await request.json();
+    recipientType = body.recipientType;
+    purpose = body.purpose;
+    context = body.context;
 
     // Check if OpenAI API key is configured
-    if (!process.env.OPENAI_API_KEY) {
-      console.warn('OPENAI_API_KEY is not set. Returning static template.');
+    if (!process.env.OPENAI_API_KEY && !isAIEnabled) {
+      console.warn('No AI provider configured. Returning static template.');
       return NextResponse.json({
         success: true,
         email: getStaticTemplate(recipientType, purpose, context),
-        warning: 'Generated with static template (OpenAI API key missing)'
+        warning: 'Generated with static template (No AI provider configured)'
       });
     }
-    // Default mock response
+
+    // Default mock response structure
     let emailTemplate = {
       subject: `GreenChainz - ${purpose}`,
-      body: `Hi [Name],
-
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    const prompt = `Write a professional B2B email for GreenChainz:
-    Recipient: ${recipientType}
-    Purpose: ${purpose}
-    Context: ${context}
-
-    Instructions:
-    - Start your response exactly with "Subject: <Your Subject Here>"
-    - Then provide the email body.
-    - Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-    - Keep it concise and professional.
-    `;
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-    });
-
-    const generatedText = completion.choices[0]?.message?.content || '';
-
-    // Parse the generated text to extract subject and body
-    let subject = `GreenChainz - ${purpose}`;
-    let body = generatedText;
-
-    // Robustly extract the subject line (handling variations like "Subject:", "Subject Line:", etc if the model drifts, though instructions are explicit)
-    const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
-
-    if (subjectMatch) {
-      subject = subjectMatch[1].trim();
-      // Remove the subject line (and any preceding label) from the body
-      body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-    }
-
-    const emailTemplate = {
-      subject,
-      body,
+      body: `Hi [Name],\n\nThis is a placeholder body.\n\nBest,\nJerit`,
       metadata: {
         generatedAt: new Date().toISOString(),
         recipientType,
         purpose,
-        model: 'gpt-4'
         provider: 'mock'
       }
     };
 
+    // Try Azure OpenAI first if enabled
     if (isAIEnabled && azureOpenAI) {
       try {
         const prompt = `Write a professional B2B email for GreenChainz:
@@ -115,12 +73,12 @@ Subject: [subject line]
 
         const text = response.choices[0].message.content || "";
 
-        // Simple parsing logic similar to lib/azure/emailer.ts
+        // Simple parsing logic
         const lines = text.split('\n').filter(l => l.trim());
         const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
 
         let subject = emailTemplate.subject;
-        let body = emailTemplate.body;
+        let body = text;
 
         if (subjectLine) {
             subject = subjectLine.replace(/^subject:\s*/i, '').trim();
@@ -143,18 +101,89 @@ Subject: [subject line]
             }
         };
 
+        return NextResponse.json({ success: true, email: emailTemplate });
+
       } catch (aiError) {
-        console.error('Azure OpenAI generation failed, falling back to mock:', aiError);
-        // Fallback to mock is already set in emailTemplate
+        console.error('Azure OpenAI generation failed:', aiError);
+        // Fall through to standard OpenAI or static
       }
     }
 
-    return NextResponse.json({ success: true, email: emailTemplate });
+    // Fallback to standard OpenAI if Azure failed or not enabled, and API key exists
+    if (process.env.OPENAI_API_KEY) {
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+
+        const prompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}
+
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            temperature: 0.7,
+        });
+
+        const generatedText = completion.choices[0]?.message?.content || '';
+
+        // Parse the generated text to extract subject and body
+        let subject = `GreenChainz - ${purpose}`;
+        let body = generatedText;
+
+        // Robustly extract the subject line
+        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
+
+        if (subjectMatch) {
+            subject = subjectMatch[1].trim();
+            // Remove the subject line (and any preceding label) from the body
+            body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
+        }
+
+        emailTemplate = {
+            subject,
+            body,
+            metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                model: 'gpt-4',
+                provider: 'openai'
+            }
+        };
+
+        return NextResponse.json({ success: true, email: emailTemplate });
+    }
+
+    // Final fallback
+    return NextResponse.json({
+      success: true,
+      email: getStaticTemplate(recipientType, purpose, context),
+      warning: 'Generated with static template (AI generation failed or not configured)'
+    });
+
   } catch (error) {
     console.error('Email writer error:', error);
     // Fallback to static template on error
     return NextResponse.json({
-      success: true, // We still return success but with a fallback
+      success: true,
       email: getStaticTemplate(recipientType, purpose, context),
       warning: 'Generated with static template (API error)'
     });
