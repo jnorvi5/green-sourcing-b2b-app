@@ -151,12 +151,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert RFQ into database
+    // Note: project_id is not in the schema, using project_name/location for context
     const { data: rfq, error: rfqError } = await supabase
       .from('rfqs')
       .insert({
         architect_id: user.id,
         product_id: rfqData.product_id || null,
-        project_id: rfqData.project_id || null,
+        // project_id: rfqData.project_id || null, // Removed as column doesn't exist in schema
         project_name: rfqData.project_name,
         project_location: rfqData.project_location,
         material_specs: rfqData.material_specs,
