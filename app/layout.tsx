@@ -6,7 +6,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 
 // Dynamically import providers with error boundaries
 const PostHogProvider = dynamic(
-  () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
+  () => import("@/components/PostHogProvider").then(mod => mod.PostHogProvider).catch(() => ({ default: ({ children }: any) => children })),
   { ssr: false }
 );
 
