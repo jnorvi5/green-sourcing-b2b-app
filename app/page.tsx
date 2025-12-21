@@ -23,6 +23,13 @@ const HowItWorksSection = dynamic(
   }
 );
 
+const PluginDemoSection = dynamic(
+  () => import("@/components/home/PluginDemoSection"),
+  {
+    loading: () => <div className="py-24 bg-slate-950 min-h-[500px]" />,
+  }
+);
+
 const PricingSection = dynamic(
   () => import("@/components/home/PricingSection"),
   {
@@ -44,6 +51,7 @@ export default function HomePage() {
       <HeroSection />
       <StatsSection />
       <ProblemSolutionSection />
+      <PluginDemoSection />
       <HowItWorksSection />
       <TestimonialsSection />
       <PricingSection />
