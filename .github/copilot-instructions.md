@@ -16,17 +16,16 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 | Styling | Tailwind CSS + Shadcn UI | Utility-first CSS with accessible primitives |
 | State | Zustand | Lightweight client-side state management |
 
-### Hybrid Data Architecture
+### Data Architecture
 
 | Database | Purpose | Use Case |
 |----------|---------|----------|
-| **Supabase (PostgreSQL)** | Relational Source of Truth | Users, Auth, Orders, Payments, Suppliers, Certification Graph, RFQs. Strict RLS enabled. |
-| **MongoDB Atlas** | Flex Layer | Product specs, sustainability data attributes, EPD metadata (schemaless). Ideal for varying data structures. |
+| **Supabase (PostgreSQL)** | Single Source of Truth | Users, Auth, Orders, Payments, Suppliers, Products, EPD metadata, Certification data, RFQs. Uses JSONB columns for flexible schema data. Strict RLS enabled. |
 
-**Database Selection Rules:**
-- ✅ **Supabase**: User data, authentication, relationships, transactions, anything requiring strict consistency
-- ✅ **MongoDB**: Product specifications, EPD data, certification details, AI extraction results - anything with varying schemas
-- ✅ **Cross-Reference**: Store `mongo_profile_id` and `mongo_specs_id` in Supabase tables; store `supabase_product_id` in MongoDB documents
+**Database Rules:**
+- ✅ **Supabase**: All data storage - user data, authentication, relationships, transactions, product specifications, EPD data, certification details
+- ✅ **JSONB Columns**: Use PostgreSQL JSONB columns for flexible/varying schemas (product specs, EPD data, certifications)
+- ✅ **Type Safety**: All database operations use Zod validation and TypeScript types
 
 ### The "Brain" (AI & Intelligence)
 
@@ -68,7 +67,6 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 │   ├── supabase/             # Supabase client & queries
 │   │   ├── client.ts         # Browser client
 │   │   └── server.ts         # Server client
-│   ├── mongodb.ts            # MongoDB connection utility (exports connectMongoDB)
 │   ├── azure-ai.ts           # Azure OpenAI and Document Intelligence
 │   ├── azure/                # Azure utilities (emailer, etc.)
 │   ├── integrations/         # Third-party service integrations
@@ -306,7 +304,6 @@ Features:
 import { AzureDocumentIntelligence } from '@/lib/azure/document-intelligence';
 import { uploadToS3 } from '@/lib/aws/s3';
 import { createClient } from '@/lib/supabase/server';
-import connectMongoDB from '@/lib/mongodb';
 
 export async function uploadAndExtractCertificate(formData: FormData) {
   const file = formData.get('certificate') as File;
@@ -319,28 +316,32 @@ export async function uploadAndExtractCertificate(formData: FormData) {
   const documentIntelligence = new AzureDocumentIntelligence();
   const extractedData = await documentIntelligence.analyzeCertificate(s3Url);
   
-  // 3. Store extracted data in MongoDB (flexible schema)
-  const mongoDb = await connectMongoDB();
-  const mongoResult = await mongoDb.collection('certifications').insertOne({
-    supabase_supplier_id: supplierId,
-    s3_url: s3Url,
-    extracted_data: extractedData,
-    extraction_source: 'azure_document_intelligence',
-    extraction_date: new Date(),
-    confidence_score: extractedData.confidence,
-  });
-  
-  // 4. Update Supabase with reference
+  // 3. Store extracted data in Supabase (JSONB column for flexible schema)
   const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('certifications')
+    .insert({
+      supplier_id: supplierId,
+      s3_url: s3Url,
+      extracted_data: extractedData, // JSONB column
+      extraction_source: 'azure_document_intelligence',
+      extraction_date: new Date().toISOString(),
+      confidence_score: extractedData.confidence,
+    })
+    .select()
+    .single();
+  
+  if (error) throw error;
+  
+  // 4. Update supplier verification status
   await supabase
     .from('suppliers')
     .update({
-      mongo_certifications_id: mongoResult.insertedId.toString(),
       verification_status: 'in_review',
     })
     .eq('id', supplierId);
   
-  return { success: true, extractedData };
+  return { success: true, extractedData, certificationId: data.id };
 }
 ```
 
@@ -494,32 +495,39 @@ await supabase.from('products').insert({
 
 **RIGHT:**
 ```typescript
-// Store flexible data in MongoDB
-import connectMongoDB from '@/lib/mongodb';
+// Store flexible data in Supabase JSONB columns
+import { createClient } from '@/lib/supabase/server';
 
-const mongoDb = await connectMongoDB();
-const mongoProductSpecs = await mongoDb.collection('product_specs').insertOne({
-  supabase_product_id: productId,
-  epd_data: {
-    program_operator: 'EPD International',
-    pcr: 'UN CPC 412',
-    declared_unit: '1 kg',
-    gwp: {
-      a1_a3: 23.8,
-      a4: 1.2,
-      c1_c4: 0.8,
-      d: -5.2,
+const supabase = await createClient();
+const { data: product, error } = await supabase
+  .from('products')
+  .update({
+    epd_data: { // JSONB column for flexible schema
+      program_operator: 'EPD International',
+      pcr: 'UN CPC 412',
+      declared_unit: '1 kg',
+      gwp: {
+        a1_a3: 23.8,
+        a4: 1.2,
+        c1_c4: 0.8,
+        d: -5.2,
+      },
+      // Any additional fields the EPD contains...
     },
-    // Any additional fields the EPD contains...
-  },
-  certifications: [
-    { name: 'LEED v4', points: 4, category: 'Materials' },
-    { name: 'Cradle to Cradle', level: 'Gold' },
-  ],
-  custom_attributes: {
-    // Supplier-specific fields
-  },
-});
+    certifications: [ // Array column or JSONB
+      { name: 'LEED v4', points: 4, category: 'Materials' },
+      { name: 'Cradle to Cradle', level: 'Gold' },
+    ],
+    custom_attributes: { // JSONB column for supplier-specific fields
+      // Supplier-specific fields
+    },
+  })
+  .eq('id', productId)
+  .select()
+  .single();
+
+if (error) throw error;
+```
 
 // Store reference in Supabase
 const supabase = await createClient();
@@ -628,7 +636,7 @@ CREATE TABLE users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Suppliers Table (with MongoDB references)
+-- Suppliers Table
 CREATE TABLE suppliers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -644,15 +652,15 @@ CREATE TABLE suppliers (
   verified_by UUID REFERENCES users(id),
   verified_certifications TEXT[],
   
-  -- MongoDB references for flexible data
-  mongo_profile_id TEXT,           -- Extended company profile in MongoDB
-  mongo_certifications_id TEXT,    -- Certification documents & extracted data
+  -- Flexible data in JSONB columns
+  profile_data JSONB,              -- Extended company profile
+  certifications_data JSONB,       -- Certification documents & extracted data
   
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Products Table (with MongoDB references)
+-- Products Table
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   supplier_id UUID REFERENCES suppliers(id) ON DELETE CASCADE,
@@ -661,10 +669,11 @@ CREATE TABLE products (
   category TEXT NOT NULL,
   image_urls TEXT[],
   
-  -- MongoDB reference for flexible specs
-  mongo_specs_id TEXT,             -- Product specifications, EPD data in MongoDB
+  -- Flexible product specifications in JSONB columns
+  epd_data JSONB,                  -- EPD data with varying schema
+  specifications JSONB,            -- Product specifications
   
-  -- Searchable summary fields (synced from MongoDB)
+  -- Searchable summary fields (extracted from JSONB for filtering)
   certifications TEXT[],           -- e.g., ['LEED', 'Cradle to Cradle']
   gwp_a1_a3 DECIMAL,               -- Primary carbon metric for filtering
   
@@ -701,9 +710,9 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rfqs ENABLE ROW LEVEL SECURITY;
 ```
 
-### MongoDB Atlas - Flex Layer
+### Supabase Database Schema - Single Source of Truth
 
-**Note:** MongoDB schemas should follow this pattern when implemented. The flexible NoSQL structure allows for varying product specifications and EPD data formats.
+All data is stored in Supabase PostgreSQL with JSONB columns for flexible schemas:
 
 ```typescript
 // Example schema pattern for lib/validations/product-specs.ts
@@ -769,7 +778,13 @@ export const productSpecsSchema = z.object({
   updated_at: z.date(),
 });
 
+// These schemas validate JSONB data stored in Supabase
+// Use with Zod's .parse() or .safeParse() before inserting into database
 export type ProductSpecs = z.infer<typeof productSpecsSchema>;
+
+// Example usage:
+// const validated = productSpecsSchema.parse(rawData);
+// await supabase.from('products').update({ epd_data: validated.epd_data }).eq('id', productId);
 ```
 
 ---
@@ -788,8 +803,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...          # Server-side only, NEVER expose
 
 # ===========================================
 # MONGODB ATLAS (Flex Layer)
-# ===========================================
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
+# ========================================
 
 # ===========================================
 # AZURE AI FOUNDRY (The "Brain")

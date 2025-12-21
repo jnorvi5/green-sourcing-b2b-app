@@ -1,20 +1,29 @@
-/**
- * Supabase Browser Client
- * 
- * Client-side Supabase client for use in React client components.
- */
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient, type SupabaseClient } from "@supabase/ssr";
 
-/**
- * Creates a Supabase client configured for browser-side usage.
- * 
- * Use this client in React client components (components with 'use client' directive).
- * 
- * @returns Supabase client instance for browser-side usage
- */
-export function createClient() {
-  return createBrowserClient(
-    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-    process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
-  );
-}
+// Get environment variables at runtime
+const getSupabaseConfig = () => {
+  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  return { supabaseUrl, supabaseKey };
+};
+
+// Singleton client instance
+let clientInstance: SupabaseClient | null = null;
+
+export const createClient = () => {
+  // Return existing instance if available
+  if (clientInstance) {
+    return clientInstance;
+  }
+  
+  const { supabaseUrl, supabaseKey } = getSupabaseConfig();
+  
+  if (!supabaseUrl || !supabaseKey) {
+    // During build-time, throw a more descriptive error
+    // This should not be called during SSG as these pages are client-side
+    throw new Error('Missing Supabase environment variables. Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.');
+  }
+  
+  clientInstance = createBrowserClient(supabaseUrl, supabaseKey);
+  return clientInstance;
+};

@@ -1,48 +1,62 @@
-import Link from 'next/link';
+'use client';
+
+import Link from "next/link";
+import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-12 px-4 mt-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Company */}
-        <div>
-          <h3 className="text-white font-bold text-lg mb-4">GreenChainz</h3>
-          <p className="text-sm text-gray-400">Verified sustainable materials marketplace for architects and suppliers.</p>
+    <footer className="border-t border-border bg-muted/40 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-4 gap-8 mb-12">
+          <div className="col-span-1 md:col-span-1">
+            <Link href="/" className="text-xl font-bold tracking-tight text-foreground mb-4 block">
+              GreenChainz
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              The verified B2B marketplace for sustainable construction materials.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Platform</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/search" className="hover:text-primary transition-colors">Search Materials</Link></li>
+              <li><Link href="/suppliers" className="hover:text-primary transition-colors">Browse Suppliers</Link></li>
+              <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Company</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/careers" className="hover:text-primary transition-colors">Careers</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+            </ul>
+          </div>
         </div>
-
-        {/* Product */}
-        <div>
-          <h4 className="text-white font-semibold mb-4">Product</h4>
-          <ul className="space-y-2 text-sm">
-            <li><Link href="/search" className="hover:text-green-400 transition">Search Materials</Link></li>
-            <li><Link href="/supplier/pricing" className="hover:text-green-400 transition">Supplier Pricing</Link></li>
-            <li><Link href="/carbon-analysis" className="hover:text-green-400 transition">Carbon Analysis</Link></li>
-            <li><Link href="/data-licensing" className="hover:text-green-400 transition">Data Licensing</Link></li>
-          </ul>
+        
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} GreenChainz Inc. All rights reserved.
+          </p>
+          <div className="flex gap-4">
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <FaLinkedin size={20} />
+            </a>
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <FaTwitter size={20} />
+            </a>
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <FaGithub size={20} />
+            </a>
+          </div>
         </div>
-
-        {/* Company */}
-        <div>
-          <h4 className="text-white font-semibold mb-4">Company</h4>
-          <ul className="space-y-2 text-sm">
-            <li><Link href="/about" className="hover:text-green-400 transition">About</Link></li>
-            <li><Link href="/contact" className="hover:text-green-400 transition">Contact</Link></li>
-            <li><a href="mailto:founder@greenchainz.com" className="hover:text-green-400 transition">founder@greenchainz.com</a></li>
-          </ul>
-        </div>
-
-        {/* Legal */}
-        <div>
-          <h4 className="text-white font-semibold mb-4">Legal</h4>
-          <ul className="space-y-2 text-sm">
-            <li><Link href="/privacy" className="hover:text-green-400 transition">Privacy Policy</Link></li>
-            <li><Link href="/terms" className="hover:text-green-400 transition">Terms of Service</Link></li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-        <p>&copy; 2025 GreenChainz. All rights reserved. | Launching Q1 2026</p>
       </div>
     </footer>
   );

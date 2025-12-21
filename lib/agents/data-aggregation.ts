@@ -35,7 +35,7 @@ export interface SustainabilityData {
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function callEC3API(query: string): Promise<any> {
+async function callEC3API(query: string): Promise<{ gwp: string; source: string; raw: unknown } | null> {
   const results = await searchEC3Materials(query, 1);
   if (results.length > 0) {
     const bestMatch = results[0];
@@ -48,9 +48,15 @@ async function callEC3API(query: string): Promise<any> {
   return null;
 }
 
-async function callEPDAPI(productId: string): Promise<any> {
+async function callEPDAPI(productId: string): Promise<{ certified: boolean; data: unknown } | null> {
+    const apiKey = process.env['EPD_API_KEY'];
+    if (!apiKey && process.env.NODE_ENV === 'production') {
+        console.warn('[DataAgent] EPD_API_KEY missing in production');
+        return null;
+    }
+
     const client = new EPDInternationalClient({
-        apiKey: process.env['EPD_API_KEY'] || 'mock-key',
+        apiKey: apiKey || 'mock-key',
     });
     
     try {
@@ -73,12 +79,12 @@ async function callEPDAPI(productId: string): Promise<any> {
     }
 }
 
-async function callFSCAPI(productId: string): Promise<any> {
-  return await checkFSCCertification(productId);
+async function callFSCAPI(productId: string): Promise<{ certified?: boolean } | null> {
+  return await checkFSCCertification(productId) as { certified?: boolean } | null;
 }
 
-async function callAutodeskAPI(productId: string, category: string): Promise<any> {
-   const data = await getEmbodiedCarbon(productId, { category });
+async function callAutodeskAPI(productId: string, _category: string): Promise<{ carbon_score: string; gwp: number; unit: string } | null> {
+   const data = await getEmbodiedCarbon(productId);
    if (data) {
      return {
          carbon_score: data.gwp < 10 ? 'A' : (data.gwp < 50 ? 'B' : 'C'),
@@ -101,7 +107,7 @@ export async function fetchSustainabilityData(productId: string, materialType: s
   // 1. Check cache
   const cacheKey = `product:${productId}:sustainability:flat`;
   try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis.get(cacheKey) as { timestamp?: number; data?: SustainabilityData } | null;
       if (cached && cached.timestamp && (Date.now() - cached.timestamp < 86400000)) {
         console.log(`[DataAgent] Cache hit for ${productId}`);
         return cached.data as SustainabilityData;

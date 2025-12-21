@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 // Temporary local implementation to avoid a missing module error for

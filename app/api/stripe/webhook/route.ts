@@ -11,6 +11,10 @@ import {
   handlePaymentFailed,
   handleSubscriptionDeleted,
   handleSubscriptionUpdated,
+  handleInvoiceFinalized,
+  handleInvoicePaymentSucceeded,
+  handlePaymentMethodAttached,
+  handleTrialWillEnd,
 } from '@/lib/stripe/webhooks';
 import Stripe from 'stripe';
 
@@ -58,6 +62,22 @@ export async function POST(request: NextRequest) {
 
       case 'customer.subscription.updated':
         await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'invoice.finalized':
+        await handleInvoiceFinalized(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'payment_method.attached':
+        await handlePaymentMethodAttached(event.data.object as Stripe.PaymentMethod);
+        break;
+
+      case 'customer.subscription.trial_will_end':
+        await handleTrialWillEnd(event.data.object as Stripe.Subscription);
         break;
 
       default:

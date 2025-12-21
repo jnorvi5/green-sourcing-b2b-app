@@ -1,74 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { generateToken } from '@/lib/auth/jwt';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const email = body.email?.trim();
-    const password = body.password;
+    const { email, password } = await req.json();
 
     if (!email || !password) {
-      console.log('[AUTH] Missing credentials');
-      return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
-    const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-    const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+    // 1. Find user
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
 
-    if (!supabaseUrl || !supabaseKey) {
-      console.log('[AUTH] Missing env');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    if (error || !user) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    console.log('[AUTH] Attempt for:', email);
+    // 2. Validate password
+    // If user is OAuth only (no password_hash), this will fail correctly or we handle it.
+    if (!user.password_hash) {
+       return NextResponse.json({ error: 'Please login with LinkedIn' }, { status: 400 });
+    }
 
-    const tokenUrl = `${supabaseUrl}/auth/v1/token`;
-    const authBody = {
-      email,
-      password,
-      grant_type: 'password',
-    };
+    const isValid = await bcrypt.compare(password, user.password_hash);
+    if (!isValid) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
 
-    const response = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-      },
-      body: JSON.stringify(authBody),
+    // Check if email verified? Prompt implies strict security but MVP might allow login without it?
+    // Usually strict. Let's check verify-email flow.
+    // If not verified, maybe return 403?
+    if (!user.email_verified) {
+        return NextResponse.json({ error: 'Email not verified' }, { status: 403 });
+    }
+
+    // 3. Generate Token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role
     });
 
-    const data = await response.json();
-    console.log('[AUTH] Status:', response.status, 'Keys:', Object.keys(data).join(','));
+    // 4. Set HttpOnly Cookie
+    const response = NextResponse.json({
+      userId: user.id,
+      email: user.email,
+      accountType: user.role,
+      token // Return token in body as well for client convenience (though cookie is safer)
+    });
 
-    // Log the actual error message
-    if (data.msg) console.log('[AUTH] Message:', data.msg);
-    if (data.error_code) console.log('[AUTH] Error code:', data.error_code);
-    if (data.code) console.log('[AUTH] Code:', data.code);
-    if (data.error) console.log('[AUTH] Error field:', data.error);
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
 
-    // Check for success
-    if (data.access_token) {
-      console.log('[AUTH] SUCCESS');
-      return NextResponse.json({
-        token: data.access_token,
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          user_type: 'architect',
-        },
-      });
-    }
+    return response;
 
-    // Handle error response
-    const errorMsg = data.msg || data.error || data.error_code || 'Authentication failed';
-    console.log('[AUTH] FAILED:', errorMsg);
-    return NextResponse.json(
-      { error: errorMsg, details: data },
-      { status: 401 }
-    );
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    console.log('[AUTH] EXCEPTION:', msg.substring(0, 80));
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error('Login error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

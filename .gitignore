@@ -75,3 +75,17 @@ local.settings.json
 
 # Sentry Config File
 .env.sentry-build-plugin
+scripts/debug_connection.ts
+scripts/guess_deployment.ts
+scripts/guess_deployment_2.ts
+scripts/guess_deployment.ts
+scripts/guess_deployment_2.ts
+scripts/*.csv
+scripts/*.json
+
+# Generated Junk
+*.txt
+main
+debug_output
+tsc_errors.txt
+build_errors.txt

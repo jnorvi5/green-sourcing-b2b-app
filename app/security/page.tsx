@@ -1,3 +1,5 @@
+'use client';
+
 export default function SecurityPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">

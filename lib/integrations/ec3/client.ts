@@ -82,7 +82,12 @@ export async function searchEC3Materials(
   limit: number = 5
 ): Promise<EC3Material[]> {
   const token = await getAccessToken();
-  if (!token) return [];
+
+  // Return mock data if credentials are missing
+  if (!token) {
+    console.log('[EC3] Using mock data');
+    return getMockMaterials(query, limit);
+  }
 
   try {
     // Note: This is a simplified search endpoint. Real EC3 API has complex filtering.
@@ -105,24 +110,67 @@ export async function searchEC3Materials(
     
     // Map response to simplified structure
     // Note: Adjust mapping based on actual EC3 API response structure
-    return (data.results || []).map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description || '',
-      category: item.category?.name || 'Unknown',
-      gwp: {
-        value: item.gwp?.value || 0,
-        unit: item.gwp?.unit || 'kgCO2e'
-      },
-      manufacturer: {
-        name: item.manufacturer?.name || 'Unknown',
-        country: item.manufacturer?.address?.country || 'Unknown'
-      },
-      epd_url: item.epd_url
-    }));
+    return (data.results || []).map((item: Record<string, unknown>) => {
+      const category = item['category'] as Record<string, unknown> | undefined;
+      const gwp = item['gwp'] as Record<string, unknown> | undefined;
+      const manufacturer = item['manufacturer'] as Record<string, unknown> | undefined;
+      const address = manufacturer?.['address'] as Record<string, unknown> | undefined;
+      
+      return {
+        id: item['id'],
+        name: item['name'],
+        description: item['description'] || '',
+        category: (category?.['name'] as string) || 'Unknown',
+        gwp: {
+          value: (gwp?.['value'] as number) || 0,
+          unit: (gwp?.['unit'] as string) || 'kgCO2e'
+        },
+        manufacturer: {
+          name: (manufacturer?.['name'] as string) || 'Unknown',
+          country: (address?.['country'] as string) || 'Unknown'
+        },
+        epd_url: item['epd_url']
+      };
+    });
 
   } catch (error) {
     console.error('Error searching EC3:', error);
     return [];
   }
+}
+
+function getMockMaterials(query: string, limit: number): EC3Material[] {
+  const mockDb: EC3Material[] = [
+    {
+      id: 'ec3-1',
+      name: 'Low Carbon Concrete 3000psi',
+      description: 'High fly ash content concrete',
+      category: 'Concrete',
+      gwp: { value: 180, unit: 'kgCO2e' },
+      manufacturer: { name: 'EcoMix', country: 'USA' }
+    },
+    {
+      id: 'ec3-2',
+      name: 'Recycled Steel Rebar',
+      description: '90% recycled content',
+      category: 'Steel',
+      gwp: { value: 450, unit: 'kgCO2e' },
+      manufacturer: { name: 'GreenSteel Inc', country: 'USA' }
+    },
+    {
+      id: 'ec3-3',
+      name: 'FSC Birch Plywood',
+      description: 'Sustainably sourced plywood',
+      category: 'Wood',
+      gwp: { value: 95, unit: 'kgCO2e' },
+      manufacturer: { name: 'Nordic Wood', country: 'Sweden' }
+    }
+  ];
+
+  return mockDb
+    .filter(m =>
+      m.name.toLowerCase().includes(query.toLowerCase()) ||
+      m.category.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(0, limit);
 }
