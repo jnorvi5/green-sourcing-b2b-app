@@ -104,6 +104,8 @@ Subject: [subject line]
                 generatedAt: new Date().toISOString(),
                 recipientType,
                 purpose,
+                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
+                provider: 'azure-openai'
                 provider: 'azure-openai',
                 model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
@@ -119,10 +121,14 @@ Subject: [subject line]
   } catch (error) {
     console.error('Email writer error:', error);
     // Fallback to static template on error
+    // recipientType, purpose, context might not be available here depending on where error occurred
+    // but try-catch is around request.json() too? No, it's inside.
+    // If request.json() fails, we might not have the variables.
+    // But assuming they are extracted or undefined.
     const { recipientType, purpose, context } = await request.json().catch(() => ({ recipientType: 'unknown', purpose: 'unknown', context: '' }));
     return NextResponse.json({
       success: true, // We still return success but with a fallback
-      email: getStaticTemplate(recipientType, purpose, context),
+      email: getStaticTemplate('Unknown', 'Contact', 'Context unavailable due to error'),
       warning: 'Generated with static template (API error)'
     });
   }
