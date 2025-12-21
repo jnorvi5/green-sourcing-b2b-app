@@ -377,7 +377,7 @@ export default function SupplierRfqsPage() {
                   {/* Right: Action Button */}
                   <div className="flex-shrink-0">
                     <Link
-                      href={`/rfq/${rfq.id}`}
+                      href={`/supplier/rfqs/${rfq.id}`}
                       className="block px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-medium transition text-center whitespace-nowrap"
                     >
                       View Details →
