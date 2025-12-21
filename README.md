@@ -49,7 +49,7 @@
 | **Frontend**          | Vercel (Next.js/React)                 | Headless, API-first UI with automatic deployments from GitHub                                                                  |
 | **Backend**           | Supabase (PostgreSQL + Edge Functions) | Managed database (SQL for transactions) + instant REST/GraphQL APIs                                                            |
 | **Authentication**    | Supabase Auth + OAuth 2.0              | Multi-provider authentication (Google, LinkedIn, GitHub) with role-based access control                                        |
-| **Database Strategy** | Hybrid SQL + NoSQL                     | SQL (Supabase) for transactional data (users, orders); NoSQL (MongoDB/Supabase JSONB) for flexible product/sustainability data |
+| **Database Strategy** | Supabase (PostgreSQL)                  | SQL for transactional data (users, orders); JSONB columns for flexible product/sustainability data |
 | **Security & CDN**    | Cloudflare                             | DDoS protection, WAF, SSL/TLS, global CDN for performance                                                                      |
 | **Version Control**   | GitHub (Student Developer Pack)        | CI/CD pipeline via Vercel integration                                                                                          |
 

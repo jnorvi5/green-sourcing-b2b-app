@@ -41,7 +41,6 @@ Go to Vercel Dashboard → Settings → Environment Variables:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
 JWT_SECRET=your-random-secret-32-chars-min
 SESSION_SECRET=your-random-secret-32-chars-min
 ```
@@ -89,14 +88,6 @@ All accessible from `/admin/dashboard`:
 3. Copy URL and keys to Vercel env vars
 4. Done! Tables auto-created on first use
 
-### MongoDB (2 minutes)
-
-1. Go to [mongodb.com](https://cloud.mongodb.com)
-2. Create free cluster
-3. Create database user
-4. Whitelist IP: `0.0.0.0/0`
-5. Copy connection string to Vercel env vars
-
 ## 🔌 Optional Services
 
 ### Intercom (Customer Support)
@@ -142,8 +133,7 @@ railway up
 
 **What Runs Elsewhere:**
 
-- Supabase: Database + Auth
-- MongoDB Atlas: Product data
+- Supabase: Database + Auth + Product data
 - Railway/Render: Express backend (optional)
 - AWS S3: File storage
 
@@ -209,7 +199,6 @@ vercel logs --build
 
 - Verify environment variables
 - Check Supabase project is active
-- Ensure MongoDB IP whitelist includes `0.0.0.0/0`
 
 ## ✅ Post-Deploy Checklist
 
