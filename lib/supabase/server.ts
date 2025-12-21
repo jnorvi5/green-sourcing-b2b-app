@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { env } from "@/lib/env";
 
 // Chainable placeholder for build-time (returns null for queries)
 const createChainableResult = () => {
@@ -53,8 +54,8 @@ const createBuildTimeClient = () => {
 };
 
 export const createClient = async () => {
-  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-  const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   
   // During build time without env vars, return a placeholder client that won't throw
   // This allows static pages to be generated even without real credentials
@@ -64,6 +65,8 @@ export const createClient = async () => {
       console.warn('Supabase credentials not available - using placeholder for build');
       return createBuildTimeClient();
     }
+    // Ideally this code path is unreachable if strict validation in env.ts is on,
+    // but if we relaxed it or are in a weird state:
     throw new Error('Missing Supabase environment variables');
   }
   

@@ -10,11 +10,15 @@ build/
 .cache/
 frontend/dist/
 frontend/build/
+out/
+.next/
+.turbo/
 
-# Env
+# Environment Variables
 .env
 .env.local
 .env.*.local
+.env.sentry-build-plugin
 
 # OS
 .DS_Store
@@ -25,20 +29,33 @@ logs
 *.log
 logs/**
 
- 
 # IDE
-
 .idea/
+.vscode/
 *.swp
 *.swo
 *~
-
-# Build artifacts
-dist/
-build/
-out/
-.cache/
 *.tsbuildinfo
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Azure Functions
+local.settings.json
+
+# Vercel
+.vercel
 
 # Link checker cache
 .lycheecache
@@ -46,44 +63,12 @@ out/
 # Vite
 .vite/
 
-# Test coverage
-coverage/
-*.lcov
-.nyc_output/
-
-# Python
-__pycache__/
-
-# Build tools & deployment
-.vercel/
-.turbo/
-.next/
-
-\n# Python build artifacts\n__pycache__/\n.pytest_cache/
-# Python
-__pycache__/
-
-# Azure Functions
-local.settings.json
-.vercel
-
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-
-# Sentry Config File
-.env.sentry-build-plugin
+# Scripts & Generated Files
 scripts/debug_connection.ts
-scripts/guess_deployment.ts
-scripts/guess_deployment_2.ts
 scripts/guess_deployment.ts
 scripts/guess_deployment_2.ts
 scripts/*.csv
 scripts/*.json
-
-# Generated Junk
 *.txt
 main
 debug_output
