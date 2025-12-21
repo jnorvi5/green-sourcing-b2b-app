@@ -15,10 +15,6 @@ export async function POST(request: NextRequest) {
         warning: 'Generated with static template (OpenAI API key missing)'
       });
     }
-    // Default mock response
-    let emailTemplate = {
-      subject: `GreenChainz - ${purpose}`,
-      body: `Hi [Name],
 
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -66,14 +62,14 @@ export async function POST(request: NextRequest) {
       body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
     }
 
-    const emailTemplate = {
+    let emailTemplate = {
       subject,
       body,
       metadata: {
         generatedAt: new Date().toISOString(),
         recipientType,
         purpose,
-        model: 'gpt-4'
+        model: 'gpt-4',
         provider: 'mock'
       }
     };
@@ -119,9 +115,6 @@ Subject: [subject line]
         const lines = text.split('\n').filter(l => l.trim());
         const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
 
-        let subject = emailTemplate.subject;
-        let body = emailTemplate.body;
-
         if (subjectLine) {
             subject = subjectLine.replace(/^subject:\s*/i, '').trim();
             // Assuming body follows subject
@@ -139,6 +132,7 @@ Subject: [subject line]
                 generatedAt: new Date().toISOString(),
                 recipientType,
                 purpose,
+                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
                 provider: 'azure-openai'
             }
         };
@@ -153,9 +147,13 @@ Subject: [subject line]
   } catch (error) {
     console.error('Email writer error:', error);
     // Fallback to static template on error
+    // recipientType, purpose, context might not be available here depending on where error occurred
+    // but try-catch is around request.json() too? No, it's inside.
+    // If request.json() fails, we might not have the variables.
+    // But assuming they are extracted or undefined.
     return NextResponse.json({
       success: true, // We still return success but with a fallback
-      email: getStaticTemplate(recipientType, purpose, context),
+      email: getStaticTemplate('Unknown', 'Contact', 'Context unavailable due to error'),
       warning: 'Generated with static template (API error)'
     });
   }
