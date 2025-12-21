@@ -1,17 +1,20 @@
 import { createClient } from "@supabase/supabase-js";
+import { env } from "@/lib/env";
 
 // This client uses the Service Role Key to bypass RLS.
 // ONLY use this in server-side API routes (not in client components).
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Check if we have the necessary keys.
+// If we are in a build environment or client-side, these might be missing.
+const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  // We don't throw error immediately to avoid breaking build if envs are missing in some contexts
-  // but it will fail at runtime if used.
-  if (process.env.NODE_ENV === 'production') {
+  if (env.NODE_ENV === 'production') {
+    // In production runtime, this is critical.
     console.error('CRITICAL: Missing Supabase Admin keys in production.');
   } else {
+    // In dev/test/build, we warn but allow execution to proceed (client might use mocks).
     console.warn('Missing Supabase Service Role Key - Admin client will fail if used.');
   }
 }
