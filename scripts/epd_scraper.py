@@ -16,30 +16,36 @@ def get_soup(url):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
         response = requests.get(url, headers=headers, timeout=30)
-        response.raise_for_status()
-        return BeautifulSoup(response.content, "html.parser")
+
+        # If 404 or other error, return None but let caller handle it
+        if response.status_code != 200:
+            print(f"Status code {response.status_code} for {url}")
+            return None, response.text
+
+        return BeautifulSoup(response.content, "html.parser"), response.text
     except requests.exceptions.RequestException as e:
         print(f"Error fetching {url}: {e}")
-        return None
+        return None, None
 
-def scrape_page(soup):
+def scrape_page(soup, raw_html, page_url):
     results = []
 
     # The class names seem to be generated CSS modules, so we use regex partial matching
-    # Based on observation:
-    # Container: EPDLibraryResultItem-module__Ik26PG__container
-    # Title: EPDLibraryResultItem-module__Ik26PG__title
-    # Reg Number: EPDLibraryResultItem-module__Ik26PG__fullIdentificationNumber
-    # Download: EPDLibraryResultItem-module__Ik26PG__downloadLink
-    # Tags: SearchTag-module__2tpr8G__tag
-
     items = soup.find_all("div", class_=re.compile(r"EPDLibraryResultItem-module.*container"))
+
+    if not items:
+        # Fallback: Dump raw HTML if structure unknown or empty
+        print(f"⚠️ No items found on {page_url}. Dumping raw HTML not supported without DB.")
+        return []
 
     for item in items:
         try:
             # Extract Product Name
             title_tag = item.find("a", class_=re.compile(r"EPDLibraryResultItem-module.*title"))
             product_name = title_tag.get_text(strip=True) if title_tag else "Unknown"
+
+            # Extract Detail Page URL (Unique ID)
+            detail_url = "https://www.environdec.com" + title_tag['href'] if title_tag and title_tag.has_attr('href') else None
 
             # Extract Registration Number
             reg_tag = item.find("div", class_=re.compile(r"EPDLibraryResultItem-module.*fullIdentificationNumber"))
@@ -50,33 +56,17 @@ def scrape_page(soup):
             pdf_url = download_tag['href'] if download_tag and download_tag.has_attr('href') else None
 
             # Extract Manufacturer
-            # The manufacturer is usually the second tag in the footer
-            # Footer structure:
-            # <div class="...tags">
-            #   <div class="...tag">Category</div>
-            #   <div class="...tag">Manufacturer</div>
-            #   <div class="...tag">Location</div>
-            #   <div class="...tag">Type</div>
-            # </div>
             manufacturer = "Unknown"
             footer_tags = item.find_all("div", class_=re.compile(r"SearchTag-module.*tag"))
-
-            # Heuristic: Manufacturer is usually the 2nd item (index 1)
-            # But sometimes fields might be missing.
-            # Usually: Category, Manufacturer, Location, Type.
-            # We can try to guess based on content if needed, but index 1 is a good start.
             if len(footer_tags) >= 2:
                 manufacturer = footer_tags[1].get_text(strip=True)
-            elif len(footer_tags) > 0:
-                # Fallback: just take the first one if only one exists? Or maybe it's the category.
-                # Let's keep it as Unknown if unsure to avoid bad data.
-                pass
 
             results.append({
                 "manufacturer_name": manufacturer,
                 "product_name": product_name,
                 "registration_number": reg_number,
-                "pdf_download_url": pdf_url
+                "pdf_download_url": pdf_url,
+                "source_page": page_url
             })
 
         except Exception as e:
@@ -104,27 +94,21 @@ def main():
         url = f"{BASE_URL}?page={page}"
         print(f"Scraping page {page}...")
 
-        soup = get_soup(url)
+        soup, raw_html = get_soup(url)
         if not soup:
             break
 
-        page_data = scrape_page(soup)
+        page_data = scrape_page(soup, raw_html, url)
+
         if not page_data:
-            print("No data found on this page. Stopping.")
+            print("No parsed items found on this page. Stopping.")
             break
-
-        all_data.extend(page_data)
-        print(f"Found {len(page_data)} items on page {page}")
-
-        # Check for next page button
-        # The next button usually has an SVG arrow and points to the next page number
-        # Or we can just check if we found items. If the page is empty, we stop.
-        # But let's check the next button to be safe.
-        # <a class="createPaginationComponent-module__92AOpa__cell" href="/library?page=2">...</a>
-        # Actually checking for items is robust enough for now.
+        else:
+            print(f"Found {len(page_data)} items on page {page}")
+            all_data.extend(page_data)
 
         # Random delay
-        sleep_time = random.uniform(2, 5)
+        sleep_time = random.uniform(1.0, 3.0)
         print(f"Sleeping for {sleep_time:.2f} seconds...")
         time.sleep(sleep_time)
 
