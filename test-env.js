@@ -1,12 +1,21 @@
+// Mock environment variables for tests
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://mock.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'mock-anon-key';
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock-service-key';
+process.env.NODE_ENV = 'test';
+// Optional: extend Jest matchers
+// import '@testing-library/jest-dom';
+
+// Mock IntersectionObserver if needed (often required for some UI libraries)
+if (typeof window !== 'undefined') {
+  global.IntersectionObserver = class IntersectionObserver {
+    constructor(cb, options) {}
+    observe() { return null; }
+    disconnect() { return null; }
+    unobserve() { return null; }
+  };
+}
 // test-env.js
-require('dotenv').config({ path: '.env.local' });
-
-console.log('Environment Variables Check:');
-console.log('============================');
-console.log('NEXT_PUBLIC_SUPABASE_URL exists?', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists?', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-console.log('AWS_BUCKET_NAME exists?', !!process.env.AWS_BUCKET_NAME);
-console.log('RESEND_API_KEY exists?', !!process.env.RESEND_API_KEY);
-console.log('NEXT_PUBLIC_INTERCOM_APP_ID exists?', !!process.env.NEXT_PUBLIC_INTERCOM_APP_ID);
-
-console.log('\n✅ Environment check complete (MongoDB removed)');
+// Mock global variables or setups needed for tests
+global.TextEncoder = require('util').TextEncoder;
+global.TextDecoder = require('util').TextDecoder;

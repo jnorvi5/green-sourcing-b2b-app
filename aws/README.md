@@ -30,13 +30,13 @@ This directory contains AWS infrastructure configuration for the GreenChainz B2B
 │           │                   │                   │                 │        │
 │           ▼                   ▼                   ▼                 ▼        │
 │  ┌─────────────────────────────────────┐  ┌─────────────────┐  ┌──────────┐ │
-│  │         MongoDB Atlas               │  │  S3: Backups    │  │ SNS/CW   │ │
-│  │  (ec3_materials, epd_products)      │  │  (→ Glacier)    │  │ Alerts   │ │
+│  │         Supabase PostgreSQL         │  │  S3: Backups    │  │ SNS/CW   │ │
+│  │  (All data including products/EPDs) │  │  (→ Glacier)    │  │ Alerts   │ │
 │  └─────────────────────────────────────┘  └─────────────────┘  └──────────┘ │
 │                                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                        Secrets Manager                               │    │
-│  │  EC3_API_KEY | EPD_API_KEY | MONGODB_URI | SUPABASE_ACCESS_TOKEN   │    │
+│  │  EC3_API_KEY | EPD_API_KEY | SUPABASE_ACCESS_TOKEN                  │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
@@ -102,7 +102,6 @@ terraform init
 terraform plan \
   -var="ec3_api_key=$EC3_API_KEY" \
   -var="epd_api_key=$EPD_API_KEY" \
-  -var="mongodb_uri=$MONGODB_URI" \
   -var="supabase_access_token=$SUPABASE_ACCESS_TOKEN" \
   -var="supabase_project_ref=$SUPABASE_PROJECT_REF"
 

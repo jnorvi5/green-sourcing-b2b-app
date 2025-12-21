@@ -16,7 +16,7 @@ import {
   generateArchitectWelcomeEmail,
   generateSupplierFollowUpDay2Email,
   generateSupplierFollowUpDay7Email,
-} from '@/lib/email/templates';
+} from '@/lib/email/templates/general';
 
 // Force dynamic rendering (no static generation)
 export const dynamic = 'force-dynamic';

@@ -24,7 +24,7 @@ export default function HeroSection() {
         <div className="flex justify-center mb-8 relative z-10">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-sm">
             <span className="text-emerald-400 text-sm font-medium">
-              ● Launching Q1 2026
+              ● New: Revit Plugin Available
             </span>
           </div>
         </div>
@@ -46,38 +46,34 @@ export default function HeroSection() {
         {/* Main Headline */}
         <h1 className="text-center mb-6">
           <span className="block text-5xl md:text-7xl font-bold text-white mb-4">
-            Find Verified
+            Sustainable materials,
           </span>
           <span className="block text-5xl md:text-7xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            Green Suppliers
-          </span>
-          <span className="block text-4xl md:text-5xl font-bold text-slate-400 mt-4">
-            in 10 minutes
+            directly in Revit
           </span>
         </h1>
 
         {/* Subheadline */}
         <p className="text-center text-xl text-slate-300 max-w-3xl mx-auto mb-12">
-          The B2B marketplace where architects discover certified sustainable
-          material suppliers.{" "}
+          AI-powered carbon audits + verified supplier marketplace.{" "}
           <span className="text-emerald-400 font-semibold">
-            No PDFs. No greenwashing. Just verified data.
+            Design greener, faster.
           </span>
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 relative z-10">
           <Link
-            href="/search"
+            href="/download-plugin"
             className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-2xl hover:shadow-emerald-500/30 transition-all hover:scale-105"
           >
-            Search Suppliers →
+            Download Plugin
           </Link>
           <Link
-            href="/signup?type=supplier"
+            href="/search"
             className="px-8 py-4 bg-slate-800/50 text-white rounded-xl font-semibold border border-slate-700 hover:border-emerald-500/50 transition-all"
           >
-            I&apos;m a Supplier
+            Browse Materials
           </Link>
         </div>
 

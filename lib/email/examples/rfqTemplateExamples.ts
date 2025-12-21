@@ -5,7 +5,7 @@
  * These examples can be used for testing or as reference implementations.
  */
 
-import { rfqMatchEmail, newQuoteEmail, quoteAcceptedEmail } from '../rfqTemplates';
+import { rfqMatchEmail, newQuoteEmail, quoteAcceptedEmail } from '../templates/rfq';
 
 // =============================================================================
 // Example 1: Supplier RFQ Match Notification

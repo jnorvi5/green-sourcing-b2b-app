@@ -33,9 +33,6 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
-# MongoDB
-MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/greenchainz
-
 # Authentication
 JWT_SECRET=your-super-secret-jwt-key-min-32-chars
 SESSION_SECRET=your-session-secret-min-32-chars
@@ -129,8 +126,7 @@ Deploy everything through Next.js on Vercel:
 - **Vercel**: Next.js frontend + admin
 - **Railway**: Express API
 - **AWS Lambda**: Background jobs (EPD sync, matching)
-- **Supabase**: Database + Auth
-- **MongoDB Atlas**: Product data
+- **Supabase**: Database + Auth + Product data
 
 **Pros:** Scalable, separation of concerns
 **Cons:** More complex, higher cost
@@ -207,7 +203,6 @@ app.use(
 
 ```bash
 # Add individual secrets
-vercel env add MONGODB_URI production
 vercel env add JWT_SECRET production
 
 # Pull secrets for local development
