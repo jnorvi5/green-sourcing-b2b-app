@@ -1,114 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-    sendEmail,
-    generateWelcomeEmail,
-    generateRfqNotificationEmail,
-    generateQuoteReceivedEmail,
-    generateCarbonReportEmail,
-} from '../../../../lib/mailerlite';
+import { sendEmail, EmailTemplateType } from '../../../../lib/email/emailService';
 
-// Email data types for different email types - match the function signatures in mailerlite.ts
-interface WelcomeEmailData {
-    name: string;
-    email: string;
-    role: 'buyer' | 'supplier';
-    company?: string;
-}
-
-interface RfqNotificationData {
-    supplierName: string;
-    rfqNumber: string;
-    productName: string;
-    quantity: number;
-    unit: string;
-    buyerCompany: string;
-    project: string;
-    deliveryLocation: string;
-    deliveryDate: string;
-    expiresIn: string;
-    viewUrl: string;
-}
-
-interface QuoteReceivedData {
-    buyerName: string;
-    rfqNumber: string;
-    productName: string;
-    supplierName: string;
-    unitPrice: number;
-    quantity: number;
-    unit: string;
-    leadTime: number;
-    validUntil: string;
-    viewUrl: string;
-}
-
-interface CarbonReportData {
-    userName: string;
-    reportPeriod: string;
-    totalCo2e: number;
-    comparison: number;
-    projectCount: number;
-    topCategory: string;
-    downloadUrl: string;
-}
-
-type EmailData = WelcomeEmailData | RfqNotificationData | QuoteReceivedData | CarbonReportData | Record<string, unknown>;
-
-interface SendEmailRequest {
-    type: string;
-    to: string;
-    data: EmailData;
-    subject?: string;
-    html?: string;
-}
+// =============================================================================
+// API Route Handler
+// =============================================================================
 
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json() as SendEmailRequest;
+  try {
+    const body = await request.json();
+    const { to, template, data, subject } = body;
 
-        if (!body.to) {
-            return NextResponse.json({ error: 'Missing recipient' }, { status: 400 });
-        }
-
-        let subject = '';
-        let html = '';
-
-        switch (body.type) {
-            case 'welcome':
-                subject = `Welcome to GreenChainz, ${(body.data as WelcomeEmailData).name}! 🌱`;
-                html = generateWelcomeEmail(body.data as WelcomeEmailData);
-                break;
-
-            case 'rfq_notification':
-                subject = `New RFQ: ${(body.data as RfqNotificationData).productName}`;
-                html = generateRfqNotificationEmail(body.data as RfqNotificationData);
-                break;
-
-            case 'quote_received':
-                subject = `Quote Received`;
-                html = generateQuoteReceivedEmail(body.data as QuoteReceivedData);
-                break;
-
-            case 'carbon_report':
-                subject = `Carbon Report`;
-                html = generateCarbonReportEmail(body.data as CarbonReportData);
-                break;
-
-            case 'custom':
-                subject = body.subject || 'Notification';
-                html = body.html || '<p>No content</p>';
-                break;
-
-            default:
-                return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
-        }
-
-        const result = await sendEmail({ to: body.to, subject, html });
-
-        return NextResponse.json({ success: true, id: result.messageId });
-
-    } catch (error) {
-        console.error('Email error:', error);
-        return NextResponse.json({ error: 'Server Error' }, { status: 500 });
+    // Validate required fields
+    if (!to || !template || !data) {
+      return NextResponse.json(
+        { error: 'Missing required fields: to, template, data' },
+        { status: 400 }
+      );
     }
+
+    // Validate template type (basic check)
+    const validTemplates: EmailTemplateType[] = [
+      'RFQ_RECEIVED',
+      'QUOTE_SUBMITTED',
+      'QUOTE_ACCEPTED',
+      'WELCOME_EMAIL',
+      'AUDIT_COMPLETE',
+    ];
+
+    if (!validTemplates.includes(template)) {
+      return NextResponse.json(
+        { error: `Invalid template. Must be one of: ${validTemplates.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // Send email
+    const result = await sendEmail(to, template as EmailTemplateType, data, { subject });
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to send email' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      messageId: result.messageId,
+      provider: result.provider,
+    });
+  } catch (error) {
+    console.error('Email API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
 }

@@ -27,7 +27,7 @@ import {
   generateSupplierRejectionEmail,
   generateAccountVerificationEmail,
   generatePasswordResetEmail,
-} from './templates';
+} from './templates/general';
 
 // =============================================================================
 // Supabase Service Role Client (for email logging)

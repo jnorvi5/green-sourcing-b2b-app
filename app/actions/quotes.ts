@@ -200,6 +200,17 @@ export async function acceptQuote(input: z.infer<typeof acceptQuoteSchema>): Pro
       console.error('Error logging email:', emailLogError);
     }
 
+    // Update RFQ status to 'closed'
+    const { error: rfqCloseError } = await supabase
+      .from('rfqs')
+      .update({ status: 'closed' })
+      .eq('id', validated.rfqId);
+
+    if (rfqCloseError) {
+      console.error('Error closing RFQ:', rfqCloseError);
+      // We don't fail the whole operation if closing the RFQ fails, as the quote is already accepted
+    }
+
     return {
       success: true,
     };

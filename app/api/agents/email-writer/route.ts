@@ -27,10 +27,33 @@ export async function POST(request: NextRequest) {
     let emailTemplate = {
       subject: `GreenChainz - ${purpose}`,
       body: `Hi [Name],\n\nThis is a placeholder body.\n\nBest,\nJerit`,
+    // Default mock response
+    let emailTemplate: any = {
+      subject: `GreenChainz - ${purpose}`,
+      body: `Hi [Name],
+
+I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified sustainable building materials.
+
+${context}
+
+    // Robustly extract the subject line
+    const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
+We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
+
+Would you be open to a 15-minute call this week?
+
+    let emailTemplate = {
+      subject,
+      body,
+Best,
+Jerit Norville
+Founder, GreenChainz
+founder@greenchainz.com`,
       metadata: {
         generatedAt: new Date().toISOString(),
         recipientType,
         purpose,
+        model: 'gpt-4',
         provider: 'mock'
       }
     };
@@ -38,7 +61,7 @@ export async function POST(request: NextRequest) {
     // Try Azure OpenAI first if enabled
     if (isAIEnabled && azureOpenAI) {
       try {
-        const prompt = `Write a professional B2B email for GreenChainz:
+        const azurePrompt = `Write a professional B2B email for GreenChainz:
 Recipient: ${recipientType}
 Purpose: ${purpose}
 Context: ${context}
@@ -64,7 +87,7 @@ Subject: [subject line]
             },
             {
               role: "user",
-              content: prompt
+              content: azurePrompt
             }
           ],
           temperature: 0.7,
@@ -97,7 +120,10 @@ Subject: [subject line]
                 generatedAt: new Date().toISOString(),
                 recipientType,
                 purpose,
+                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
                 provider: 'azure-openai'
+                provider: 'azure-openai',
+                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
         };
 
@@ -182,9 +208,16 @@ Instructions:
   } catch (error) {
     console.error('Email writer error:', error);
     // Fallback to static template on error
+    // recipientType, purpose, context might not be available here depending on where error occurred
+    // but try-catch is around request.json() too? No, it's inside.
+    // If request.json() fails, we might not have the variables.
+    // But assuming they are extracted or undefined.
+    const { recipientType, purpose, context } = await request.json().catch(() => ({ recipientType: 'unknown', purpose: 'unknown', context: '' }));
     return NextResponse.json({
       success: true,
       email: getStaticTemplate(recipientType, purpose, context),
+      success: true, // We still return success but with a fallback
+      email: getStaticTemplate('Unknown', 'Contact', 'Context unavailable due to error'),
       warning: 'Generated with static template (API error)'
     });
   }
