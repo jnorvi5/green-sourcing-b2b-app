@@ -6,6 +6,15 @@ export async function POST(request: NextRequest) {
   try {
     const { recipientType, purpose, context } = await request.json();
 
+    // Check if OpenAI API key is configured
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('OPENAI_API_KEY is not set. Returning static template.');
+      return NextResponse.json({
+        success: true,
+        email: getStaticTemplate(recipientType, purpose, context),
+        warning: 'Generated with static template (OpenAI API key missing)'
+      });
+    }
     // Default mock response
     let emailTemplate: any = {
       subject: `GreenChainz - ${purpose}`,
@@ -15,10 +24,15 @@ I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified su
 
 ${context}
 
+    // Robustly extract the subject line
+    const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
 We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
 
 Would you be open to a 15-minute call this week?
 
+    let emailTemplate = {
+      subject,
+      body,
 Best,
 Jerit Norville
 Founder, GreenChainz
@@ -27,13 +41,14 @@ founder@greenchainz.com`,
         generatedAt: new Date().toISOString(),
         recipientType,
         purpose,
+        model: 'gpt-4',
         provider: 'mock'
       }
     };
 
     if (isAIEnabled && azureOpenAI) {
       try {
-        const prompt = `Write a professional B2B email for GreenChainz:
+        const azurePrompt = `Write a professional B2B email for GreenChainz:
 Recipient: ${recipientType}
 Purpose: ${purpose}
 Context: ${context}
@@ -59,7 +74,7 @@ Subject: [subject line]
             },
             {
               role: "user",
-              content: prompt
+              content: azurePrompt
             }
           ],
           temperature: 0.7,
@@ -71,9 +86,6 @@ Subject: [subject line]
         // Simple parsing logic similar to lib/azure/emailer.ts
         const lines = text.split('\n').filter(l => l.trim());
         const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
-
-        let subject = emailTemplate.subject;
-        let body = emailTemplate.body;
 
         if (subjectLine) {
             subject = subjectLine.replace(/^subject:\s*/i, '').trim();
@@ -92,7 +104,8 @@ Subject: [subject line]
                 generatedAt: new Date().toISOString(),
                 recipientType,
                 purpose,
-                provider: 'azure-openai'
+                provider: 'azure-openai',
+                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
         };
 
@@ -106,6 +119,7 @@ Subject: [subject line]
   } catch (error) {
     console.error('Email writer error:', error);
     // Fallback to static template on error
+    const { recipientType, purpose, context } = await request.json().catch(() => ({ recipientType: 'unknown', purpose: 'unknown', context: '' }));
     return NextResponse.json({
       success: true, // We still return success but with a fallback
       email: getStaticTemplate(recipientType, purpose, context),
