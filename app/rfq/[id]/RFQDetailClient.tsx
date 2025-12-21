@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * RFQ Detail Client Component
  * 
@@ -21,7 +23,7 @@ interface Props {
   supplierName: string;
 }
 
-export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Props) {
+export default function RFQDetailClient({ rfq, existingQuote }: Props) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(!existingQuote);
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ export default function RFQDetailClient({ rfq, existingQuote, supplierName }: Pr
         const fileName = `${rfq.id}_${Date.now()}.${fileExt}`;
         const filePath = `quotes/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('quotes')
           .upload(filePath, pdfFile, {
             cacheControl: '3600',

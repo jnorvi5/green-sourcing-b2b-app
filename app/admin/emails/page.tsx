@@ -1,23 +1,26 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from "@/lib/supabase/server";
+
+// Force dynamic rendering - this page fetches data from Supabase
+export const dynamic = 'force-dynamic';
 
 export default async function AdminEmailsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Fetch email logs
   const { data: logs, error } = await supabase
-    .from('email_logs')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(100)
+    .from("email_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) {
-    console.error('Failed to fetch email logs:', error)
+    console.error("Failed to fetch email logs:", error);
   }
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Email Logs</h1>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           Error loading logs: {error.message}
@@ -47,22 +50,22 @@ export default async function AdminEmailsPage() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {logs && logs.length > 0 ? (
-              logs.map((log) => (
+              logs.map((log: { id: string; recipient: string; template_name?: string; status: string; sent_at?: string; error_message?: string }) => (
                 <tr key={log.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {log.recipient}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {log.template_name || 'N/A'}
+                    {log.template_name || "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        log.status === 'sent'
-                          ? 'bg-green-100 text-green-800'
-                          : log.status === 'failed'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                        log.status === "sent"
+                          ? "bg-green-100 text-green-800"
+                          : log.status === "failed"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
                       {log.status}
@@ -71,10 +74,10 @@ export default async function AdminEmailsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {log.sent_at
                       ? new Date(log.sent_at).toLocaleString()
-                      : 'Pending'}
+                      : "Pending"}
                   </td>
                   <td className="px-6 py-4 text-sm text-red-600">
-                    {log.error_message || '-'}
+                    {log.error_message || "-"}
                   </td>
                 </tr>
               ))
@@ -93,5 +96,5 @@ export default async function AdminEmailsPage() {
         Showing {logs?.length || 0} most recent emails
       </div>
     </div>
-  )
+  );
 }

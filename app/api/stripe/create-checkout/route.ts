@@ -13,9 +13,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as CreateCheckoutRequest;
     const { tier, success_url, cancel_url } = body;
 
-    if (!tier || !['standard', 'verified'].includes(tier)) {
+    // Map 'professional' -> 'architect_pro_monthly'
+    // Map 'supplier' -> 'supplier_monthly'
+    // Map legacy 'standard' -> ...
+
+    let priceIdKey: keyof typeof import('@/lib/stripe/config').STRIPE_PRICE_IDS | null = null;
+
+    if (tier === 'professional') priceIdKey = 'architect_pro_monthly';
+    else if (tier === 'supplier') priceIdKey = 'supplier_monthly';
+    else if (tier === 'standard') priceIdKey = 'standard_monthly'; // Fallback
+
+    if (!priceIdKey) {
       return NextResponse.json(
-        { error: 'Invalid tier. Must be "standard" or "verified".' },
+        { error: 'Invalid plan selected.' },
         { status: 400 }
       );
     }
@@ -34,19 +44,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get supplier
-    const { data: supplier, error: supplierError } = await supabase
-      .from('suppliers')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    // Determine the entity ID (User ID or Supplier ID)
+    // For Architects/Buyers, the subscription is often attached to the User or Organization.
+    // For Suppliers, it might be the Supplier profile.
+    let customerId = user.id; // Default to user ID
 
-    if (supplierError || !supplier) {
-      return NextResponse.json({ error: 'Supplier profile not found' }, { status: 404 });
+    // If it's a supplier plan, try to find the supplier profile
+    if (tier === 'supplier') {
+      const { data: supplier } = await supabase
+        .from('suppliers')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (supplier) customerId = supplier.id;
     }
 
     // Create Checkout Session
-    const { url, sessionId } = await createCheckoutSession(supplier.id, tier, {
+    // We pass the priceIdKey (identifier) and let the checkout helper resolve the actual Stripe Price ID
+    const { url, sessionId } = await createCheckoutSession(customerId, priceIdKey, {
       successUrl: success_url,
       cancelUrl: cancel_url,
     });

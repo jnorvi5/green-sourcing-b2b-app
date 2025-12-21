@@ -32,8 +32,9 @@ export const stripe = {
 
 // Stripe Price IDs (set these from your Stripe Dashboard)
 export const STRIPE_PRICE_IDS = {
-  standard_monthly: process.env['STRIPE_PRICE_STANDARD'] || 'price_standard_monthly',
-  verified_monthly: process.env['STRIPE_PRICE_VERIFIED'] || 'price_verified_monthly',
+  standard_monthly: process.env['STRIPE_PRICE_STANDARD'] || 'price_1Qf...', // Legacy/Fallback
+  architect_pro_monthly: process.env['STRIPE_PRICE_ARCHITECT_PRO'] || 'price_architect_pro_monthly',
+  supplier_monthly: process.env['STRIPE_PRICE_SUPPLIER'] || 'price_supplier_monthly',
 } as const;
 
 // Webhook signing secret

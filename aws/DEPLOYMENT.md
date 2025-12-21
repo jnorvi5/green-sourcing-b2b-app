@@ -64,7 +64,6 @@ Before deploying, gather the following secrets:
 |--------|-------------|--------------|
 | `EC3_API_KEY` | Building Transparency API key | [buildingtransparency.org](https://buildingtransparency.org) |
 | `EPD_INTERNATIONAL_API_KEY` | EPD International API key | [environdec.com](https://www.environdec.com/) |
-| `MONGODB_URI` | MongoDB Atlas connection string | [cloud.mongodb.com](https://cloud.mongodb.com) |
 | `SUPABASE_ACCESS_TOKEN` | Supabase access token | Supabase Dashboard → Settings → Access Tokens |
 | `SUPABASE_PROJECT_REF` | Supabase project reference | Supabase Dashboard URL (e.g., `abcd1234`) |
 
@@ -140,7 +139,6 @@ Create `terraform.tfvars` for your secrets:
 # terraform/aws/terraform.tfvars
 ec3_api_key           = "your-ec3-api-key"
 epd_api_key           = "your-epd-api-key"
-mongodb_uri           = "mongodb+srv://user:pass@cluster.mongodb.net/greenchainz"
 supabase_access_token = "your-supabase-token"
 supabase_project_ref  = "your-project-ref"
 ```
@@ -273,7 +271,6 @@ Add these secrets to your GitHub repository:
 | `AWS_DEPLOY_ROLE_ARN` | IAM role ARN for deployment |
 | `EC3_API_KEY` | EC3 API key |
 | `EPD_INTERNATIONAL_API_KEY` | EPD API key |
-| `MONGODB_URI` | MongoDB connection string |
 | `SUPABASE_ACCESS_TOKEN` | Supabase access token |
 | `SUPABASE_PROJECT_REF` | Supabase project reference |
 | `AWS_CLOUDFRONT_DISTRIBUTION_ID` | CloudFront distribution ID |

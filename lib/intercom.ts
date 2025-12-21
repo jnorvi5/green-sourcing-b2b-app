@@ -1,5 +1,23 @@
 // Intercom integration for customer support and engagement
 
+interface IntercomSettings {
+  app_id: string;
+  api_base: string;
+}
+
+interface IntercomQueue {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  q: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  c: (args: any) => void;
+}
+
+interface WindowWithIntercom extends Window {
+  Intercom?: ((command: string, ...args: unknown[]) => void) & IntercomQueue;
+  intercomSettings?: IntercomSettings;
+  attachEvent?: (event: string, callback: () => void) => void;
+}
+
 export function initIntercom() {
   if (typeof window === 'undefined') return;
   
@@ -9,23 +27,23 @@ export function initIntercom() {
     return;
   }
 
-  (window as any).intercomSettings = {
+  const w = window as WindowWithIntercom;
+  w.intercomSettings = {
     app_id: appId,
     api_base: 'https://api-iam.intercom.io'
   };
 
-  const w = window as any;
   const ic = w.Intercom;
   if (typeof ic === 'function') {
     ic('reattach_activator');
     ic('update', w.intercomSettings);
   } else {
     const d = document;
-    const i: any = function () {
-      i.c(arguments);
-    };
+    const i = function (...args: unknown[]) {
+      i.c(args);
+    } as ((command: string, ...args: unknown[]) => void) & IntercomQueue;
     i.q = [];
-    i.c = function (args: any) {
+    i.c = function (args: unknown) {
       i.q.push(args);
     };
     w.Intercom = i;
@@ -54,9 +72,11 @@ export function updateIntercomUser(user: {
   userType?: 'buyer' | 'supplier' | 'admin';
   company?: string;
 }) {
-  if (typeof window === 'undefined' || !(window as any).Intercom) return;
+  if (typeof window === 'undefined') return;
+  const w = window as WindowWithIntercom;
+  if (!w.Intercom) return;
 
-  (window as any).Intercom('update', {
+  w.Intercom('update', {
     email: user.email,
     name: user.name,
     user_id: user.userId,
@@ -66,11 +86,15 @@ export function updateIntercomUser(user: {
 }
 
 export function shutdownIntercom() {
-  if (typeof window === 'undefined' || !(window as any).Intercom) return;
-  (window as any).Intercom('shutdown');
+  if (typeof window === 'undefined') return;
+  const w = window as WindowWithIntercom;
+  if (!w.Intercom) return;
+  w.Intercom('shutdown');
 }
 
 export function showIntercom() {
-  if (typeof window === 'undefined' || !(window as any).Intercom) return;
-  (window as any).Intercom('show');
+  if (typeof window === 'undefined') return;
+  const w = window as WindowWithIntercom;
+  if (!w.Intercom) return;
+  w.Intercom('show');
 }

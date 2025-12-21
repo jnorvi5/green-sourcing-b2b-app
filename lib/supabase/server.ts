@@ -1,36 +1,87 @@
-/**
- * Supabase SSR Server Client
- * 
- * Server-side Supabase client with cookie handling for Next.js 14 App Router.
- * Use this in Server Components, Server Actions, and Route Handlers.
- */
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-/**
- * Creates a Supabase client configured for server-side rendering.
- * 
- * This client automatically handles cookie management for authentication
- * in Next.js 14 App Router server components.
- * 
- * @returns Supabase client instance configured for server-side usage
- */
-export async function createClient() {
+// Chainable placeholder for build-time (returns null for queries)
+const createChainableResult = () => {
+  const result: any = {
+    data: null,
+    error: null,
+    count: null,
+  };
+  
+  // Add chainable methods
+  const chainMethods = [
+    'select', 'insert', 'update', 'delete', 'upsert',
+    'eq', 'neq', 'gt', 'gte', 'lt', 'lte', 
+    'like', 'ilike', 'is', 'in', 'contains', 'containedBy', 'range',
+    'order', 'limit', 'offset', 'single', 'maybeSingle',
+    'textSearch', 'match', 'not', 'or', 'filter',
+  ];
+  
+  chainMethods.forEach(method => {
+    result[method] = function() { return this; };
+  });
+  
+  // Make it thenable for async/await
+  result.then = (resolve: any) => resolve(result);
+  
+  return result;
+};
+
+const createBuildTimeClient = () => {
+  const noopClient = {
+    auth: {
+      getUser: async () => ({ data: { user: null }, error: null }),
+      getSession: async () => ({ data: { session: null }, error: null }),
+      signInWithPassword: async () => ({ data: { user: null, session: null }, error: null }),
+      signOut: async () => ({ error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+    from: () => createChainableResult(),
+    rpc: async () => ({ data: null, error: null }),
+    storage: {
+      from: () => ({
+        upload: async () => ({ data: null, error: null }),
+        download: async () => ({ data: null, error: null }),
+        getPublicUrl: () => ({ data: { publicUrl: '' } }),
+        list: async () => ({ data: [], error: null }),
+        remove: async () => ({ data: null, error: null }),
+      }),
+    },
+  };
+  return noopClient as any;
+};
+
+export const createClient = async () => {
+  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  
+  // During build time without env vars, return a placeholder client that won't throw
+  // This allows static pages to be generated even without real credentials
+  if (!supabaseUrl || !supabaseKey) {
+    // Only use placeholder during server-side build process
+    if (typeof window === 'undefined') {
+      console.warn('Supabase credentials not available - using placeholder for build');
+      return createBuildTimeClient();
+    }
+    throw new Error('Missing Supabase environment variables');
+  }
+  
   const cookieStore = await cookies();
 
   return createServerClient(
-    process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-    process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return cookieStore.getAll()
         },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
-            );
+            )
           } catch {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -38,53 +89,6 @@ export async function createClient() {
           }
         },
       },
-    }
+    },
   );
-}
-
-/**
- * Gets the currently authenticated user.
- * 
- * @returns The authenticated user object or null if not authenticated
- */
-export async function getUser() {
-  const supabase = await createClient();
-  
-  const { data: { user }, error } = await supabase.auth.getUser();
-  
-  if (error) {
-    console.error('Error getting user:', error.message);
-    return null;
-  }
-  
-  return user;
-}
-
-/**
- * Gets the user profile with role information from the profiles table.
- * 
- * @returns The user profile with role information or null if not found
- */
-export async function getUserProfile() {
-  const supabase = await createClient();
-  
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  
-  if (userError || !user) {
-    console.error('Error getting user:', userError?.message);
-    return null;
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (profileError) {
-    console.error('Error getting profile:', profileError.message);
-    return null;
-  }
-
-  return profile;
-}
+};

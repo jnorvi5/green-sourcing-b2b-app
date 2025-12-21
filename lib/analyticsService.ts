@@ -205,15 +205,17 @@ export async function trackSearch(
 
     if (insertError) throw insertError;
 
-    // Update aggregated keywords
+    // Update aggregated keywords in parallel
     const keywords = event.searchQuery.toLowerCase().split(/\s+/).filter(k => k.length > 2);
     
-    for (const keyword of keywords) {
-      await client.rpc('upsert_search_keyword', {
-        p_keyword: keyword,
-        p_material_type: materialType,
-      });
-    }
+    await Promise.all(
+      keywords.map(keyword =>
+        client.rpc('upsert_search_keyword', {
+          p_keyword: keyword,
+          p_material_type: materialType,
+        })
+      )
+    );
 
     return { success: true };
   } catch (error) {
@@ -304,16 +306,18 @@ export async function trackRFQEvent(
       p_response_time: event.responseTimeHours,
     });
 
-    // Update certification performance for each certification
-    for (const cert of event.certifications) {
-      await client.rpc('update_certification_rfq_performance', {
-        p_certification_name: cert,
-        p_time_period: today,
-        p_status: event.status,
-        p_quoted_price: event.quotedPrice,
-        p_response_time: event.responseTimeHours,
-      });
-    }
+    // Update certification performance for each certification in parallel
+    await Promise.all(
+      event.certifications.map(cert =>
+        client.rpc('update_certification_rfq_performance', {
+          p_certification_name: cert,
+          p_time_period: today,
+          p_status: event.status,
+          p_quoted_price: event.quotedPrice,
+          p_response_time: event.responseTimeHours,
+        })
+      )
+    );
 
     return { success: true };
   } catch (error) {

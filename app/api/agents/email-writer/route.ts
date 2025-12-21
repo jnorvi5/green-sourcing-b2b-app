@@ -1,25 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export async function POST(request: NextRequest) {
   try {
     const { recipientType, purpose, context } = await request.json();
 
-    // Email generation logic
-    // TODO: Connect to OpenAI/Anthropic API when ready with this prompt:
-    // const prompt = `Write a professional B2B email for GreenChainz:
-    // Recipient: ${recipientType}
-    // Purpose: ${purpose}
-    // Context: ${context}
-    // 
-    // Template:
-    // - Subject line
-    // - Greeting
-    // - Value proposition
-    // - Call to action
-    // - Sign: Jerit Norville, Founder - founder@greenchainz.com`;
-
-    // For now, return structured template
-    const emailTemplate = {
+    // Default mock response
+    let emailTemplate = {
       subject: `GreenChainz - ${purpose}`,
       body: `Hi [Name],
 
@@ -39,9 +26,81 @@ founder@greenchainz.com
       metadata: {
         generatedAt: new Date().toISOString(),
         recipientType,
-        purpose
+        purpose,
+        provider: 'mock'
       }
     };
+
+    if (isAIEnabled && azureOpenAI) {
+      try {
+        const prompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}
+
+Template:
+- Subject line
+- Greeting
+- Value proposition
+- Call to action
+- Sign: Jerit Norville, Founder - founder@greenchainz.com
+
+Format:
+Subject: [subject line]
+
+[email body]`;
+
+        const response = await azureOpenAI.chat.completions.create({
+          model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are Jerit Norville, CEO of GreenChainz. Write direct, confident cold emails."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 500
+        });
+
+        const text = response.choices[0].message.content || "";
+
+        // Simple parsing logic similar to lib/azure/emailer.ts
+        const lines = text.split('\n').filter(l => l.trim());
+        const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
+
+        let subject = emailTemplate.subject;
+        let body = emailTemplate.body;
+
+        if (subjectLine) {
+            subject = subjectLine.replace(/^subject:\s*/i, '').trim();
+            // Assuming body follows subject
+            const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
+            body = lines.slice(bodyStart).join('\n').trim();
+        } else {
+            // Fallback if formatting is off, treat whole text as body
+            body = text.trim();
+        }
+
+        emailTemplate = {
+            subject,
+            body,
+            metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                provider: 'azure-openai'
+            }
+        };
+
+      } catch (aiError) {
+        console.error('Azure OpenAI generation failed, falling back to mock:', aiError);
+        // Fallback to mock is already set in emailTemplate
+      }
+    }
 
     return NextResponse.json({ success: true, email: emailTemplate });
   } catch (error) {

@@ -65,6 +65,60 @@ export function getStatusColor(status: string): string {
 }
 
 /**
+ * Calculate hours until deadline
+ */
+export function getHoursUntilDeadline(deadline: string | null): number | null {
+  if (!deadline) return null;
+  const now = new Date();
+  const deadlineDate = new Date(deadline);
+  const hoursUntil = (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+  return hoursUntil;
+}
+
+/**
+ * Get deadline urgency level based on hours remaining
+ * Returns: 'urgent' (< 24hrs), 'soon' (< 48hrs), 'normal' (> 48hrs)
+ */
+export function getDeadlineUrgency(deadline: string | null): 'urgent' | 'soon' | 'normal' {
+  const hoursUntil = getHoursUntilDeadline(deadline);
+  if (hoursUntil === null) return 'normal';
+  if (hoursUntil < 0) return 'urgent'; // Expired
+  if (hoursUntil < 24) return 'urgent';
+  if (hoursUntil < 48) return 'soon';
+  return 'normal';
+}
+
+/**
+ * Get deadline urgency color classes for Tailwind CSS
+ */
+export function getDeadlineUrgencyColor(deadline: string | null): string {
+  const urgency = getDeadlineUrgency(deadline);
+  switch (urgency) {
+    case 'urgent':
+      return 'text-red-500 bg-red-500/10 border-red-500/20';
+    case 'soon':
+      return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
+    case 'normal':
+      return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+  }
+}
+
+/**
+ * Get deadline urgency icon emoji
+ */
+export function getDeadlineUrgencyIcon(deadline: string | null): string {
+  const urgency = getDeadlineUrgency(deadline);
+  switch (urgency) {
+    case 'urgent':
+      return '🔴';
+    case 'soon':
+      return '🟡';
+    case 'normal':
+      return '🟢';
+  }
+}
+
+/**
  * Export quotes data to CSV format
  */
 export function exportQuotesToCSV(quotes: Array<{

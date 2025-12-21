@@ -1,3 +1,5 @@
+'use client';
+
 'use client'
 
 export const dynamic = 'force-dynamic'
@@ -64,7 +66,7 @@ interface DashboardStats {
 type StatusFilter = 'all' | 'pending' | 'responded' | 'closed'
 
 export default function ArchitectDashboardRFQ() {
-  const [user, setUser] = useState<{ id: string; email: string } | null>(null)
+  const [, setUser] = useState<{ id: string; email: string } | null>(null)
   const [profile, setProfile] = useState<{ full_name: string; role: string } | null>(null)
   const [rfqs, setRfqs] = useState<RFQWithQuotes[]>([])
   const [recentQuotes, setRecentQuotes] = useState<Quote[]>([])

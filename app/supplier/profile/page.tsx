@@ -1,3 +1,5 @@
+'use client';
+
 export default function SupplierProfilePage() {
   return (
     <div className="container mx-auto py-12 px-4">

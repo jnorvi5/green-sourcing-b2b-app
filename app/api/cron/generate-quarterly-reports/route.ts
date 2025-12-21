@@ -131,32 +131,34 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate material-specific reports for Enterprise customers
+    // Generate material-specific reports for Enterprise customers in parallel
     const materialCategories = [
       'insulation', 'flooring', 'cladding', 'structural', 
       'roofing', 'windows', 'drywall'
     ];
 
-    for (const category of materialCategories) {
-      try {
-        const reportData = await generateQuarterlyReportData(quarter, year, 'Enterprise');
-        
-        await saveReport(
-          'MaterialDemand',
-          `Q${quarter} ${year} ${category.charAt(0).toUpperCase() + category.slice(1)} Market Analysis`,
-          reportData,
-          startDate,
-          endDate,
-          'Enterprise',
-          category,
-          'National'
-        );
-        
-        console.log(`Generated material-specific report for: ${category}`);
-      } catch (error) {
-        console.error(`Error generating ${category} report:`, error);
-      }
-    }
+    await Promise.all(
+      materialCategories.map(async (category) => {
+        try {
+          const reportData = await generateQuarterlyReportData(quarter, year, 'Enterprise');
+          
+          await saveReport(
+            'MaterialDemand',
+            `Q${quarter} ${year} ${category.charAt(0).toUpperCase() + category.slice(1)} Market Analysis`,
+            reportData,
+            startDate,
+            endDate,
+            'Enterprise',
+            category,
+            'National'
+          );
+          
+          console.log(`Generated material-specific report for: ${category}`);
+        } catch (error) {
+          console.error(`Error generating ${category} report:`, error);
+        }
+      })
+    );
 
     return NextResponse.json({
       success: true,

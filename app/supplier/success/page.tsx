@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * Subscription Success Page
  * Displayed after successful Stripe Checkout

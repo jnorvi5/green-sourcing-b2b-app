@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 /**
  * BIM Carbon Analysis Page
  * Upload BIM models and analyze embodied carbon

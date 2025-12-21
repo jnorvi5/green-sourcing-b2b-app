@@ -41,20 +41,33 @@ export async function sendEmail({ to, subject, html }: SendParams): Promise<Send
   }
 }
 
-export async function sendBulkEmail({ recipients, subject, html }: BulkParams): Promise<SendResponse[]> {
+export async function sendBulkEmail({ recipients, subject, html }: BulkParams): Promise<{ results: SendResponse[]; errors: Array<{ to: string; error: unknown }> }> {
   const resend = getClient();
-  const outputs: SendResponse[] = [];
-  // Resend batch API is limited; fall back to loop
-  for (const to of recipients) {
-    try {
-      const res = await resend.emails.send({ from: FROM, to, subject, html });
-      outputs.push(res);
-    } catch (err) {
-      console.error('Resend sendBulkEmail error:', { to, err });
-      throw err;
+  
+  // Send emails in parallel for better performance
+  // Collect results and errors separately to allow partial success
+  const results: SendResponse[] = [];
+  const errors: Array<{ to: string; error: unknown }> = [];
+  
+  const settledResults = await Promise.allSettled(
+    recipients.map(to =>
+      resend.emails.send({ from: FROM, to, subject, html })
+        .then(result => ({ to, result }))
+    )
+  );
+  
+  for (const settled of settledResults) {
+    if (settled.status === 'fulfilled') {
+      results.push(settled.value.result);
+    } else {
+      // Find the corresponding 'to' from the original array by index
+      const idx = settledResults.indexOf(settled);
+      console.error('Resend sendBulkEmail error:', { to: recipients[idx], error: settled.reason });
+      errors.push({ to: recipients[idx], error: settled.reason });
     }
   }
-  return outputs;
+  
+  return { results, errors };
 }
 
 export async function scheduleEmail({ to, subject, html, sendAt }: ScheduleParams): Promise<SendResponse> {
