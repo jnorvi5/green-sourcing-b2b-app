@@ -10,7 +10,6 @@ cp .env.updated .env
 
 # Edit .env with your credentials:
 # - Supabase URL and keys
-# - MongoDB connection string
 # - Intercom App ID
 # - Email service (Resend recommended)
 ```
@@ -96,13 +95,7 @@ supabase db push
 ```
 
 3. Enable Row Level Security (RLS) policies
-
-### MongoDB (Product Data)
-
-1. Create cluster at https://cloud.mongodb.com
-2. Whitelist IP: 0.0.0.0/0 (for serverless)
-3. Create database: `greenchainz`
-4. Collections auto-created on first use
+4. Product data stored in JSONB columns for flexibility
 
 ## 🔌 Integrations
 
@@ -204,8 +197,7 @@ lsof -ti:3001 | xargs kill -9
 
 1. Check `.env` credentials
 2. Verify Supabase project is active
-3. Check MongoDB IP whitelist
-4. Test connection: `npm run test:db`
+3. Test connection: `npm run test:db`
 
 ### Build Errors
 

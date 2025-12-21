@@ -7,7 +7,7 @@ Your platform has:
 - ✅ Admin dashboard with automation
 - ✅ OAuth login (Google, GitHub, LinkedIn)
 - ✅ Email/password login
-- ✅ Supabase + MongoDB integration
+- ✅ Supabase integration
 - ✅ Intercom support widget
 - ✅ API routes
 - ✅ Health checks
@@ -38,7 +38,6 @@ Go to Vercel Dashboard → Your Project → Settings → Environment Variables
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
 JWT_SECRET=your-random-secret-32-chars-minimum
 SESSION_SECRET=your-random-secret-32-chars-minimum
 ```
@@ -98,8 +97,7 @@ Should return:
   "status": "healthy",
   "services": {
     "api": "operational",
-    "database": "connected",
-    "mongodb": "connected"
+    "database": "connected"
   }
 }
 ```
@@ -144,8 +142,7 @@ Test automation buttons:
 
 **Integrations:**
 
-- Supabase: Auth + Database
-- MongoDB: Product data
+- Supabase: Auth + Database + Product data
 - Intercom: Support widget
 - Resend: Emails
 - AWS S3: File storage

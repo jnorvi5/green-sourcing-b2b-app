@@ -29,7 +29,6 @@ In Vercel Dashboard → Settings → Environment Variables, add:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/greenchainz
 JWT_SECRET=your-random-secret-min-32-chars
 SESSION_SECRET=your-random-secret-min-32-chars
 ```
@@ -59,7 +58,7 @@ AWS_BUCKET_NAME=greenchainz-assets
 ✅ **API Routes** - RESTful API for all operations
 ✅ **Intercom Support** - Customer chat widget
 ✅ **Authentication** - Supabase Auth with OAuth
-✅ **Database** - Supabase (PostgreSQL) + MongoDB
+✅ **Database** - Supabase (PostgreSQL)
 ✅ **File Storage** - AWS S3 integration
 ✅ **Email** - Resend for transactional emails
 ✅ **Monitoring** - Built-in health checks
@@ -116,13 +115,6 @@ open http://localhost:3001/admin/dashboard
    cd supabase
    npx supabase db push
    ```
-
-### MongoDB Atlas (5 minutes)
-
-1. Create cluster at [mongodb.com](https://cloud.mongodb.com)
-2. Create database user
-3. Whitelist IP: `0.0.0.0/0` (for serverless)
-4. Copy connection string to Vercel env vars
 
 ## 🔌 Optional Integrations
 
@@ -193,9 +185,7 @@ npm run build
 ### Database Connection Error
 
 1. Verify Supabase URL and keys
-2. Check MongoDB connection string
-3. Ensure IP whitelist includes `0.0.0.0/0`
-4. Test connections in health check
+2. Test connections in health check
 
 ### Automation Not Working
 
