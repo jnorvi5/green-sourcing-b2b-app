@@ -5,7 +5,7 @@
  * Requires EC3_CLIENT_ID and EC3_CLIENT_SECRET environment variables.
  */
 
-const EC3_API_BASE = 'https://buildingtransparency.org/api';
+export const EC3_API_BASE = 'https://buildingtransparency.org/api';
 
 interface EC3Token {
   access_token: string;
@@ -19,7 +19,7 @@ let tokenExpiry: number | null = null;
 /**
  * Get valid access token for EC3 API
  */
-async function getAccessToken(): Promise<string | null> {
+export async function getAccessToken(): Promise<string | null> {
   if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
     return cachedToken;
   }
