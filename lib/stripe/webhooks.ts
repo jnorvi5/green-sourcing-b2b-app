@@ -31,12 +31,12 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
     process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
-  const supplierId = session.metadata?.['supplier_id'];
-  const tier = session.metadata?.['tier'] as SubscriptionTier;
+  const userId = session.metadata?.['userId'];
+  const role = session.metadata?.['role']; // Should be 'architect' for new billing system
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 
-  if (!supplierId || !tier) {
+  if (!userId || !role) {
     console.error('Missing metadata in checkout session:', session.id);
     return;
   }
@@ -44,39 +44,53 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
   // Get subscription details from Stripe
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-  // Update supplier with subscription info
-  const { error: supplierError } = await supabase
-    .from('suppliers')
-    .update({
-      tier: tier,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: subscriptionId,
-      subscription_status: subscription.status,
-      upgraded_at: new Date().toISOString(),
-    })
-    .eq('id', supplierId);
+  // Determine trial end date if applicable
+  const trialEndsAt = subscription.trial_end 
+    ? new Date(subscription.trial_end * 1000).toISOString()
+    : null;
 
-  if (supplierError) {
-    console.error('Failed to update supplier:', supplierError);
-    throw new Error('Failed to update supplier');
+  // Update user's subscription tier
+  const { error: userError } = await supabase
+    .from('users')
+    .update({
+      subscription_tier: role, // 'architect' or 'enterprise'
+    })
+    .eq('id', userId);
+
+  if (userError) {
+    console.error('Failed to update user subscription tier:', userError);
+    throw new Error('Failed to update user');
   }
 
   // Create subscription record
   const { error: subError } = await supabase.from('subscriptions').insert({
-    supplier_id: supplierId,
+    user_id: userId,
     stripe_subscription_id: subscriptionId,
-    stripe_customer_id: customerId,
-    tier: tier,
     status: subscription.status,
-    current_period_start: new Date((subscription.current_period_start as number) * 1000).toISOString(),
     current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    trial_ends_at: trialEndsAt,
   });
 
   if (subError) {
     console.error('Failed to create subscription record:', subError);
   }
 
-  console.log(`✅ Subscription created for supplier ${supplierId} - Tier: ${tier}`);
+  // For architect tier, grant 10 audit credits
+  if (role === 'architect') {
+    const { error: creditsError } = await supabase.from('audit_credits').insert({
+      user_id: userId,
+      credits: 10,
+      expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+    });
+
+    if (creditsError) {
+      console.error('Failed to create audit credits:', creditsError);
+    } else {
+      console.log(`✅ Granted 10 audit credits to user ${userId}`);
+    }
+  }
+
+  console.log(`✅ Subscription created for user ${userId} - Role: ${role}`);
 }
 
 /**
