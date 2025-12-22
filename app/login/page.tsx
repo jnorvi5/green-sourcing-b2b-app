@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaLinkedin, FaMicrosoft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ export default function LoginPage() {
     setError("");
 
     if (debugMode) {
-      console.log("🔍 Login attempt for:", formData.email);
+      logger.info("Login attempt initiated", { email: formData.email });
     }
 
     try {
@@ -81,8 +82,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (debugMode) {
-        console.log("🔍 Response status:", response.status);
-        console.log("🔍 Response body:", data);
+        logger.debug("Login response received", { status: response.status, body: data });
       }
 
       if (response.ok) {
@@ -104,11 +104,11 @@ export default function LoginPage() {
         }
         setError(errorMsg);
         if (debugMode) {
-          console.log("🔍 Error details:", data.details);
+          logger.warn("Login failed", { details: data.details });
         }
       }
     } catch (err) {
-      console.error("Login error:", err);
+      logger.error("Login exception", { error: err });
       setError("Network error. Please check your connection.");
     } finally {
       setLoading(false);
