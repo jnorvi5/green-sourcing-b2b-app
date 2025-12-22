@@ -1,14 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { createRFQConversation } from '@/lib/intercom'
 
 export async function POST(req: Request) {
+    const cookieStore = cookies()
     const supabase = createServerClient(
         process.env['NEXT_PUBLIC_SUPABASE_URL']!,
         process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
-                get: (name: string) => cookies().get(name)?.value,
+                get: (name: string) => cookieStore.get(name)?.value,
                 set: () => { },
                 remove: () => { },
             },
@@ -23,32 +25,32 @@ export async function POST(req: Request) {
     const { data: rfq } = await supabase.from('rfqs').select('*').eq('id', rfq_id).single()
     if (!rfq) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-    // Check if supplier is premium (if supplier is initiating)
+    // NEW: Check if supplier is premium (if supplier is initiating)
     if (user_role === 'supplier') {
         const { data: subscription } = await supabase
             .from('supplier_subscriptions')
             .select('plan_id, supplier_plans:plan_id(plan_name)')
             .eq('supplier_id', session.user.id)
             .eq('status', 'active')
-            .single()
+            .maybeSingle()
 
-        // supplier_plans is an array due to the join
-        const supplierPlans = subscription?.supplier_plans as { plan_name: string }[] | null;
-        const isPremium = supplierPlans?.[0] && ['Basic', 'Enterprise'].includes(supplierPlans[0].plan_name)
+        const supplierPlans = subscription?.supplier_plans as unknown as { plan_name: string } | null;
+        const planName = supplierPlans?.plan_name;
+        const isPremium = planName ? ['Basic', 'Enterprise', 'Premium'].includes(planName) : false
 
-        // Check existing conversation (architect may have initiated)
+        // Check if existing conversation (architect initiated)
         const { data: existing } = await supabase
             .from('rfq_chat_sessions')
             .select('intercom_conversation_id')
             .eq('rfq_id', rfq_id)
-            .single()
+            .maybeSingle()
 
         // If not premium AND no existing conversation, deny
         if (!isPremium && !existing) {
             return NextResponse.json(
                 {
                     error: 'Premium feature',
-                    message: 'Upgrade to Basic ($199/mo) or Enterprise to chat with architects.',
+                    message: 'Upgrade to Basic or Enterprise plan to initiate conversations with architects.',
                     requires_premium: true
                 },
                 { status: 403 }
@@ -56,36 +58,33 @@ export async function POST(req: Request) {
         }
     }
 
-    // Check existing session
+    // Check existing conversation
     const { data: existingSession } = await supabase
         .from('rfq_chat_sessions')
         .select('intercom_conversation_id')
         .eq('rfq_id', rfq_id)
         .eq('user_id', session.user.id)
-        .single()
+        .maybeSingle()
 
     if (existingSession) {
         return NextResponse.json({ conversation_id: existingSession.intercom_conversation_id })
     }
 
-    // Create Intercom conversation
-    try {
-        const conversationId = `rfq_${rfq_id}_${Date.now()}`
+    // Create new Intercom conversation
+    const conversation = await createRFQConversation(
+        rfq_id,
+        rfq.architect_id,
+        rfq.supplier_id || rfq.matched_suppliers?.[0],
+        rfq
+    )
 
-        // Save session
-        await supabase.from('rfq_chat_sessions').insert({
-            rfq_id,
-            user_id: session.user.id,
-            user_role,
-            intercom_conversation_id: conversationId,
-        })
+    // Save session
+    await supabase.from('rfq_chat_sessions').insert({
+        rfq_id,
+        user_id: session.user.id,
+        user_role,
+        intercom_conversation_id: conversation.id,
+    })
 
-        return NextResponse.json({
-            conversation_id: conversationId,
-            intercom_app_id: process.env['NEXT_PUBLIC_INTERCOM_APP_ID'],
-        })
-    } catch (error) {
-        console.error('Chat init error:', error)
-        return NextResponse.json({ error: 'Failed to initialize chat' }, { status: 500 })
-    }
+    return NextResponse.json({ conversation_id: conversation.id })
 }

@@ -2,23 +2,54 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
-import { z } from 'zod'
 import { calculateDistance, calculateTransportCarbon, calculateTier } from '@/lib/carbon'
 import { getEPDData } from '@/lib/autodesk-sda'
-import { SUPPLIER_CANDIDATE_LIMIT, AZURE_DEPLOYMENT_EXPENSIVE } from '@/lib/constants'
 
-// Input validation schema
-const RequestSchema = z.object({
-    rfq_id: z.string().uuid(),
+interface Product {
+  id: string
+  name: string
+  material_type: string
+}
+
+interface Supplier {
+  id: string
+  company_name: string
+  location: string
+  lat: number
+  lng: number
+  verification_status: string
+  products: Product[]
+}
+
+interface SupplierPlan {
+  plan_name: string
+}
+
+interface SubscriptionData {
+  supplier_id: string
+  plan_id: string
+  supplier_plans?: SupplierPlan | SupplierPlan[] | null
+}
+
+const apiKey = process.env['AZURE_OPENAI_API_KEY'];
+const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+const deploymentName = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'];
+
+const client = new OpenAI({
+    apiKey: apiKey!,
+    baseURL: `${endpoint}/openai/deployments/${deploymentName}`,
+    defaultQuery: { 'api-version': '2024-02-15-preview' },
+    defaultHeaders: { 'api-key': apiKey! },
 })
 
 export async function POST(req: Request) {
+    const cookieStore = cookies()
     const supabase = createServerClient(
-        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
+        process.env['NEXT_PUBLIC_SUPABASE_URL']! as string,
+        process.env['SUPABASE_SERVICE_ROLE_KEY']! as string,
         {
             cookies: {
-                get: (name: string) => cookies().get(name)?.value,
+                get: (name: string) => cookieStore.get(name)?.value,
                 set: () => { },
                 remove: () => { },
             },
@@ -28,43 +59,27 @@ export async function POST(req: Request) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    // Validate Input
-    let body
-    try {
-        body = await req.json()
-    } catch (e) {
-        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-    }
-
-    const parse = RequestSchema.safeParse(body)
-    if (!parse.success) {
-        return NextResponse.json({ error: 'Invalid input', details: parse.error }, { status: 400 })
-    }
-    const { rfq_id } = parse.data
+    const body = await req.json()
+    const { rfq_id } = body
 
     // Get RFQ
-    const { data: rfq } = await supabase
+    const { data: rfq, error: rfqErr } = await supabase
         .from('rfqs')
         .select('*')
         .eq('id', rfq_id)
-        .eq('architect_id', session.user.id)
         .single()
 
-    if (!rfq) return NextResponse.json({ error: 'RFQ not found' }, { status: 404 })
-
-    // 1. Fetch EPD data ONCE for the material (not per supplier)
-    // Optimization: Only fetch for the primary material to save time
-    const primaryMaterial = rfq.materials?.[0] || 'steel'
-    const epdData = await getEPDData(primaryMaterial)
-    const embodiedCarbonBase = epdData.embodied_carbon_kg * (rfq.material_weight_tons || 1)
+    if (rfqErr || !rfq) return NextResponse.json({ error: 'RFQ not found' }, { status: 404 })
 
     // Get all suppliers
     const { data: suppliers } = await supabase
         .from('suppliers')
         .select(`
-      id, name, location, lat, lng, verification_status, certifications, description,
-      products (id, name, category, epd_data)
+      id, company_name, location, lat, lng, verification_status,
+      products (id, name, material_type)
     `)
+
+    if (!suppliers) return NextResponse.json({ suppliers: [] })
 
     // Get premium supplier IDs
     const { data: subscriptions } = await supabase
@@ -72,157 +87,105 @@ export async function POST(req: Request) {
         .select('supplier_id, plan_id, supplier_plans:plan_id(plan_name)')
         .eq('status', 'active')
 
-    const premiumIds = subscriptions
-        ?.filter((s: { supplier_plans: { plan_name: string }[] }) =>
-            s.supplier_plans?.[0] && ['Basic', 'Enterprise'].includes(s.supplier_plans[0].plan_name)
-        )
-        .map((s: { supplier_id: string }) => s.supplier_id) || []
+    const premiumIds = (subscriptions || [])
+        .filter((s: SubscriptionData) => {
+            const planName = Array.isArray(s.supplier_plans) 
+                ? s.supplier_plans[0]?.plan_name 
+                : s.supplier_plans?.plan_name
+            return ['Basic', 'Enterprise', 'Premium'].includes(planName || '')
+        })
+        .map((s: SubscriptionData) => s.supplier_id)
 
-    // Define the shape of supplier data from our query
-    type SupplierQueryResult = {
-      id: string;
-      name: string;
-      location: string;
-      lat: number;
-      lng: number;
-      verification_status: string;
-      certifications: unknown[];
-      description: string;
-      products: { id: string; name: string; category: string; epd_data: unknown }[];
-    };
+    // Calculate distance, carbon, tier for each supplier
+    const ranked = await Promise.all(
+        suppliers.map(async (supplier: Supplier) => {
+            const distance = calculateDistance(
+                rfq.job_site_lat,
+                rfq.job_site_lng,
+                supplier.lat,
+                supplier.lng
+            )
 
-    // 2. Sync Calculation: Calculate Distance, Carbon, and Tier for ALL suppliers locally
-    // This is fast and cheap.
-    const candidates = (suppliers as SupplierQueryResult[] || []).map((supplier) => {
-        const distance = calculateDistance(
-            rfq.job_site_lat,
-            rfq.job_site_lng,
-            supplier.lat,
-            supplier.lng
-        )
+            // Get embodied carbon from EPD
+            const epdData = await getEPDData(rfq.materials?.[0] || 'steel')
+            const embodiedCarbon = epdData.embodied_carbon_kg * (rfq.material_weight_tons || 1)
+            const transportCarbon = calculateTransportCarbon(distance, rfq.material_weight_tons || 1)
+            const totalCarbon = embodiedCarbon + transportCarbon
 
-        const transportCarbon = calculateTransportCarbon(distance, rfq.material_weight_tons || 1)
-        const totalCarbon = embodiedCarbonBase + transportCarbon
+            const isPremium = premiumIds.includes(supplier.id)
+            const tier = calculateTier(
+                supplier.verification_status as 'verified' | 'unverified', 
+                isPremium, 
+                distance
+            )
 
-        const isVerified = supplier.verification_status === 'verified'
-        const isPremium = premiumIds.includes(supplier.id)
-        const tier = calculateTier(isVerified, isPremium, distance)
+            // Match score (AI-based)
+            const matchScore = await calculateMatchScore(rfq.materials || [], supplier.products || [])
 
-        return {
-            ...supplier,
-            distance_miles: Math.round(distance),
-            transport_carbon_kg: Math.round(transportCarbon),
-            embodied_carbon_kg: Math.round(embodiedCarbonBase),
-            total_carbon_kg: Math.round(totalCarbon),
-            is_verified: isVerified,
-            is_premium: isPremium,
-            tier,
-            match_score: 50, // Default score before AI
-        }
-    })
-
-    // 3. Pre-sort by Tier (asc) then Distance (asc)
-    // This puts the most promising candidates at the top
-    candidates.sort((a, b) => {
-        if ((a.tier || 4) !== (b.tier || 4)) return (a.tier || 4) - (b.tier || 4)
-        return (a.distance_miles || 0) - (b.distance_miles || 0)
-    })
-
-    // 4. Batch AI Optimization: Only run expensive AI match scoring on top 10 candidates
-    // The rest get the default score (or a simpler heuristic if we implemented one)
-    const topCandidates = candidates.slice(0, SUPPLIER_CANDIDATE_LIMIT)
-    const remainingCandidates = candidates.slice(SUPPLIER_CANDIDATE_LIMIT)
-
-    let aiTokensUsed = 0
-
-    const scoredTopCandidates = await Promise.all(
-        topCandidates.map(async (candidate) => {
-            const { score, tokens } = await calculateMatchScore(rfq.materials, candidate.products)
-            aiTokensUsed += tokens
-            return { ...candidate, match_score: score }
+            return {
+                ...supplier,
+                distance_miles: Math.round(distance),
+                transport_carbon_kg: Math.round(transportCarbon),
+                embodied_carbon_kg: Math.round(embodiedCarbon),
+                total_carbon_kg: Math.round(totalCarbon),
+                is_premium: isPremium,
+                tier,
+                match_score: matchScore,
+            }
         })
     )
 
-    // Merge back together
-    const ranked = [...scoredTopCandidates, ...remainingCandidates]
-
-    // Final Sort: Tier 1->4, then Match Score desc
+    // Sort: Tier 1 → Tier 2 → Tier 3 → Tier 4, then by match score
     ranked.sort((a, b) => {
-        if ((a.tier || 4) !== (b.tier || 4)) return (a.tier || 4) - (b.tier || 4)
-        return (b.match_score || 0) - (a.match_score || 0)
+        if (a.tier !== b.tier) return a.tier - b.tier
+        return b.match_score - a.match_score
     })
 
     // Log AI usage
-    const costUsd = (aiTokensUsed / 1000) * 0.03
-
     await supabase.from('ai_agent_logs').insert({
         user_id: session.user.id,
         rfq_id,
         agent_type: 'architect_find',
         input_data: { materials: rfq.materials, location: rfq.job_site_location },
-        output_data: {
-            suppliers_processed: candidates.length,
-            ai_scored: topCandidates.length,
-            tier_breakdown: {
-                tier1: ranked.filter(s => s.tier === 1).length,
-                tier2: ranked.filter(s => s.tier === 2).length,
-                tier3: ranked.filter(s => s.tier === 3).length,
-                tier4: ranked.filter(s => s.tier === 4).length,
-            }
-        },
-        model_used: AZURE_DEPLOYMENT_EXPENSIVE,
-        tokens_used: aiTokensUsed,
-        cost_usd: costUsd,
+        output_data: { suppliers_found: ranked.length, tiers: { 1: ranked.filter(s => s.tier === 1).length } },
+        model_used: 'gpt-4o',
     })
 
-    // Save carbon calcs (batch insert)
-    const carbonRecords = ranked.map(s => ({
-        rfq_id,
-        supplier_id: s.id,
-        distance_miles: s.distance_miles,
-        transport_carbon_kg: s.transport_carbon_kg,
-        embodied_carbon_kg: s.embodied_carbon_kg,
-        total_carbon_kg: s.total_carbon_kg,
-        tier: s.tier,
-    }))
-
-    if (carbonRecords.length > 0) {
-        await supabase.from('rfq_carbon_calc').insert(carbonRecords)
+    // Save/Update carbon calcs in DB
+    for (const s of ranked) {
+        await supabase.from('rfq_carbon_calc').upsert({
+            rfq_id,
+            supplier_id: s.id,
+            distance_miles: s.distance_miles,
+            transport_carbon_kg: s.transport_carbon_kg,
+            embodied_carbon_kg: s.embodied_carbon_kg,
+            total_carbon_kg: s.total_carbon_kg,
+            tier: s.tier,
+        }, { onConflict: 'rfq_id,supplier_id' })
     }
 
     return NextResponse.json({ suppliers: ranked })
 }
 
 // AI match scoring
-async function calculateMatchScore(materials: string[], products: { id: string; name: string; category: string; epd_data: unknown }[]) {
-    if (!materials || materials.length === 0) return { score: 50, tokens: 0 }
-
-    const client = new OpenAI({
-        apiKey: process.env['AZURE_OPENAI_API_KEY'],
-        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-    })
+async function calculateMatchScore(materials: string[], products: Product[]) {
+    if (materials.length === 0 || products.length === 0) return 30;
 
     const prompt = `Materials needed: ${materials.join(', ')}
 Products available: ${products.map(p => p.name).join(', ')}
-
-Score 0-100 how well these products match the materials needed.
-Return ONLY a JSON object: {"match_score": 85}`
+Evaluate similarity and return JSON only: {"match_score": 0-100}`
 
     try {
         const response = await client.chat.completions.create({
-            model: AZURE_DEPLOYMENT_EXPENSIVE, // Use constant
+            model: deploymentName!,
             messages: [{ role: 'user', content: prompt }],
             response_format: { type: 'json_object' },
-            max_tokens: 50,
         })
 
         const result = JSON.parse(response.choices[0].message.content!)
-        return {
-            score: result.match_score || 50,
-            tokens: response.usage?.total_tokens || 0
-        }
-    } catch (error) {
-        console.error('AI match score error:', error)
-        return { score: 50, tokens: 0 } // Fallback
+        return result.match_score
+    } catch (e) {
+        console.error('Match score AI error:', e);
+        return 50;
     }
 }

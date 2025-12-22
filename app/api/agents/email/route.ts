@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { emailAgent } from '@/lib/agents/email/email-agent';
 import { createClient } from '@/lib/supabase/server';
 
+interface Supplier {
+    id: string;
+    name: string;
+    contact_email: string;
+    contact_name: string;
+}
+
 export async function POST(req: NextRequest) {
     const { campaignType, supplierIds } = await req.json();
 
@@ -13,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     // Queue emails in parallel
     await Promise.all(
-        (suppliers || []).map(supplier =>
+        (suppliers || []).map((supplier: Supplier) =>
             emailAgent.addTask({
                 type: campaignType,
                 recipientEmail: supplier.contact_email,
