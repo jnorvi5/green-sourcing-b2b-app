@@ -4,75 +4,63 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { createCheckoutSession } from '@/lib/stripe/checkout';
-import { CreateCheckoutRequest, CreateCheckoutResponse } from '@/types/stripe';
+import Stripe from 'stripe';
+
+// Initialize Stripe with specific API version
+const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
+  apiVersion: '2023-10-16',
+  typescript: true,
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json() as CreateCheckoutRequest;
-    const { tier, success_url, cancel_url } = body;
+    const body = await request.json();
+    const { priceId, userId, tier } = body;
 
-    // Map 'professional' -> 'architect_pro_monthly'
-    // Map 'supplier' -> 'supplier_monthly'
-    // Map legacy 'standard' -> ...
-
-    let priceIdKey: keyof typeof import('@/lib/stripe/config').STRIPE_PRICE_IDS | null = null;
-
-    if (tier === 'professional') priceIdKey = 'architect_pro_monthly';
-    else if (tier === 'supplier') priceIdKey = 'supplier_monthly';
-    else if (tier === 'standard') priceIdKey = 'standard_monthly'; // Fallback
-
-    if (!priceIdKey) {
+    // Validate required parameters
+    if (!priceId || !userId) {
       return NextResponse.json(
-        { error: 'Invalid plan selected.' },
+        { error: 'Missing required parameters: priceId and userId' },
         { status: 400 }
       );
     }
 
-    const supabase = createClient(
-      process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-      process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
-    );
+    // Determine subscription tier from request or default to architect
+    const subscriptionTier = tier || 'architect';
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // Get base URL for success/cancel URLs
+    const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] || process.env['NEXT_PUBLIC_SITE_URL'] || 'http://localhost:3001';
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Determine the entity ID (User ID or Supplier ID)
-    // For Architects/Buyers, the subscription is often attached to the User or Organization.
-    // For Suppliers, it might be the Supplier profile.
-    let customerId = user.id; // Default to user ID
-
-    // If it's a supplier plan, try to find the supplier profile
-    if (tier === 'supplier') {
-      const { data: supplier } = await supabase
-        .from('suppliers')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (supplier) customerId = supplier.id;
-    }
-
-    // Create Checkout Session
-    // We pass the priceIdKey (identifier) and let the checkout helper resolve the actual Stripe Price ID
-    const { url, sessionId } = await createCheckoutSession(customerId, priceIdKey, {
-      successUrl: success_url,
-      cancelUrl: cancel_url,
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/billing`,
+      metadata: {
+        userId: userId,
+        role: subscriptionTier,
+      },
+      allow_promotion_codes: true,
     });
 
-    const response: CreateCheckoutResponse = {
-      checkout_url: url,
-      session_id: sessionId,
-    };
+    if (!session.url) {
+      return NextResponse.json(
+        { error: 'Failed to create checkout session' },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json(response);
+    return NextResponse.json({
+      checkout_url: session.url,
+      session_id: session.id,
+    });
   } catch (error) {
     console.error('Create checkout session error:', error);
     return NextResponse.json(
