@@ -1,11 +1,18 @@
 // Get Autodesk access token
 async function getAutodeskToken() {
+    const clientId = process.env['AUTODESK_CLIENT_ID'];
+    const clientSecret = process.env['AUTODESK_CLIENT_SECRET'];
+
+    if (!clientId || !clientSecret) {
+        throw new Error('Missing Autodesk Credentials');
+    }
+
     const res = await fetch('https://developer.api.autodesk.com/authentication/v2/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-            client_id: process.env['AUTODESK_CLIENT_ID']!,
-            client_secret: process.env['AUTODESK_CLIENT_SECRET']!,
+            client_id: clientId,
+            client_secret: clientSecret,
             grant_type: 'client_credentials',
             scope: 'data:read',
         }),
@@ -19,9 +26,13 @@ async function getAutodeskToken() {
 export async function getEPDData(materialName: string) {
     try {
         const token = await getAutodeskToken()
+        const apiUrl = process.env['AUTODESK_SDA_API_URL'];
 
+        if (!apiUrl) throw new Error('Missing Autodesk SDA API URL');
+
+        // Search SDA API for material EPD
         const res = await fetch(
-            `https://developer.api.autodesk.com/construction/carbon/v1/epd?search=${encodeURIComponent(materialName)}`,
+            `${apiUrl}/epd?search=${encodeURIComponent(materialName)}`,
             {
                 headers: { Authorization: `Bearer ${token}` },
             }
@@ -29,23 +40,22 @@ export async function getEPDData(materialName: string) {
 
         const data = await res.json()
 
+        // Return embodied carbon (kg CO2 per unit)
         if (data.results && data.results[0]) {
             return {
                 material: materialName,
-                embodied_carbon_kg: data.results[0].gwp_per_unit || 500,
+                embodied_carbon_kg: data.results[0].gwp_per_unit || 0,
                 source: 'Autodesk SDA',
-                epd_url: data.results[0].url,
             }
         }
     } catch (error) {
-        console.error('Autodesk SDA error:', error)
+        console.error('Autodesk SDA Error:', error);
     }
 
-    // Fallback: mock data
+    // Fallback: mock data if API unavailable
     return {
         material: materialName,
-        embodied_carbon_kg: 500,
+        embodied_carbon_kg: 500, // Default estimate
         source: 'Estimated',
-        epd_url: null,
     }
 }

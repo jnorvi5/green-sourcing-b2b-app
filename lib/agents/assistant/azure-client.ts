@@ -113,7 +113,7 @@ export class AzureAssistant {
                 Autodesk SDA Data:
                 - Carbon Footprint: ${epdData.embodied_carbon_kg} kg CO2e
                 - Source: ${epdData.source}
-                - EPD URL: ${epdData.epd_url || 'Not available'}
+                - EPD URL: Not available
 
                 Provide a sustainability audit, highlighting pros, cons, and EPD verification status.`
             }],

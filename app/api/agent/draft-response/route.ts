@@ -2,25 +2,27 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
-import { z } from 'zod'
 import { getEPDData } from '@/lib/autodesk-sda'
 
-const RequestSchema = z.object({
-    rfq_id: z.string().uuid(),
+const apiKey = process.env['AZURE_OPENAI_API_KEY'];
+const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+const deploymentName = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'];
+
+const client = new OpenAI({
+    apiKey: apiKey!,
+    baseURL: `${endpoint}/openai/deployments/${deploymentName}`,
+    defaultQuery: { 'api-version': '2024-02-15-preview' },
+    defaultHeaders: { 'api-key': apiKey! },
 })
 
 export async function POST(req: Request) {
-    const client = new OpenAI({
-        apiKey: process.env['AZURE_OPENAI_API_KEY'],
-        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-    })
-
+    const cookieStore = cookies()
     const supabase = createServerClient(
         process.env['NEXT_PUBLIC_SUPABASE_URL']!,
         process.env['SUPABASE_SERVICE_ROLE_KEY']!,
         {
             cookies: {
-                get: (name: string) => cookies().get(name)?.value,
+                get: (name: string) => cookieStore.get(name)?.value,
                 set: () => { },
                 remove: () => { },
             },
@@ -30,18 +32,8 @@ export async function POST(req: Request) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    let body
-    try {
-        body = await req.json()
-    } catch (e) {
-        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-    }
-
-    const parse = RequestSchema.safeParse(body)
-    if (!parse.success) {
-        return NextResponse.json({ error: 'Invalid input', details: parse.error }, { status: 400 })
-    }
-    const { rfq_id } = parse.data
+    const body = await req.json()
+    const { rfq_id } = body
 
     // Get RFQ
     const { data: rfq } = await supabase
@@ -54,86 +46,65 @@ export async function POST(req: Request) {
 
     // Get supplier's products
     const { data: products } = await supabase
-        .from('supplier_products')
+        .from('products')
         .select('*')
         .eq('supplier_id', session.user.id)
-
-    // Get supplier info
-    const { data: supplier } = await supabase
-        .from('suppliers')
-        .select('name, certifications')
-        .eq('id', session.user.id)
-        .single()
 
     // Get EPD data for materials
     const epdPromises = rfq.materials?.map((m: string) => getEPDData(m)) || []
     const epdResults = await Promise.all(epdPromises)
 
     // AI draft response
-    const prompt = `You are drafting a professional supplier quote response for sustainable building materials.
+    const prompt = `You are drafting a supplier quote response.
 
 RFQ Details:
-- Materials requested: ${rfq.materials?.join(', ')}
+- Materials: ${rfq.materials?.join(', ')}
 - Budget: $${rfq.budget}
 - Timeline: ${rfq.timeline}
-- Project location: ${rfq.job_site_location}
 
-Your Company: ${supplier?.name}
-Your Certifications: ${supplier?.certifications?.join(', ') || 'None listed'}
+Your Products:
+${products?.map(p => `- ${p.name}: ${p.description}`).join('\n')}
 
-Your Available Products:
-${products?.map((p: { name: string; description: string; category: string }) => `- ${p.name}: ${p.description} (Category: ${p.category})`).join('\n') || 'No products listed'}
+EPD Data:
+${epdResults.map(e => `- ${e.material}: ${e.embodied_carbon_kg} kg CO2`).join('\n')}
 
-Environmental Data (from EPDs):
-${epdResults.map(e => `- ${e.material}: ${e.embodied_carbon_kg} kg CO2 per unit`).join('\n')}
+Draft a professional quote response with:
+1. Matched products from your inventory
+2. Estimated pricing (use budget as guide)
+3. Environmental impact summary
+4. Compliance notes
 
-Task: Draft a quote response that includes:
-1. Matched products from your inventory that meet their materials request
-2. Estimated pricing (stay within or slightly below their budget, be realistic)
-3. Environmental impact summary (LCA data, carbon footprint)
-4. Compliance notes (certifications, LEED credits if applicable)
-5. Professional message they can edit
-
-Return ONLY valid JSON in this exact format:
+Return JSON only:
 {
-  "matched_products": [
-    {"product_id": "uuid-here", "product_name": "Product Name", "quantity": 10, "unit_price": 500}
-  ],
-  "estimated_total": 50000,
-  "lca_summary": "Our recycled steel reduces embodied carbon by 40% compared to virgin steel. Total project carbon footprint: 1,200 kg CO2.",
-  "compliance_notes": "LEED v4.1 certified. Qualifies for Materials & Resources credits MR1 (EPD) and MR2 (Regional Materials if <100mi).",
-  "draft_message": "Dear [Architect Name],\n\nThank you for your RFQ..."
+  "matched_products": [{"product_id": "...", "product_name": "...", "quantity": 0}],
+  "estimated_total": 0,
+  "lca_summary": "...",
+  "compliance_notes": "...",
+  "draft_message": "..."
 }`
 
     try {
         const response = await client.chat.completions.create({
-            model: process.env['AZURE_OPENAI_DEPLOYMENT_NAME']!,
+            model: deploymentName!,
             messages: [{ role: 'user', content: prompt }],
             response_format: { type: 'json_object' },
-            max_tokens: 1000,
         })
 
         const draft = JSON.parse(response.choices[0].message.content!)
 
         // Log AI usage
-        const tokensUsed = response.usage?.total_tokens || 800
-        const costUsd = (tokensUsed / 1000) * 0.03
-
         await supabase.from('ai_agent_logs').insert({
             user_id: session.user.id,
             rfq_id,
             agent_type: 'supplier_draft',
-            input_data: { rfq_materials: rfq.materials, budget: rfq.budget },
+            input_data: { rfq_materials: rfq.materials },
             output_data: draft,
             model_used: 'gpt-4o',
-            tokens_used: tokensUsed,
-            cost_usd: costUsd,
         })
 
         return NextResponse.json(draft)
-    } catch (error) {
-        console.error('AI draft error:', error)
-        return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
+    } catch (e) {
+        console.error('AI draft error:', e);
+        return NextResponse.json({ error: 'AI drafting failed' }, { status: 500 })
     }
 }
-
