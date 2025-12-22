@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-// import dynamic from "next/dynamic";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
 
 // Dynamically import providers with error boundaries
+const PostHogProvider = dynamic(
+  () => import("@/components/PostHogProvider").then(mod => mod.PostHogProvider).catch(() => ({ default: ({ children }: any) => children })),
+  { ssr: false }
+);
 // const PostHogProvider = dynamic(
 //   () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
 //   { ssr: false }
@@ -26,8 +30,13 @@ import { AuthProvider } from "@/hooks/useAuth";
 // );
 
 export const metadata: Metadata = {
-  title: "GreenChainz - Sustainable Building Materials Marketplace",
-  description: "B2B marketplace for verified green building materials",
+  title: "GreenChainz - Revit Plugin for Sustainable Design & Materials",
+  description: "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
+  openGraph: {
+    title: "GreenChainz - Revit Plugin for Sustainable Design",
+    description: "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
+    images: ['/images/plugin/demo-thumbnail.svg'],
+  },
   icons: {
     icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
     apple: "/apple-touch-icon.png",

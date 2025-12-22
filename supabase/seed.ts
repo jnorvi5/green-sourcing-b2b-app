@@ -6,11 +6,7 @@ import { Client } from 'pg';
 dotenv.config();
 
 const client = new Client({
-  host: process.env.POSTGRES_HOST,
-  port: parseInt(process.env.POSTGRES_PORT || '5432'),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  connectionString: process.env.DATABASE_URL,
 });
 
 async function seed() {

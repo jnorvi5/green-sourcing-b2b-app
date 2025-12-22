@@ -7,7 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
-import { certificationVerifiedEmail, certificationRejectedEmail } from '@/lib/email/certificationTemplates';
+import { certificationVerifiedEmail, certificationRejectedEmail } from '@/lib/email/templates/certification';
 import type {
   CertificationPendingSupplier,
   VerificationStats,

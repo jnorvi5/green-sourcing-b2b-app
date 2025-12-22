@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MaterialPassportCard from "@/components/MaterialPassportCard";
+import BimIntegrationButton from "@/components/BimIntegrationButton";
 import { FaArrowLeft, FaIndustry, FaRulerCombined, FaLeaf, FaRecycle } from "react-icons/fa";
 
 export default async function ProductPage({
@@ -226,6 +227,7 @@ export default async function ProductPage({
                     Download EPD
                   </button>
               )}
+              <BimIntegrationButton productName={product.product_name} />
             </div>
           </div>
         </div>
