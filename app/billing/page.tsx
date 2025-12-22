@@ -9,6 +9,9 @@ export default function BillingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
+  // Get architect price ID from environment variable
+  const architectPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ARCHITECT;
+
   const handleSubscribe = async (tier: "free" | "architect" | "enterprise") => {
     // Free tier - redirect to signup
     if (tier === "free") {
@@ -45,8 +48,9 @@ export default function BillingPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ARCHITECT,
+          priceId: architectPriceId,
           userId: user.id,
+          tier: "architect",
         }),
       });
 

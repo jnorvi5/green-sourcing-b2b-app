@@ -15,7 +15,7 @@ const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { priceId, userId } = body;
+    const { priceId, userId, tier } = body;
 
     // Validate required parameters
     if (!priceId || !userId) {
@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Determine subscription tier from request or default to architect
+    const subscriptionTier = tier || 'architect';
 
     // Get base URL for success/cancel URLs
     const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] || process.env['NEXT_PUBLIC_SITE_URL'] || 'http://localhost:3001';
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
       cancel_url: `${baseUrl}/billing`,
       metadata: {
         userId: userId,
-        role: 'architect',
+        role: subscriptionTier,
       },
       allow_promotion_codes: true,
     });

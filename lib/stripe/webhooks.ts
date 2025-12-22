@@ -31,13 +31,13 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
     process.env['SUPABASE_SERVICE_ROLE_KEY']!
   );
 
-  const userId = session.metadata?.['userId'];
-  const role = session.metadata?.['role']; // Should be 'architect' for new billing system
+  const userId = session.metadata?.userId;
+  const subscriptionTier = session.metadata?.role; // 'architect' or 'enterprise'
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 
-  if (!userId || !role) {
-    console.error('Missing metadata in checkout session:', session.id);
+  if (!userId || !subscriptionTier) {
+    console.error('Missing metadata in checkout session:', session.id, 'metadata:', session.metadata);
     return;
   }
 
@@ -53,7 +53,7 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
   const { error: userError } = await supabase
     .from('users')
     .update({
-      subscription_tier: role, // 'architect' or 'enterprise'
+      subscription_tier: subscriptionTier,
     })
     .eq('id', userId);
 
@@ -76,7 +76,7 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
   }
 
   // For architect tier, grant 10 audit credits
-  if (role === 'architect') {
+  if (subscriptionTier === 'architect') {
     const { error: creditsError } = await supabase.from('audit_credits').insert({
       user_id: userId,
       credits: 10,
@@ -90,7 +90,7 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session):
     }
   }
 
-  console.log(`✅ Subscription created for user ${userId} - Role: ${role}`);
+  console.log(`✅ Subscription created for user ${userId} - Tier: ${subscriptionTier}`);
 }
 
 /**
