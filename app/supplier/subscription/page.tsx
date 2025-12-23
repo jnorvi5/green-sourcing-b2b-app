@@ -295,15 +295,19 @@ export default function SubscriptionPage() {
               {limits.products !== "unlimited" && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`progress-bar ${
+                    className={`progress-bar transition-all duration-300 ${
                       productsPercent >= 100
-                        ? "red"
+                        ? "bg-red-500"
                         : productsPercent >= 80
-                        ? "orange"
-                        : "green"
+                        ? "bg-orange-500"
+                        : "bg-green-500"
                     }`}
-                    // eslint-disable-next-line
-                    style={{ width: `${Math.min(productsPercent, 100)}%` }}
+                    style={
+                      {
+                        "--width": `${Math.min(productsPercent, 100)}%`,
+                        width: "var(--width)",
+                      } as React.CSSProperties
+                    }
                   ></div>
                 </div>
               )}
@@ -321,15 +325,19 @@ export default function SubscriptionPage() {
               {limits.rfqs !== "unlimited" && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
+                    className={`h-2 rounded-full transition-all duration-300 ${
                       rfqsPercent >= 100
                         ? "bg-red-500"
                         : rfqsPercent >= 80
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    // eslint-disable-next-line
-                    style={{ width: `${Math.min(rfqsPercent, 100)}%` }}
+                    style={
+                      {
+                        "--width": `${Math.min(rfqsPercent, 100)}%`,
+                        width: "var(--width)",
+                      } as React.CSSProperties
+                    }
                   ></div>
                 </div>
               )}

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
 
