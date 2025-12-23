@@ -31,16 +31,28 @@ interface SubscriptionData {
   supplier_plans?: SupplierPlan | SupplierPlan[] | null
 }
 
-const apiKey = process.env['AZURE_OPENAI_API_KEY'];
-const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
-const deploymentName = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'];
+// Lazy initialization of OpenAI client to avoid build-time errors
+let client: OpenAI | null = null;
 
-const client = new OpenAI({
-    apiKey: apiKey!,
-    baseURL: `${endpoint}/openai/deployments/${deploymentName}`,
-    defaultQuery: { 'api-version': '2024-02-15-preview' },
-    defaultHeaders: { 'api-key': apiKey! },
-})
+function getOpenAIClient() {
+  if (!client) {
+    const apiKey = process.env['AZURE_OPENAI_API_KEY'];
+    const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+    const deploymentName = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'];
+
+    if (!apiKey || !endpoint || !deploymentName) {
+      throw new Error('Azure OpenAI configuration is missing. Please set AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, and AZURE_OPENAI_DEPLOYMENT_NAME environment variables.');
+    }
+
+    client = new OpenAI({
+      apiKey: apiKey,
+      baseURL: `${endpoint}/openai/deployments/${deploymentName}`,
+      defaultQuery: { 'api-version': '2024-02-15-preview' },
+      defaultHeaders: { 'api-key': apiKey },
+    });
+  }
+  return client;
+}
 
 export async function POST(req: Request) {
     const cookieStore = cookies()
@@ -176,8 +188,9 @@ Products available: ${products.map(p => p.name).join(', ')}
 Evaluate similarity and return JSON only: {"match_score": 0-100}`
 
     try {
-        const response = await client.chat.completions.create({
-            model: deploymentName!,
+        const openai = getOpenAIClient();
+        const response = await openai.chat.completions.create({
+            model: process.env['AZURE_OPENAI_DEPLOYMENT_NAME']!,
             messages: [{ role: 'user', content: prompt }],
             response_format: { type: 'json_object' },
         })
