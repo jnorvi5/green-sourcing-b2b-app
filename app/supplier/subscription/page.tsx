@@ -302,7 +302,7 @@ export default function SubscriptionPage() {
                         ? "orange"
                         : "green"
                     }`}
-                    // eslint-disable-next-line react-dom/no-unsafe-target-blank
+                    // eslint-disable-next-line
                     style={{ width: `${Math.min(productsPercent, 100)}%` }}
                   ></div>
                 </div>
@@ -328,7 +328,7 @@ export default function SubscriptionPage() {
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    // eslint-disable-next-line react-dom/no-unsafe-target-blank
+                    // eslint-disable-next-line
                     style={{ width: `${Math.min(rfqsPercent, 100)}%` }}
                   ></div>
                 </div>

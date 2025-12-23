@@ -6,7 +6,10 @@ import { AuthProvider } from "@/hooks/useAuth";
 
 // Dynamically import providers with error boundaries
 const PostHogProvider = dynamic(
-  () => import("@/components/PostHogProvider").then(mod => mod.PostHogProvider).catch(() => ({ default: ({ children }: any) => children })),
+  () =>
+    import("@/components/PostHogProvider")
+      .then((mod) => mod.PostHogProvider)
+      .catch(() => ({ default: ({ children }: any) => children })),
   { ssr: false }
 );
 // const PostHogProvider = dynamic(
@@ -31,11 +34,13 @@ const PostHogProvider = dynamic(
 
 export const metadata: Metadata = {
   title: "GreenChainz - Revit Plugin for Sustainable Design & Materials",
-  description: "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
+  description:
+    "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
   openGraph: {
     title: "GreenChainz - Revit Plugin for Sustainable Design",
-    description: "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
-    images: ['/images/plugin/demo-thumbnail.svg'],
+    description:
+      "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
+    images: ["/images/plugin/demo-thumbnail.svg"],
   },
   icons: {
     icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
@@ -80,7 +85,7 @@ export default function RootLayout({
             src="https://www.googletagmanager.com/ns.html?id=GTM-NV6SKWWJ"
             height="0"
             width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
+            className="hidden"
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
@@ -94,11 +99,11 @@ export default function RootLayout({
         {/* ✅ END COOKIEYES BANNER */}
         {/* <GoogleAnalytics /> */}
         {/* <PostHogProvider> */}
-          <AuthProvider>
-            {/* <IntercomProvider> */}
-              {children}
-            {/* </IntercomProvider> */}
-          </AuthProvider>
+        <AuthProvider>
+          {/* <IntercomProvider> */}
+          {children}
+          {/* </IntercomProvider> */}
+        </AuthProvider>
         {/* </PostHogProvider> */}
         {/* <AgentChat /> */}
       </body>
