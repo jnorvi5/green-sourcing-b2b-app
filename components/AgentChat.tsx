@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import {
@@ -124,12 +124,14 @@ export default function AgentChat() {
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-2 text-gray-400 hover:text-white transition"
+            aria-label={isExpanded ? "Collapse chat" : "Expand chat"}
           >
             {isExpanded ? <FaCompress /> : <FaExpand />}
           </button>
           <button
             onClick={() => setIsOpen(false)}
             className="p-2 text-gray-400 hover:text-white transition"
+            aria-label="Close chat"
           >
             <FaTimes />
           </button>
@@ -159,18 +161,9 @@ export default function AgentChat() {
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-800 text-gray-400 p-3 rounded-lg rounded-bl-none border border-gray-700 flex items-center gap-2">
-              <div
-                className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"
-                style={{ animationDelay: "0ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"
-                style={{ animationDelay: "150ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"
-                style={{ animationDelay: "300ms" }}
-              />
+              <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" />
+              <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce delay-150" />
+              <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce delay-300" />
               <span className="text-xs ml-1">Consulting databases...</span>
             </div>
           </div>
@@ -196,6 +189,7 @@ export default function AgentChat() {
             type="submit"
             disabled={!input.trim() || isLoading}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-teal-500 hover:text-teal-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            aria-label="Send message"
           >
             <FaPaperPlane />
           </button>
