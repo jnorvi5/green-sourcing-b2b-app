@@ -49,10 +49,6 @@ export default function ProjectDetailPage() {
 
   const supabase = createClient();
 
-  useEffect(() => {
-    if (id) loadData();
-  }, [id, loadData]);
-
   const loadData = useCallback(async () => {
     try {
       // Test Mode Check
@@ -136,6 +132,10 @@ export default function ProjectDetailPage() {
       setLoading(false);
     }
   }, [id, supabase]);
+
+  useEffect(() => {
+    if (id) loadData();
+  }, [id, loadData]);
 
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
