@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 /**
  * Subscription Management Dashboard
  * Allows suppliers to view and manage their subscription
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import type { SubscriptionStatusResponse } from '@/types/stripe';
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import type { SubscriptionStatusResponse } from "@/types/stripe";
 
 interface BillingHistoryItem {
   id: string;
@@ -46,8 +46,11 @@ interface BillingHistory {
 
 export default function SubscriptionPage() {
   const router = useRouter();
-  const [subscription, setSubscription] = useState<SubscriptionStatusResponse | null>(null);
-  const [billingHistory, setBillingHistory] = useState<BillingHistory | null>(null);
+  const [subscription, setSubscription] =
+    useState<SubscriptionStatusResponse | null>(null);
+  const [billingHistory, setBillingHistory] = useState<BillingHistory | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [loadingBilling, setLoadingBilling] = useState(false);
   const [canceling, setCanceling] = useState(false);
@@ -56,16 +59,18 @@ export default function SubscriptionPage() {
 
   const fetchSubscription = useCallback(async () => {
     try {
-      const response = await fetch('/api/stripe/subscription');
+      const response = await fetch("/api/stripe/subscription");
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch subscription');
+        throw new Error(data.error || "Failed to fetch subscription");
       }
 
       setSubscription(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load subscription');
+      setError(
+        err instanceof Error ? err.message : "Failed to load subscription"
+      );
     } finally {
       setLoading(false);
     }
@@ -74,16 +79,16 @@ export default function SubscriptionPage() {
   const fetchBillingHistory = useCallback(async () => {
     setLoadingBilling(true);
     try {
-      const response = await fetch('/api/stripe/billing-history');
+      const response = await fetch("/api/stripe/billing-history");
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch billing history');
+        throw new Error(data.error || "Failed to fetch billing history");
       }
 
       setBillingHistory(data);
     } catch (err) {
-      console.error('Failed to load billing history:', err);
+      console.error("Failed to load billing history:", err);
     } finally {
       setLoadingBilling(false);
     }
@@ -95,9 +100,9 @@ export default function SubscriptionPage() {
 
   async function handleManageBilling() {
     try {
-      const response = await fetch('/api/stripe/customer-portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/customer-portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           return_url: window.location.href,
         }),
@@ -106,13 +111,15 @@ export default function SubscriptionPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create portal session');
+        throw new Error(data.error || "Failed to create portal session");
       }
 
       // Redirect to Stripe Customer Portal
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+      setError(
+        err instanceof Error ? err.message : "Failed to open billing portal"
+      );
     }
   }
 
@@ -123,14 +130,14 @@ export default function SubscriptionPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/stripe/subscription', {
-        method: 'POST',
+      const response = await fetch("/api/stripe/subscription", {
+        method: "POST",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to cancel subscription');
+        throw new Error(data.error || "Failed to cancel subscription");
       }
 
       // Refresh subscription data
@@ -138,7 +145,9 @@ export default function SubscriptionPage() {
       setError(null);
       // Show success message in UI instead of alert
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to cancel subscription');
+      setError(
+        err instanceof Error ? err.message : "Failed to cancel subscription"
+      );
     } finally {
       setCanceling(false);
     }
@@ -149,20 +158,22 @@ export default function SubscriptionPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/stripe/subscription', {
-        method: 'DELETE',
+      const response = await fetch("/api/stripe/subscription", {
+        method: "DELETE",
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reactivate subscription');
+        throw new Error(data.error || "Failed to reactivate subscription");
       }
 
       await fetchSubscription();
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reactivate subscription');
+      setError(
+        err instanceof Error ? err.message : "Failed to reactivate subscription"
+      );
     } finally {
       setCanceling(false);
     }
@@ -183,9 +194,11 @@ export default function SubscriptionPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Failed to load subscription'}</p>
+          <p className="text-red-600 mb-4">
+            {error || "Failed to load subscription"}
+          </p>
           <button
-            onClick={() => router.push('/supplier/pricing')}
+            onClick={() => router.push("/supplier/pricing")}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             View Pricing
@@ -196,8 +209,14 @@ export default function SubscriptionPage() {
   }
 
   const { limits, usage } = subscription;
-  const productsPercent = limits.products === 'unlimited' ? 0 : (usage!.products_used / limits.products) * 100;
-  const rfqsPercent = limits.rfqs === 'unlimited' ? 0 : (usage!.rfqs_used_this_month / limits.rfqs) * 100;
+  const productsPercent =
+    limits.products === "unlimited"
+      ? 0
+      : (usage!.products_used / limits.products) * 100;
+  const rfqsPercent =
+    limits.rfqs === "unlimited"
+      ? 0
+      : (usage!.rfqs_used_this_month / limits.rfqs) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -214,35 +233,44 @@ export default function SubscriptionPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-2xl font-bold capitalize">{subscription.tier} Plan</h2>
+              <h2 className="text-2xl font-bold capitalize">
+                {subscription.tier} Plan
+              </h2>
               {subscription.has_subscription && (
                 <p className="text-gray-600 mt-1">
-                  Status: <span className="font-medium capitalize">{subscription.status}</span>
+                  Status:{" "}
+                  <span className="font-medium capitalize">
+                    {subscription.status}
+                  </span>
                 </p>
               )}
             </div>
-            {subscription.tier !== 'free' && subscription.tier !== 'verified' && (
-              <button
-                onClick={() => router.push('/supplier/pricing')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Upgrade
-              </button>
-            )}
+            {subscription.tier !== "free" &&
+              subscription.tier !== "verified" && (
+                <button
+                  onClick={() => router.push("/supplier/pricing")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Upgrade
+                </button>
+              )}
           </div>
 
           {subscription.has_subscription && (
             <>
               <div className="border-t pt-4 mt-4">
                 <p className="text-sm text-gray-600">
-                  Current period ends:{' '}
+                  Current period ends:{" "}
                   <span className="font-medium">
-                    {new Date(subscription.current_period_end!).toLocaleDateString()}
+                    {new Date(
+                      subscription.current_period_end!
+                    ).toLocaleDateString()}
                   </span>
                 </p>
                 {subscription.cancel_at_period_end && (
                   <p className="text-sm text-orange-600 mt-2">
-                    ⚠️ Your subscription will be canceled at the end of the billing period
+                    ⚠️ Your subscription will be canceled at the end of the
+                    billing period
                   </p>
                 )}
               </div>
@@ -260,15 +288,21 @@ export default function SubscriptionPage() {
               <div className="flex justify-between mb-2">
                 <span className="text-gray-700">Product Listings</span>
                 <span className="font-medium">
-                  {usage!.products_used} / {limits.products === 'unlimited' ? '∞' : limits.products}
+                  {usage!.products_used} /{" "}
+                  {limits.products === "unlimited" ? "∞" : limits.products}
                 </span>
               </div>
-              {limits.products !== 'unlimited' && (
+              {limits.products !== "unlimited" && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className={`progress-bar ${
-                      productsPercent >= 100 ? 'red' : productsPercent >= 80 ? 'orange' : 'green'
+                      productsPercent >= 100
+                        ? "red"
+                        : productsPercent >= 80
+                        ? "orange"
+                        : "green"
                     }`}
+                    // eslint-disable-next-line react-dom/no-unsafe-target-blank
                     style={{ width: `${Math.min(productsPercent, 100)}%` }}
                   ></div>
                 </div>
@@ -280,15 +314,21 @@ export default function SubscriptionPage() {
               <div className="flex justify-between mb-2">
                 <span className="text-gray-700">RFQs Received</span>
                 <span className="font-medium">
-                  {usage!.rfqs_used_this_month} / {limits.rfqs === 'unlimited' ? '∞' : limits.rfqs}
+                  {usage!.rfqs_used_this_month} /{" "}
+                  {limits.rfqs === "unlimited" ? "∞" : limits.rfqs}
                 </span>
               </div>
-              {limits.rfqs !== 'unlimited' && (
+              {limits.rfqs !== "unlimited" && (
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full ${
-                      rfqsPercent >= 100 ? 'bg-red-500' : rfqsPercent >= 80 ? 'bg-orange-500' : 'bg-green-500'
+                      rfqsPercent >= 100
+                        ? "bg-red-500"
+                        : rfqsPercent >= 80
+                        ? "bg-orange-500"
+                        : "bg-green-500"
                     }`}
+                    // eslint-disable-next-line react-dom/no-unsafe-target-blank
                     style={{ width: `${Math.min(rfqsPercent, 100)}%` }}
                   ></div>
                 </div>
@@ -302,39 +342,95 @@ export default function SubscriptionPage() {
           <h3 className="text-xl font-semibold mb-4">Your Features</h3>
           <ul className="space-y-2">
             <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
-              <span>{limits.visibility === 'premium' ? 'Premium' : 'Standard'} visibility</span>
+              <span>
+                {limits.visibility === "premium" ? "Premium" : "Standard"}{" "}
+                visibility
+              </span>
             </li>
             {limits.analytics && (
               <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-500 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
-                <span>{limits.analytics === 'advanced' ? 'Advanced' : 'Basic'} analytics</span>
+                <span>
+                  {limits.analytics === "advanced" ? "Advanced" : "Basic"}{" "}
+                  analytics
+                </span>
               </li>
             )}
             {limits.verified_badge && (
               <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-500 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span>Verified badge on profile</span>
               </li>
             )}
             {limits.epd_verifications > 0 && (
               <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-500 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span>{limits.epd_verifications} EPD verification/month</span>
               </li>
             )}
             {limits.ranking_boost > 1 && (
               <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-500 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span>{limits.ranking_boost}x search ranking boost</span>
               </li>
@@ -354,7 +450,7 @@ export default function SubscriptionPage() {
                 Manage Billing
               </button>
               <button
-                onClick={() => router.push('/supplier/pricing')}
+                onClick={() => router.push("/supplier/pricing")}
                 className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
                 Change Plan
@@ -365,7 +461,7 @@ export default function SubscriptionPage() {
                   disabled={canceling}
                   className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                 >
-                  {canceling ? 'Processing...' : 'Reactivate Subscription'}
+                  {canceling ? "Processing..." : "Reactivate Subscription"}
                 </button>
               ) : (
                 <button
@@ -378,7 +474,8 @@ export default function SubscriptionPage() {
               )}
             </div>
             <p className="text-sm text-gray-500 mt-4">
-              Use &quot;Manage Billing&quot; to update payment methods, view invoices, or change billing details.
+              Use &quot;Manage Billing&quot; to update payment methods, view
+              invoices, or change billing details.
             </p>
           </div>
         )}
@@ -393,10 +490,10 @@ export default function SubscriptionPage() {
                 disabled={loadingBilling}
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
-                {loadingBilling ? 'Loading...' : 'Refresh'}
+                {loadingBilling ? "Loading..." : "Refresh"}
               </button>
             </div>
-            
+
             {!billingHistory && !loadingBilling && (
               <button
                 onClick={fetchBillingHistory}
@@ -414,8 +511,11 @@ export default function SubscriptionPage() {
 
             {billingHistory && (
               <div className="space-y-4">
-                {billingHistory.invoices.length === 0 && billingHistory.payments.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No billing history yet</p>
+                {billingHistory.invoices.length === 0 &&
+                billingHistory.payments.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">
+                    No billing history yet
+                  </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -442,10 +542,12 @@ export default function SubscriptionPage() {
                         {billingHistory.invoices.map((invoice) => (
                           <tr key={invoice.id}>
                             <td className="px-4 py-3 text-sm text-gray-900">
-                              {new Date(invoice.created_at).toLocaleDateString()}
+                              {new Date(
+                                invoice.created_at
+                              ).toLocaleDateString()}
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-900">
-                              {invoice.description || 'Subscription payment'}
+                              {invoice.description || "Subscription payment"}
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-900">
                               ${(invoice.amount_cents / 100).toFixed(2)}
@@ -453,11 +555,11 @@ export default function SubscriptionPage() {
                             <td className="px-4 py-3 text-sm">
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  invoice.status === 'paid'
-                                    ? 'bg-green-100 text-green-800'
-                                    : invoice.status === 'open'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-gray-100 text-gray-800'
+                                  invoice.status === "paid"
+                                    ? "bg-green-100 text-green-800"
+                                    : invoice.status === "open"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
                                 }`}
                               >
                                 {invoice.status}
@@ -499,10 +601,11 @@ export default function SubscriptionPage() {
         {!subscription.has_subscription && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
             <p className="text-gray-700 mb-4">
-              You&apos;re currently on the Free plan. Upgrade to unlock more features!
+              You&apos;re currently on the Free plan. Upgrade to unlock more
+              features!
             </p>
             <button
-              onClick={() => router.push('/supplier/pricing')}
+              onClick={() => router.push("/supplier/pricing")}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               View Pricing Plans
@@ -517,11 +620,14 @@ export default function SubscriptionPage() {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold mb-4">Cancel Subscription?</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to cancel your subscription? You will retain access until the end of your billing period on{' '}
+              Are you sure you want to cancel your subscription? You will retain
+              access until the end of your billing period on{" "}
               <span className="font-medium">
                 {subscription.current_period_end
-                  ? new Date(subscription.current_period_end).toLocaleDateString()
-                  : 'your billing period ends'}
+                  ? new Date(
+                      subscription.current_period_end
+                    ).toLocaleDateString()
+                  : "your billing period ends"}
               </span>
               .
             </p>
@@ -538,7 +644,7 @@ export default function SubscriptionPage() {
                 disabled={canceling}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {canceling ? 'Canceling...' : 'Yes, Cancel'}
+                {canceling ? "Canceling..." : "Yes, Cancel"}
               </button>
             </div>
           </div>
