@@ -116,12 +116,14 @@ This creates:
 
 ### Using Stripe CLI
 
-1. Install Stripe CLI: https://stripe.com/docs/stripe-cli
+1. Install Stripe CLI: [stripe.com/docs/stripe-cli](https://stripe.com/docs/stripe-cli)
 2. Login: `stripe login`
 3. Forward webhooks to local server:
+
    ```bash
    stripe listen --forward-to localhost:3001/api/stripe/webhook
    ```
+
 4. Copy the webhook signing secret from CLI output
 5. Use test card: `4242 4242 4242 4242` (any future expiry, any CVC)
 

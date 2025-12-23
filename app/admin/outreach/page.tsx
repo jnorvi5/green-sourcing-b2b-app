@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-'use client';
+"use client";
 
 /**
  * Outreach Dashboard Page
- * 
+ *
  * Admin interface for managing outreach leads and emails.
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ILead,
   LeadStatus,
@@ -15,10 +15,10 @@ import {
   LeadPriority,
   EmailType,
   EmailTone,
-} from '../../../types/outreach';
-import OutreachStats from './components/OutreachStats';
-import LeadList from './components/LeadList';
-import LeadDetail from './components/LeadDetail';
+} from "../../../types/outreach";
+import OutreachStats from "./components/OutreachStats";
+import LeadList from "./components/LeadList";
+import LeadDetail from "./components/LeadDetail";
 
 interface CreateLeadForm {
   companyName: string;
@@ -36,18 +36,18 @@ interface CreateLeadForm {
 }
 
 const initialFormState: CreateLeadForm = {
-  companyName: '',
-  contactName: '',
-  email: '',
-  role: '',
-  phone: '',
-  website: '',
+  companyName: "",
+  contactName: "",
+  email: "",
+  role: "",
+  phone: "",
+  website: "",
   leadType: LeadType.SUPPLIER,
-  source: '',
+  source: "",
   priority: LeadPriority.MEDIUM,
-  notes: '',
-  companyDescription: '',
-  customHook: '',
+  notes: "",
+  companyDescription: "",
+  customHook: "",
 };
 
 export default function OutreachPage() {
@@ -56,17 +56,18 @@ export default function OutreachPage() {
   const [selectedLead, setSelectedLead] = useState<ILead | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filters
-  const [statusFilter, setStatusFilter] = useState<LeadStatus | ''>('');
-  const [typeFilter, setTypeFilter] = useState<LeadType | ''>('');
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
+  const [typeFilter, setTypeFilter] = useState<LeadType | "">("");
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createForm, setCreateForm] = useState<CreateLeadForm>(initialFormState);
+  const [createForm, setCreateForm] =
+    useState<CreateLeadForm>(initialFormState);
   const [isCreating, setIsCreating] = useState(false);
-  
+
   // Action states
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -75,21 +76,25 @@ export default function OutreachPage() {
   const fetchLeads = useCallback(async () => {
     try {
       const params = new URLSearchParams();
-      if (statusFilter) params.set('status', statusFilter);
-      if (typeFilter) params.set('leadType', typeFilter);
-      if (searchQuery) params.set('search', searchQuery);
+      if (statusFilter) params.set("status", statusFilter);
+      if (typeFilter) params.set("leadType", typeFilter);
+      if (searchQuery) params.set("search", searchQuery);
 
       const response = await fetch(`/api/outreach/leads?${params.toString()}`);
-      const data = await response.json() as { success: boolean; leads: ILead[]; error?: string };
-      
+      const data = (await response.json()) as {
+        success: boolean;
+        leads: ILead[];
+        error?: string;
+      };
+
       if (data.success) {
         setLeads(data.leads);
         setError(null);
       } else {
-        setError(data.error || 'Failed to fetch leads');
+        setError(data.error || "Failed to fetch leads");
       }
     } catch (err) {
-      setError('Network error while fetching leads');
+      setError("Network error while fetching leads");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -106,9 +111,9 @@ export default function OutreachPage() {
     setIsCreating(true);
 
     try {
-      const response = await fetch('/api/outreach/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/outreach/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...createForm,
           context: {
@@ -118,17 +123,21 @@ export default function OutreachPage() {
         }),
       });
 
-      const data = await response.json() as { success: boolean; lead?: ILead; error?: string };
+      const data = (await response.json()) as {
+        success: boolean;
+        lead?: ILead;
+        error?: string;
+      };
 
       if (data.success) {
         setShowCreateModal(false);
         setCreateForm(initialFormState);
         await fetchLeads();
       } else {
-        setError(data.error || 'Failed to create lead');
+        setError(data.error || "Failed to create lead");
       }
     } catch (err) {
-      setError('Network error while creating lead');
+      setError("Network error while creating lead");
       console.error(err);
     } finally {
       setIsCreating(false);
@@ -138,18 +147,18 @@ export default function OutreachPage() {
   // Update selected lead
   const handleUpdateLead = (updatedLead: ILead) => {
     setSelectedLead(updatedLead);
-    setLeads(leads.map(l => l._id === updatedLead._id ? updatedLead : l));
+    setLeads(leads.map((l) => (l._id === updatedLead._id ? updatedLead : l)));
   };
 
   // Generate email
   const handleGenerateEmail = async (emailType: EmailType, tone: EmailTone) => {
     if (!selectedLead?._id) return;
-    
+
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/outreach/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/outreach/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           leadId: selectedLead._id,
           emailType,
@@ -157,20 +166,28 @@ export default function OutreachPage() {
         }),
       });
 
-      const data = await response.json() as { success: boolean; error?: string };
+      const data = (await response.json()) as {
+        success: boolean;
+        error?: string;
+      };
 
       if (data.success) {
         // Refresh lead to get new email
-        const leadResponse = await fetch(`/api/outreach/leads/${selectedLead._id}`);
-        const leadData = await leadResponse.json() as { success: boolean; lead?: ILead };
+        const leadResponse = await fetch(
+          `/api/outreach/leads/${selectedLead._id}`
+        );
+        const leadData = (await leadResponse.json()) as {
+          success: boolean;
+          lead?: ILead;
+        };
         if (leadData.success && leadData.lead) {
           handleUpdateLead(leadData.lead);
         }
       } else {
-        setError(data.error || 'Failed to generate email');
+        setError(data.error || "Failed to generate email");
       }
     } catch (err) {
-      setError('Network error while generating email');
+      setError("Network error while generating email");
       console.error(err);
     } finally {
       setIsGenerating(false);
@@ -178,29 +195,40 @@ export default function OutreachPage() {
   };
 
   // Approve email
-  const handleApproveEmail = async (emailIndex: number, editedSubject?: string, editedBody?: string) => {
+  const handleApproveEmail = async (
+    emailIndex: number,
+    editedSubject?: string,
+    editedBody?: string
+  ) => {
     if (!selectedLead?._id) return;
 
     try {
-      const response = await fetch(`/api/outreach/leads/${selectedLead._id}/approve-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          emailIndex,
-          editedSubject,
-          editedBody,
-        }),
-      });
+      const response = await fetch(
+        `/api/outreach/leads/${selectedLead._id}/approve-email`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            emailIndex,
+            editedSubject,
+            editedBody,
+          }),
+        }
+      );
 
-      const data = await response.json() as { success: boolean; lead?: ILead; error?: string };
+      const data = (await response.json()) as {
+        success: boolean;
+        lead?: ILead;
+        error?: string;
+      };
 
       if (data.success && data.lead) {
         handleUpdateLead(data.lead);
       } else {
-        setError(data.error || 'Failed to approve email');
+        setError(data.error || "Failed to approve email");
       }
     } catch (err) {
-      setError('Network error while approving email');
+      setError("Network error while approving email");
       console.error(err);
     }
   };
@@ -211,29 +239,37 @@ export default function OutreachPage() {
 
     setIsSending(true);
     try {
-      const response = await fetch('/api/outreach/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/outreach/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           leadId: selectedLead._id,
           emailIndex,
         }),
       });
 
-      const data = await response.json() as { success: boolean; error?: string };
+      const data = (await response.json()) as {
+        success: boolean;
+        error?: string;
+      };
 
       if (data.success) {
         // Refresh lead to get updated email status
-        const leadResponse = await fetch(`/api/outreach/leads/${selectedLead._id}`);
-        const leadData = await leadResponse.json() as { success: boolean; lead?: ILead };
+        const leadResponse = await fetch(
+          `/api/outreach/leads/${selectedLead._id}`
+        );
+        const leadData = (await leadResponse.json()) as {
+          success: boolean;
+          lead?: ILead;
+        };
         if (leadData.success && leadData.lead) {
           handleUpdateLead(leadData.lead);
         }
       } else {
-        setError(data.error || 'Failed to send email');
+        setError(data.error || "Failed to send email");
       }
     } catch (err) {
-      setError('Network error while sending email');
+      setError("Network error while sending email");
       console.error(err);
     } finally {
       setIsSending(false);
@@ -246,8 +282,12 @@ export default function OutreachPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-100">Outreach Dashboard</h1>
-            <p className="text-gray-400">Manage leads and AI-powered email campaigns</p>
+            <h1 className="text-3xl font-bold text-gray-100">
+              Outreach Dashboard
+            </h1>
+            <p className="text-gray-400">
+              Manage leads and AI-powered email campaigns
+            </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
@@ -262,7 +302,10 @@ export default function OutreachPage() {
         {error && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 flex items-center justify-between">
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="text-red-300 hover:text-red-100">
+            <button
+              onClick={() => setError(null)}
+              className="text-red-300 hover:text-red-100"
+            >
               ✕
             </button>
           </div>
@@ -274,7 +317,7 @@ export default function OutreachPage() {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Lead List */}
-          <div className={selectedLead ? 'lg:col-span-2' : 'lg:col-span-3'}>
+          <div className={selectedLead ? "lg:col-span-2" : "lg:col-span-3"}>
             {isLoading ? (
               <div className="bg-gray-800/50 rounded-xl p-8 text-center">
                 <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" />
@@ -315,14 +358,16 @@ export default function OutreachPage() {
         {/* Create Lead Modal */}
         {showCreateModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div 
+            <div
               className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               onClick={() => setShowCreateModal(false)}
             />
-            
+
             <div className="relative bg-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h2 className="text-lg font-semibold text-gray-100">Add New Lead</h2>
+                <h2 className="text-lg font-semibold text-gray-100">
+                  Add New Lead
+                </h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-400 hover:text-gray-200 transition-colors"
@@ -334,22 +379,38 @@ export default function OutreachPage() {
               <form onSubmit={handleCreateLead} className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Company Name *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Company Name *
+                    </label>
                     <input
                       type="text"
                       required
                       value={createForm.companyName}
-                      onChange={(e) => setCreateForm({ ...createForm, companyName: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          companyName: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="e.g. Acme Corp"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Contact Name *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Contact Name *
+                    </label>
                     <input
                       type="text"
                       required
                       value={createForm.contactName}
-                      onChange={(e) => setCreateForm({ ...createForm, contactName: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          contactName: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="e.g. John Doe"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -357,22 +418,38 @@ export default function OutreachPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Email *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Email *
+                    </label>
                     <input
                       type="email"
                       required
                       value={createForm.email}
-                      onChange={(e) => setCreateForm({ ...createForm, email: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          email: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="john@example.com"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Role *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Role *
+                    </label>
                     <input
                       type="text"
                       required
                       value={createForm.role}
-                      onChange={(e) => setCreateForm({ ...createForm, role: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          role: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="e.g. Sustainability Manager"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -380,20 +457,36 @@ export default function OutreachPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Phone</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Phone
+                    </label>
                     <input
                       type="tel"
                       value={createForm.phone}
-                      onChange={(e) => setCreateForm({ ...createForm, phone: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          phone: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="+1 (555) 000-0000"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Website</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Website
+                    </label>
                     <input
                       type="url"
                       value={createForm.website}
-                      onChange={(e) => setCreateForm({ ...createForm, website: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          website: e.currentTarget.value,
+                        })
+                      }
+                      placeholder="https://example.com"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
@@ -401,36 +494,60 @@ export default function OutreachPage() {
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Type *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Type *
+                    </label>
                     <select
                       required
                       value={createForm.leadType}
-                      onChange={(e) => setCreateForm({ ...createForm, leadType: e.currentTarget.value as LeadType })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          leadType: e.currentTarget.value as LeadType,
+                        })
+                      }
+                      aria-label="Lead type"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     >
                       {Object.values(LeadType).map((type) => (
                         <option key={type} value={type}>
-                          {type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
+                          {type.replace("_", " ").charAt(0).toUpperCase() +
+                            type.replace("_", " ").slice(1)}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Source *</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Source *
+                    </label>
                     <input
                       type="text"
                       required
                       placeholder="LinkedIn, Referral, etc."
                       value={createForm.source}
-                      onChange={(e) => setCreateForm({ ...createForm, source: e.currentTarget.value })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          source: e.currentTarget.value,
+                        })
+                      }
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400 block mb-1">Priority</label>
+                    <label className="text-sm text-gray-400 block mb-1">
+                      Priority
+                    </label>
                     <select
                       value={createForm.priority}
-                      onChange={(e) => setCreateForm({ ...createForm, priority: e.currentTarget.value as LeadPriority })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          priority: e.currentTarget.value as LeadPriority,
+                        })
+                      }
+                      aria-label="Lead priority"
                       className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
                     >
                       {Object.values(LeadPriority).map((priority) => (
@@ -443,10 +560,17 @@ export default function OutreachPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-400 block mb-1">Company Description (for AI)</label>
+                  <label className="text-sm text-gray-400 block mb-1">
+                    Company Description (for AI)
+                  </label>
                   <textarea
                     value={createForm.companyDescription}
-                    onChange={(e) => setCreateForm({ ...createForm, companyDescription: e.currentTarget.value })}
+                    onChange={(e) =>
+                      setCreateForm({
+                        ...createForm,
+                        companyDescription: e.currentTarget.value,
+                      })
+                    }
                     rows={2}
                     placeholder="Brief description for personalized emails..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -454,10 +578,17 @@ export default function OutreachPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-400 block mb-1">Custom Hook (why reaching out)</label>
+                  <label className="text-sm text-gray-400 block mb-1">
+                    Custom Hook (why reaching out)
+                  </label>
                   <textarea
                     value={createForm.customHook}
-                    onChange={(e) => setCreateForm({ ...createForm, customHook: e.currentTarget.value })}
+                    onChange={(e) =>
+                      setCreateForm({
+                        ...createForm,
+                        customHook: e.currentTarget.value,
+                      })
+                    }
                     rows={2}
                     placeholder="Reason for reaching out to this specific lead..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -465,10 +596,17 @@ export default function OutreachPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-400 block mb-1">Notes</label>
+                  <label className="text-sm text-gray-400 block mb-1">
+                    Notes
+                  </label>
                   <textarea
                     value={createForm.notes}
-                    onChange={(e) => setCreateForm({ ...createForm, notes: e.currentTarget.value })}
+                    onChange={(e) =>
+                      setCreateForm({
+                        ...createForm,
+                        notes: e.currentTarget.value,
+                      })
+                    }
                     rows={2}
                     placeholder="Internal notes..."
                     className="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -488,7 +626,7 @@ export default function OutreachPage() {
                     disabled={isCreating}
                     className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
-                    {isCreating ? 'Creating...' : 'Create Lead'}
+                    {isCreating ? "Creating..." : "Create Lead"}
                   </button>
                 </div>
               </form>

@@ -87,6 +87,7 @@ export default function LeadList({
             onStatusFilter(e.target.value as LeadStatus | "")
           }
           className="bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
+          aria-label="Filter by status"
         >
           <option value="">All Statuses</option>
           {Object.values(LeadStatus).map((status) => (
@@ -104,6 +105,7 @@ export default function LeadList({
             onTypeFilter(e.target.value as LeadType | "")
           }
           className="bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:border-emerald-500"
+          aria-label="Filter by type"
         >
           <option value="">All Types</option>
           {Object.values(LeadType).map((type) => (

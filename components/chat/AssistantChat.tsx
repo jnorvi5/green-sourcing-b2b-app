@@ -48,6 +48,7 @@ export default function AssistantChat({ userId }: { userId: string }) {
     return (
       <button
         onClick={() => setIsOpen(true)}
+        aria-label="Open chat"
         className="fixed bottom-4 right-4 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700 transition"
       >
         <svg
@@ -74,6 +75,7 @@ export default function AssistantChat({ userId }: { userId: string }) {
         <h3 className="font-semibold">GreenChainz Assistant</h3>
         <button
           onClick={() => setIsOpen(false)}
+          aria-label="Close chat"
           className="hover:text-gray-200"
         >
           <svg
