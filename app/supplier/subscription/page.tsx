@@ -302,12 +302,7 @@ export default function SubscriptionPage() {
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    style={
-                      {
-                        "--width": `${Math.min(productsPercent, 100)}%`,
-                        width: "var(--width)",
-                      } as React.CSSProperties
-                    }
+                    style={productProgressStyle}
                   ></div>
                 </div>
               )}
@@ -332,12 +327,7 @@ export default function SubscriptionPage() {
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    style={
-                      {
-                        "--width": `${Math.min(rfqsPercent, 100)}%`,
-                        width: "var(--width)",
-                      } as React.CSSProperties
-                    }
+                    style={rfqProgressStyle}
                   ></div>
                 </div>
               )}
