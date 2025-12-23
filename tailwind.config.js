@@ -48,6 +48,17 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand System Colors
+        brand: {
+          teal: {
+            500: "#218a8d",
+            700: "#1a7473",
+            300: "#32b8c6",
+          },
+          gold: "#D4AF37",
+          green: "#2db648",
+          cream: "#fcfcf9",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
