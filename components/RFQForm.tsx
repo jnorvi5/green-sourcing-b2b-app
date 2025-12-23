@@ -237,6 +237,7 @@ export default function RFQForm() {
                       size="sm"
                       onClick={() => remove(index)}
                       className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      aria-label="Remove material"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
