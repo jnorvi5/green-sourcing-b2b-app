@@ -7,6 +7,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BuyCleanActCountdown from "@/components/BuyCleanActCountdown";
+import AssistantChat from "@/components/chat/AssistantChat";
+import {
+  FaSearch,
+  FaMapMarkerAlt,
   FaLeaf,
   FaBalanceScale,
   FaPaperPlane,
