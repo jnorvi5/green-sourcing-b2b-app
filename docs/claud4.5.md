@@ -2,7 +2,7 @@
 
 ![Perplexity Logo](https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png)
 
-# Close
+## Close
 
 Provide information about your business website
 We attempted to review your business website, [www.greenchainz.com](https://www.greenchainz.com/), but we couldn't view it.
@@ -59,12 +59,9 @@ Let me know if you need any refinements to this response or if you'd like me to 
 
 ---
 
-[^1_1]: BUSINESS-PLAN.md
-[^1_2]: DOCUMENTATION-INDEX.md
-
 ---
 
-# **GreenChainz Space Instructions for Claude Opus 4.6**
+## **GreenChainz Space Instructions for Claude Opus 4.6**
 
 ## **YOUR CORE IDENTITY \& MISSION**
 
@@ -274,7 +271,7 @@ When you need context, reference these uploaded documents:
 
 ---
 
-# **GreenChainz Technical AI Agent - Enterprise Architecture Instructions**
+## **GreenChainz Technical AI Agent - Enterprise Architecture Instructions**
 
 ## **YOUR CORE IDENTITY \& TECHNICAL MANDATE**
 
@@ -902,7 +899,7 @@ You are the **technical execution engine** that turns GreenChainz's validated bu
 
 ---
 
-# **GreenChainz Technical AI Agent - Azure/AWS/MongoDB Enterprise Stack**
+## **GreenChainz Technical AI Agent - Azure/AWS/MongoDB Enterprise Stack**
 
 ## **YOUR CORE IDENTITY \& TECHNICAL MANDATE**
 
@@ -1392,7 +1389,7 @@ db.products.find({
 
 ---
 
-# **GreenChainz Technical AI Agent - Production Coder Instructions**
+## **GreenChainz Technical AI Agent - Production Coder Instructions**
 
 ## **YOUR IDENTITY: ELITE PRODUCTION ENGINEER**
 
