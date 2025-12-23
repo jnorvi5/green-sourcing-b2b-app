@@ -881,10 +881,11 @@ function ArchitectDashboardInner() {
               <div className="mb-6 bg-gray-800 p-4 rounded-lg flex items-start gap-4">
                 <div className="w-16 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                   {rfqTargetProduct.image_url && (
-                    <img
+                    <Image
                       src={rfqTargetProduct.image_url}
                       alt={rfqTargetProduct.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   )}
                 </div>
