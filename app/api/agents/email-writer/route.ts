@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export const dynamic = 'force-dynamic';
@@ -15,8 +16,11 @@ export async function POST(request: NextRequest) {
     purpose = body.purpose;
     context = body.context;
 
-    // Check if OpenAI API key is configured
-    if (!process.env.OPENAI_API_KEY && !isAIEnabled) {
+    const hasOpenAI = !!process.env.OPENAI_API_KEY;
+    const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+
+    // Check if any AI provider is configured
+    if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
       console.warn('No AI provider configured. Returning static template.');
       return NextResponse.json({
         success: true,
@@ -127,7 +131,8 @@ Subject: [subject line]
     }
 
     // Fallback to standard OpenAI if Azure failed or not enabled, and API key exists
-    if (process.env.OPENAI_API_KEY) {
+    if (hasOpenAI) {
+      try {
         const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
         });
@@ -187,6 +192,75 @@ Instructions:
         };
 
         return NextResponse.json({ success: true, email: emailTemplate });
+      } catch (openAIError) {
+        console.error('OpenAI generation failed:', openAIError);
+        // Fall through to Anthropic or static
+      }
+    }
+
+    // Try Anthropic if enabled and OpenAI failed or wasn't available
+    if (hasAnthropic) {
+      try {
+        const anthropic = new Anthropic({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+        });
+
+        const prompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}
+
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.`;
+
+        const message = await anthropic.messages.create({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+          system: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        });
+
+        const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
+
+        // Parse the generated text to extract subject and body
+        let subject = `GreenChainz - ${purpose}`;
+        let body = generatedText;
+
+        // Robustly extract the subject line
+        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
+
+        if (subjectMatch) {
+            subject = subjectMatch[1].trim();
+            // Remove the subject line (and any preceding label) from the body
+            body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
+        }
+
+        emailTemplate = {
+            subject,
+            body,
+            metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                model: 'claude-3-5-sonnet-20241022',
+                provider: 'anthropic'
+            }
+        };
+
+        return NextResponse.json({ success: true, email: emailTemplate });
+
+      } catch (anthropicError) {
+        console.error('Anthropic generation failed:', anthropicError);
+        // Fall through to static
+      }
     }
 
     // Final fallback
