@@ -7,16 +7,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BuyCleanActCountdown from "@/components/BuyCleanActCountdown";
-import AssistantChat from "@/components/chat/AssistantChat";
-import {
-  FaSearch,
-  FaMapMarkerAlt,
   FaLeaf,
   FaBalanceScale,
   FaPaperPlane,
   FaCheckSquare,
-  FaTimes,
+  FaTimes, // eslint-disable-line @typescript-eslint/no-unused-vars
 } from "react-icons/fa";
+import Image from "next/image";
 
 // Types
 interface Product {
@@ -656,10 +653,11 @@ function ArchitectDashboardInner() {
               >
                 <div className="h-48 bg-gray-800 relative">
                   {product.image_url ? (
-                    <img
+                    <Image
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-600">
@@ -775,10 +773,11 @@ function ArchitectDashboardInner() {
                     >
                       <div className="h-40 bg-gray-700 rounded-lg mb-4 overflow-hidden">
                         {product.image_url ? (
-                          <img
+                          <Image
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                           />
                         ) : (
                           <div className="flex items-center justify-center h-full text-gray-500">

@@ -15,7 +15,7 @@
     },
     "types": ["node", "jest"],
     "jsx": "preserve",
-    "strict": false,
+    "strict": true,
     "noUncheckedIndexedAccess": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
