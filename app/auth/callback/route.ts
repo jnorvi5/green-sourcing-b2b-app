@@ -4,11 +4,17 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next')
 
   const supabase = await createClient()
 
   if (code) {
     await supabase.auth.exchangeCodeForSession(code)
+  }
+
+  // If next param is present, redirect there
+  if (next) {
+    return NextResponse.redirect(`${requestUrl.origin}${next}`)
   }
 
   // Get user to check role and redirect appropriately
