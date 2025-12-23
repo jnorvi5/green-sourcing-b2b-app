@@ -44,6 +44,56 @@ interface RFQ {
   };
 }
 
+// Mock Data for Test Mode
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: "p1",
+    name: "Eco-Friendly Insulation Batts",
+    description: "Recycled glass insulation with low embodied carbon.",
+    gwp: 1.2,
+    supplier: {
+      company_name: "GreenBuild Supplies",
+      location: "Portland, OR",
+    },
+    certifications: ["LEED", "Greenguard"],
+    image_url:
+      "https://images.unsplash.com/photo-1599696846175-654877797745?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p2",
+    name: "Reclaimed Oak Flooring",
+    description: "Sustainably sourced reclaimed wood flooring.",
+    gwp: 0.5,
+    supplier: { company_name: "Heritage Timbers", location: "Austin, TX" },
+    certifications: ["FSC Recycled"],
+    image_url:
+      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p3",
+    name: "Low-Carbon Concrete Block",
+    description: "Concrete blocks made with fly ash and recycled aggregates.",
+    gwp: 8.5,
+    supplier: { company_name: "CarbonCure Inc", location: "Seattle, WA" },
+    certifications: ["EPD Verified"],
+    image_url:
+      "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p4",
+    name: "Hempcrete Panels",
+    description: "Carbon-negative wall panels made from hemp hurds.",
+    gwp: -1.5,
+    supplier: {
+      company_name: "Sustainable Structures",
+      location: "Denver, CO",
+    },
+    certifications: ["Bio-based"],
+    image_url:
+      "https://images.unsplash.com/photo-1594488518606-4b24c6e91307?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+];
+
 function ArchitectDashboardInner() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [profile, setProfile] = useState<{
@@ -79,145 +129,8 @@ function ArchitectDashboardInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Mock Data for Test Mode
-  const MOCK_PRODUCTS: Product[] = [
-    {
-      id: "p1",
-      name: "Eco-Friendly Insulation Batts",
-      description: "Recycled glass insulation with low embodied carbon.",
-      gwp: 1.2,
-      supplier: {
-        company_name: "GreenBuild Supplies",
-        location: "Portland, OR",
-      },
-      certifications: ["LEED", "Greenguard"],
-      image_url:
-        "https://images.unsplash.com/photo-1599696846175-654877797745?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p2",
-      name: "Reclaimed Oak Flooring",
-      description: "Sustainably sourced reclaimed wood flooring.",
-      gwp: 0.5,
-      supplier: { company_name: "Heritage Timbers", location: "Austin, TX" },
-      certifications: ["FSC Recycled"],
-      image_url:
-        "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p3",
-      name: "Low-Carbon Concrete Block",
-      description: "Concrete blocks made with fly ash and recycled aggregates.",
-      gwp: 8.5,
-      supplier: { company_name: "CarbonCure Inc", location: "Seattle, WA" },
-      certifications: ["EPD Verified"],
-      image_url:
-        "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p4",
-      name: "Hempcrete Panels",
-      description: "Carbon-negative wall panels made from hemp hurds.",
-      gwp: -0.5,
-      supplier: { company_name: "HempBlock", location: "Denver, CO" },
-      certifications: ["C2C Silver"],
-      image_url:
-        "https://images.unsplash.com/photo-1595846519845-68e298c2edd8?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-  ];
-
-  const loadDashboard = useCallback(async () => {
-    try {
-      // Check if using test token
-      const token = localStorage.getItem("auth-token");
-      const isTest = token?.startsWith("test_");
-      setIsTestMode(isTest || false);
-
-      if (isTest) {
-        // Demo data for test mode
-        const userType = localStorage.getItem("user-type");
-        setUser({
-          id: "test-user",
-          email:
-            userType === "supplier"
-              ? "demo@supplier.com"
-              : "demo@architect.com",
-        });
-        setProfile({
-          id: "test-user",
-          full_name:
-            userType === "supplier" ? "Demo Supplier" : "Demo Architect",
-          role: "architect",
-        });
-        setSentRFQs([
-          {
-            id: "1",
-            created_at: new Date().toISOString(),
-            message: "This is a demo RFQ in test mode",
-            status: "Pending",
-            profiles: { company_name: "Demo Supplier" },
-          },
-        ]);
-        setSearchResults(MOCK_PRODUCTS); // Initial load of mock products
-        setLoading(false);
-        return;
-      }
-
-      // Production: Use real Supabase
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-      setUser(user);
-
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (profileData?.role !== "architect") {
-        router.push("/");
-        return;
-      }
-      setProfile(profileData);
-
-      // Load sent RFQs
-      const { data: rfqsData } = await supabase
-        .from("rfqs")
-        .select(
-          `
-          *,
-          profiles!rfqs_supplier_id_fkey(company_name)
-        `
-        )
-        .eq("architect_id", user.id)
-        .order("created_at", { ascending: false });
-
-      setSentRFQs(rfqsData || []);
-
-      // Initial Product Load
-      await handleSearch();
-    } catch (error) {
-      console.error("Dashboard error:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase, router]);
-
-  useEffect(() => {
-    loadDashboard();
-    if (searchParams && searchParams.get("rfq") === "created") {
-      setShowSuccessMessage(true);
-      setTimeout(() => setShowSuccessMessage(false), 5000);
-    }
-  }, [loadDashboard, searchParams]);
-
   // Search Handler
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     setIsSearching(true);
     try {
       if (isTestMode) {
@@ -252,6 +165,7 @@ function ArchitectDashboardInner() {
         if (searchTerm) {
           query = query.ilike("name", `%${searchTerm}%`);
         }
+        // apply other filters ...
 
         const { data: productData, error: productError } = await query;
         if (productError) throw productError;
@@ -341,7 +255,97 @@ function ArchitectDashboardInner() {
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [isTestMode, searchTerm, locationFilter, carbonThreshold, supabase]);
+
+  const loadDashboard = useCallback(async () => {
+    try {
+      // Check if using test token
+      const token = localStorage.getItem("auth-token");
+      const isTest = token?.startsWith("test_");
+      setIsTestMode(isTest || false);
+
+      if (isTest) {
+        // Demo data for test mode
+        const userType = localStorage.getItem("user-type");
+        setUser({
+          id: "test-user",
+          email:
+            userType === "supplier"
+              ? "demo@supplier.com"
+              : "demo@architect.com",
+        });
+        setProfile({
+          id: "test-user",
+          full_name:
+            userType === "supplier" ? "Demo Supplier" : "Demo Architect",
+          role: "architect",
+        });
+        setSentRFQs([
+          {
+            id: "1",
+            created_at: new Date().toISOString(),
+            message: "This is a demo RFQ in test mode",
+            status: "Pending",
+            profiles: { company_name: "Demo Supplier" },
+          },
+        ]);
+        setSearchResults(MOCK_PRODUCTS); // Initial load of mock products
+        setLoading(false);
+        return;
+      }
+
+      // Production: Use real Supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+      setUser(user);
+
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profileData?.role !== "architect") {
+        router.push("/");
+        return;
+      }
+      setProfile(profileData);
+
+      // Load sent RFQs
+      const { data: rfqsData } = await supabase
+        .from("rfqs")
+        .select(
+          `
+          *,
+          profiles!rfqs_supplier_id_fkey(company_name)
+        `
+        )
+        .eq("architect_id", user.id)
+        .order("created_at", { ascending: false });
+
+      setSentRFQs(rfqsData || []);
+
+      // Initial Product Load handled by separate effect
+    } catch (error) {
+      console.error("Dashboard error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase, router]);
+
+  useEffect(() => {
+    loadDashboard();
+    handleSearch(); // Initial search
+    if (searchParams && searchParams.get("rfq") === "created") {
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, [loadDashboard, handleSearch, searchParams]);
 
   // Comparison Logic
   const toggleCompare = (product: Product) => {
