@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatShortDate } from "@/lib/utils/formatters";
@@ -34,7 +34,7 @@ interface RFQ {
 
 export default function ProjectDetailPage() {
   const params = useParams();
-  const id = params?.['id'] as string;
+  const id = params?.["id"] as string;
   const [project, setProject] = useState<Project | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [rfqs, setRfqs] = useState<RFQ[]>([]);
@@ -51,9 +51,9 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     if (id) loadData();
-  }, [id]);
+  }, [id, loadData]);
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       // Test Mode Check
       const token = localStorage.getItem("auth-token");
@@ -135,7 +135,7 @@ export default function ProjectDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id, supabase]);
 
   const handleAddMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
