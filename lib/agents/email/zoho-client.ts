@@ -14,11 +14,7 @@ class ZohoMailClient {
             clientId: process.env['ZOHO_CLIENT_ID']!,
             clientSecret: process.env['ZOHO_CLIENT_SECRET']!,
             refreshToken: process.env['ZOHO_REFRESH_TOKEN']!,
-<<<<<<< HEAD
-            accountId: process.env['ZOHO_ACCOUNT_ID']!
-=======
             accountId: process.env['ZOHO_ACCOUNT_ID']!,
->>>>>>> fd168402960996d95b98e9a96bf7650bddb9d034
         };
     }
 
