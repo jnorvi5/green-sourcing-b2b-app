@@ -228,16 +228,6 @@ export default function SubscriptionPage() {
     width: "var(--width)",
   } as React.CSSProperties;
 
-  const productProgressStyle = {
-    "--width": `${Math.min(productsPercent, 100)}%`,
-    width: "var(--width)",
-  } as React.CSSProperties;
-
-  const rfqProgressStyle = {
-    "--width": `${Math.min(rfqsPercent, 100)}%`,
-    width: "var(--width)",
-  } as React.CSSProperties;
-
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
