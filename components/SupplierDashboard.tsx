@@ -39,6 +39,7 @@ import {
 import { NotificationDropdown } from "@/components/supplier/NotificationDropdown";
 import { AnalyticsSection } from "@/components/supplier/AnalyticsSection";
 import { QuickAddProductModal } from "@/components/supplier/QuickAddProductModal";
+import { MobileBottomNav } from "@/components/supplier/MobileBottomNav";
 import { useSupplierNotifications } from "@/hooks/useSupplierNotifications";
 import {
   calculateMonthlyWinRate,
@@ -429,7 +430,7 @@ export function SupplierDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground pb-20 md:pb-8">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -1029,6 +1030,9 @@ export function SupplierDashboard() {
         onSuccess={() => loadDashboard(true)}
         supplierId={profile?.id || ''}
       />
+
+      {/* Mobile Bottom Navigation - NEW */}
+      <MobileBottomNav />
     </div>
   );
 }
