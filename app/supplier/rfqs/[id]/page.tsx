@@ -19,8 +19,15 @@ export default function SupplierRFQDetail() {
   const router = useRouter();
   const supabase = createClient();
 
+  interface DraftResponse {
+    matched_products: Array<{ product_id: string; product_name: string }>;
+    estimated_total: number;
+    lca_summary: string;
+    draft_message: string;
+  }
+
   const [rfq, setRfq] = useState<RfqWithResponse | null>(null);
-  const [draft, setDraft] = useState<any>(null);
+  const [draft, setDraft] = useState<DraftResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [drafting, setDrafting] = useState(false);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
@@ -270,7 +277,7 @@ export default function SupplierRFQDetail() {
                     Recommended Matching Products:
                   </h3>
                   <div className="grid gap-2">
-                    {draft.matched_products.map((p: any) => (
+                    {draft.matched_products.map((p) => (
                       <div
                         key={p.product_id}
                         className="bg-white/50 p-3 rounded-xl flex justify-between items-center border border-purple-100"
