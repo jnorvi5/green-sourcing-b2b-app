@@ -3,10 +3,15 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import RFQChatButton from "@/app/components/rfq-chat-button";
-import { createClient } from '@/lib/supabase/client';
-import type { RfqWithResponse } from '@/types/rfq';
-import { formatMaterialType, formatShortDate, getDeadlineUrgencyColor, getDeadlineUrgencyIcon } from '@/lib/utils/formatters';
-import QuoteSubmissionForm from '@/components/QuoteSubmissionForm';
+import { createClient } from "@/lib/supabase/client";
+import type { RfqWithResponse } from "@/types/rfq";
+import {
+  formatMaterialType,
+  formatShortDate,
+  getDeadlineUrgencyColor,
+  getDeadlineUrgencyIcon,
+} from "@/lib/utils/formatters";
+import QuoteSubmissionForm from "@/components/QuoteSubmissionForm";
 
 export default function SupplierRFQDetail() {
   const params = useParams();
@@ -28,28 +33,32 @@ export default function SupplierRFQDetail() {
   async function loadRfqDetails() {
     try {
       // Check auth
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
       if (authError || !authUser) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
       // Get supplier ID
       const { data: supplierData, error: supplierError } = await supabase
-        .from('suppliers')
-        .select('id')
-        .eq('user_id', authUser.id)
+        .from("suppliers")
+        .select("id")
+        .eq("user_id", authUser.id)
         .single();
 
       if (supplierError || !supplierData) {
-        router.push('/supplier/dashboard');
+        router.push("/supplier/dashboard");
         return;
       }
 
       // Fetch RFQ
       const { data: rfqData, error: rfqError } = await supabase
-        .from('rfqs')
-        .select(`
+        .from("rfqs")
+        .select(
+          `
           *,
           users!rfqs_architect_id_fkey(
             id,
@@ -58,22 +67,23 @@ export default function SupplierRFQDetail() {
             full_name,
             company_name
           )
-        `)
-        .eq('id', rfqId)
+        `
+        )
+        .eq("id", rfqId)
         .single();
 
       if (rfqError || !rfqData) {
-        console.error('Error fetching RFQ:', rfqError);
-        router.push('/supplier/rfqs');
+        console.error("Error fetching RFQ:", rfqError);
+        router.push("/supplier/rfqs");
         return;
       }
 
       // Fetch existing response
       const { data: responseData } = await supabase
-        .from('rfq_responses')
-        .select('*')
-        .eq('rfq_id', rfqId)
-        .eq('supplier_id', supplierData.id)
+        .from("rfq_responses")
+        .select("*")
+        .eq("rfq_id", rfqId)
+        .eq("supplier_id", supplierData.id)
         .maybeSingle();
 
       const enrichedRfq: RfqWithResponse = {
@@ -125,42 +135,53 @@ export default function SupplierRFQDetail() {
       <header className="flex justify-between items-center mb-10 pb-6 border-b">
         <div>
           <div className="flex items-center gap-3 mb-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200`}>
-                RFQ #{rfq.id.slice(0, 8).toUpperCase()}
-              </span>
-              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getDeadlineUrgencyColor(rfq.delivery_deadline)}`}>
-                {getDeadlineUrgencyIcon(rfq.delivery_deadline)} Due {formatShortDate(rfq.delivery_deadline)}
-              </span>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200`}
+            >
+              RFQ #{rfq.id.slice(0, 8).toUpperCase()}
+            </span>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold border ${getDeadlineUrgencyColor(
+                rfq.delivery_deadline
+              )}`}
+            >
+              {getDeadlineUrgencyIcon(rfq.delivery_deadline)} Due{" "}
+              {formatShortDate(rfq.delivery_deadline)}
+            </span>
           </div>
           <h1 className="text-3xl font-black text-gray-900">
             {rfq.project_name}
           </h1>
           <p className="text-gray-500">
-             {rfq.users?.company_name || rfq.users?.full_name || 'Architect'} • {rfq.project_location}
+            {rfq.users?.company_name || rfq.users?.full_name || "Architect"} •{" "}
+            {rfq.project_location}
           </p>
         </div>
         <div className="flex gap-3 items-center">
           <RFQChatButton rfq_id={rfqId} user_role="supplier" />
-           {rfq.rfq_response ? (
-                <div className="px-6 py-4 rounded-xl bg-blue-50 border border-blue-200 text-center">
-                  <p className="text-sm text-blue-800 mb-1">Quote Submitted</p>
-                  <p className="text-2xl font-bold text-blue-900">${rfq.rfq_response.quote_amount.toLocaleString()}</p>
-                </div>
-             ) : (
-               <button
-                 onClick={() => setShowQuoteModal(true)}
-                 disabled={rfq.status === 'closed' || rfq.status === 'expired'}
-                 className={`
+          {rfq.rfq_response ? (
+            <div className="px-6 py-4 rounded-xl bg-blue-50 border border-blue-200 text-center">
+              <p className="text-sm text-blue-800 mb-1">Quote Submitted</p>
+              <p className="text-2xl font-bold text-blue-900">
+                ${rfq.rfq_response.quote_amount.toLocaleString()}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowQuoteModal(true)}
+              disabled={rfq.status === "closed" || rfq.status === "expired"}
+              className={`
                    px-6 py-3 rounded-xl font-bold text-lg shadow-md transition transform hover:-translate-y-1
-                   ${rfq.status === 'closed' || rfq.status === 'expired'
-                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                     : 'bg-teal-600 hover:bg-teal-500 text-white'
+                   ${
+                     rfq.status === "closed" || rfq.status === "expired"
+                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                       : "bg-teal-600 hover:bg-teal-500 text-white"
                    }
                  `}
-               >
-                 {rfq.status === 'closed' ? 'RFQ Closed' : 'Submit Quote'}
-               </button>
-             )}
+            >
+              {rfq.status === "closed" ? "RFQ Closed" : "Submit Quote"}
+            </button>
+          )}
         </div>
       </header>
 
@@ -176,15 +197,18 @@ export default function SupplierRFQDetail() {
                   Material Type
                 </p>
                 <p className="font-semibold">
-                   {formatMaterialType(rfq.material_specs.material_type)}
+                  {formatMaterialType(rfq.material_specs.material_type)}
                 </p>
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-500 uppercase mb-1">
-                   Quantity Needed
+                  Quantity Needed
                 </p>
                 <p className="font-semibold">
-                   {rfq.material_specs.quantity.toLocaleString()} <span className="text-gray-400 text-sm">{rfq.material_specs.unit}</span>
+                  {rfq.material_specs.quantity.toLocaleString()}{" "}
+                  <span className="text-gray-400 text-sm">
+                    {rfq.material_specs.unit}
+                  </span>
                 </p>
               </div>
               <div>
@@ -197,25 +221,36 @@ export default function SupplierRFQDetail() {
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-500 uppercase mb-1">
-                   Required Certifications
+                  Required Certifications
                 </p>
                 <div className="flex flex-wrap gap-1">
-                     {rfq.required_certifications.length > 0 ? (
-                       rfq.required_certifications.map(c => (
-                         <span key={c} className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-full border border-emerald-100">{c}</span>
-                       ))
-                     ) : (
-                       <span className="text-gray-500 font-semibold">None specific</span>
-                     )}
+                  {rfq.required_certifications.length > 0 ? (
+                    rfq.required_certifications.map((c) => (
+                      <span
+                        key={c}
+                        className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-full border border-emerald-100"
+                      >
+                        {c}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 font-semibold">
+                      None specific
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-             {rfq.message && (
-                <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-                   <p className="text-xs font-bold text-gray-500 uppercase mb-1">Additional Message</p>
-                  <p className="text-gray-700 italic">"{rfq.message}"</p>
-                </div>
-              )}
+            {rfq.message && (
+              <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                <p className="text-xs font-bold text-gray-500 uppercase mb-1">
+                  Additional Message
+                </p>
+                <p className="text-gray-700 italic">
+                  &quot;{rfq.message}&quot;
+                </p>
+              </div>
+            )}
           </section>
 
           {draft && (
@@ -275,6 +310,7 @@ export default function SupplierRFQDetail() {
                   <textarea
                     className="w-full p-4 bg-white border border-purple-100 rounded-2xl h-48 focus:ring-2 focus:ring-purple-500 outline-none text-sm transition"
                     defaultValue={draft.draft_message}
+                    aria-label="Draft Quote Message"
                   />
                 </div>
 
@@ -319,7 +355,9 @@ export default function SupplierRFQDetail() {
               </div>
               <div>
                 <p className="font-bold text-sm">Lead Architect</p>
-                <p className="text-xs text-gray-500">{rfq.users?.company_name || "Company Confidential"}</p>
+                <p className="text-xs text-gray-500">
+                  {rfq.users?.company_name || "Company Confidential"}
+                </p>
               </div>
             </div>
             <p className="text-xs text-gray-400 pt-4 border-t border-dashed">
