@@ -7,6 +7,54 @@ export interface DashboardStats {
   pendingQuotes: number;
   acceptedQuotes: number;
   profileCompleteness: number;
+  // Enhanced metrics
+  averageResponseTime?: number;
+  winRate?: number;
+  monthlyRevenue?: number;
+  activeOpportunities?: number;
+}
+
+export interface Notification {
+  id: string;
+  type: 'new_rfq' | 'quote_status' | 'urgent_deadline' | 'milestone';
+  title: string;
+  message: string;
+  link?: string;
+  read: boolean;
+  created_at: string;
+}
+
+export interface AnalyticsData {
+  winRateData: Array<{
+    month: string;
+    winRate: number;
+    totalQuotes: number;
+    acceptedQuotes: number;
+  }>;
+  responseTime: {
+    averageHours: number;
+    status: 'good' | 'warning' | 'critical';
+    color: string;
+  };
+  revenueData: Array<{
+    month: string;
+    revenue: number;
+    growthPercent: number;
+  }>;
+  funnelData: Array<{
+    stage: string;
+    count: number;
+    percentage: number;
+  }>;
+}
+
+export interface PerformanceMetrics {
+  averageResponseTime: number;
+  responseTimeStatus: 'good' | 'warning' | 'critical';
+  winRate: number;
+  winRateTrend: 'up' | 'down' | 'stable';
+  monthlyRevenue: number;
+  activeOpportunities: number;
 }
 
 export interface IncomingRfq {
