@@ -62,14 +62,18 @@ export default function RootLayout({
           }}
         />
         {/* End Google Tag Manager */}
-        <link
-          rel="preconnect"
-          href="https://ezgnhyymoqxaplungbabj.supabase.co"
-        />
-        <link
-          rel="dns-prefetch"
-          href="https://ezgnhyymoqxaplungbabj.supabase.co"
-        />
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
+            <link
+              rel="dns-prefetch"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
+          </>
+        )}
       </head>
       <body className="bg-slate-950 text-white">
         {/* Google Tag Manager (noscript) */}

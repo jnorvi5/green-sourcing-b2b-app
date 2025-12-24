@@ -29,6 +29,8 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: npm ci
 
       - name: Run ESLint
@@ -53,6 +55,8 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: npm ci
 
       - name: Build for production
