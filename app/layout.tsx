@@ -25,6 +25,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 // );
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://app.greenchainz.com"),
   title: "GreenChainz - Revit Plugin for Sustainable Design & Materials",
   description:
     "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
