@@ -25,6 +25,10 @@ import {
   FiClock,
   FiAlertCircle,
   FiBarChart2,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiDollarSign,
+  FiTarget,
 } from "react-icons/fi";
 import { FaLeaf } from "react-icons/fa";
 import { ProductList } from "@/app/supplier/dashboard/ProductList";
@@ -32,6 +36,19 @@ import {
   getDeadlineUrgency,
   getDeadlineUrgencyIcon,
 } from "@/lib/utils/formatters";
+import { NotificationDropdown } from "@/components/supplier/NotificationDropdown";
+import { AnalyticsSection } from "@/components/supplier/AnalyticsSection";
+import { QuickAddProductModal } from "@/components/supplier/QuickAddProductModal";
+import { useSupplierNotifications } from "@/hooks/useSupplierNotifications";
+import {
+  calculateMonthlyWinRate,
+  calculateAverageResponseTime,
+  calculateMonthlyRevenue,
+  calculateQuoteFunnel,
+  calculateWinRate,
+  calculateMonthlyRevenueTotal,
+  countActiveOpportunities,
+} from "@/lib/analytics/supplierMetrics";
 
 // Safe error logging helper - only logs in development
 function logError(message: string, error: unknown): void {
@@ -54,9 +71,19 @@ export function SupplierDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
+
+  // Real-time notifications
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    clearNotifications,
+  } = useSupplierNotifications(profile?.id || null);
 
   useEffect(() => {
     loadDashboard();
@@ -255,6 +282,12 @@ export function SupplierDashboard() {
 
       setMyQuotes(transformedQuotes);
 
+      // Calculate enhanced metrics
+      const responseTimeData = calculateAverageResponseTime(transformedQuotes, transformedRfqs);
+      const winRate = calculateWinRate(transformedQuotes);
+      const monthlyRevenue = calculateMonthlyRevenueTotal(transformedQuotes);
+      const activeOpps = countActiveOpportunities(transformedRfqs);
+
       // Calculate stats
       const pendingQuotes = transformedQuotes.filter(
         (q) => q.status === "submitted" || q.status === "pending" // handle 'pending' status if DB uses that
@@ -268,6 +301,10 @@ export function SupplierDashboard() {
         pendingQuotes,
         acceptedQuotes,
         profileCompleteness: completeness,
+        averageResponseTime: responseTimeData.averageHours,
+        winRate,
+        monthlyRevenue,
+        activeOpportunities: activeOpps,
       });
     } catch (err) {
       logError("Dashboard error:", err);
@@ -405,6 +442,13 @@ export function SupplierDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <NotificationDropdown
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onMarkAsRead={markAsRead}
+              onMarkAllAsRead={markAllAsRead}
+              onClear={clearNotifications}
+            />
             <Button
               variant="outline"
               size="sm"
@@ -478,8 +522,8 @@ export function SupplierDashboard() {
           );
         })()}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Stats Cards - Enhanced with 8 cards total */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-2">
@@ -553,6 +597,101 @@ export function SupplierDashboard() {
               <p className="text-xs text-muted-foreground mt-1">Completeness</p>
             </CardContent>
           </Card>
+
+          {/* NEW Enhanced Performance Metrics Cards */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                  <FiClock className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-sm text-foreground">
+                  Avg Response
+                </h3>
+              </div>
+              <p className={`text-3xl font-bold ${
+                (stats.averageResponseTime || 0) < 12 ? 'text-emerald-500' :
+                (stats.averageResponseTime || 0) < 24 ? 'text-yellow-500' :
+                'text-red-500'
+              }`}>
+                {stats.averageResponseTime?.toFixed(1) || '0'}h
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {(stats.averageResponseTime || 0) < 12 ? '✅ Excellent' :
+                 (stats.averageResponseTime || 0) < 24 ? '⚠️ Good' :
+                 '🚨 Slow'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                  <FiTrendingUp className="w-5 h-5 text-teal-600" />
+                </div>
+                <h3 className="font-semibold text-sm text-foreground">
+                  Win Rate
+                </h3>
+              </div>
+              <p className="text-3xl font-bold text-foreground">
+                {stats.winRate || 0}%
+              </p>
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                {(stats.winRate || 0) >= 50 ? <FiTrendingUp className="text-emerald-500" /> : <FiTrendingDown className="text-red-500" />}
+                Quote success rate
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <FiDollarSign className="w-5 h-5 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-sm text-foreground">
+                  This Month
+                </h3>
+              </div>
+              <p className="text-3xl font-bold text-foreground">
+                ${((stats.monthlyRevenue || 0) / 1000).toFixed(1)}k
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Monthly revenue
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                  <FiTarget className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="font-semibold text-sm text-foreground">
+                  Active
+                </h3>
+              </div>
+              <p className="text-3xl font-bold text-foreground">
+                {stats.activeOpportunities || 0}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Live opportunities
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Analytics Section - NEW */}
+        <div className="mb-8">
+          <AnalyticsSection
+            winRateData={calculateMonthlyWinRate(myQuotes)}
+            responseTime={calculateAverageResponseTime(myQuotes, incomingRfqs)}
+            revenueData={calculateMonthlyRevenue(myQuotes)}
+            funnelData={calculateQuoteFunnel(incomingRfqs, myQuotes)}
+            loading={loading}
+          />
         </div>
 
         {/* Main Content Grid - 2 Column Layout on Desktop */}
@@ -873,6 +1012,23 @@ export function SupplierDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button (Mobile) - NEW */}
+      <button
+        onClick={() => setShowQuickAddModal(true)}
+        className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-teal-500 hover:bg-teal-600 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 z-40"
+        aria-label="Quick add product"
+      >
+        <FiPlus className="w-6 h-6" />
+      </button>
+
+      {/* Quick Add Product Modal - NEW */}
+      <QuickAddProductModal
+        isOpen={showQuickAddModal}
+        onClose={() => setShowQuickAddModal(false)}
+        onSuccess={() => loadDashboard(true)}
+        supplierId={profile?.id || ''}
+      />
     </div>
   );
 }
