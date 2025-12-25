@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
     // 1. Standalone output reduces the size of the deployment significantly
     output: "standalone",
 

@@ -335,8 +335,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-sm"
                   disabled={loading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <FiEyeOff className="w-5 h-5" />
@@ -349,8 +350,11 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="hidden peer" />
-                <div className="w-4 h-4 border border-primary rounded flex items-center justify-center peer-checked:bg-primary peer-checked:text-primary-foreground text-transparent">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                />
+                <div className="w-4 h-4 border border-primary rounded flex items-center justify-center peer-checked:bg-primary peer-checked:text-primary-foreground text-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2">
                   <FiCheckSquare className="w-3 h-3" />
                 </div>
                 {/* Fallback checkbox if custom one is tricky */}
