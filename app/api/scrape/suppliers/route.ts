@@ -1,102 +1,72 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-import { OpenAI } from 'openai'
-import { z } from 'zod'
-import { AZURE_DEPLOYMENT_CHEAP } from '@/lib/constants'
+import { createClient } from '@/utils/supabase/server';
+import { NextResponse } from 'next/server';
 
-const RequestSchema = z.object({
-    urls: z.array(z.string().url()),
-})
+export const maxDuration = 60; // Allow 60s for Vercel to wait for Azure
 
-export async function POST(req: Request) {
-    const client = new OpenAI({
-        apiKey: process.env['AZURE_OPENAI_API_KEY'],
-        baseURL: process.env['AZURE_OPENAI_ENDPOINT'],
-    })
-
-    const supabase = createServerClient(
-        process.env['NEXT_PUBLIC_SUPABASE_URL']!,
-        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
-        {
-            cookies: {
-                get: (name: string) => cookies().get(name)?.value,
-                set: () => { },
-                remove: () => { },
-            },
-        }
-    )
-
-    let body
-    try {
-        body = await req.json()
-    } catch (e) {
-        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Security Check: Ensure user is logged in
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const parse = RequestSchema.safeParse(body)
-    if (!parse.success) {
-        return NextResponse.json({ error: 'Invalid input', details: parse.error }, { status: 400 })
+    // 2. Get Data from Frontend
+    const body = await request.json();
+    const { targetUrl, supplierId } = body;
+
+    if (!targetUrl) {
+      return NextResponse.json({ error: 'Missing targetUrl' }, { status: 400 });
     }
-    const { urls } = parse.data
 
-    // Process in parallel with concurrency limit (e.g., 5)
-    // Simple Promise.all since typical batches are small (<10)
-    const results = await Promise.all(
-        urls.map(async (url) => {
-            try {
-                const websiteRes = await fetch(`https://api.firecrawl.dev/v0/scrape`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${process.env['FIRECRAWL_API_KEY']}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url }),
-                })
+    // 3. The Switch: Call Azure instead of doing it locally
+    // This URL will be in your Vercel Environment Variables
+    const azureFunctionUrl = process.env.AZURE_SCRAPER_FUNCTION_URL; 
 
-                const { data } = await websiteRes.json()
-                const scrapedText = data?.markdown || data?.text || ''
+    if (!azureFunctionUrl) {
+      console.error("❌ Configuration Error: AZURE_SCRAPER_FUNCTION_URL is missing.");
+      return NextResponse.json({ 
+        error: 'System configuration error. Please contact support.' 
+      }, { status: 500 });
+    }
 
-                const prompt = `Extract supplier information from this website content:
+    console.log(`🚀 Delegating scrape to Azure: ${targetUrl}`);
 
-${scrapedText}
+    // Call your Azure Function
+    const response = await fetch(azureFunctionUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUrl, supplierId }),
+    });
 
-Return ONLY valid JSON:
-{
-  "company_name": "...",
-  "location": "City, State",
-  "products": ["Product 1", "Product 2"],
-  "certifications": ["LEED", "FSC"],
-  "sustainability_features": ["recycled content", "low carbon"],
-  "contact_email": "info@company.com"
-}`
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Azure Scraper failed: ${response.status} ${errorText}`);
+    }
 
-                const aiRes = await client.chat.completions.create({
-                    model: AZURE_DEPLOYMENT_CHEAP,
-                    messages: [{ role: 'user', content: prompt }],
-                    response_format: { type: 'json_object' },
-                    max_tokens: 500,
-                })
+    const result = await response.json();
 
-                const extracted = JSON.parse(aiRes.choices[0].message.content!)
+    // 4. Update Database with results (if Azure sent data back)
+    if (result.success && result.data) {
+        // Save the scraped data to Supabase
+        const { error: dbError } = await supabase
+            .from('suppliers')
+            .update({ 
+                website_data: result.data, // Make sure your DB has this JSONB column
+                last_scraped_at: new Date().toISOString(),
+                status: 'verified' 
+            })
+            .eq('id', supplierId);
 
-                await supabase.from('supplier_scrapes').insert({
-                    source_url: url,
-                    company_name: extracted.company_name,
-                    location: extracted.location,
-                    products: extracted.products,
-                    certifications: extracted.certifications,
-                    contact_email: extracted.contact_email,
-                })
+        if (dbError) console.error('Database update failed:', dbError);
+    }
 
-                return { url, success: true, company: extracted.company_name }
-            } catch (error: unknown) {
-                console.error(`Scrape error for ${url}:`, error)
-                return { url, success: false, error: error instanceof Error ? error.message : 'Unknown error' }
-            }
-        })
-    )
+    return NextResponse.json(result);
 
-    return NextResponse.json({ results })
+  } catch (error: any) {
+    console.error('🔥 Scrape Proxy Error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
-
