@@ -16,6 +16,9 @@ const envSchema = z.object({
   // Stripe
   STRIPE_SECRET_KEY: z.string().optional().or(z.literal('')),
   STRIPE_WEBHOOK_SECRET: z.string().optional().or(z.literal('')),
+
+  // Azure Functions
+  AZURE_FUNCTIONS_BASE_URL: z.string().url().optional().or(z.literal('')),
 })
 
 export function validateEnv() {
@@ -37,6 +40,7 @@ export function validateEnv() {
         SUPABASE_SERVICE_ROLE_KEY: '',
         STRIPE_SECRET_KEY: '',
         STRIPE_WEBHOOK_SECRET: '',
+        AZURE_FUNCTIONS_BASE_URL: 'https://mock-func.azurewebsites.net',
       }
     }
   }

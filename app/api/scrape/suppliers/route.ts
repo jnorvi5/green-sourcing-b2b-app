@@ -45,51 +45,49 @@ export async function POST(req: Request) {
     const results = await Promise.all(
         urls.map(async (url) => {
             try {
-                const websiteRes = await fetch(`https://api.firecrawl.dev/v0/scrape`, {
+                // Call Azure Function instead of local scraping
+                const azureFunctionUrl = process.env.AZURE_FUNCTIONS_BASE_URL
+                    ? `${process.env.AZURE_FUNCTIONS_BASE_URL}/api/scrapeSupplier`
+                    : 'http://localhost:7071/api/scrapeSupplier'; // Default to local func if env not set
+
+                const response = await fetch(azureFunctionUrl, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${process.env['FIRECRAWL_API_KEY']}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ url }),
-                })
+                    body: JSON.stringify({ targetUrl: url }),
+                });
 
-                const { data } = await websiteRes.json()
-                const scrapedText = data?.markdown || data?.text || ''
+                if (!response.ok) {
+                    throw new Error(`Azure Function failed with status: ${response.status}`);
+                }
 
-                const prompt = `Extract supplier information from this website content:
+                const result = await response.json();
 
-${scrapedText}
+                if (!result.success) {
+                    throw new Error(result.error || 'Unknown error from Azure Function');
+                }
 
-Return ONLY valid JSON:
-{
-  "company_name": "...",
-  "location": "City, State",
-  "products": ["Product 1", "Product 2"],
-  "certifications": ["LEED", "FSC"],
-  "sustainability_features": ["recycled content", "low carbon"],
-  "contact_email": "info@company.com"
-}`
+                const { data } = result;
 
-                const aiRes = await client.chat.completions.create({
-                    model: AZURE_DEPLOYMENT_CHEAP,
-                    messages: [{ role: 'user', content: prompt }],
-                    response_format: { type: 'json_object' },
-                    max_tokens: 500,
-                })
-
-                const extracted = JSON.parse(aiRes.choices[0].message.content!)
+                // Store the scraped data in Supabase
+                // Note: The Azure Function returns basic metadata. 
+                // If we need deeper extraction (OpenAI), we might need to do it here 
+                // or move that logic to the Azure Function as well.
+                // For now, we store what we get.
 
                 await supabase.from('supplier_scrapes').insert({
                     source_url: url,
-                    company_name: extracted.company_name,
-                    location: extracted.location,
-                    products: extracted.products,
-                    certifications: extracted.certifications,
-                    contact_email: extracted.contact_email,
+                    company_name: data.title, // Fallback to title as company name
+                    location: 'Unknown', // Azure func doesn't extract this yet
+                    products: data.detectedProducts,
+                    certifications: [], // Azure func doesn't extract this yet
+                    contact_email: null, // Azure func doesn't extract this yet
+                    raw_data: data // Store full raw data for future processing
                 })
 
-                return { url, success: true, company: extracted.company_name }
+                return { url, success: true, company: data.title, products: data.detectedProducts }
+
             } catch (error: unknown) {
                 console.error(`Scrape error for ${url}:`, error)
                 return { url, success: false, error: error instanceof Error ? error.message : 'Unknown error' }
