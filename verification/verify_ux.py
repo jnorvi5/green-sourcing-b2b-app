@@ -4,9 +4,7 @@ from playwright.sync_api import sync_playwright, expect
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")
 
 def verify_login_a11y(page):
-    print("Navigating to login page...")
-    page.goto(f"{BASE_URL}/login")
-
+    """
     This function navigates to the login page and performs a series of checks:
     - Ensures the password visibility toggle button is visible with the
       expected initial aria-label ("Show password").
@@ -25,14 +23,13 @@ def verify_login_a11y(page):
             interact with the login UI at ``http://localhost:3000/login``.
     """
     print("Navigating to login page...")
-    page.goto("http://localhost:3000/login")
+    page.goto(f"{BASE_URL}/login")
 
     # Wait for the password toggle button to be visible
     print("Waiting for password toggle button...")
     toggle_btn = page.locator("button[aria-label='Show password']")
-    classes = checkbox.get_attribute("class") or ""
-    class_list = classes.split()
-    if "sr-only" in class_list:
+    expect(toggle_btn).to_be_visible()
+
     # Take a screenshot of initial state
     print("Taking screenshot of initial state...")
     page.screenshot(path="verification/login_initial.png")
