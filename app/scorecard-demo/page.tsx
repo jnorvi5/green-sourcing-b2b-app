@@ -16,6 +16,7 @@ export default function ScorecardDemoPage() {
     unit_type: "m3",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    certifications: [],
     suppliers: {
       id: "sup-001",
       user_id: "user-001",
@@ -58,12 +59,12 @@ export default function ScorecardDemoPage() {
         <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-lg text-blue-800 text-sm">
           <p className="font-semibold">ℹ️ Revit Plugin Simulation</p>
           <p className="mt-1">
-            "Current Swap: -12.4 Tons Embodied Carbon | +
+            &quot;Current Swap: -12.4 Tons Embodied Carbon | +
             {
               mockPlatinumProduct.sustainability_data?.leed_contribution
                 ?.total_points
             }{" "}
-            LEED Points toward Certification."
+            LEED Points toward Certification.&quot;
           </p>
         </div>
       </div>

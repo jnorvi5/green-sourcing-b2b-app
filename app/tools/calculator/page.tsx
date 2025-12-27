@@ -4,12 +4,24 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Leaf, Truck, Zap, FileText, MapPin, CheckCircle } from "lucide-react";
-import MotionWrapper from "@/components/ui/motion-wrapper";
+import { Leaf, Zap, FileText, MapPin, CheckCircle } from "lucide-react";
+import { FadeIn } from "@/components/ui/motion-wrapper";
+
+interface CalculationResult {
+  bestOption: {
+    name: string;
+    supplierName: string;
+    totalCarbon: number;
+    distance: number;
+    savings: number;
+    leedContribution: string;
+  };
+  error?: string;
+}
 
 export default function CarbonCalculatorPage() {
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<CalculationResult | null>(null);
   const [category, setCategory] = useState("Concrete");
   const [zipCode, setZipCode] = useState("");
   const [quantity, setQuantity] = useState(100);
@@ -45,7 +57,7 @@ export default function CarbonCalculatorPage() {
 
   return (
     <div className="min-h-screen bg-[#fcfcf9] py-12 px-4">
-      <MotionWrapper className="max-w-5xl mx-auto">
+      <FadeIn className="max-w-5xl mx-auto">
         <header className="mb-12 text-center">
           <span className="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full text-sm font-bold uppercase">
             Beta Access
@@ -79,6 +91,7 @@ export default function CarbonCalculatorPage() {
                   Material Type
                 </label>
                 <select
+                  aria-label="Material Type"
                   className="w-full p-2 border rounded-md bg-white border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -205,7 +218,7 @@ export default function CarbonCalculatorPage() {
             )}
           </div>
         </div>
-      </MotionWrapper>
+      </FadeIn>
     </div>
   );
 }

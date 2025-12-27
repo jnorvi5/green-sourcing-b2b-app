@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { calculateDistance, calculateTransportCarbon } from '@/lib/utils/geo';
 import { Product, Supplier } from '@/types/schema';
 
@@ -10,10 +10,25 @@ interface CalculationRequest {
     currentProductGWP: number;
 }
 
+interface ProductWithSupplier extends Product {
+    suppliers: Supplier | null;
+}
+
+interface RankedAlternative {
+    id: string;
+    name: string;
+    supplierName: string;
+    supplierLogo: string | null;
+    totalCarbon: number;
+    distance: number;
+    savings: number;
+    leedContribution: 'Significant' | 'Moderate';
+}
+
 export async function POST(req: Request) {
     try {
         const supabase = await createClient();
-        const { zipCode, category, quantity, currentProductGWP } = await req.json() as CalculationRequest;
+        const { category, quantity, currentProductGWP } = await req.json() as CalculationRequest;
 
         // 1. Mock Geocoding (In prod, use Google Geocoding API)
         // Let's assume the project is in Raleigh, NC (near our seeded supplier)
@@ -49,7 +64,7 @@ export async function POST(req: Request) {
         }
 
         // 3. Process and Rank
-        const comparisons = products.map((p: any) => {
+        const comparisons: RankedAlternative[] = products.map((p: ProductWithSupplier) => {
             const s = p.suppliers;
 
             // Skip if missing geo data on supplier
@@ -81,8 +96,8 @@ export async function POST(req: Request) {
                 leedContribution: totalImpact < (currentProductGWP * 0.8) ? 'Significant' : 'Moderate'
             };
         })
-            .filter(item => item !== null) // Remove items with missing data
-            .sort((a, b) => (a?.totalCarbon || 0) - (b?.totalCarbon || 0));
+            .filter((item): item is RankedAlternative => item !== null) // Remove items with missing data
+            .sort((a, b) => a.totalCarbon - b.totalCarbon);
 
         if (comparisons.length === 0) {
             return NextResponse.json({ error: "No products with sufficient data found" }, { status: 404 });
