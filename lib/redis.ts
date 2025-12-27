@@ -1,36 +1,54 @@
+import { redis } from '@/lib/redis'
+import { NextRequest, NextResponse } from 'next/server'
+
 /**
- * Mock Redis Client for GreenChainz
- * 
- * In-memory replacement for Redis to support agent caching
- * until a real Redis instance (like Upstash) is configured.
+ * GreenChainz Rate Limiter
+ * Uses Upstash Redis to implement a "Token Bucket" or "Fixed Window" limit.
  */
 
-class MockRedis {
-  private cache = new Map<string, { value: unknown; expiry: number }>();
+export interface RateLimitConfig {
+  limit: number      // Max requests
+  window: number     // Time window in seconds
+  identifier: string // Unique ID (IP address, User ID, or API Key)
+}
 
-  async get<T = unknown>(key: string): Promise<T | null> {
-    const item = this.cache.get(key);
-    if (!item) return null;
+export async function rateLimit(config: RateLimitConfig) {
+  if (!redis) {
+    // Fail open if Redis isn't configured so we don't break the app
+    console.warn('Redis not configured, skipping rate limit')
+    return { success: true, remaining: 100 }
+  }
 
-    if (Date.now() > item.expiry) {
-      this.cache.delete(key);
-      return null;
+  const { limit, window, identifier } = config
+  const key = `rate_limit:${identifier}`
+
+  try {
+    // Increment the counter for this identifier
+    const requests = await redis.incr(key)
+
+    // If this is the first request, set the expiry
+    if (requests === 1) {
+      await redis.expire(key, window)
     }
 
-    return item.value as T;
-  }
-
-  async set(key: string, value: unknown, options?: { ex?: number }): Promise<void> {
-    // Default TTL 24 hours if not specified
-    const ttlSeconds = options?.ex || 86400;
-    const expiry = Date.now() + (ttlSeconds * 1000);
+    const remaining = Math.max(0, limit - requests)
     
-    this.cache.set(key, { value, expiry });
-  }
-
-  async del(key: string): Promise<void> {
-    this.cache.delete(key);
+    return {
+      success: requests <= limit,
+      remaining,
+      limit,
+      window
+    }
+  } catch (error) {
+    console.error('Rate limit error:', error)
+    // Fail open on Redis error to maintain uptime
+    return { success: true, remaining: 1 } 
   }
 }
 
-export const redis = new MockRedis();
+/**
+ * Helper to get IP from request
+ */
+export function getIp(req: NextRequest): string {
+  return req.headers.get('x-forwarded-for') ?? '127.0.0.1'
+}
