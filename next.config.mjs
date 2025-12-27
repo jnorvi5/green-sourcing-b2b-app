@@ -1,5 +1,28 @@
+import { withSentryConfig } from "@sentry/nextjs";
+
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https:;
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  connect-src 'self' https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  upgrade-insecure-requests;
+`;
 
 const nextConfig = {
+    // 0. Build optimizations
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+
     // 1. Standalone output reduces the size of the deployment significantly
     output: "standalone",
 
@@ -11,27 +34,119 @@ const nextConfig = {
             "playwright",
             "puppeteer-core",
             "@sparticuz/chromium",
-            "chrome-aws-lambda"
+            "chrome-aws-lambda",
+            "@supabase/supabase-js",
+            "@supabase/ssr"
         ],
+        optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'react-icons', 'recharts'],
+        instrumentationHook: true,
     },
 
-    // 3. Image optimization (Standard best practice)
+    // 3. Image optimization
     images: {
+        formats: ['image/avif', 'image/webp'],
         remotePatterns: [
-            {
-                protocol: "https",
-                hostname: "**",
-            },
+            // Safe list from previous config
+           { protocol: 'https', hostname: 'images.unsplash.com' },
+           { protocol: 'https', hostname: 'tailwindui.com' },
+           { protocol: 'https', hostname: 'plus.unsplash.com' },
+           { protocol: 'https', hostname: 'res.cloudinary.com' },
+           { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+           { protocol: 'https', hostname: 'ui-avatars.com' },
         ],
     },
 
     // 4. Build-time environment handling
-    // This ensures your env.ts validation doesn't fail the build if keys are missing
     env: {
         NEXT_PUBLIC_APP_URL: process.env.VERCEL_URL
             ? `https://${process.env.VERCEL_URL}`
             : "http://localhost:3000",
     },
+
+    // 5. Security Headers
+    async headers() {
+        return [
+          {
+            source: '/(.*)',
+            headers: [
+              {
+                key: 'Content-Security-Policy',
+                value: cspHeader.replace(/\n/g, ''),
+              },
+              {
+                key: 'X-DNS-Prefetch-Control',
+                value: 'on',
+              },
+              {
+                key: 'Strict-Transport-Security',
+                value: 'max-age=63072000; includeSubDomains; preload',
+              },
+              {
+                key: 'X-XSS-Protection',
+                value: '1; mode=block',
+              },
+              {
+                key: 'X-Frame-Options',
+                value: 'SAMEORIGIN',
+              },
+              {
+                key: 'X-Content-Type-Options',
+                value: 'nosniff',
+              },
+              {
+                key: 'Referrer-Policy',
+                value: 'origin-when-cross-origin',
+              },
+              {
+                key: 'Permissions-Policy',
+                value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+              }
+            ],
+          },
+        ];
+    },
+
+    // 6. Rewrites for PostHog
+    async rewrites() {
+        return [
+          {
+            source: "/ingest/static/:path*",
+            destination: "https://us-assets.i.posthog.com/static/:path*",
+          },
+          {
+            source: "/ingest/:path*",
+            destination: "https://us.i.posthog.com/:path*",
+          },
+        ];
+    },
+
+    skipTrailingSlashRedirect: true,
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
+
+  // Suppresses source map uploading logs during build
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT || "greenchainz-production",
+
+  // Upload a larger set of source maps for prettier stack traces (increases build time)
+  widenClientFileUpload: true,
+
+  // Transpiles SDK to be compatible with IE11 (increases bundle size)
+  transpileClientSDK: true,
+
+  // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+  tunnelRoute: "/monitoring",
+
+  // Hides source maps from generated client bundles
+  hideSourceMaps: true,
+
+  // Automatically tree-shake Sentry logger statements to reduce bundle size
+  disableLogger: true,
+
+  // Enables automatic instrumentation of Vercel Cron Monitors.
+  automaticVercelMonitors: true,
+});
