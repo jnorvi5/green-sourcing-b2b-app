@@ -10,6 +10,10 @@ export interface Supplier {
   subscription_status?: 'active' | 'past_due' | 'canceled' | 'trialing';
   certifications: any[] | null; // JSONB
   geographic_coverage: string[] | null;
+  latitude?: number;
+  longitude?: number;
+  city?: string;
+  state?: string;
   total_rfqs_received: number;
   total_rfqs_won: number;
   avg_response_time_hours?: number;
@@ -76,6 +80,11 @@ export interface Product {
   post_consumer_pct?: number; // [NEW]
   pre_consumer_pct?: number;  // [NEW]
   thermal_conductivity?: number;
+
+  // New props for calculations
+  gwp_per_unit?: number;
+  unit_of_measure?: string;
+  kg_per_unit?: number; // For transport
 
   certifications: any[] | null; // Keep generic or type strictly if needed
   sustainability_data: ScorecardData | null; // [UPDATED] Typed Scorecard Data
