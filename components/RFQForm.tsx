@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // Types and Schemas
 const MaterialTypeEnum = z.enum([
@@ -178,31 +179,44 @@ export default function RFQForm() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Project Name *</label>
-                <Input {...form.register('project_name')} placeholder="e.g. Skyline Tower Renovation" />
+                <Label htmlFor="project_name">Project Name *</Label>
+                <Input
+                  id="project_name"
+                  {...form.register('project_name')}
+                  placeholder="e.g. Skyline Tower Renovation"
+                />
                 {form.formState.errors.project_name && (
-                  <p className="text-sm text-red-500">{form.formState.errors.project_name.message}</p>
+                  <p className="text-sm text-red-500" role="alert">{form.formState.errors.project_name.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Project Location *</label>
-                <Input {...form.register('project_location')} placeholder="e.g. Seattle, WA" />
+                <Label htmlFor="project_location">Project Location *</Label>
+                <Input
+                  id="project_location"
+                  {...form.register('project_location')}
+                  placeholder="e.g. Seattle, WA"
+                />
                 {form.formState.errors.project_location && (
-                  <p className="text-sm text-red-500">{form.formState.errors.project_location.message}</p>
+                  <p className="text-sm text-red-500" role="alert">{form.formState.errors.project_location.message}</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Delivery Deadline</label>
-                <Input type="date" {...form.register('delivery_deadline')} />
+                <Label htmlFor="delivery_deadline">Delivery Deadline</Label>
+                <Input
+                  id="delivery_deadline"
+                  type="date"
+                  {...form.register('delivery_deadline')}
+                />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">General Message / Notes</label>
+              <Label htmlFor="message">General Message / Notes</Label>
               <textarea
+                id="message"
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Any specific requirements or instructions for suppliers..."
                 {...form.register('message')}
@@ -247,8 +261,9 @@ export default function RFQForm() {
               <CardContent className="grid gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Type *</label>
+                    <Label htmlFor={`materials-${index}-type`}>Type *</Label>
                     <select
+                      id={`materials-${index}-type`}
                       className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...form.register(`materials.${index}.material_type`)}
                     >
@@ -266,32 +281,35 @@ export default function RFQForm() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Quantity *</label>
+                    <Label htmlFor={`materials-${index}-quantity`}>Quantity *</Label>
                     <Input
+                      id={`materials-${index}-quantity`}
                       type="number"
                       {...form.register(`materials.${index}.quantity`, { valueAsNumber: true })}
                       placeholder="0"
                     />
                     {form.formState.errors.materials?.[index]?.quantity && (
-                      <p className="text-sm text-red-500">{form.formState.errors.materials[index]?.quantity?.message}</p>
+                      <p className="text-sm text-red-500" role="alert">{form.formState.errors.materials[index]?.quantity?.message}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Unit *</label>
+                    <Label htmlFor={`materials-${index}-unit`}>Unit *</Label>
                     <Input
+                      id={`materials-${index}-unit`}
                       {...form.register(`materials.${index}.unit`)}
                       placeholder="e.g. sqft, pcs"
                     />
                     {form.formState.errors.materials?.[index]?.unit && (
-                      <p className="text-sm text-red-500">{form.formState.errors.materials[index]?.unit?.message}</p>
+                      <p className="text-sm text-red-500" role="alert">{form.formState.errors.materials[index]?.unit?.message}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div className="space-y-2">
-                    <label className="text-sm font-medium">Budget Range</label>
+                    <Label htmlFor={`materials-${index}-budget`}>Budget Range</Label>
                     <select
+                      id={`materials-${index}-budget`}
                       className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       {...form.register(`materials.${index}.budget_range`)}
                     >
@@ -303,8 +321,9 @@ export default function RFQForm() {
                     </select>
                   </div>
                    <div className="space-y-2">
-                    <label className="text-sm font-medium">Specs / Details</label>
+                    <Label htmlFor={`materials-${index}-specs`}>Specs / Details</Label>
                     <Input
+                      id={`materials-${index}-specs`}
                       {...form.register(`materials.${index}.specs`)}
                       placeholder="e.g. R-value > 30, Fire rating A"
                     />
