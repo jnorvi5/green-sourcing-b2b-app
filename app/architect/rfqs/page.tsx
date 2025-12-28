@@ -1,5 +1,3 @@
-'use client';
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -19,36 +17,36 @@ export default function ArchitectRfqsPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    loadRfqs();
-  }, []);
+    async function loadRfqs() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
 
-  async function loadRfqs() {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("rfqs")
-        .select(
+        const { data, error } = await supabase
+          .from("rfqs")
+          .select(
+            `
+            *,
+            quotes:rfq_responses(count),
+            projects(name)
           `
-          *,
-          quotes:rfq_responses(count),
-          projects(name)
-        `
-        )
-        .eq("architect_id", user.id)
-        .order("created_at", { ascending: false });
+          )
+          .eq("architect_id", user.id)
+          .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setRfqs(data || []);
-    } catch (err) {
-      console.error("Error loading RFQs:", err);
-    } finally {
-      setLoading(false);
+        if (error) throw error;
+        setRfqs(data || []);
+      } catch (err) {
+        console.error("Error loading RFQs:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
+
+    loadRfqs();
+  }, [supabase]);
 
   if (loading) {
     return (
@@ -100,7 +98,8 @@ export default function ArchitectRfqsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-xl font-semibold mb-2 group-hover:text-green-400 transition">
-                      {rfq.projects?.name ? `${rfq.projects.name} - ` : ''}{rfq.project_name}
+                      {rfq.projects?.name ? `${rfq.projects.name} - ` : ""}
+                      {rfq.project_name}
                     </h3>
                     <div className="flex gap-4 text-sm text-gray-400">
                       <span>{rfq.material_specs.material_type}</span>

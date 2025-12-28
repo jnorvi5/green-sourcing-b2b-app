@@ -110,7 +110,7 @@ export function Scorecard({ product }: ScorecardProps) {
       {/* 📊 The Core Metrics */}
       <div className="p-6">
         <h3 className="text-sm uppercase tracking-wider text-gray-500 font-semibold mb-4">
-          📊 Core Metrics (The "Must-Haves")
+          📊 Core Metrics (The &quot;Must-Haves&quot;)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {metrics.map((metric, idx) => (
@@ -152,7 +152,7 @@ export function Scorecard({ product }: ScorecardProps) {
       {/* 🛡️ Risk & Verification */}
       <div className="p-6 border-t border-gray-100 bg-slate-50">
         <h3 className="text-sm uppercase tracking-wider text-gray-500 font-semibold mb-4">
-          🛡️ Risk & Verification (The "Safety Net")
+          🛡️ Risk & Verification (The &quot;Safety Net&quot;)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-start gap-3">
@@ -213,7 +213,7 @@ export function Scorecard({ product }: ScorecardProps) {
         <div className="flex items-center gap-3 mb-4">
           <Leaf className="w-6 h-6 text-emerald-600" />
           <h3 className="text-lg font-bold text-emerald-900">
-            LEED v5 Contribution (The "Win")
+            LEED v5 Contribution (The &quot;Win&quot;)
           </h3>
         </div>
 
