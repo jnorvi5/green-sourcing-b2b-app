@@ -1,0 +1,11 @@
+# Ignore local verification artifacts
+verification/screenshots/
+verification/*.png
+verification/*.log
+verification/*.csv
+verification/*.md
+
+# Ignore accidental zips and downloads
+*.zip
+*.rar
+*.tar.gz
