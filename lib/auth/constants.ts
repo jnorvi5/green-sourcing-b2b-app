@@ -1,5 +1,7 @@
 const isProduction = process.env.NODE_ENV === 'production';
 
+// SECURITY: In production, this fallback should never be used.
+// Ensure JWT_SECRET is set in your environment variables.
 export const JWT_SECRET = process.env.JWT_SECRET || 'default-dev-secret-do-not-use-in-prod-32chars';
 
 if (isProduction && JWT_SECRET === 'default-dev-secret-do-not-use-in-prod-32chars') {

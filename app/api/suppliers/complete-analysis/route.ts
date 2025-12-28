@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
 
     try {
         // 1. AUDITOR
-        const auditRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/suppliers/audit-epd`, {
+        const auditRes = await fetch(`${process.env['NEXT_PUBLIC_BASE_URL']}/api/suppliers/audit-epd`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ supplierId, epdDocument }),
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         const audit = await auditRes.json();
 
         // 2. COMPLIANCE
-        const complianceRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/materials/compliance-check`, {
+        const complianceRes = await fetch(`${process.env['NEXT_PUBLIC_BASE_URL']}/api/materials/compliance-check`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         const compliance = await complianceRes.json();
 
         // 3. CARBON
-        const carbonRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/materials/carbon-alternatives`, {
+        const carbonRes = await fetch(`${process.env['NEXT_PUBLIC_BASE_URL']}/api/materials/carbon-alternatives`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         const carbon = await carbonRes.json();
 
         // 4. PRICING
-        const pricingRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/suppliers/pricing-recommendation`, {
+        const pricingRes = await fetch(`${process.env['NEXT_PUBLIC_BASE_URL']}/api/suppliers/pricing-recommendation`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -62,7 +62,8 @@ export async function POST(req: NextRequest) {
             status: "complete",
             timestamp: new Date().toISOString(),
         });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

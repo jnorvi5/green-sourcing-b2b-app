@@ -127,8 +127,9 @@ export async function POST(
     // Let's leave RFQ status alone unless business logic dictates otherwise.
 
     return NextResponse.json({ success: true, quote });
-  } catch (error: any) {
-    console.error('Error in quote submission:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Error in quote submission:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
