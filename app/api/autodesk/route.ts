@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
  * GET /api/autodesk
  * Health check + endpoint discovery
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   return NextResponse.json(
     {
       status: 'active',
@@ -30,9 +30,9 @@ export async function GET(request: NextRequest) {
  * Router for requests without explicit endpoint
  * Expects: { action: string, ...payload }
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { action } = body;
 
     if (!action) {

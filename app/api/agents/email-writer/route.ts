@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     purpose = body.purpose;
     context = body.context;
 
-    const hasOpenAI = !!process.env.OPENAI_API_KEY;
-    const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+    const hasOpenAI = !!process.env['OPENAI_API_KEY'];
+    const hasAnthropic = !!process.env['ANTHROPIC_API_KEY'];
 
     // Check if any AI provider is configured
     if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
@@ -30,7 +30,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Default mock response structure
-    let emailTemplate: any = {
+    interface EmailTemplate {
+      subject: string;
+      body: string;
+      metadata: {
+        generatedAt: string;
+        recipientType: string;
+        purpose: string;
+        model?: string;
+        provider?: string;
+        isStatic?: boolean;
+      };
+    }
+
+    let emailTemplate: EmailTemplate = {
       subject: `GreenChainz - ${purpose}`,
       body: `Hi [Name],
 
@@ -101,25 +114,25 @@ Subject: [subject line]
         let body = text;
 
         if (subjectLine) {
-            subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-            // Assuming body follows subject
-            const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
-            body = lines.slice(bodyStart).join('\n').trim();
+          subject = subjectLine.replace(/^subject:\s*/i, '').trim();
+          // Assuming body follows subject
+          const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
+          body = lines.slice(bodyStart).join('\n').trim();
         } else {
-            // Fallback if formatting is off, treat whole text as body
-            body = text.trim();
+          // Fallback if formatting is off, treat whole text as body
+          body = text.trim();
         }
 
         emailTemplate = {
-            subject,
-            body,
-            metadata: {
-                generatedAt: new Date().toISOString(),
-                recipientType,
-                purpose,
-                provider: 'azure-openai',
-                model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
-            }
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            provider: 'azure-openai',
+            model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
+          }
         };
 
         return NextResponse.json({ success: true, email: emailTemplate });
@@ -134,7 +147,7 @@ Subject: [subject line]
     if (hasOpenAI) {
       try {
         const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
+          apiKey: process.env['OPENAI_API_KEY'],
         });
 
         const prompt = `Write a professional B2B email for GreenChainz:
@@ -150,18 +163,18 @@ Instructions:
 `;
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
-                },
-                {
-                    role: 'user',
-                    content: prompt
-                }
-            ],
-            temperature: 0.7,
+          model: 'gpt-4',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
         });
 
         const generatedText = completion.choices[0]?.message?.content || '';
@@ -174,21 +187,21 @@ Instructions:
         const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
 
         if (subjectMatch) {
-            subject = subjectMatch[1].trim();
-            // Remove the subject line (and any preceding label) from the body
-            body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
+          subject = subjectMatch[1].trim();
+          // Remove the subject line (and any preceding label) from the body
+          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
         }
 
         emailTemplate = {
-            subject,
-            body,
-            metadata: {
-                generatedAt: new Date().toISOString(),
-                recipientType,
-                purpose,
-                model: 'gpt-4',
-                provider: 'openai'
-            }
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            model: 'gpt-4',
+            provider: 'openai'
+          }
         };
 
         return NextResponse.json({ success: true, email: emailTemplate });
@@ -202,7 +215,7 @@ Instructions:
     if (hasAnthropic) {
       try {
         const anthropic = new Anthropic({
-          apiKey: process.env.ANTHROPIC_API_KEY,
+          apiKey: process.env['ANTHROPIC_API_KEY'],
         });
 
         const prompt = `Write a professional B2B email for GreenChainz:
@@ -238,21 +251,21 @@ Instructions:
         const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
 
         if (subjectMatch) {
-            subject = subjectMatch[1].trim();
-            // Remove the subject line (and any preceding label) from the body
-            body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
+          subject = subjectMatch[1].trim();
+          // Remove the subject line (and any preceding label) from the body
+          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
         }
 
         emailTemplate = {
-            subject,
-            body,
-            metadata: {
-                generatedAt: new Date().toISOString(),
-                recipientType,
-                purpose,
-                model: 'claude-3-5-sonnet-20241022',
-                provider: 'anthropic'
-            }
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            model: 'claude-3-5-sonnet-20241022',
+            provider: 'anthropic'
+          }
         };
 
         return NextResponse.json({ success: true, email: emailTemplate });

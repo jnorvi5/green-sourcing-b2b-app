@@ -48,14 +48,15 @@ export async function GET(
     }
 
     if (product.supplier_id !== supplier.id) {
-       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Remove the joined supplier data before returning if necessary, or just return the product fields.
     // The select("*") might include joined data if we asked for it, but here we did select("*, suppliers!inner(user_id)").
     // We should probably just clean it up.
 
-    const { suppliers, ...cleanProduct } = product;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { suppliers: _suppliers, ...cleanProduct } = product;
     return NextResponse.json(cleanProduct);
 
   } catch (error) {
@@ -99,11 +100,11 @@ export async function PUT(
       .single();
 
     if (checkError || !existingProduct) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     if (existingProduct.supplier_id !== supplier.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -175,11 +176,11 @@ export async function DELETE(
       .single();
 
     if (checkError || !existingProduct) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     if (existingProduct.supplier_id !== supplier.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const { error: deleteError } = await supabase

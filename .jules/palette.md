@@ -5,3 +5,6 @@
 ## 2024-05-24 - Form Label Association
 **Learning:** Inputs in dynamic forms (like `useFieldArray`) often miss proper label association because unique IDs aren't automatically generated. Screen readers fail to announce the label when focusing these inputs.
 **Action:** Always generate a unique `id` (e.g., combining field name and index) for dynamic inputs and explicitly link them with `htmlFor` on the label.
+## 2024-05-24 - Error Feedback in Simple Forms
+**Learning:** Found a "Join" form that silently failed on error (no visual feedback).
+**Action:** Always ensure `status === 'error'` states render visible, accessible feedback (e.g., red text with `role="alert"` and `aria-invalid` on input).
