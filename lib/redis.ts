@@ -1,54 +1,36 @@
-import { redis } from '@/lib/redis'
-import { NextRequest, NextResponse } from 'next/server'
-
 /**
- * GreenChainz Rate Limiter
- * Uses Upstash Redis to implement a "Token Bucket" or "Fixed Window" limit.
+ * Mock Redis Client for GreenChainz
+ * * In-memory replacement for Redis to support agent caching
+ * until a real Redis instance (like Upstash) is configured.
  */
 
-export interface RateLimitConfig {
-  limit: number      // Max requests
-  window: number     // Time window in seconds
-  identifier: string // Unique ID (IP address, User ID, or API Key)
-}
+class MockRedis {
+  private cache = new Map<string, { value: unknown; expiry: number }>();
 
-export async function rateLimit(config: RateLimitConfig) {
-  if (!redis) {
-    // Fail open if Redis isn't configured so we don't break the app
-    console.warn('Redis not configured, skipping rate limit')
-    return { success: true, remaining: 100 }
+  async get<T = unknown>(key: string): Promise<T | null> {
+    const item = this.cache.get(key);
+    if (!item) return null;
+
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return item.value as T;
   }
 
-  const { limit, window, identifier } = config
-  const key = `rate_limit:${identifier}`
+  async set(key: string, value: unknown, options?: { ex?: number }): Promise<void> {
+    // Default TTL 24 hours if not specified
+    const ttlSeconds = options?.ex || 86400;
+    const expiry = Date.now() + (ttlSeconds * 1000);
 
-  try {
-    // Increment the counter for this identifier
-    const requests = await redis.incr(key)
+    this.cache.set(key, { value, expiry });
+  }
 
-    // If this is the first request, set the expiry
-    if (requests === 1) {
-      await redis.expire(key, window)
-    }
-
-    const remaining = Math.max(0, limit - requests)
-    
-    return {
-      success: requests <= limit,
-      remaining,
-      limit,
-      window
-    }
-  } catch (error) {
-    console.error('Rate limit error:', error)
-    // Fail open on Redis error to maintain uptime
-    return { success: true, remaining: 1 } 
+  async del(key: string): Promise<void> {
+    this.cache.delete(key);
   }
 }
 
-/**
- * Helper to get IP from request
- */
-export function getIp(req: NextRequest): string {
-  return req.headers.get('x-forwarded-for') ?? '127.0.0.1'
-}
+// Ensure this named export exists
+export const redis = new MockRedis();
