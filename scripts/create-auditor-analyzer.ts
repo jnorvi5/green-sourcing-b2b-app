@@ -1,12 +1,12 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as dotenv from "dotenv";
 import path from "path";
 
 // Load .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
-const endpoint = process.env.AZURE_CONTENT_UNDERSTANDING_ENDPOINT!;
-const apiKey = process.env.AZURE_CONTENT_UNDERSTANDING_KEY!;
+const endpoint = process.env['AZURE_CONTENT_UNDERSTANDING_ENDPOINT']!;
+const apiKey = process.env['AZURE_CONTENT_UNDERSTANDING_KEY']!;
 const apiVersion = "2025-05-01-preview";
 
 async function createAuditorAnalyzer() {
@@ -63,11 +63,12 @@ async function createAuditorAnalyzer() {
 
         console.log("✅ Analyzer 'auditor' created successfully!");
         console.log("Response:", JSON.stringify(response.data, null, 2));
-    } catch (error: any) {
+    } catch (error) {
+        const err = error as AxiosError;
         console.error("❌ Error creating analyzer:");
-        console.error("Status:", error.response?.status);
-        console.error("Data:", JSON.stringify(error.response?.data, null, 2));
-        console.error("Message:", error.message);
+        console.error("Status:", err.response?.status);
+        console.error("Data:", JSON.stringify(err.response?.data, null, 2));
+        console.error("Message:", err.message);
     }
 }
 
