@@ -62,9 +62,9 @@ async function seed() {
       const baseIdx = idx * PRODUCT_COLUMNS;
       return `($${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${baseIdx + 4}, $${baseIdx + 5}, $${baseIdx + 6}, $${baseIdx + 7}, $${baseIdx + 8}, $${baseIdx + 9}, $${baseIdx + 10}, $${baseIdx + 11})`;
     }).join(', ');
-    
+
     const flatValues = productValues.flat();
-    
+
     await client.query(
       `INSERT INTO products (supplier_id, name, description, material_type, application, certifications, sustainability_data, specs, images, epd_url, verified)
        VALUES ${placeholders}`,
@@ -85,6 +85,10 @@ async function seed() {
 export { seed };
 
 // This allows running the script directly via `tsx supabase/seed.ts`
-if (require.main === module) {
+// This allows running the script directly via `tsx supabase/seed.ts`
+// Using a robust check for main module execution
+import { fileURLToPath } from 'url';
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   seed();
 }

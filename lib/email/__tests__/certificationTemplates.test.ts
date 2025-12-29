@@ -3,7 +3,7 @@
  * Ensures HTML escaping, correct structure, and proper content
  */
 
-import { certificationVerifiedEmail, certificationRejectedEmail } from '../certificationTemplates';
+import { certificationVerifiedEmail, certificationRejectedEmail } from '../templates/certification';
 
 describe('certificationVerifiedEmail', () => {
   it('should generate a valid HTML email for verified certification', () => {

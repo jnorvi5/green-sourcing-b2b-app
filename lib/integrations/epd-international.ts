@@ -73,13 +73,17 @@ export class EPDInternationalClient {
         signal: controller.signal,
       });
 
+      if (!response || typeof response.ok === 'undefined') {
+        throw new Error('Fetch returned invalid response');
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`EPD API error (${response.status}): ${errorText}`);
       }
 
       const contentType = response.headers.get('content-type');
-      
+
       // Handle XML response (ILCD/EPD format)
       if (contentType?.includes('xml')) {
         const xmlText = await response.text();
@@ -149,29 +153,29 @@ export class EPDInternationalClient {
     // Simple XML to JSON conversion
     // For production, consider using a proper XML parser like 'fast-xml-parser'
     const epds: EPDApiResponse[] = [];
-    
+
     // Extract EPD entries from XML
     const epdRegex = /<epd[^>]*>([\s\S]*?)<\/epd>/gi;
     const matches = xml.matchAll(epdRegex);
-    
+
     for (const match of matches) {
       const epdXml = match[1];
       if (!epdXml) continue;
-      
+
       const epd: Partial<EPDApiResponse> = {};
-      
+
       // Extract fields using regex (basic approach)
       const extractField = (fieldName: string): string | undefined => {
         const regex = new RegExp(`<${fieldName}[^>]*>([^<]*)<\/${fieldName}>`, 'i');
         const fieldMatch = epdXml.match(regex);
         return fieldMatch?.[1]?.trim();
       };
-      
+
       const extractNumber = (fieldName: string): number | undefined => {
         const value = extractField(fieldName);
         return value ? parseFloat(value) : undefined;
       };
-      
+
       epd.epd_number = extractField('registrationNumber') || extractField('uuid');
       epd.product_name = extractField('name') || extractField('productName');
       epd.manufacturer = extractField('manufacturer');
@@ -180,17 +184,17 @@ export class EPDInternationalClient {
       epd.valid_from = extractField('publishedDate') || extractField('validFrom');
       epd.valid_until = extractField('validUntil');
       epd.declared_unit = extractField('declaredUnit');
-      
+
       // Extract certifications
       const certsRegex = /<certification[^>]*>([^<]*)<\/certification>/gi;
       const certMatches = epdXml.matchAll(certsRegex);
       epd.certifications = Array.from(certMatches, m => m[1]?.trim()).filter(Boolean) as string[];
-      
+
       if (epd.epd_number && epd.product_name) {
         epds.push(epd as EPDApiResponse);
       }
     }
-    
+
     return { data: epds };
   }
 
@@ -200,7 +204,7 @@ export class EPDInternationalClient {
   async fetchEPDs(options: FetchEPDsOptions = {}): Promise<PaginatedResponse> {
     const page = options.page ?? 1;
     const perPage = options.perPage ?? 50;
-    
+
     const params = new URLSearchParams({
       page: page.toString(),
       per_page: perPage.toString(),
@@ -214,19 +218,19 @@ export class EPDInternationalClient {
     }
 
     const endpoint = `/epds?${params.toString()}`;
-    
+
     try {
       const rawResponse = await this.makeRequest<unknown>(endpoint);
-      
+
       // Handle different response formats
       let data: unknown[] = [];
       let meta: PaginatedResponse['meta'];
-      
+
       if (Array.isArray(rawResponse)) {
         data = rawResponse;
       } else if (typeof rawResponse === 'object' && rawResponse !== null) {
         const responseObj = rawResponse as Record<string, unknown>;
-        
+
         // Try different data field names
         if (Array.isArray(responseObj['data'])) {
           data = responseObj['data'];
@@ -235,7 +239,7 @@ export class EPDInternationalClient {
         } else if (Array.isArray(responseObj['results'])) {
           data = responseObj['results'];
         }
-        
+
         // Extract metadata
         if (responseObj['meta'] && typeof responseObj['meta'] === 'object') {
           meta = responseObj['meta'] as PaginatedResponse['meta'];
@@ -249,7 +253,7 @@ export class EPDInternationalClient {
           };
         }
       }
-      
+
       // Validate EPDs
       const validatedEPDs: EPDApiResponse[] = [];
       for (const item of data) {
@@ -260,7 +264,7 @@ export class EPDInternationalClient {
           console.warn('[EPD API] Skipping invalid EPD:', error);
         }
       }
-      
+
       return {
         data: validatedEPDs,
         meta,
@@ -279,20 +283,20 @@ export class EPDInternationalClient {
     const allEPDs: EPDApiResponse[] = [];
     const perPage = options.perPage ?? 50;
     const limit = options.limit;
-    
+
     let currentPage = 1;
     let hasMore = true;
-    
+
     while (hasMore && (!limit || allEPDs.length < limit)) {
       console.log(`[EPD API] Fetching page ${currentPage}...`);
-      
+
       const response = await this.fetchEPDs({
         page: currentPage,
         perPage,
       });
-      
+
       allEPDs.push(...response.data);
-      
+
       // Check if there are more pages
       if (response.meta?.totalPages) {
         hasMore = currentPage < response.meta.totalPages;
@@ -300,21 +304,21 @@ export class EPDInternationalClient {
         // If no pagination metadata, assume no more pages if we got fewer results than requested
         hasMore = response.data.length === perPage;
       }
-      
+
       // Check if we've hit the limit
       if (limit && allEPDs.length >= limit) {
         console.log(`[EPD API] Reached limit of ${limit} EPDs`);
         return allEPDs.slice(0, limit);
       }
-      
+
       currentPage++;
-      
+
       // Rate limiting - wait 200ms between requests
       if (hasMore) {
         await new Promise(resolve => setTimeout(resolve, 200));
       }
     }
-    
+
     return allEPDs;
   }
 }
@@ -325,26 +329,26 @@ export class EPDInternationalClient {
 export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null {
   try {
     // Extract EPD number
-    const epd_number = apiResponse.epd_number 
-      || apiResponse.registrationNumber 
-      || apiResponse.registration_number 
+    const epd_number = apiResponse.epd_number
+      || apiResponse.registrationNumber
+      || apiResponse.registration_number
       || apiResponse.uuid;
-    
+
     if (!epd_number) {
       console.warn('[EPD Normalize] Missing EPD number');
       return null;
     }
-    
+
     // Extract product name
-    const product_name = apiResponse.product_name 
-      || apiResponse.productName 
+    const product_name = apiResponse.product_name
+      || apiResponse.productName
       || apiResponse.name;
-    
+
     if (!product_name) {
       console.warn('[EPD Normalize] Missing product name');
       return null;
     }
-    
+
     // Extract manufacturer
     let manufacturer: string;
     if (typeof apiResponse.manufacturer === 'string') {
@@ -354,7 +358,7 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
     } else {
       manufacturer = 'Unknown';
     }
-    
+
     // Extract GWP A1-A3
     const gwp_fossil_a1a3 = apiResponse.gwp_fossil_a1a3
       || apiResponse.gwp_a1a3
@@ -362,13 +366,13 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
       || apiResponse.impacts?.gwp?.a1a3
       || apiResponse.impacts?.gwp?.fossil?.a1a3
       || null;
-    
+
     // Extract recycled content
     const recycled_content_pct = apiResponse.recycled_content_pct
       || apiResponse.recycledContent
       || apiResponse.recycled_content
       || null;
-    
+
     // Extract certifications
     let certifications: string[] = [];
     if (Array.isArray(apiResponse.certifications)) {
@@ -381,24 +385,24 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
         return '';
       }).filter(Boolean);
     }
-    
+
     // Extract validity dates
     const valid_from = apiResponse.valid_from
       || apiResponse.validFrom
       || apiResponse.validity_start
       || apiResponse.validityStart
       || apiResponse.publishedDate;
-    
+
     const valid_until = apiResponse.valid_until
       || apiResponse.validUntil
       || apiResponse.validity_end
       || apiResponse.validityEnd;
-    
+
     if (!valid_from || !valid_until) {
       console.warn('[EPD Normalize] Missing validity dates');
       return null;
     }
-    
+
     // Extract declared unit
     let declared_unit: string | null = null;
     if (typeof apiResponse.declaredUnit === 'string') {
@@ -408,7 +412,7 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
     } else if (apiResponse.declared_unit) {
       declared_unit = apiResponse.declared_unit;
     }
-    
+
     // Extract PCR reference
     let pcr_reference: string | null = null;
     if (typeof apiResponse.pcr === 'string') {
@@ -418,7 +422,7 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
     } else if (apiResponse.pcr_reference) {
       pcr_reference = apiResponse.pcr_reference;
     }
-    
+
     // Extract geographic scope
     let geographic_scope: string[] = [];
     if (Array.isArray(apiResponse.geographic_scope)) {
@@ -430,7 +434,7 @@ export function normalizeEPD(apiResponse: EPDApiResponse): NormalizedEPD | null 
     } else if (typeof apiResponse.geographicScope === 'string') {
       geographic_scope = [apiResponse.geographicScope];
     }
-    
+
     return {
       epd_number,
       product_name,
