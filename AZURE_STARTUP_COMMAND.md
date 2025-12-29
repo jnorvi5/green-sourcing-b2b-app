@@ -1,6 +1,8 @@
 # Azure Startup Command Configuration
 
-## Required Manual Configuration in Azure Portal
+## ⚠️ CRITICAL: Required Manual Configuration in Azure Portal
+
+**TIMING**: This change should be made **immediately after this PR is merged** and **before** or **immediately after** the first automated deployment completes.
 
 After deploying with the Next.js standalone build, you **MUST** update the startup command in Azure Portal.
 
@@ -23,6 +25,8 @@ After deploying with the Next.js standalone build, you **MUST** update the start
 - **New command**: `node server.js` (runs the standalone server directly)
 
 The standalone build creates a self-contained `server.js` file that includes all dependencies. This is much more reliable than depending on the entire `node_modules` folder being uploaded correctly.
+
+**Without this change, the deployment will fail** because the new standalone build structure doesn't include the traditional `node_modules/.bin/next` that `npm start` depends on.
 
 ### Verification
 

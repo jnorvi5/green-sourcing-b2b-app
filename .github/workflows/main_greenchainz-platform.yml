@@ -50,6 +50,7 @@ jobs:
       # Zip ONLY the standalone folder (Tiny file, very fast upload)
       - name: Zip Standalone Artifact
         run: |
+          # Redundant check for safety - in case the Prepare Standalone step is modified/removed
           if [ ! -d ".next/standalone" ]; then
             echo "Error: .next/standalone directory not found."
             exit 1
