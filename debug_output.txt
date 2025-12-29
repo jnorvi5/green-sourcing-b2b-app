@@ -1,0 +1,21 @@
+[dotenv@17.2.3] injecting env (8) from .env.local -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+=== Testing Azure OpenAI Connection ===
+Configuration:
+- Endpoint: https://greenchainz-foundry.cognitiveservices.azure.com/
+- Deployment: gpt-4o
+- API Key Present: true
+- API Key (first 5 chars): 46eQN...
+- API Key (last 5 chars): ...GzF5S
+
+Sending test request...
+
+Γ¥î Connection Failed
+Status: 401
+Code: 401
+Type: undefined
+Message: 401 Access denied due to invalid subscription key or wrong API endpoint. Make sure to provide a valid key for an active subscription and use a correct regional API endpoint for your resource.
+
+Possible Causes for 401:
+1. Invalid API Key
+2. Key does not match the Endpoint (different resource?)
+3. Key expired or disabled

@@ -218,16 +218,6 @@ export default function SubscriptionPage() {
       ? 0
       : (usage!.rfqs_used_this_month / limits.rfqs) * 100;
 
-  const productProgressStyle = {
-    "--width": `${Math.min(productsPercent, 100)}%`,
-    width: "var(--width)",
-  } as React.CSSProperties;
-
-  const rfqProgressStyle = {
-    "--width": `${Math.min(rfqsPercent, 100)}%`,
-    width: "var(--width)",
-  } as React.CSSProperties;
-
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -312,7 +302,13 @@ export default function SubscriptionPage() {
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    style={productProgressStyle}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - Inline styles required for dynamic width
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - Inline styles required for dynamic width
+                    style={{
+                      width: `${Math.min(productsPercent, 100)}%`,
+                    }}
                   ></div>
                 </div>
               )}
@@ -337,7 +333,13 @@ export default function SubscriptionPage() {
                         ? "bg-orange-500"
                         : "bg-green-500"
                     }`}
-                    style={rfqProgressStyle}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - Inline styles required for dynamic width
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - Inline styles required for dynamic width
+                    style={{
+                      width: `${Math.min(rfqsPercent, 100)}%`,
+                    }}
                   ></div>
                 </div>
               )}

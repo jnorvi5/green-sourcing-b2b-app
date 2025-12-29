@@ -1,10 +1,11 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 // Safe Supabase Client Helper
+// Checks for ANON_KEY or PUBLISHABLE_DEFAULT_KEY (Azure specific)
 // Prevents "URL required" crash if env vars are missing (e.g. during build)
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+const supabaseAnonKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY'];
 
 let clientInstance: ReturnType<typeof createBrowserClient> | null = null;
 
@@ -19,7 +20,7 @@ export const createClient = () => {
         autoRefreshToken: false,
       },
       global: {
-        fetch: (...args) => {
+        fetch: (..._args: unknown[]) => {
           console.warn("Supabase fetch blocked: Missing API keys.");
           return Promise.reject("Missing API keys");
         },

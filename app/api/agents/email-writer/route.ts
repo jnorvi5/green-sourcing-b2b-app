@@ -68,6 +68,59 @@ founder@greenchainz.com`,
       }
     };
 
+    // Try Foundry Agent (OUTREACH-SCALER) if configured
+    const agentId = process.env['AGENT_OUTREACH_SCALER_ID'];
+    if (agentId) {
+      try {
+        console.log("Delegating email generation to Foundry Agent:", agentId);
+        const { invokeFoundryAgent } = await import('@/lib/azure-foundry');
+
+        const prompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}
+
+Format:
+Subject: [subject line]
+
+[email body]`;
+
+        const agentRes = await invokeFoundryAgent(agentId, prompt);
+
+        if (agentRes.success && agentRes.text) {
+          const text = agentRes.text;
+          // Parse subject/body same as Azure OpenAI logic
+          const lines = text.split('\n').filter(l => l.trim());
+          const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
+
+          let subject = emailTemplate.subject;
+          let body = text;
+
+          if (subjectLine) {
+            subject = subjectLine.replace(/^subject:\s*/i, '').trim();
+            const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
+            body = lines.slice(bodyStart).join('\n').trim();
+          }
+
+          emailTemplate = {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              provider: 'foundry-agent',
+              model: agentId // Tracking the Agent ID
+            }
+          };
+          return NextResponse.json({ success: true, email: emailTemplate });
+        }
+      } catch (agentError) {
+        console.error('Foundry Agent invocation failed:', agentError);
+        // Fall through to other providers
+      }
+    }
+
     // Try Azure OpenAI first if enabled
     if (isAIEnabled && azureOpenAI) {
       try {
