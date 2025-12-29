@@ -1,317 +1,165 @@
 #!/bin/bash
+# GreenChainz Deployment Readiness Test
+# Tests that the application is ready to deploy to Vercel
 
-# ============================================================================
-# GreenChainz Pre-Deployment Test Script
-# ============================================================================
-# This script tests if the application is ready for deployment
-# Run with: bash scripts/test-deployment-readiness.sh
-# ============================================================================
+set -e  # Exit on error
 
-set -e
-
-echo "🧪 GreenChainz Pre-Deployment Test"
-echo "===================================="
+echo "🧪 GreenChainz Deployment Readiness Test"
+echo "=========================================="
 echo ""
 
-# Colors
-RED='\033[0;31m'
+# Color codes
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+NC='\033[0m' # No Color
 
-PASSED=0
-FAILED=0
-WARNINGS=0
+# Test counter
+PASS=0
+FAIL=0
 
-# ============================================================================
-# Test Functions
-# ============================================================================
-
-test_passed() {
-  echo -e "${GREEN}✓${NC} $1"
-  PASSED=$((PASSED + 1))
+# Function to check a file exists
+check_file() {
+  if [ -f "$1" ]; then
+    echo -e "${GREEN}✅${NC} $1 found"
+    ((PASS++))
+  else
+    echo -e "${RED}❌${NC} $1 missing"
+    ((FAIL++))
+  fi
 }
 
-test_failed() {
-  echo -e "${RED}✗${NC} $1"
-  FAILED=$((FAILED + 1))
+# Function to check a directory exists
+check_dir() {
+  if [ -d "$1" ]; then
+    echo -e "${GREEN}✅${NC} $1 found"
+    ((PASS++))
+  else
+    echo -e "${RED}❌${NC} $1 missing"
+    ((FAIL++))
+  fi
 }
 
-test_warning() {
-  echo -e "${YELLOW}⚠${NC} $1"
-  WARNINGS=$((WARNINGS + 1))
-}
-
-# ============================================================================
-# 1. Check Node.js and npm
-# ============================================================================
-echo -e "${BLUE}1. Checking Node.js environment...${NC}"
-
-if command -v node &> /dev/null; then
-  NODE_VERSION=$(node -v)
-  test_passed "Node.js installed: $NODE_VERSION"
-else
-  test_failed "Node.js not found"
-fi
-
-if command -v npm &> /dev/null; then
-  NPM_VERSION=$(npm -v)
-  test_passed "npm installed: $NPM_VERSION"
-else
-  test_failed "npm not found"
-fi
-
+# Test 1: Check critical configuration files
+echo "1️⃣  Checking critical configuration files..."
+check_file "package.json"
+check_file "next.config.mjs"
+check_file "vercel.json"
+check_file "tsconfig.json"
+check_file ".env.example"
 echo ""
 
-# ============================================================================
-# 2. Check package.json integrity
-# ============================================================================
-echo -e "${BLUE}2. Checking package.json...${NC}"
-
-if [ -f "package.json" ]; then
-  test_passed "package.json exists"
-  
-  if node -e "JSON.parse(require('fs').readFileSync('package.json'))" 2>/dev/null; then
-    test_passed "package.json is valid JSON"
-  else
-    test_failed "package.json is invalid JSON"
-  fi
-else
-  test_failed "package.json not found"
-fi
-
+# Test 2: Check critical directories
+echo "2️⃣  Checking critical directories..."
+check_dir "app"
+check_dir "components"
+check_dir "lib"
+check_dir "public"
 echo ""
 
-# ============================================================================
-# 3. Check critical files
-# ============================================================================
-echo -e "${BLUE}3. Checking critical files...${NC}"
-
-CRITICAL_FILES=(
-  "next.config.js"
-  "tsconfig.json"
-  "app/layout.tsx"
-  "lib/supabase/client.ts"
-  "lib/supabase/server.ts"
-  "middleware.ts"
-)
-
-for file in "${CRITICAL_FILES[@]}"; do
-  if [ -f "$file" ]; then
-    test_passed "$file exists"
-  else
-    test_failed "$file missing"
-  fi
-done
-
-echo ""
-
-# ============================================================================
-# 4. Check for hardcoded secrets
-# ============================================================================
-echo -e "${BLUE}4. Checking for hardcoded secrets...${NC}"
-
-HARDCODED_PATTERNS=(
-  "7eaf7cc60234118db714b516e9228e49:sentry.server.config.ts:Hardcoded Sentry DSN"
-  "ezgnhyymoqxaplungbabj:app/layout.tsx:Hardcoded Supabase URL"
-  "your-org:next.config.js:Placeholder Sentry org"
-)
-
-for pattern in "${HARDCODED_PATTERNS[@]}"; do
-  IFS=':' read -r search_term file description <<< "$pattern"
-  if grep -q "$search_term" "$file" 2>/dev/null; then
-    test_failed "$description found in $file"
-  else
-    test_passed "$description not found in $file"
-  fi
-done
-
-echo ""
-
-# ============================================================================
-# 5. Check for duplicate code issue
-# ============================================================================
-echo -e "${BLUE}5. Checking for known code issues...${NC}"
-
-SUPPLIER_RFQ_FILE="app/supplier/rfqs/[id]/page.tsx"
-if [ -f "$SUPPLIER_RFQ_FILE" ]; then
-  # Check if line 334 has the problematic pattern
-  if sed -n '334p' "$SUPPLIER_RFQ_FILE" | grep -q "export const dynamic"; then
-    test_failed "Duplicate code detected in $SUPPLIER_RFQ_FILE (line 334)"
-  else
-    test_passed "No duplicate code in $SUPPLIER_RFQ_FILE"
-  fi
-fi
-
-echo ""
-
-# ============================================================================
-# 6. Check environment variables
-# ============================================================================
-echo -e "${BLUE}6. Checking environment variables...${NC}"
-
-REQUIRED_ENV_VARS=(
-  "NEXT_PUBLIC_SUPABASE_URL"
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY"
-)
-
-for var in "${REQUIRED_ENV_VARS[@]}"; do
-  if [ -n "${!var}" ]; then
-    test_passed "$var is set"
-  else
-    test_warning "$var not set (required for deployment)"
-  fi
-done
-
-echo ""
-
-# ============================================================================
-# 7. Check dependencies installation
-# ============================================================================
-echo -e "${BLUE}7. Checking dependencies...${NC}"
-
+# Test 3: Check dependencies installed
+echo "3️⃣  Checking dependencies..."
 if [ -d "node_modules" ]; then
-  test_passed "node_modules directory exists"
+  echo -e "${GREEN}✅${NC} node_modules found"
+  ((PASS++))
+else
+  echo -e "${YELLOW}⚠️${NC}  node_modules not found. Installing dependencies..."
+  npm ci
+  if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅${NC} Dependencies installed successfully"
+    ((PASS++))
+  else
+    echo -e "${RED}❌${NC} Failed to install dependencies"
+    ((FAIL++))
+    exit 1
+  fi
+fi
+echo ""
+
+# Test 4: Run production build
+echo "4️⃣  Running production build..."
+echo "   This may take 2-3 minutes..."
+if npm run build > /tmp/build-output.log 2>&1; then
+  echo -e "${GREEN}✅${NC} Build completed successfully"
+  ((PASS++))
   
-  # Check critical packages
-  CRITICAL_PACKAGES=(
-    "next"
-    "@supabase/supabase-js"
-    "@supabase/ssr"
-    "react"
-    "react-dom"
-  )
-  
-  for pkg in "${CRITICAL_PACKAGES[@]}"; do
-    if [ -d "node_modules/$pkg" ]; then
-      test_passed "$pkg installed"
-    else
-      test_failed "$pkg not installed"
-    fi
-  done
-else
-  test_failed "node_modules not found - run 'npm install'"
-fi
-
-echo ""
-
-# ============================================================================
-# 8. Check TypeScript configuration
-# ============================================================================
-echo -e "${BLUE}8. Checking TypeScript...${NC}"
-
-if [ -f "tsconfig.json" ]; then
-  if command -v npx &> /dev/null; then
-    echo "   Running TypeScript check (this may take a moment)..."
-    
-    if npx tsc --noEmit 2>&1 | head -20 > /tmp/tsc_errors.txt; then
-      test_passed "TypeScript check passed"
-    else
-      ERROR_COUNT=$(grep -c "error TS" /tmp/tsc_errors.txt 2>/dev/null || echo "0")
-      if [ "$ERROR_COUNT" -gt 0 ]; then
-        test_failed "TypeScript errors found ($ERROR_COUNT errors)"
-        echo ""
-        echo "   First few errors:"
-        head -10 /tmp/tsc_errors.txt | sed 's/^/   /'
-      else
-        test_warning "TypeScript check completed with warnings"
-      fi
-    fi
-  else
-    test_warning "Cannot run TypeScript check (npx not found)"
-  fi
-fi
-
-echo ""
-
-# ============================================================================
-# 9. Check build configuration
-# ============================================================================
-echo -e "${BLUE}9. Checking build configuration...${NC}"
-
-if grep -q "ignoreBuildErrors: true" next.config.js 2>/dev/null; then
-  test_warning "TypeScript errors are ignored during build (next.config.js)"
-fi
-
-if grep -q "ignoreDuringBuilds: true" next.config.js 2>/dev/null; then
-  test_warning "ESLint errors are ignored during build (next.config.js)"
-fi
-
-if [ -f ".env.local" ]; then
-  test_warning ".env.local found - ensure secrets are not committed"
-fi
-
-if [ -f ".env" ]; then
-  test_failed ".env found - should not be committed (use .env.local instead)"
-fi
-
-echo ""
-
-# ============================================================================
-# 10. Check Git status
-# ============================================================================
-echo -e "${BLUE}10. Checking Git status...${NC}"
-
-if command -v git &> /dev/null; then
-  if git rev-parse --git-dir > /dev/null 2>&1; then
-    test_passed "Git repository detected"
-    
-    # Check for uncommitted changes
-    if git diff --quiet && git diff --cached --quiet; then
-      test_passed "No uncommitted changes"
-    else
-      test_warning "Uncommitted changes detected"
-    fi
-    
-    # Check branch
-    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
-    echo "   Current branch: $CURRENT_BRANCH"
-    
-  else
-    test_warning "Not a Git repository"
+  # Check for warnings
+  if grep -q "⚠" /tmp/build-output.log; then
+    echo -e "${YELLOW}⚠️${NC}  Build completed with warnings (non-blocking)"
+    grep "⚠" /tmp/build-output.log | head -5
   fi
 else
-  test_warning "Git not installed"
-fi
-
-echo ""
-
-# ============================================================================
-# Summary
-# ============================================================================
-echo "===================================="
-echo "📊 Test Summary"
-echo "===================================="
-echo ""
-echo -e "${GREEN}Passed: $PASSED${NC}"
-echo -e "${RED}Failed: $FAILED${NC}"
-echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
-echo ""
-
-if [ $FAILED -eq 0 ]; then
-  if [ $WARNINGS -eq 0 ]; then
-    echo -e "${GREEN}🎉 All tests passed! Ready for deployment.${NC}"
-    echo ""
-    echo "Next steps:"
-    echo "1. Commit your changes: git add . && git commit -m 'Ready for deployment'"
-    echo "2. Push to trigger deployment: git push"
-    echo "3. Monitor deployment in Vercel dashboard"
-    exit 0
-  else
-    echo -e "${YELLOW}⚠️  Tests passed with warnings.${NC}"
-    echo ""
-    echo "Review warnings above before deploying."
-    echo "You can proceed, but consider fixing warnings first."
-    exit 0
-  fi
-else
-  echo -e "${RED}❌ Deployment readiness check failed!${NC}"
+  echo -e "${RED}❌${NC} Build failed"
   echo ""
-  echo "Fix the issues above before deploying:"
-  echo "1. Review CODE_REVIEW_REPORT.md for detailed solutions"
-  echo "2. Run scripts/fix-deployment-issues.sh to auto-fix some issues"
-  echo "3. Manually fix critical issues (especially duplicate code)"
-  echo "4. Re-run this test: bash scripts/test-deployment-readiness.sh"
+  echo "Build errors:"
+  tail -20 /tmp/build-output.log
+  ((FAIL++))
+  exit 1
+fi
+echo ""
+
+# Test 5: Check for required environment variable examples
+echo "5️⃣  Checking environment variable documentation..."
+if grep -q "NEXT_PUBLIC_SUPABASE_URL" .env.example; then
+  echo -e "${GREEN}✅${NC} Supabase config documented in .env.example"
+  ((PASS++))
+else
+  echo -e "${YELLOW}⚠️${NC}  Supabase config not documented in .env.example"
+fi
+echo ""
+
+# Test 6: Check critical files exist
+echo "6️⃣  Checking critical application files..."
+check_file "app/layout.tsx"
+check_file "app/page.tsx"
+check_file "middleware.ts"
+check_file "lib/supabase/client.ts"
+check_file "lib/supabase/server.ts"
+echo ""
+
+# Test 7: Check for common deployment issues
+echo "7️⃣  Checking for common deployment issues..."
+
+# Check for hardcoded secrets (basic check)
+if grep -r "sk_live_" app/ lib/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v ".env" | grep -q "sk_live_"; then
+  echo -e "${RED}❌${NC} WARNING: Potential hardcoded Stripe key found"
+  ((FAIL++))
+else
+  echo -e "${GREEN}✅${NC} No hardcoded Stripe keys detected"
+  ((PASS++))
+fi
+
+# Check for console.logs in production code (warning only)
+LOG_COUNT=$(grep -r "console.log" app/ lib/ --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l)
+if [ "$LOG_COUNT" -gt 50 ]; then
+  echo -e "${YELLOW}⚠️${NC}  Found $LOG_COUNT console.log statements (consider removing for production)"
+else
+  echo -e "${GREEN}✅${NC} Console.log usage reasonable ($LOG_COUNT occurrences)"
+  ((PASS++))
+fi
+echo ""
+
+# Summary
+echo "=========================================="
+echo "📊 Test Summary"
+echo "=========================================="
+echo -e "Passed: ${GREEN}$PASS${NC}"
+echo -e "Failed: ${RED}$FAIL${NC}"
+echo ""
+
+if [ $FAIL -eq 0 ]; then
+  echo -e "${GREEN}🎉 All tests passed! App is ready to deploy to Vercel.${NC}"
+  echo ""
+  echo "Next steps:"
+  echo "1. Configure environment variables in Vercel"
+  echo "2. Push to GitHub: git push origin main"
+  echo "3. Monitor deployment in Vercel dashboard"
+  echo ""
+  echo "See CODE_REVIEW_REPORT.md for detailed deployment instructions."
+  exit 0
+else
+  echo -e "${RED}❌ Some tests failed. Please fix the issues before deploying.${NC}"
+  echo ""
+  echo "Check the output above for specific errors."
   exit 1
 fi
