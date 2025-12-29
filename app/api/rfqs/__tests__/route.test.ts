@@ -1,9 +1,17 @@
-import { POST, GET } from '../route';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-// 1. MOCK SUPABASE (This prevents the crash)
+// 1. MOCK COOKIES (The "Ketch" fix)
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(async () => ({
+    get: jest.fn(),
+    getAll: jest.fn(() => []),
+    set: jest.fn(),
+  })),
+}));
+
+// 2. MOCK SUPABASE
 jest.mock('@/lib/supabase/server', () => ({
-  createClient: jest.fn(() => ({
+  createClient: jest.fn(async () => ({
     auth: {
       getUser: jest.fn().mockResolvedValue({ 
         data: { user: { id: 'test-user', email: 'test@example.com' } }, 
@@ -25,18 +33,26 @@ describe('RFQ API Route', () => {
   });
 
   it('GET should return 200/Success (Mock Mode)', async () => {
+    // Import after mocks are set up
+    const { GET } = await import('../route');
+    
     const req = new Request('http://localhost/api/rfqs', { method: 'GET' });
     const res = await GET(req);
     expect(res.status).toBe(200);
   });
 
   it('POST should return 201/Success (Mock Mode)', async () => {
+    // Import after mocks are set up
+    const { POST } = await import('../route');
+    
     const req = new Request('http://localhost/api/rfqs', { 
       method: 'POST',
       body: JSON.stringify({ project_name: "Test Project" })
     });
     const res = await POST(req);
-    // Our Mock Route now returns 201 for everything to ensure deployment passes
     expect(res.status).toBe(201);
   });
 });
+
+
+
