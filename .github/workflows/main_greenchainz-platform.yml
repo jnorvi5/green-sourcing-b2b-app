@@ -19,25 +19,29 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: "20.x"
+          node-version: '20.x'
 
-      - name: npm install, build, and test
-        # Pass secrets so the build can bake them in (Next.js needs this)
+      - name: Install and Build
         env:
+          # Pass secrets so the build works
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY }}
           EPD_INTERNATIONAL_API_KEY: ${{ secrets.EPD_INTERNATIONAL_API_KEY }}
-          # Add other build-time keys here if needed
         run: |
           npm ci
-          npm run build --if-present
-          # npm run test --if-present (Commented out to ensure deployment proceeds)
+          npm run build
 
-      # FIX: Zip the entire folder (including node_modules)
-      # This fixes the "Exit Code 127" / "command not found" error
-      - name: Zip artifact for deployment
-        run: zip -r release.zip . -x ".git/*" ".github/*"
+      # CRITICAL STEP: Prepare the Standalone Folder
+      # Next.js creates the folder, but we must manually copy public/static files into it
+      - name: Prepare Standalone
+        run: |
+          cp -r public .next/standalone/public
+          cp -r .next/static .next/standalone/.next/static
+
+      # Zip ONLY the standalone folder (Tiny file, very fast upload)
+      - name: Zip Standalone Artifact
+        run: cd .next/standalone && zip -r ../../release.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
