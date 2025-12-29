@@ -81,13 +81,18 @@ export async function POST(request: Request) {
                             throw new Error(result.error || 'Unknown error from Azure Function');
                         }
 
-                        // Save to database
+                        // Validate response data structure
                         const { data } = result;
+                        if (!data || typeof data !== 'object') {
+                            throw new Error('Invalid response data from Azure Function');
+                        }
+
+                        // Save to database
                         await supabase.from('supplier_scrapes').insert({
                             source_url: url,
                             company_name: data.title || 'Unknown',
                             location: 'Unknown',
-                            products: data.detectedProducts || [],
+                            products: Array.isArray(data.detectedProducts) ? data.detectedProducts : [],
                             certifications: [],
                             contact_email: null,
                             raw_data: data,
@@ -96,8 +101,8 @@ export async function POST(request: Request) {
                         return {
                             url,
                             success: true,
-                            company: data.title,
-                            products: data.detectedProducts,
+                            company: data.title || 'Unknown',
+                            products: Array.isArray(data.detectedProducts) ? data.detectedProducts : [],
                         };
                     } catch (error: unknown) {
                         console.error(`Scrape error for ${url}:`, error);
