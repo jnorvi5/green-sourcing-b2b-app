@@ -17,7 +17,15 @@ const cspHeader = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Moved to root for Next.js 15+
-  serverExternalPackages: ['@supabase/supabase-js', '@supabase/ssr'],
+  serverExternalPackages: [
+    '@supabase/supabase-js',
+    '@supabase/ssr',
+    'puppeteer',
+    'playwright',
+    'puppeteer-core',
+    '@sparticuz/chromium',
+    'chrome-aws-lambda',
+  ],
 
   compress: true,
   eslint: {
