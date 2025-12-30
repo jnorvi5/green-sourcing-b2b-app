@@ -67,6 +67,9 @@ $DirectoriesToClean = @(
 $FilesToClean = @(
     # .NET/Visual Studio artifacts
     "*.user",
+    "*.suo",
+    "*.userosscache",
+    "*.sln.docstates",
     
     # System/Misc files
     ".DS_Store",
