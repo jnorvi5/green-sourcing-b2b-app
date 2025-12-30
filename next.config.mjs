@@ -146,10 +146,12 @@ const nextConfig = {
                                             
                                             if (typeof source === 'string') {
                                                 // Match Object.defineProperty calls for __import_unsupported with configurable:false
-                                                // This pattern matches the minified code from Next.js Edge Runtime setup
-                                                const unsafePattern = /Object\.defineProperty\s*\(\s*globalThis\s*,\s*["']__import_unsupported["']\s*,\s*\{([^}]*configurable\s*:\s*!1[^}]*)\}\s*\)/g;
+                                                // This pattern matches both minified (!1) and non-minified (false) code formats
+                                                // Uses [\s\S] to match any character including newlines
+                                                const unsafePattern = /Object\.defineProperty\s*\(\s*globalThis\s*,\s*["']__import_unsupported["']\s*,\s*\{([\s\S]*?configurable\s*:\s*(?:false|!1)[\s\S]*?)\}\s*\)/g;
                                                 
                                                 if (unsafePattern.test(source)) {
+                                                    unsafePattern.lastIndex = 0; // Reset regex
                                                     const safeSource = source.replace(
                                                         unsafePattern,
                                                         (match, descriptorContent) => {
