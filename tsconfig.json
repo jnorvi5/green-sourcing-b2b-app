@@ -11,8 +11,7 @@
       "@/lib/*": ["lib/*"],
       "@/types/*": ["types/*"],
       "@/models/*": ["models/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/utils/*": ["src/utils/*"]
+      "@/hooks/*": ["hooks/*"]
     },
     "types": ["node", "jest"],
     "jsx": "preserve",
@@ -55,8 +54,6 @@
     "lib/**/*.tsx",
     "types/**/*.ts",
     "types/**/*.tsx",
-    "pages/**/*.ts",
-    "pages/**/*.tsx",
     "models/**/*.ts",
     "instrumentation.ts",
     "instrumentation-client.ts",
