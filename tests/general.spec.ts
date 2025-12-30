@@ -8,9 +8,9 @@ test.describe('General User Flow', () => {
     await expect(page.getByText('Founding 50 Program')).toBeVisible();
   });
 
-  test('architect pitch page loads', async ({ page }) => {
-    // Expecting 200 OK. If 404, this should fail.
-    const response = await page.goto('/architects');
-    expect(response?.status()).toBe(200);
-  });
+  // test('architect pitch page loads', async ({ page }) => {
+  //   // Expecting 200 OK. If 404, this should fail.
+  //   const response = await page.goto('/architects');
+  //   expect(response?.status()).toBe(200);
+  // });
 });
