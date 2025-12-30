@@ -8,6 +8,9 @@ on:
       - 'azure-functions/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   AZURE_FUNCTIONAPP_NAME: 'greenchainz-functions-prod'   # set this to your function app name on Azure
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-functions'      # set this to the path to your function app project, defaults to the repository root
