@@ -124,7 +124,7 @@ const nextConfig = {
 
     // 7. Webpack configuration to fix Edge Runtime __import_unsupported redefinition bug
     // This workaround prevents the TypeError when Next.js tries to redefine the non-configurable property
-    webpack: (config, { isServer }) => {
+    webpack: (config, { isServer, webpack }) => {
         if (isServer) {
             class SafeImportUnsupportedPlugin {
                 apply(compiler) {
@@ -134,7 +134,7 @@ const nextConfig = {
                             compilation.hooks.processAssets.tap(
                                 {
                                     name: 'SafeImportUnsupportedPlugin',
-                                    stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+                                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
                                 },
                                 () => {
                                     for (const [filename, asset] of Object.entries(compilation.assets)) {
