@@ -90,15 +90,15 @@ Subject: [subject line]
         if (agentRes.success && agentRes.text) {
           const text = agentRes.text;
           // Parse subject/body same as Azure OpenAI logic
-          const lines = text.split('\n').filter(l => l.trim());
-          const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
+          const lines = text.split('\n').filter((l: string) => l.trim());
+          const subjectLine = lines.find((l: string) => l.toLowerCase().startsWith('subject:'));
 
           let subject = emailTemplate.subject;
           let body = text;
 
           if (subjectLine) {
             subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-            const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
+            const bodyStart = lines.findIndex((l: string) => l.toLowerCase().startsWith('subject:')) + 1;
             body = lines.slice(bodyStart).join('\n').trim();
           }
 
