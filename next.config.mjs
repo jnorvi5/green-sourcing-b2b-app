@@ -40,7 +40,7 @@ const nextConfig = {
   },
   compress: true,
   // 🟢 FIXED: Webpack config for Edge Runtime crash
-  webpack: (config, { isServer, nextRuntime }) => {
+  webpack: (config, { _isServer, nextRuntime }) => {
     // 🛑 CRITICAL FIX: Disable splitChunks for Edge Runtime
     // This prevents the "Cannot redefine property: __import_unsupported" error
     if (nextRuntime === 'edge') {
