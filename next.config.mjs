@@ -18,13 +18,12 @@ const cspHeader = `
 const nextConfig = {
   // Moved to root for Next.js 15+
   serverExternalPackages: [
-    '@supabase/supabase-js',
-    '@supabase/ssr',
-    'puppeteer',
-    'playwright',
-    'puppeteer-core',
-    '@sparticuz/chromium',
-    'chrome-aws-lambda',
+    "@supabase/supabase-js",
+    "@supabase/ssr",
+    "puppeteer",
+    "playwright",
+    "puppeteer-core",
+    "@sparticuz/chromium",
   ],
 
   compress: true,
@@ -34,7 +33,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
+
   logging: {
     fetches: {
       fullUrl: true,
@@ -43,24 +42,30 @@ const nextConfig = {
 
   experimental: {
     // REMOVED 'react-icons' from here to fix the build error
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'recharts', 'react-icons'],
+    optimizePackageImports: [
+      "lucide-react",
+      "framer-motion",
+      "@heroicons/react",
+      "recharts",
+      "react-icons",
+    ],
   },
 
   images: {
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
-       { protocol: 'https', hostname: 'images.unsplash.com' },
-       { protocol: 'https', hostname: 'tailwindui.com' },
-       { protocol: 'https', hostname: 'plus.unsplash.com' },
-       { protocol: 'https', hostname: 'res.cloudinary.com' },
-       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-       { protocol: 'https', hostname: 'ui-avatars.com' },
-    ]
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "tailwindui.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      { protocol: "https", hostname: "ui-avatars.com" },
+    ],
   },
-  
+
   // EDGE RUNTIME FIX
   webpack: (config, { isServer, nextRuntime }) => {
-    if (nextRuntime === 'edge') {
+    if (nextRuntime === "edge") {
       config.optimization = {
         ...config.optimization,
         splitChunks: false,
@@ -68,8 +73,8 @@ const nextConfig = {
     }
 
     config.externals.push({
-      'utf-8-validate': 'commonjs utf-8-validate',
-      'bufferutil': 'commonjs bufferutil',
+      "utf-8-validate": "commonjs utf-8-validate",
+      bufferutil: "commonjs bufferutil",
     });
 
     config.resolve.fallback = {
@@ -79,7 +84,7 @@ const nextConfig = {
       tls: false,
       crypto: false,
     };
-    
+
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       /Failed to parse source map/,
@@ -87,45 +92,46 @@ const nextConfig = {
 
     return config;
   },
-  
-  output: 'standalone',
+
+  output: "standalone",
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
           {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
+            key: "Content-Security-Policy",
+            value: cspHeader.replace(/\n/g, ""),
           },
           {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
+            key: "X-DNS-Prefetch-Control",
+            value: "on",
           },
           {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
           },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
           },
           {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
           {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
           },
           {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
-          }
+            key: "Permissions-Policy",
+            value:
+              "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+          },
         ],
       },
     ];
@@ -147,6 +153,6 @@ const nextConfig = {
 
 export default withSentryConfig(nextConfig, {
   silent: true,
-  org: "greenchainz", 
-  project: "greenchainz-production", 
+  org: "greenchainz",
+  project: "greenchainz-production",
 });
