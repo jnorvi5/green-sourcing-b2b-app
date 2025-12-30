@@ -167,12 +167,10 @@ const nextConfig = {
                                                         }
                                                     );
                                                     
+                                                    // Use webpack's RawSource for proper asset handling
                                                     compilation.updateAsset(
                                                         filename,
-                                                        {
-                                                            source: () => safeSource,
-                                                            size: () => Buffer.byteLength(safeSource, 'utf8'),
-                                                        }
+                                                        new webpack.sources.RawSource(safeSource)
                                                     );
                                                 }
                                             }
