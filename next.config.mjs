@@ -16,6 +16,7 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -58,6 +59,7 @@ const nextConfig = {
       };
     }
 
+    // 2. Fix Supabase/node dependencies
     config.externals.push({
       "utf-8-validate": "commonjs utf-8-validate",
       bufferutil: "commonjs bufferutil",

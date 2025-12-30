@@ -6,12 +6,17 @@ node_modules/
 # Next.js
 /.next/
 /out/
+.turbo/
+
+# Testing
+coverage/
 
 # Production
 build/
 
 # Misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # Debug
@@ -37,6 +42,17 @@ next-env.d.ts
 .vscode/
 .idea/
 
+# .NET / Visual Studio artifacts
+# Note: These patterns target build output directories commonly used by .NET projects
+# If you have script directories named 'bin', exclude them explicitly (e.g., !scripts/bin/)
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
 # Verification
 verification/screenshots/
 verification/*.png
@@ -47,5 +63,3 @@ verification/*.pdf
 *.zip
 *.rar
 *.tar.gz
-.env.local
-.next/
