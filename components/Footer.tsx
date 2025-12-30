@@ -60,7 +60,7 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-foreground mb-4">Resources</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
+              {/* <li>
                 <Link
                   href="/docs"
                   className="hover:text-primary transition-colors"
@@ -83,7 +83,7 @@ export default function Footer() {
                 >
                   Support
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div>
@@ -97,14 +97,14 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/careers"
                   className="hover:text-primary transition-colors"
                 >
                   Careers
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/contact"

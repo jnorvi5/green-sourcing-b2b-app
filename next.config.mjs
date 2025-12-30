@@ -2,7 +2,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.azurewebsites.net https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   font-src 'self';
@@ -10,7 +10,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  connect-src 'self' https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
+  connect-src 'self' https://*.azurewebsites.net https://*.supabase.co https://*.sentry.io https://*.posthog.com https://us.i.posthog.com;
   upgrade-insecure-requests;
 `;
 
@@ -35,9 +35,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+
   experimental: {
     // REMOVED 'react-icons' from here to fix the build error
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'recharts'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'recharts', 'react-icons'],
   },
 
   images: {

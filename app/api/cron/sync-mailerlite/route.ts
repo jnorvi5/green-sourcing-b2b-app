@@ -347,7 +347,7 @@ async function logSyncResults(
 export async function GET(request: Request): Promise<Response> {
   const startTime = new Date();
 
-  // Verify the request is from Vercel Cron
+  // Verify the request is authorized (using CRON_SECRET)
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env['CRON_SECRET'];
 
@@ -422,6 +422,6 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-// Export for Vercel Cron
+// Export for cron job scheduling
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max execution time
