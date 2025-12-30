@@ -1,4 +1,0 @@
-bleach
-beautifulsoup4
-azure-functions
-tinycss2
