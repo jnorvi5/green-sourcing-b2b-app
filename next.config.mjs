@@ -35,9 +35,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+
   experimental: {
     // REMOVED 'react-icons' from here to fix the build error
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'recharts'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@heroicons/react', 'recharts', 'react-icons'],
   },
 
   images: {

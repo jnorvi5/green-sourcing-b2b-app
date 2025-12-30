@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 // Dynamically import providers with error boundaries
 // const PostHogProvider = dynamic(
@@ -75,7 +82,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="bg-slate-950 text-white">
+      <body className={`${inter.className} bg-slate-950 text-white`}>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -91,7 +98,7 @@ export default function RootLayout({
           id="cookieyes"
           type="text/javascript"
           src="https://cdn-cookieyes.com/client_data/80d633ac80d2b968de32ce14/script.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         {/* ✅ END COOKIEYES BANNER */}
         {/* <GoogleAnalytics /> */}
