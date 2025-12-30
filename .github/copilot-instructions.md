@@ -12,7 +12,7 @@ GreenChainz is a global B2B green sourcing marketplace connecting sustainability
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| Frontend | Next.js 14 (App Router) + TypeScript 5.x (Strict Mode) | Server-side rendering, deployed on Vercel |
+| Frontend | Next.js 14 (App Router) + TypeScript 5.x (Strict Mode) | Server-side rendering, deployed on Azure App Service |
 | Styling | Tailwind CSS + Shadcn UI | Utility-first CSS with accessible primitives |
 | State | Zustand | Lightweight client-side state management |
 

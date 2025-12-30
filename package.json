@@ -11,9 +11,6 @@
     "check:links": "lychee --config lychee.toml '*.md' '*.html' 'docs/**/*.md' 'aws/**/*.md' 'database-schemas/**/*.md' 'marketing/**/*.md' '.github/**/*.md'",
     "test": "jest",
     "test:watch": "jest --watch",
-    "deploy:vercel": "vercel --prod",
-    "deploy:preview": "vercel",
-    "vercel-build": "next build",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {

@@ -3,7 +3,7 @@
  * POST /api/cron/generate-quarterly-reports
  * 
  * Runs on Jan 1, Apr 1, Jul 1, Oct 1 to generate quarterly reports.
- * Called by Vercel Cron.
+ * Can be triggered via Azure Logic Apps or Azure Functions Timer Trigger.
  */
 
 import { NextRequest, NextResponse } from 'next/server';

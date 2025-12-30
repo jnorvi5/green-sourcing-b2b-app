@@ -376,7 +376,7 @@ az storage container list \
 az storage cors add \
   --services b \
   --methods GET POST PUT \
-  --origins "https://greenchainz.com" "https://*.vercel.app" \
+  --origins "https://greenchainz.com" "https://*.azurewebsites.net" \
   --allowed-headers "*" \
   --exposed-headers "*" \
   --max-age 3600 \
