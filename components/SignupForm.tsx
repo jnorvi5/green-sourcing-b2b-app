@@ -1,6 +1,7 @@
 // SignUpForm.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { Eye, EyeOff } from 'lucide-react';
 
 async function hibpPasswordPwned(password: string): Promise<boolean> {
   if (!password) return false;
@@ -24,7 +25,9 @@ async function hibpPasswordPwned(password: string): Promise<boolean> {
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirm, setConfirm] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -109,23 +112,43 @@ export default function SignUpForm() {
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Password</label>
-        <input 
-          value={password} 
-          onChange={e => setPassword(e.target.value)} 
-          type="password" 
-          required 
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative">
+          <input
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            type={showPassword ? "text" : "password"}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Confirm password</label>
-        <input 
-          value={confirm} 
-          onChange={e => setConfirm(e.target.value)} 
-          type="password" 
-          required 
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative">
+          <input
+            value={confirm}
+            onChange={e => setConfirm(e.target.value)}
+            type={showConfirm ? "text" : "password"}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirm(!showConfirm)}
+            className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+            aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
+          >
+            {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
       {hint && <div className="text-orange-600 text-sm">{hint}</div>}
