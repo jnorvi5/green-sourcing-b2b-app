@@ -43,6 +43,8 @@ next-env.d.ts
 .idea/
 
 # .NET / Visual Studio artifacts
+# Note: These patterns target build output directories commonly used by .NET projects
+# If you have script directories named 'bin', exclude them explicitly (e.g., !scripts/bin/)
 .vs/
 bin/
 obj/

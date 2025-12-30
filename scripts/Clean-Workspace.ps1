@@ -50,6 +50,9 @@ $script:SkippedCount = 0
 $script:TotalSizeFreed = 0
 
 # Define patterns to clean
+# WARNING: Some directory names (e.g., 'bin', 'obj') are generic and may match legitimate
+# source directories. The script is designed for .NET/Node.js monorepos where these names
+# are conventionally used for build artifacts. Review with -WhatIf first if unsure.
 $DirectoriesToClean = @(
     # .NET/Visual Studio artifacts
     ".vs",
@@ -197,8 +200,8 @@ foreach ($dirName in $DirectoriesToClean) {
     
     if ($foundDirs) {
         foreach ($dir in $foundDirs) {
-            # Skip if inside .git directory
-            if ($dir.FullName -like "*\.git\*") {
+            # Skip if inside .git directory (cross-platform compatible)
+            if ($dir.FullName -match '[\\/]\.git[\\/]') {
                 Write-Host "  [SKIPPING] $($dir.FullName) (inside .git)" -ForegroundColor DarkGray
                 $script:SkippedCount++
                 continue
@@ -224,8 +227,8 @@ foreach ($filePattern in $FilesToClean) {
     
     if ($foundFiles) {
         foreach ($file in $foundFiles) {
-            # Skip if inside .git directory
-            if ($file.FullName -like "*\.git\*") {
+            # Skip if inside .git directory (cross-platform compatible)
+            if ($file.FullName -match '[\\/]\.git[\\/]') {
                 Write-Host "  [SKIPPING] $($file.FullName) (inside .git)" -ForegroundColor DarkGray
                 $script:SkippedCount++
                 continue
