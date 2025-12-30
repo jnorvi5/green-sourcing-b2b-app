@@ -72,7 +72,7 @@
 - [ ] **IN PROGRESS**: Data provider partnerships (EPD International, WAP Sustainability, Building Transparency, Autodesk, FSC)
 - [ ] GitHub Student Developer Pack activated
 - [ ] Cloud credits approved (AWS/Google Cloud - pending)
-- [ ] Local MVP deployed to Vercel (staging environment)
+- [x] Local MVP deployed to Azure App Service (staging environment)
 
 ### **Phase 2: Data Integration (Weeks 5-8)**
 
@@ -223,7 +223,7 @@ Our platform aligns with:
 
 - **November 10, 2025**: Data provider contact list finalized, first outreach emails sent
 - **November 17, 2025**: Minimum 2 API partnership responses received
-- **December 1, 2025**: Local MVP deployed to Vercel staging
+- **December 1, 2025**: MVP deployed to Azure App Service production
 - **January 2026**: First anchor supplier onboarded
 
 ---

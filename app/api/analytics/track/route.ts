@@ -93,9 +93,10 @@ export async function POST(request: NextRequest) {
     // Detect device type
     const deviceType = detectDeviceType(userAgent);
 
-    // Extract geographic region from request (simplified - in production use GeoIP)
-    const geographicRegion = request.headers.get('x-vercel-ip-country') || 
-                             request.headers.get('cf-ipcountry') || 
+    // Extract geographic region from request headers
+    // Azure App Service provides X-Forwarded-For, Cloudflare provides CF-IPCountry
+    const geographicRegion = request.headers.get('cf-ipcountry') || 
+                             request.headers.get('x-azure-clientip') || 
                              'Unknown';
 
     let result: { success: boolean; error?: string };

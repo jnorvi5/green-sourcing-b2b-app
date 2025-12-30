@@ -1,10 +1,10 @@
-# Vercel Environment Variables Checklist
+# Azure App Service Environment Variables Checklist
 
-This document lists all required and optional environment variables that must be configured in Vercel for successful deployment.
+This document lists all required and optional environment variables that must be configured in Azure App Service for successful deployment.
 
 ## 🚨 CRITICAL - Required for Deployment
 
-These MUST be set in Vercel or deployment will fail:
+These MUST be set in Azure App Service or deployment will fail:
 
 ### Supabase (Database & Auth)
 ```bash
@@ -13,11 +13,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key
 ```
 
-**How to add in Vercel:**
-1. Go to Project Settings → Environment Variables
-2. Add each variable with appropriate scope (Production, Preview, Development)
-3. For public variables (NEXT_PUBLIC_*), they can be visible
-4. For service role keys, mark as "Sensitive"
+**How to add in Azure App Service:**
+1. Go to Azure Portal → Your App Service → Configuration → Application settings
+2. Click "New application setting" for each variable
+3. For public variables (NEXT_PUBLIC_*), they can be visible in app settings
+4. For sensitive keys (service role, API keys), consider using Azure Key Vault references
 
 ### Sentry (Error Tracking)
 ```bash
@@ -136,39 +136,40 @@ CRON_SECRET=your-random-cron-secret
 ### Production
 ```bash
 NODE_ENV=production
-NEXT_PUBLIC_BASE_URL=https://greenchainz.com
+NEXT_PUBLIC_BASE_URL=https://app.greenchainz.com
+WEBSITE_NODE_DEFAULT_VERSION=~18
 ```
 
-### Preview/Development
+### Staging/Development
 ```bash
 NODE_ENV=development
-NEXT_PUBLIC_BASE_URL=https://preview-branch.vercel.app
+NEXT_PUBLIC_BASE_URL=https://staging.greenchainz.com
 ```
 
 ---
 
 ## 📋 Verification Steps
 
-After adding environment variables to Vercel:
+After adding environment variables to Azure App Service:
 
-1. **Trigger a new deployment** (push to main or redeploy in Vercel dashboard)
-2. **Check deployment logs** for any missing variable warnings
+1. **Restart the App Service** (Configuration → Overview → Restart)
+2. **Check deployment logs** in Azure Portal → Log Stream for any missing variable warnings
 3. **Test critical features:**
    - [ ] User authentication (Supabase)
    - [ ] File uploads (AWS S3)
    - [ ] Email notifications (Resend/Zoho)
    - [ ] Error tracking (Sentry)
 4. **Monitor Sentry** for any configuration errors
-5. **Check Vercel logs** for runtime errors related to missing env vars
+5. **Check Azure App Service logs** for runtime errors related to missing env vars
 
 ---
 
 ## 🔍 Troubleshooting
 
 ### Build Fails with "Missing Environment Variable"
-- Check that the variable is added to Vercel
-- Ensure it's set for the correct environment (Production/Preview)
-- Redeploy after adding variables
+- Check that the variable is added to Azure App Service Configuration
+- Restart the App Service after adding variables
+- Check deployment logs in Azure Portal
 
 ### Sentry Not Working
 - Verify `NEXT_PUBLIC_SENTRY_DSN` is set
@@ -178,12 +179,16 @@ After adding environment variables to Vercel:
 ### Supabase Errors
 - Verify URLs don't have trailing slashes
 - Ensure ANON_KEY is for the correct Supabase project
-- Check SERVICE_ROLE_KEY is marked as sensitive in Vercel
+- Check SERVICE_ROLE_KEY is properly set in Azure configuration
 
 ### File Uploads Not Working
 - Verify all AWS credentials are correct
 - Check bucket name matches in both variables
 - Ensure AWS IAM user has S3 write permissions
+
+### Network/CORS Issues
+- Verify CSP headers in next.config.mjs include Azure domains
+- Check App Service CORS settings if using custom domains
 
 ---
 
@@ -198,15 +203,18 @@ export CRON_SECRET=$(openssl rand -base64 32)
 # Test build locally with env vars
 npm run build
 
-# Deploy to Vercel after setting env vars
-vercel --prod
+# Deploy to Azure App Service using GitHub Actions
+git push origin main
+# Or manually via Azure CLI:
+# az webapp deployment source config-zip --resource-group <group> --name <app-name> --src <zip-file>
 ```
 
 ---
 
 ## 🔗 Useful Links
 
-- [Vercel Environment Variables Docs](https://vercel.com/docs/projects/environment-variables)
+- [Azure App Service Configuration Docs](https://docs.microsoft.com/en-us/azure/app-service/configure-common)
+- [Azure Key Vault Integration](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 - [Supabase Project Settings](https://supabase.com/dashboard/project/_/settings/api)
 - [Sentry Project Settings](https://sentry.io/settings/)
 - [AWS IAM Console](https://console.aws.amazon.com/iam/)
