@@ -6,12 +6,17 @@ node_modules/
 # Next.js
 /.next/
 /out/
+.turbo/
+
+# Testing
+coverage/
 
 # Production
 build/
 
 # Misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # Debug
@@ -37,6 +42,15 @@ next-env.d.ts
 .vscode/
 .idea/
 
+# .NET / Visual Studio artifacts
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
 # Verification
 verification/screenshots/
 verification/*.png
@@ -47,5 +61,3 @@ verification/*.pdf
 *.zip
 *.rar
 *.tar.gz
-.env.local
-.next/
