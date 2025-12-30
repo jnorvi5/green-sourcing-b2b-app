@@ -121,6 +121,75 @@ const nextConfig = {
     },
 
     skipTrailingSlashRedirect: true,
+
+    // 7. Webpack configuration to fix Edge Runtime __import_unsupported redefinition bug
+    // This workaround prevents the TypeError when Next.js tries to redefine the non-configurable property
+    webpack: (config, { isServer }) => {
+        if (isServer) {
+            class SafeImportUnsupportedPlugin {
+                apply(compiler) {
+                    compiler.hooks.thisCompilation.tap(
+                        'SafeImportUnsupportedPlugin',
+                        (compilation) => {
+                            compilation.hooks.processAssets.tap(
+                                {
+                                    name: 'SafeImportUnsupportedPlugin',
+                                    stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+                                },
+                                () => {
+                                    for (const [filename, asset] of Object.entries(compilation.assets)) {
+                                        // Only process middleware and edge-runtime bundle files
+                                        if (filename.includes('middleware') || filename.includes('edge-runtime')) {
+                                            const source = typeof asset.source === 'function' 
+                                                ? asset.source() 
+                                                : asset.source;
+                                            
+                                            if (typeof source === 'string') {
+                                                // Match Object.defineProperty calls for __import_unsupported with configurable:false
+                                                // This pattern matches the minified code from Next.js Edge Runtime setup
+                                                const unsafePattern = /Object\.defineProperty\s*\(\s*globalThis\s*,\s*["']__import_unsupported["']\s*,\s*\{([^}]*configurable\s*:\s*!1[^}]*)\}\s*\)/g;
+                                                
+                                                if (unsafePattern.test(source)) {
+                                                    const safeSource = source.replace(
+                                                        unsafePattern,
+                                                        (match, descriptorContent) => {
+                                                            // Wrap in a safe check that prevents redefinition
+                                                            return `(function() {
+                                                                try {
+                                                                    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "__import_unsupported");
+                                                                    if (!descriptor) {
+                                                                        Object.defineProperty(globalThis, "__import_unsupported", {${descriptorContent}});
+                                                                    }
+                                                                } catch (e) {
+                                                                    // Property already exists or cannot be defined, ignore
+                                                                }
+                                                            })()`;
+                                                        }
+                                                    );
+                                                    
+                                                    compilation.updateAsset(
+                                                        filename,
+                                                        {
+                                                            source: () => safeSource,
+                                                            size: () => Buffer.byteLength(safeSource, 'utf8'),
+                                                        }
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    );
+                }
+            }
+
+            config.plugins.push(new SafeImportUnsupportedPlugin());
+        }
+
+        return config;
+    },
 };
 
 export default withSentryConfig(nextConfig, {
