@@ -31,8 +31,8 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-3">
               <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link></li>
-              <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Blog</Link></li>
-              <li><Link href="/careers" className="text-sm text-muted-foreground hover:text-primary transition-colors">Careers</Link></li>
+              {/* <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Blog</Link></li>
+              <li><Link href="/careers" className="text-sm text-muted-foreground hover:text-primary transition-colors">Careers</Link></li> */}
               <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
             </ul>
           </div>
@@ -43,9 +43,9 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors">How It Works</Link></li>
               <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
-              <li><Link href="/help" className="text-sm text-muted-foreground hover:text-primary transition-colors">Help Center</Link></li>
+              {/* <li><Link href="/help" className="text-sm text-muted-foreground hover:text-primary transition-colors">Help Center</Link></li>
               <li><Link href="/developers" className="text-sm text-muted-foreground hover:text-primary transition-colors">API Docs</Link></li>
-              <li><Link href="/partners" className="text-sm text-muted-foreground hover:text-primary transition-colors">Partner Program</Link></li>
+              <li><Link href="/partners" className="text-sm text-muted-foreground hover:text-primary transition-colors">Partner Program</Link></li> */}
             </ul>
           </div>
 
