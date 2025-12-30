@@ -45,7 +45,7 @@ Resources:
             AllowedOrigins:
               - 'https://greenchainz.com'
               - 'https://www.greenchainz.com'
-              - 'https://*.vercel.app'
+              - 'https://*.azurewebsites.net'
             MaxAge: 3600
             ExposedHeaders:
               - ETag

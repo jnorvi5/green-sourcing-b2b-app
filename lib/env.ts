@@ -22,11 +22,11 @@ const envSchema = z.object({
 })
 
 export function validateEnv() {
-  // CRITICAL FIX: Always return mock data during build time to prevent Vercel crashes
+  // CRITICAL FIX: Always return mock data during build time to prevent crashes
   // This checks if we are in a CI environment or building
   if (
     process.env.npm_lifecycle_event === 'build' ||
-    process.env.VERCEL_ENV === 'production' ||
+    process.env.NODE_ENV === 'production' ||
     process.env.CI
   ) {
     // If keys are missing during build, return safe defaults
