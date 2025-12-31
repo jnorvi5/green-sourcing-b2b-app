@@ -65,3 +65,10 @@ verification/*.pdf
 *.zip
 *.rar
 *.tar.gz
+
+# Debug - Cleanups
+*.log
+*_error.txt
+output.txt
+curl_output.txt
+push_error*.txt
