@@ -1,7 +1,7 @@
 // SignUpForm.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 async function hibpPasswordPwned(password: string): Promise<boolean> {
   if (!password) return false;
@@ -39,6 +39,10 @@ export default function SignUpForm() {
     setHint(null);
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
     debounceRef.current = window.setTimeout(async () => {
+      if (password.length === 0) {
+        setHint(null);
+        return;
+      }
       if (password.length < 8) {
         setHint('Password must be at least 8 characters.');
         return;
@@ -101,8 +105,9 @@ export default function SignUpForm() {
   return (
     <form onSubmit={handleSubmit} className="max-w-md space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Email</label>
+        <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
         <input 
+          id="email"
           value={email} 
           onChange={e => setEmail(e.target.value)} 
           type="email" 
@@ -111,9 +116,10 @@ export default function SignUpForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Password</label>
+        <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
         <div className="relative">
           <input
+            id="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             type={showPassword ? "text" : "password"}
@@ -131,9 +137,10 @@ export default function SignUpForm() {
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Confirm password</label>
+        <label htmlFor="confirm" className="block text-sm font-medium mb-1">Confirm password</label>
         <div className="relative">
           <input
+            id="confirm"
             value={confirm}
             onChange={e => setConfirm(e.target.value)}
             type={showConfirm ? "text" : "password"}
@@ -151,16 +158,21 @@ export default function SignUpForm() {
         </div>
       </div>
 
-      {hint && <div className="text-orange-600 text-sm">{hint}</div>}
-      {error && <div className="text-red-600 text-sm">{error}</div>}
-      {success && <div className="text-green-600 text-sm">{success}</div>}
+      {hint && <div role="alert" aria-live="polite" className="text-orange-600 text-sm">{hint}</div>}
+      {error && <div role="alert" className="text-red-600 text-sm">{error}</div>}
+      {success && <div role="alert" className="text-green-600 text-sm">{success}</div>}
 
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {loading ? 'Signing up…' : 'Sign up'}
+        {loading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Signing up…
+          </>
+        ) : 'Sign up'}
       </button>
 
       <div className="text-xs text-gray-600">
