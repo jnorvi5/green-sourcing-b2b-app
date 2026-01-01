@@ -5,6 +5,19 @@ import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export const dynamic = 'force-dynamic';
 
+interface EmailTemplate {
+  subject: string;
+  body: string;
+  metadata: {
+    generatedAt: string;
+    recipientType?: string;
+    purpose?: string;
+    model?: string;
+    provider?: string;
+    isStatic?: boolean;
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { recipientType, purpose, context } = await request.json();
@@ -34,6 +47,7 @@ export async function POST(request: NextRequest) {
       console.warn('No AI provider configured. Returning static template.');
       return NextResponse.json({
         success: true,
+        email: getStaticTemplate(recipientType, purpose, context),
         email: emailTemplate,
         warning: 'Generated with static template (No AI provider configured)'
       });
@@ -65,6 +79,19 @@ Instructions:
         const agentRes = await invokeFoundryAgent(agentId, fullPrompt);
 
         if (agentRes.success && agentRes.text) {
+          const { subject, body } = parseResponse(agentRes.text, `GreenChainz - ${purpose}`);
+          return NextResponse.json({
+            success: true,
+            email: {
+              subject,
+              body,
+              metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                provider: 'foundry-agent',
+                model: agentId
+              }
           const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
 
           emailTemplate = {
@@ -110,6 +137,20 @@ Instructions:
         });
 
         const text = response.choices[0].message.content || "";
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
+
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              provider: 'azure-openai',
+              model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
+            }
         const { subject, body } = parseResponse(text, emailTemplate.subject);
 
         emailTemplate = {
@@ -157,6 +198,21 @@ Instructions:
           temperature: 0.7,
         });
 
+        const text = completion.choices[0]?.message?.content || '';
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
+
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              model: 'gpt-4',
+              provider: 'openai'
+            }
         const generatedText = completion.choices[0]?.message?.content || '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -201,6 +257,8 @@ Instructions:
           ]
         });
 
+        const text = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -275,7 +333,7 @@ function parseResponse(text: string, defaultSubject: string): { subject: string,
   return { subject, body };
 }
 
-function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined) {
+function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined): EmailTemplate {
   return {
     subject: `GreenChainz - ${purpose || 'Introduction'}`,
     body: `Hi [Name],
