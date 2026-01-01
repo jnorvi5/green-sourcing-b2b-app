@@ -16,6 +16,8 @@ export const createClient = (request: NextRequest) => {
             request: { headers: request.headers },
         });
         // Create a minimal mock supabase client that won't crash
+        // Note: Only getUser is mocked since that's all the middleware calls.
+        // If additional methods are needed, they must be added here.
         const mockSupabase = {
             auth: {
                 getUser: async () => ({ data: { user: null }, error: null }),
