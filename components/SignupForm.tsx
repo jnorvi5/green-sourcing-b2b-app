@@ -230,7 +230,7 @@ export default function SignUpForm() {
             className="w-full justify-start gap-3 h-11"
           >
             <FaMicrosoft className="h-5 w-5 text-[#00A4EF]" />
-            Continue with Microsoft (Azure)
+            Continue with Microsoft
           </Button>
 
           <Button
