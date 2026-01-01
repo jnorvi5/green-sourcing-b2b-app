@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+import IntercomProvider from "@/components/IntercomProvider";
 
 // Use system font stack instead of Google Fonts to avoid network failures during build
 // Inter font can be added via CDN in production or as a static asset if needed
@@ -9,11 +11,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 // Dynamically import providers with error boundaries
 // const PostHogProvider = dynamic(
 //   () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
-//   { ssr: false }
-// );
-
-// const IntercomProvider = dynamic(
-//   () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
 //   { ssr: false }
 // );
 
@@ -100,9 +97,9 @@ export default function RootLayout({
         {/* <GoogleAnalytics /> */}
         {/* <PostHogProvider> */}
         <AuthProvider>
-          {/* <IntercomProvider> */}
-          {children}
-          {/* </IntercomProvider> */}
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
         </AuthProvider>
         {/* </PostHogProvider> */}
         {/* <AgentChat /> */}
