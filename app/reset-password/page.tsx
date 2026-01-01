@@ -144,6 +144,7 @@ export default function ResetPasswordPage() {
                 required
                 disabled={loading}
                 minLength={8}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-white dark:border-slate-700 placeholder:text-slate-400"
               />
               <p className="text-xs text-muted-foreground">
                 Must be at least 8 characters
@@ -163,6 +164,7 @@ export default function ResetPasswordPage() {
                 required
                 disabled={loading}
                 minLength={8}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-white dark:border-slate-700 placeholder:text-slate-400"
               />
             </div>
 
