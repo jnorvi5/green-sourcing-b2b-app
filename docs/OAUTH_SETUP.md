@@ -17,13 +17,18 @@ This guide walks through setting up Google, LinkedIn, Microsoft (Azure AD), and 
 
 ## Exact Redirect URLs to Whitelist
 
-**For all OAuth providers, use this Supabase callback URL:**
+**For all OAuth providers, use your Supabase callback URL in this format:**
 
+```
+https://[YOUR-PROJECT-REF].supabase.co/auth/v1/callback
+```
+
+For the GreenChainz production environment, the URL is:
 ```
 https://jfexzdhacbgugleutgdwq.supabase.co/auth/v1/callback
 ```
 
-⚠️ **Copy this exactly** — no trailing slash, must be `https://`.
+⚠️ **Important**: Replace `[YOUR-PROJECT-REF]` with your actual Supabase project reference ID. You can find this in your Supabase Dashboard → Settings → API → Project URL. Ensure no trailing slash and use `https://`.
 
 ---
 
