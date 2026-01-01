@@ -4,11 +4,26 @@ import { type NextRequest, NextResponse } from "next/server";
 const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
 const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY'];
 
-if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
-}
+// Don't throw at module load time - let the createClient function handle missing vars
+// This prevents build-time crashes when env vars aren't available
 
 export const createClient = (request: NextRequest) => {
+    // Check at runtime instead of module load time to prevent build crashes
+    if (!supabaseUrl || !supabaseKey) {
+        console.warn('⚠️ Missing Supabase environment variables in middleware. Skipping auth refresh.');
+        // Return a passthrough response without Supabase client
+        const response = NextResponse.next({
+            request: { headers: request.headers },
+        });
+        // Create a minimal mock supabase client that won't crash
+        const mockSupabase = {
+            auth: {
+                getUser: async () => ({ data: { user: null }, error: null }),
+            },
+        };
+        return { response, supabase: mockSupabase as unknown as ReturnType<typeof createServerClient> };
+    }
+
     let supabaseResponse = NextResponse.next({
         request: {
             headers: request.headers,

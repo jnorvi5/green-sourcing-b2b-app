@@ -72,12 +72,19 @@ export default function LoginPage() {
     }
 
     try {
+      // Add timeout to prevent infinite loading (30 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
         credentials: "include", // Important: include cookies in request
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -86,6 +93,13 @@ export default function LoginPage() {
       }
 
       if (response.ok) {
+        // Safety check: ensure we have the expected response structure
+        if (!data.user) {
+          setError("Unexpected response from server. Please try again.");
+          logger.error("Login response missing user object", { data });
+          return;
+        }
+        
         // Session cookies are set by the API, just redirect
         if (data.user.user_type === "supplier") {
           router.push("/supplier/dashboard");
@@ -108,8 +122,13 @@ export default function LoginPage() {
         }
       }
     } catch (err) {
-      logger.error("Login exception", { error: err });
-      setError("Network error. Please check your connection.");
+      if (err instanceof Error && err.name === 'AbortError') {
+        logger.error("Login request timed out");
+        setError("Request timed out. Please check your connection and try again.");
+      } else {
+        logger.error("Login exception", { error: err });
+        setError("Network error. Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }
