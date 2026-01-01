@@ -24,6 +24,8 @@ const playfair = Playfair_Display({
 //   { ssr: false }
 // );
 
+import IntercomProvider from "@/components/IntercomProvider";
+
 // const GoogleAnalytics = dynamic(
 //   () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
 //   { ssr: false }
