@@ -277,7 +277,7 @@ export class ZohoMailClient {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error(`❌ Failed to send Zoho email to ${options.to}:`, errorMessage);
+      console.error('❌ Failed to send Zoho email to %s:', options.to, errorMessage);
 
       return {
         success: false,
