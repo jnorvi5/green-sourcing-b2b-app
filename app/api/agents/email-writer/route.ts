@@ -29,44 +29,23 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Default mock response structure
-    interface EmailTemplate {
-      subject: string;
-      body: string;
-      metadata: {
-        generatedAt: string;
-        recipientType: string;
-        purpose: string;
-        model?: string;
-        provider?: string;
-        isStatic?: boolean;
-      };
-    }
+    // Prepare prompt
+    // The prompt is based on the user request, with appended formatting instructions
+    // to ensure the response can be parsed by the frontend.
+    const basePrompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}`;
 
-    let emailTemplate: EmailTemplate = {
-      subject: `GreenChainz - ${purpose}`,
-      body: `Hi [Name],
+    const formattingInstructions = `
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
 
-I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified sustainable building materials.
-
-${context}
-
-We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
-
-Would you be open to a 15-minute call this week?
-
-Best,
-Jerit Norville
-Founder, GreenChainz
-founder@greenchainz.com`,
-      metadata: {
-        generatedAt: new Date().toISOString(),
-        recipientType,
-        purpose,
-        model: 'gpt-4',
-        provider: 'mock'
-      }
-    };
+    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
 
     // Try Foundry Agent (OUTREACH-SCALER) if configured
     const agentId = process.env['AGENT_OUTREACH_SCALER_ID'];
@@ -75,45 +54,24 @@ founder@greenchainz.com`,
         console.log("Delegating email generation to Foundry Agent:", agentId);
         const { invokeFoundryAgent } = await import('@/lib/azure-foundry');
 
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Format:
-Subject: [subject line]
-
-[email body]`;
-
-        const agentRes = await invokeFoundryAgent(agentId, prompt);
+        const agentRes = await invokeFoundryAgent(agentId, fullPrompt);
 
         if (agentRes.success && agentRes.text) {
-          const text = agentRes.text;
-          // Parse subject/body same as Azure OpenAI logic
-          const lines = text.split('\n').filter((l: string) => l.trim());
-          const subjectLine = lines.find((l: string) => l.toLowerCase().startsWith('subject:'));
-
-          let subject = emailTemplate.subject;
-          let body = text;
-
-          if (subjectLine) {
-            subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-            const bodyStart = lines.findIndex((l: string) => l.toLowerCase().startsWith('subject:')) + 1;
-            body = lines.slice(bodyStart).join('\n').trim();
-          }
-
-          emailTemplate = {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              provider: 'foundry-agent',
-              model: agentId // Tracking the Agent ID
+          const { subject, body } = parseResponse(agentRes.text, purpose);
+          return NextResponse.json({
+            success: true,
+            email: {
+              subject,
+              body,
+              metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                provider: 'foundry-agent',
+                model: agentId
+              }
             }
-          };
-          return NextResponse.json({ success: true, email: emailTemplate });
+          });
         }
       } catch (agentError) {
         console.error('Foundry Agent invocation failed:', agentError);
@@ -124,23 +82,6 @@ Subject: [subject line]
     // Try Azure OpenAI first if enabled
     if (isAIEnabled && azureOpenAI) {
       try {
-        const azurePrompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Template:
-- Subject line
-- Greeting
-- Value proposition
-- Call to action
-- Sign: Jerit Norville, Founder - founder@greenchainz.com
-
-Format:
-Subject: [subject line]
-
-[email body]`;
-
         const response = await azureOpenAI.chat.completions.create({
           model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
           messages: [
@@ -150,7 +91,7 @@ Subject: [subject line]
             },
             {
               role: "user",
-              content: azurePrompt
+              content: fullPrompt
             }
           ],
           temperature: 0.7,
@@ -158,41 +99,26 @@ Subject: [subject line]
         });
 
         const text = response.choices[0].message.content || "";
+        const { subject, body } = parseResponse(text, purpose);
 
-        // Simple parsing logic
-        const lines = text.split('\n').filter(l => l.trim());
-        const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
-
-        let subject = emailTemplate.subject;
-        let body = text;
-
-        if (subjectLine) {
-          subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-          // Assuming body follows subject
-          const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
-          body = lines.slice(bodyStart).join('\n').trim();
-        } else {
-          // Fallback if formatting is off, treat whole text as body
-          body = text.trim();
-        }
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            provider: 'azure-openai',
-            model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              provider: 'azure-openai',
+              model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
+            }
           }
-        };
-
-        return NextResponse.json({ success: true, email: emailTemplate });
+        });
 
       } catch (aiError) {
         console.error('Azure OpenAI generation failed:', aiError);
-        // Fall through to standard OpenAI or static
+        // Fall through to standard OpenAI
       }
     }
 
@@ -203,64 +129,41 @@ Subject: [subject line]
           apiKey: process.env['OPENAI_API_KEY'],
         });
 
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.
-`;
-
         const completion = await openai.chat.completions.create({
           model: 'gpt-4',
           messages: [
             {
               role: 'system',
-              content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.'
+              content: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials.'
             },
             {
               role: 'user',
-              content: prompt
+              content: fullPrompt
             }
           ],
           temperature: 0.7,
         });
 
-        const generatedText = completion.choices[0]?.message?.content || '';
+        const text = completion.choices[0]?.message?.content || '';
+        const { subject, body } = parseResponse(text, purpose);
 
-        // Parse the generated text to extract subject and body
-        let subject = `GreenChainz - ${purpose}`;
-        let body = generatedText;
-
-        // Robustly extract the subject line
-        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
-
-        if (subjectMatch) {
-          subject = subjectMatch[1].trim();
-          // Remove the subject line (and any preceding label) from the body
-          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-        }
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            model: 'gpt-4',
-            provider: 'openai'
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              model: 'gpt-4',
+              provider: 'openai'
+            }
           }
-        };
-
-        return NextResponse.json({ success: true, email: emailTemplate });
+        });
       } catch (openAIError) {
         console.error('OpenAI generation failed:', openAIError);
-        // Fall through to Anthropic or static
+        // Fall through to Anthropic
       }
     }
 
@@ -271,57 +174,35 @@ Instructions:
           apiKey: process.env['ANTHROPIC_API_KEY'],
         });
 
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.`;
-
         const message = await anthropic.messages.create({
           model: 'claude-3-5-sonnet-20241022',
           max_tokens: 1024,
-          system: 'You are a professional B2B email copywriter for GreenChainz, a marketplace for sustainable building materials. Your tone is professional, concise, and value-driven.',
+          system: 'You are a professional B2B email copywriter for GreenChainz.',
           messages: [
             {
               role: 'user',
-              content: prompt
+              content: fullPrompt
             }
           ]
         });
 
-        const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
+        const text = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(text, purpose);
 
-        // Parse the generated text to extract subject and body
-        let subject = `GreenChainz - ${purpose}`;
-        let body = generatedText;
-
-        // Robustly extract the subject line
-        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
-
-        if (subjectMatch) {
-          subject = subjectMatch[1].trim();
-          // Remove the subject line (and any preceding label) from the body
-          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-        }
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            model: 'claude-3-5-sonnet-20241022',
-            provider: 'anthropic'
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              model: 'claude-3-5-sonnet-20241022',
+              provider: 'anthropic'
+            }
           }
-        };
-
-        return NextResponse.json({ success: true, email: emailTemplate });
+        });
 
       } catch (anthropicError) {
         console.error('Anthropic generation failed:', anthropicError);
@@ -338,13 +219,41 @@ Instructions:
 
   } catch (error) {
     console.error('Email writer error:', error);
-    // If extraction of variables failed, use defaults
     return NextResponse.json({
       success: true,
       email: getStaticTemplate('Unknown', 'Contact', 'Context unavailable due to error'),
       warning: 'Generated with static template (API error)'
     });
   }
+}
+
+// Helper to parse subject and body from AI response
+function parseResponse(text: string, defaultPurpose: string) {
+  // We do NOT filter empty lines here to preserve paragraph breaks
+  const lines = text.split('\n');
+
+  // Find line starting with Subject:
+  const subjectLineIndex = lines.findIndex(l => l.match(/^Subject:/i));
+
+  let subject = `GreenChainz - ${defaultPurpose}`;
+  let body = text;
+
+  if (subjectLineIndex !== -1) {
+    const subjectLine = lines[subjectLineIndex];
+    subject = subjectLine.replace(/^Subject:\s*/i, '').trim();
+
+    // Body is everything after the subject line
+    // We explicitly skip the subject line
+    const bodyLines = lines.slice(subjectLineIndex + 1);
+
+    // Trim leading/trailing empty lines from body, but preserve internal spacing
+    // join back first
+    body = bodyLines.join('\n').trim();
+  } else {
+    body = text.trim();
+  }
+
+  return { subject, body };
 }
 
 function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined) {
