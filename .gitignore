@@ -27,6 +27,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local Env Files
+local.settings.json
+azure-functions/local.settings.json
 .env
 .env.local
 .env.development.local
