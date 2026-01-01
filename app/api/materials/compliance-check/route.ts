@@ -4,6 +4,7 @@ export async function POST(req: NextRequest) {
     const { materialName, specifications, targetCertifications } = await req.json();
 
     try {
+        const response = await fetch(process.env.AGENT_COMPLIANCE_URL!, {
         const response = await fetch(process.env['AGENT_COMPLIANCE_URL']!, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -18,6 +19,8 @@ export async function POST(req: NextRequest) {
 
         const compliance = await response.json();
         return NextResponse.json(compliance);
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
     } catch (error: unknown) {
         const err = error as Error;
         return NextResponse.json({ error: err.message }, { status: 500 });

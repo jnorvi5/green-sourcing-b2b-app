@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Inter, Playfair_Display } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+import IntercomProvider from "@/components/IntercomProvider";
 
-// Use system font stack instead of Google Fonts to avoid network failures during build
-// Inter font can be added via CDN in production or as a static asset if needed
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
 
 // Dynamically import providers with error boundaries
 // const PostHogProvider = dynamic(
@@ -26,11 +38,11 @@ import IntercomProvider from "@/components/IntercomProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.greenchainz.com"),
-  title: "GreenChainz - Revit Plugin for Sustainable Design & Materials",
+  title: "GreenChainz - The Future of Verified Green Sourcing",
   description:
     "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
   openGraph: {
-    title: "GreenChainz - Revit Plugin for Sustainable Design",
+    title: "GreenChainz - Design Greener, Faster",
     description:
       "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
     images: ["/images/plugin/demo-thumbnail.svg"],
@@ -47,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${playfair.variable} scroll-smooth`}>
       <head>
         {/* Google Tag Manager */}
         <Script
@@ -75,7 +87,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="font-sans bg-slate-950 text-white">
+      <body className="font-sans bg-slate-950 text-white antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
