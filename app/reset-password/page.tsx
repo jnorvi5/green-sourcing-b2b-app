@@ -37,7 +37,6 @@ export default function ResetPasswordPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         setVerifyingSession(false);
-        setSessionError(false);
       } else if (event === 'SIGNED_OUT') {
         // Optionally handle sign out
       }
