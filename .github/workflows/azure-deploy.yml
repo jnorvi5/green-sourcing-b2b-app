@@ -23,7 +23,12 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.AZURE_ACR_SERVER }}/greenchainz:latest .
+          docker build \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+            --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -t ${{ secrets.AZURE_ACR_SERVER }}/greenchainz:latest .
           docker push ${{ secrets.AZURE_ACR_SERVER }}/greenchainz:latest
 
       - name: Azure Login
