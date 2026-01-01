@@ -25,6 +25,34 @@ export async function POST(request: NextRequest) {
     const hasOpenAI = !!process.env['OPENAI_API_KEY'];
     const hasAnthropic = !!process.env['ANTHROPIC_API_KEY'];
 
+    // Check if any AI provider is configured
+    if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
+      console.warn('No AI provider configured. Returning static template.');
+      return NextResponse.json({
+        success: true,
+        email: getStaticTemplate(recipientType, purpose, context),
+        warning: 'Generated with static template (No AI provider configured)'
+      });
+    }
+
+    // Prepare prompt
+    // The prompt is based on the user request, with appended formatting instructions
+    // to ensure the response can be parsed by the frontend.
+    const basePrompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}`;
+
+    const formattingInstructions = `
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
+
+    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
+
     // Default mock response structure
     interface EmailTemplate {
       subject: string;
@@ -39,6 +67,7 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    let emailTemplate: EmailTemplate | null = null;
     // Initialize with mock data as fallback
     let emailTemplate: EmailTemplate = getStaticTemplate(recipientType, purpose, context);
 
@@ -105,6 +134,7 @@ Instructions:
               model: agentId
             }
           };
+          return NextResponse.json({ success: true, email: emailTemplate });
 
           return NextResponse.json({
             success: true,
@@ -118,7 +148,7 @@ Instructions:
     }
 
     // Try Azure OpenAI first if enabled
-    if (isAIEnabled && azureOpenAI) {
+    if (isAIEnabled && azureOpenAI && !emailTemplate) {
       try {
         const response = await azureOpenAI.chat.completions.create({
           model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
@@ -164,6 +194,7 @@ Instructions:
             model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
           }
         };
+         return NextResponse.json({ success: true, email: emailTemplate });
 
         return NextResponse.json({
           success: true,
@@ -177,7 +208,7 @@ Instructions:
     }
 
     // Fallback to standard OpenAI
-    if (hasOpenAI) {
+    if (hasOpenAI && !emailTemplate) {
       try {
         const openai = new OpenAI({
           apiKey: process.env['OPENAI_API_KEY'],
@@ -227,6 +258,7 @@ Instructions:
             provider: 'openai'
           }
         };
+         return NextResponse.json({ success: true, email: emailTemplate });
 
         return NextResponse.json({
           success: true,
@@ -239,7 +271,7 @@ Instructions:
     }
 
     // Try Anthropic
-    if (hasAnthropic) {
+    if (hasAnthropic && !emailTemplate) {
       try {
         const anthropic = new Anthropic({
           apiKey: process.env['ANTHROPIC_API_KEY'],
@@ -262,21 +294,18 @@ Instructions:
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
-        return NextResponse.json({
-          success: true,
-          email: {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              model: 'claude-3-5-sonnet-20241022',
-              provider: 'anthropic'
-            }
+        emailTemplate = {
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            model: 'claude-3-5-sonnet-20241022',
+            provider: 'anthropic'
           }
-        });
-
+        };
+         return NextResponse.json({ success: true, email: emailTemplate });
       } catch (anthropicError) {
         console.error('Anthropic generation failed:', anthropicError);
         // Fall through to static
@@ -354,6 +383,7 @@ founder@greenchainz.com
     metadata: {
       generatedAt: new Date().toISOString(),
       recipientType: recipientType || 'Unknown',
+      purpose: purpose || 'Contact',
       purpose: purpose || 'General',
       isStatic: true
     }

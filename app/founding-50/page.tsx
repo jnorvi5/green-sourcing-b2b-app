@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import JoinForm from "@/components/JoinForm";
 import { FiStar, FiUsers, FiTrendingUp, FiUnlock } from "react-icons/fi";
 import { Card, CardContent } from "@/components/ui/card";

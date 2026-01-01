@@ -399,6 +399,8 @@ describe('resendClient', () => {
           error: null,
         });
 
+        // Use a dynamic future date to prevent test rot
+        const sendAt = new Date(Date.now() + 86400000); // Tomorrow
         // Use a dynamic future date (1 year from now) to prevent test from aging out
         const sendAt = new Date();
         sendAt.setFullYear(sendAt.getFullYear() + 1);
