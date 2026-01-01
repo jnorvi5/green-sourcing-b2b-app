@@ -4,6 +4,7 @@ export async function POST(req: NextRequest) {
     const { architectId, projectLocation, materialsNeeded, budget, radius } = await req.json();
 
     try {
+        const response = await fetch(process.env.AGENT_RFQ_MATCHING_URL!, {
         const response = await fetch(process.env['AGENT_RFQ_MATCHING_URL']!, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -20,6 +21,8 @@ export async function POST(req: NextRequest) {
 
         const results = await response.json();
         return NextResponse.json(results);
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
     } catch (error: unknown) {
         const err = error as Error;
         return NextResponse.json({ error: err.message }, { status: 500 });

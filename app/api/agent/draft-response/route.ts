@@ -4,6 +4,17 @@ import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 import { getEPDData } from '@/lib/autodesk-sda'
 
+const apiKey = process.env['AZURE_OPENAI_API_KEY'];
+const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+const deploymentName = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'];
+
+const client = new OpenAI({
+    apiKey: apiKey!,
+    baseURL: `${endpoint}/openai/deployments/${deploymentName}`,
+    defaultQuery: { 'api-version': '2024-02-15-preview' },
+    defaultHeaders: { 'api-key': apiKey! },
+})
+
 // Lazy initialization of OpenAI client to avoid build-time errors
 let client: OpenAI | null = null;
 
@@ -86,6 +97,19 @@ Draft a professional quote response with:
 3. Environmental impact summary
 4. Compliance notes
 
+
+Your Products:
+${products?.map(p => `- ${p.name}: ${p.description}`).join('\n')}
+
+EPD Data:
+${epdResults.map(e => `- ${e.material}: ${e.embodied_carbon_kg} kg CO2`).join('\n')}
+
+Draft a professional quote response with:
+1. Matched products from your inventory
+2. Estimated pricing (use budget as guide)
+3. Environmental impact summary
+4. Compliance notes
+
 Return JSON only:
 {
   "matched_products": [{"product_id": "...", "product_name": "...", "quantity": 0}],
@@ -96,6 +120,8 @@ Return JSON only:
 }`
 
     try {
+        const response = await client.chat.completions.create({
+            model: deploymentName!,
         const openai = getOpenAIClient();
         const response = await openai.chat.completions.create({
             model: process.env['AZURE_OPENAI_DEPLOYMENT_NAME']!,
