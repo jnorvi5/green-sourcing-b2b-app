@@ -16,6 +16,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [verifyingSession, setVerifyingSession] = useState(true);
+  const [sessionError, setSessionError] = useState(false);
 
   // Verify the reset token/session on mount
   useEffect(() => {
@@ -25,6 +26,10 @@ export default function ResetPasswordPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setVerifyingSession(false);
+        setSessionError(false);
+      } else {
+        setVerifyingSession(false);
+        setSessionError(true);
       }
     };
 
@@ -33,6 +38,7 @@ export default function ResetPasswordPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         setVerifyingSession(false);
+        setSessionError(false);
       } else if (event === 'SIGNED_OUT') {
         // Optionally handle sign out
       }
@@ -93,6 +99,45 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   };
+
+  if (verifyingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Verifying secure link...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (sessionError && !success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md border-destructive/20">
+          <CardHeader>
+            <CardTitle className="text-destructive">Invalid or Expired Link</CardTitle>
+            <CardDescription>
+              This password reset link is invalid or has expired.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+             <div className="p-4 rounded-md bg-destructive/10 text-destructive border border-destructive/20 text-sm">
+                Please request a new password reset link to continue.
+            </div>
+            <Button asChild className="w-full">
+              <Link href="/forgot-password">Request New Link</Link>
+            </Button>
+            <div className="text-center">
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-primary">
+                Back to login
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (success) {
     return (
