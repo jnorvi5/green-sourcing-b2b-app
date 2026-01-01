@@ -1,10 +1,9 @@
 "use client";
 
-"use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { STRIPE_PRICE_IDS } from "@/lib/stripe/config";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -32,6 +31,18 @@ export default function PricingPage() {
         return;
       }
 
+      // Determine priceId based on plan
+      let priceId = "";
+      if (plan === "professional") {
+        priceId = STRIPE_PRICE_IDS.architect_pro_monthly;
+      } else if (plan === "supplier") {
+        priceId = STRIPE_PRICE_IDS.supplier_monthly;
+      }
+
+      if (!priceId) {
+        throw new Error("Invalid plan selected or pricing configuration missing.");
+      }
+
       // Logged in: Initiate Stripe Checkout
       const response = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -40,6 +51,8 @@ export default function PricingPage() {
         },
         body: JSON.stringify({
           tier: plan, // 'professional' or 'supplier'
+          priceId: priceId,
+          userId: session.user.id,
           success_url: `${window.location.origin}/dashboard?success=true`,
           cancel_url: `${window.location.origin}/pricing`,
         }),
@@ -209,54 +222,6 @@ export default function PricingPage() {
               </ul>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Pricing Comparison Table */}
-      <div className="mt-16 max-w-4xl mx-auto px-4">
-        <h3 className="text-2xl font-bold mb-8 text-center">
-          How to get started as an Architect
-        </h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse bg-white rounded-lg shadow">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-4 text-left">Option</th>
-                <th className="border p-4 text-center">Upfront Cost</th>
-                <th className="border p-4 text-center">Cost Per RFQ</th>
-                <th className="border p-4 text-center">Best For</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border p-4 font-semibold">
-                  Free Tier (10 RFQs/mo)
-                </td>
-                <td className="border p-4 text-center">$0</td>
-                <td className="border p-4 text-center">$0 (limited)</td>
-                <td className="border p-4 text-center">Testing the platform</td>
-              </tr>
-              <tr className="bg-blue-50">
-                <td className="border p-4 font-semibold">💳 Pay-Per-RFQ</td>
-                <td className="border p-4 text-center">$0</td>
-                <td className="border p-4 text-center">$2 each</td>
-                <td className="border p-4 text-center">Occasional RFQs</td>
-              </tr>
-              <tr className="bg-green-50">
-                <td className="border p-4 font-semibold">🎯 $50 Deposit</td>
-                <td className="border p-4 text-center">$50 one-time</td>
-                <td className="border p-4 text-center">$2 each (25 RFQs)</td>
-                <td className="border p-4 text-center">Serious buyers</td>
-              </tr>
-              <tr className="bg-purple-50">
-                <td className="border p-4 font-semibold">Pro Subscription</td>
-                <td className="border p-4 text-center">$99/mo</td>
-                <td className="border p-4 text-center">Unlimited</td>
-                <td className="border p-4 text-center">Active architects</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
 
