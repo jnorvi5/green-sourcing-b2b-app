@@ -18,7 +18,13 @@ export async function POST(req: NextRequest) {
       .eq('email', email)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      console.error('Database error during login:', error);
+      // Don't expose database errors to client, but log them
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
+    
+    if (!user) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
@@ -48,16 +54,20 @@ export async function POST(req: NextRequest) {
     });
 
     // 4. Set HttpOnly Cookie
+    // Response structure must match what the client expects: data.user.user_type
     const response = NextResponse.json({
-      userId: user.id,
-      email: user.email,
-      accountType: user.role,
+      user: {
+        id: user.id,
+        email: user.email,
+        user_type: user.role, // Client expects user_type, not accountType
+        full_name: user.full_name || null,
+      },
       token // Return token in body as well for client convenience (though cookie is safer)
     });
 
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env['NODE_ENV'] === 'production',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     });
@@ -66,6 +76,11 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    // Only include error details in development to avoid leaking sensitive information
+    const isDev = process.env['NODE_ENV'] !== 'production';
+    return NextResponse.json({ 
+      error: 'Internal Server Error',
+      ...(isDev && { details: error instanceof Error ? error.message : 'Unknown error' })
+    }, { status: 500 });
   }
 }
