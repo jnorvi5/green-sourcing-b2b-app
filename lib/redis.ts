@@ -47,7 +47,7 @@ class RedisWrapper implements IRedisClient {
       if (!data) return null;
       return JSON.parse(data) as T;
     } catch (error) {
-      console.error(`Error getting key ${key} from Redis:`, error);
+      console.error('Error getting key from Redis', { key, error });
       return null;
     }
   }
@@ -61,7 +61,7 @@ class RedisWrapper implements IRedisClient {
         await this.client.set(key, stringValue);
       }
     } catch (error) {
-      console.error(`Error setting key ${key} in Redis:`, error);
+      console.error('Error setting key in Redis', { key, error });
     }
   }
 
@@ -69,7 +69,7 @@ class RedisWrapper implements IRedisClient {
     try {
       await this.client.del(key);
     } catch (error) {
-      console.error(`Error deleting key ${key} from Redis:`, error);
+      console.error('Error deleting key from Redis', { key, error });
     }
   }
 }
