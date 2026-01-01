@@ -120,8 +120,8 @@ export default function ResetPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <div className="p-4 rounded-md bg-destructive/10 text-destructive border border-destructive/20 text-sm">
-                Please request a new password reset link to continue.
+            <div className="p-4 rounded-md bg-destructive/10 text-destructive border border-destructive/20 text-sm">
+              Please request a new password reset link to continue.
             </div>
             <Button asChild className="w-full">
               <Link href="/forgot-password">Request New Link</Link>
