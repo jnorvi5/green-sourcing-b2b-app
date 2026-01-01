@@ -71,8 +71,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-brand-obsidian text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
   }
 }
 
@@ -81,27 +84,39 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - The "Suave" Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: #020617; /* Obsidian */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.5); /* Emerald 500 equivalent */
-  border-radius: 4px;
+  background: linear-gradient(to bottom, #064E3B, #10B981); /* Deep Emerald to Glow */
+  border-radius: 5px;
+  border: 2px solid #020617;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.8);
+  background: #10B981;
 }
 
-/* Selection color */
-::selection {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: inherit;
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-slate-900/40 backdrop-blur-md border border-white/10;
+}
+
+.glass-hover {
+  @apply hover:bg-slate-800/60 hover:border-emerald-500/30 transition-all duration-300;
+}
+
+/* Text Gradients */
+.text-gradient-gold {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-gold-dark via-brand-gold to-brand-gold-light;
+}
+
+.text-gradient-emerald {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-emerald-400 to-teal-300;
 }

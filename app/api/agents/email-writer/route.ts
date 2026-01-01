@@ -5,6 +5,19 @@ import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export const dynamic = 'force-dynamic';
 
+interface EmailTemplate {
+  subject: string;
+  body: string;
+  metadata: {
+    generatedAt: string;
+    recipientType?: string;
+    purpose?: string;
+    model?: string;
+    provider?: string;
+    isStatic?: boolean;
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { recipientType, purpose, context } = await request.json();
@@ -40,6 +53,7 @@ Instructions:
 
     const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
 
+    // Default mock response structure
     interface EmailTemplate {
       subject: string;
       body: string;
@@ -54,6 +68,35 @@ Instructions:
     }
 
     let emailTemplate: EmailTemplate | null = null;
+    // Initialize with mock data as fallback
+    let emailTemplate: EmailTemplate = getStaticTemplate(recipientType, purpose, context);
+
+    // Check if any AI provider is configured
+    if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
+      console.warn('No AI provider configured. Returning static template.');
+      return NextResponse.json({
+        success: true,
+        email: getStaticTemplate(recipientType, purpose, context),
+        email: emailTemplate,
+        warning: 'Generated with static template (No AI provider configured)'
+      });
+    }
+
+    // Prepare prompt
+    const basePrompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}`;
+
+    const formattingInstructions = `
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
+
+    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
 
     // Try Foundry Agent (OUTREACH-SCALER) if configured
     const agentId = process.env['AGENT_OUTREACH_SCALER_ID'];
@@ -66,6 +109,20 @@ Instructions:
 
         if (agentRes.success && agentRes.text) {
           const { subject, body } = parseResponse(agentRes.text, `GreenChainz - ${purpose}`);
+          return NextResponse.json({
+            success: true,
+            email: {
+              subject,
+              body,
+              metadata: {
+                generatedAt: new Date().toISOString(),
+                recipientType,
+                purpose,
+                provider: 'foundry-agent',
+                model: agentId
+              }
+          const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
+
           emailTemplate = {
             subject,
             body,
@@ -78,6 +135,11 @@ Instructions:
             }
           };
           return NextResponse.json({ success: true, email: emailTemplate });
+
+          return NextResponse.json({
+            success: true,
+            email: emailTemplate
+          });
         }
       } catch (agentError) {
         console.error('Foundry Agent invocation failed:', agentError);
@@ -107,6 +169,20 @@ Instructions:
         const text = response.choices[0].message.content || "";
         const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
 
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              provider: 'azure-openai',
+              model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
+            }
+        const { subject, body } = parseResponse(text, emailTemplate.subject);
+
         emailTemplate = {
           subject,
           body,
@@ -119,6 +195,12 @@ Instructions:
           }
         };
          return NextResponse.json({ success: true, email: emailTemplate });
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
+        });
+
       } catch (aiError) {
         console.error('Azure OpenAI generation failed:', aiError);
         // Fall through to standard OpenAI
@@ -147,6 +229,21 @@ Instructions:
           temperature: 0.7,
         });
 
+        const text = completion.choices[0]?.message?.content || '';
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
+
+        return NextResponse.json({
+          success: true,
+          email: {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              model: 'gpt-4',
+              provider: 'openai'
+            }
         const generatedText = completion.choices[0]?.message?.content || '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -162,6 +259,11 @@ Instructions:
           }
         };
          return NextResponse.json({ success: true, email: emailTemplate });
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
+        });
       } catch (openAIError) {
         console.error('OpenAI generation failed:', openAIError);
         // Fall through to Anthropic
@@ -187,6 +289,8 @@ Instructions:
           ]
         });
 
+        const text = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -238,10 +342,8 @@ function parseResponse(text: string, defaultSubject: string): { subject: string,
     // Remove the match from the body
     if (subjectMatch.index !== undefined) {
         const matchLength = subjectMatch[0].length;
-        // Take everything after the match
         body = text.slice(subjectMatch.index + matchLength).trim();
     } else {
-        // Fallback replacement if index is somehow missing
         body = text.replace(subjectMatch[0], '').trim();
     }
   } else {
@@ -260,7 +362,7 @@ function parseResponse(text: string, defaultSubject: string): { subject: string,
   return { subject, body };
 }
 
-function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined) {
+function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined): EmailTemplate {
   return {
     subject: `GreenChainz - ${purpose || 'Introduction'}`,
     body: `Hi [Name],
@@ -282,6 +384,7 @@ founder@greenchainz.com
       generatedAt: new Date().toISOString(),
       recipientType: recipientType || 'Unknown',
       purpose: purpose || 'Contact',
+      purpose: purpose || 'General',
       isStatic: true
     }
   };

@@ -94,6 +94,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-white dark:border-slate-700 placeholder:text-slate-400"
               />
             </div>
 

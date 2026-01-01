@@ -48,16 +48,24 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Brand System Colors
+        // Brand System Colors - Enhanced for "Suave" look
         brand: {
           teal: {
             500: "#218a8d",
             700: "#1a7473",
             300: "#32b8c6",
           },
-          gold: "#D4AF37",
-          green: "#2db648",
+          gold: {
+            DEFAULT: "#D4AF37",
+            light: "#F4D03F",
+            dark: "#B8860B",
+          },
+          emerald: {
+            glow: "#10B981",
+            deep: "#064E3B",
+          },
           cream: "#fcfcf9",
+          obsidian: "#020617", // Richer black
         },
       },
       borderRadius: {
@@ -66,7 +74,23 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+      },
+      animation: {
+        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
     },
   },
