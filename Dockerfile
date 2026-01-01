@@ -1,44 +1,45 @@
-FROM node:20-alpine AS base
+#
+# Root Dockerfile: single-container "full-stack" build for Azure Container Apps
+#
+# - Builds `frontend/` (Vite) -> served as static files by `backend/` (Express)
+# - Runs `backend/` on PORT (default 3001)
+#
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+# -----------------
+# STAGE 1: Frontend build
+# -----------------
+FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
+COPY frontend/package*.json ./frontend/
+RUN npm --prefix ./frontend ci
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY frontend ./frontend
+RUN npm --prefix ./frontend run build
 
-# Build Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build
-
-# Production image
-FROM base AS runner
+# -----------------
+# STAGE 2: Backend deps
+# -----------------
+FROM node:20-alpine AS backend-deps
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+COPY backend/package*.json ./backend/
+RUN npm --prefix ./backend ci --omit=dev
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# -----------------
+# STAGE 3: Runtime
+# -----------------
+FROM node:20-alpine AS runner
+WORKDIR /app/backend
 
-# Copy built files
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+ENV NODE_ENV=production
+ENV PORT=3001
 
-USER nextjs
+COPY --from=backend-deps /app/backend/node_modules ./node_modules
+COPY backend ./
+COPY database-schemas ./database-schemas
+COPY --from=frontend-builder /app/frontend/dist ./frontend-dist
 
-EXPOSE 3000
+EXPOSE 3001
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["node", "server.js"]
+CMD ["node", "index.js"]

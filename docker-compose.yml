@@ -55,12 +55,11 @@ services:
       dockerfile: ./frontend/Dockerfile # Specifies the path to the Dockerfile
     restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - backend
     environment:
       NODE_ENV: development
-      VITE_API_BASE_URL: http://localhost:3001 # URL for the frontend to call the backend
 
 # ---------------------------------
 # VOLUMES: Ensures DB data persists

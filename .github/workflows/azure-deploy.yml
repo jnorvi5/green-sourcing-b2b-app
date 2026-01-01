@@ -6,10 +6,12 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: greenchainzregistry.azurecr.io
-  IMAGE_NAME: greenchainz-web
-  CONTAINER_APP: greenchainz-app
-  RESOURCE_GROUP: greenchainz-rg
+  # Defaults are aligned to your listed production resources.
+  # Override via GitHub repo variables if needed.
+  REGISTRY: ${{ vars.AZURE_ACR_LOGIN_SERVER || 'acrgreenchainzprod916.azurecr.io' }}
+  IMAGE_NAME: ${{ vars.AZURE_IMAGE_NAME || 'greenchainz-container' }}
+  CONTAINER_APP: ${{ vars.AZURE_CONTAINER_APP_NAME || 'greenchainz-container' }}
+  RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-greenchainz-prod-container' }}
 
 jobs:
   build-deploy:
@@ -41,4 +43,6 @@ jobs:
           az containerapp update \
             --name ${{ env.CONTAINER_APP }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --target-port 3001 \
+            --ingress external

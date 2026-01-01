@@ -27,6 +27,11 @@ const YAML = require('yaml');
 
 const app = express();
 
+// Behind Azure Container Apps / reverse proxies, secure cookies need proxy awareness
+if ((process.env.TRUST_PROXY || '').toLowerCase() === 'true' || process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
@@ -44,8 +49,14 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// CSRF protection for routes using session cookies
-app.use(lusca.csrf());
+// CSRF protection ONLY for session-cookie routes (avoid breaking JSON/JWT APIs)
+const csrf = lusca.csrf();
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  if (req.path.startsWith('/auth')) return csrf(req, res, next);
+  if (req.path.startsWith('/admin')) return csrf(req, res, next);
+  return next();
+});
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -1434,6 +1445,27 @@ app.get('/auth/microsoft/callback',
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
   }
 );
+
+// ============================================
+// FRONTEND STATIC (for single-container deploys)
+// ============================================
+// In Azure Container Apps, it’s convenient to ship the Vite build inside the backend container
+// and serve it from the same origin.
+const frontendDistPath = path.join(__dirname, 'frontend-dist');
+const frontendIndexPath = path.join(frontendDistPath, 'index.html');
+
+if (fs.existsSync(frontendIndexPath)) {
+  app.use(express.static(frontendDistPath));
+
+  // SPA fallback: serve index.html for non-API routes
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    if (req.path.startsWith('/auth')) return next();
+    if (req.path.startsWith('/admin')) return next();
+    if (req.path.startsWith('/docs')) return next();
+    return res.sendFile(frontendIndexPath);
+  });
+}
 
 // ============================================
 // SERVER STARTUP

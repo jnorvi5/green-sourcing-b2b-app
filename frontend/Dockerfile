@@ -23,19 +23,12 @@ RUN npm run build
 # -----------------
 # STAGE 2: The Production Runner
 # -----------------
-# --- FIX: Using matching node:20 base ---
-FROM node:20-alpine AS runner 
+# Serve static assets via nginx, and (for docker-compose) proxy /api -> backend
+FROM nginx:alpine AS runner
 
-WORKDIR /app
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy only the built assets and package.json
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
+EXPOSE 80
 
-# Install 'serve' to run the static build
-RUN npm install -g serve
-
-EXPOSE 5173
-
-# Run the app
-CMD ["serve", "-s", "dist", "-l", "5173"]
+CMD ["nginx", "-g", "daemon off;"]
