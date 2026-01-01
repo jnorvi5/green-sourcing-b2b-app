@@ -30,14 +30,9 @@ cd azure-functions
 npm install
 ```
 
-2. Update `local.settings.json` with your values:
-```json
-{
-  "Values": {
-    "NEXT_API_BASE_URL": "http://localhost:3001",
-    "JOBS_API_KEY": "your-api-key"
-  }
-}
+2. Copy `local.settings.example.json` to `local.settings.json` and update values:
+```bash
+cp local.settings.example.json local.settings.json
 ```
 
 3. Start the functions locally:
@@ -77,9 +72,8 @@ az functionapp config appsettings set \
   --name greenchainz-functions \
   --resource-group greenchainz-rg \
   --settings \
-    "NEXT_API_BASE_URL=https://your-app.vercel.app" \
-    "JOBS_API_KEY=your-secure-key" \
-    "MONGODB_URI=your-mongodb-uri"
+    "NEXT_API_BASE_URL=https://your-app.azurewebsites.net" \
+    "JOBS_API_KEY=your-secure-key"
 ```
 
 3. Deploy:
@@ -132,7 +126,7 @@ func azure functionapp publish greenchainz-functions
                           │
                           ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                    MongoDB Atlas                              │
+│                    Supabase (PostgreSQL)                     │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌───────────┐ │
 │  │greenchainz │ │  buyers    │ │ suppliers  │ │ analytics │ │
 │  │   (main)   │ │            │ │            │ │           │ │
@@ -188,6 +182,6 @@ Azure Functions Consumption Plan (typical usage):
 - Check Application Insights logs
 
 ### Connection errors
-- Verify MongoDB connection strings in app settings
-- Check IP whitelist in MongoDB Atlas
+- Verify Supabase connection strings in app settings
+- Check API endpoint availability
 - Ensure VNet configuration if using private endpoints
