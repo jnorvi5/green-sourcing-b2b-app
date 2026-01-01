@@ -10,24 +10,22 @@ import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/reso
 import { searchMaterials as searchAutodesk } from '@/lib/integrations/autodesk/material-matcher';
 import { EPDInternationalClient } from '@/lib/integrations/epd-international';
 import { searchEC3Materials } from '@/lib/integrations/ec3/client';
+import { getAzureOpenAIConfig } from '@/lib/config/azure-openai';
 
 // Initialize Azure OpenAI Client
-// Note: This requires AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT env vars
 const getClient = () => {
-  const apiKey = process.env['AZURE_OPENAI_API_KEY'];
-  const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
-  const deployment = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'gpt-4';
+  const config = getAzureOpenAIConfig();
   
-  if (!apiKey || !endpoint) {
+  if (!config) {
     console.warn('Azure OpenAI credentials not configured');
     return null;
   }
 
   return new AzureOpenAI({
-    apiKey,
-    endpoint,
-    apiVersion: '2024-02-15-preview',
-    deployment,
+    apiKey: config.apiKey,
+    endpoint: config.endpoint,
+    apiVersion: config.apiVersion,
+    deployment: config.deployment,
   });
 };
 
@@ -109,7 +107,8 @@ export class FoundryAgent {
 
   constructor() {
     this.client = getClient();
-    this.deployment = process.env['AZURE_OPENAI_DEPLOYMENT_NAME'] || 'gpt-4';
+    const config = getAzureOpenAIConfig();
+    this.deployment = config?.deployment || 'gpt-4o';
   }
 
   /**
@@ -186,15 +185,7 @@ export class FoundryAgent {
               const epdClient = new EPDInternationalClient({
                 apiKey: process.env['EPD_API_KEY'] || '',
               });
-              // Note: fetchEPDs expects pagination options, but we want a search.
-              // The client doesn't have a direct search method exposed in the interface I saw,
-              // but let's assume we can fetch and filter or use a search endpoint if available.
-              // Looking at the client code, it fetches /epds.
-              // For now, let's try to fetch and filter client-side or assume the API supports query params if we modified it.
-              // Actually, let's use fetchAllEPDs with a limit and pretend we searched,
-              // OR better, let's just return a placeholder if search isn't implemented in the client yet.
-              // Wait, I saw the client code. It has fetchEPDs. It doesn't seem to have a search query param.
-              // I will implement a basic search by fetching recent EPDs and filtering by name for now.
+              // Fetch recent EPDs and filter
               const allEpds = await epdClient.fetchEPDs({ limit: 20 });
               const filtered = allEpds.data.filter(epd => 
                 epd.product_name?.toLowerCase().includes(functionArgs.query.toLowerCase())

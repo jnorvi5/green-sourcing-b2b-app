@@ -1,27 +1,21 @@
-import { EmailAgent } from '../../lib/azure/emailer';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { AzureEmailer } from '../../lib/azure/emailer';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {
-    const agent = new EmailAgent();
-    
-    const email = await agent.generate("EPD International", [
-      "Building B2B marketplace for verified green materials",
-      "Need EPD data API for 500 architects",
-      "Request 20-min call to discuss partnership"
-    ]);
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-    return res.json({ 
-      success: true, 
-      email,
-      cost: "~$0.0001 per email" 
-    });
+  const { recipient, topic, context } = req.body;
+  const agent = new AzureEmailer();
+
+  try {
+    const draft = await agent.draftEmail(recipient, topic, context);
+    res.status(200).json({ draft });
   } catch (error) {
-    return res.status(500).json({ 
-      error: error.message 
-    });
+    res.status(500).json({ error: 'Failed to draft email' });
   }
 }

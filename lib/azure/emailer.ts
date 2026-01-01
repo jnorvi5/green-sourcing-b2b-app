@@ -1,45 +1,47 @@
 import OpenAI from 'openai';
+import { getAzureOpenAIConfig } from '@/lib/config/azure-openai';
 
-export class EmailAgent {
-  private client: OpenAI;
+export class AzureEmailer {
+  private client: OpenAI | null;
   private deployment: string;
 
   constructor() {
-    this.client = new OpenAI({
-      apiKey: process.env['AZURE_OPENAI_API_KEY'],
-      baseURL: `${process.env['AZURE_OPENAI_ENDPOINT']}/openai/deployments/${process.env['AZURE_OPENAI_DEPLOYMENT']}`,
-      defaultQuery: { 'api-version': '2024-12-01-preview' },
-      defaultHeaders: { 'api-key': process.env['AZURE_OPENAI_API_KEY'] },
-    });
-    this.deployment = process.env['AZURE_OPENAI_DEPLOYMENT']!;
+    const config = getAzureOpenAIConfig();
+
+    if (config) {
+      this.client = new OpenAI({
+        apiKey: config.apiKey,
+        baseURL: `${config.endpoint}/openai/deployments/${config.deployment}`,
+        defaultQuery: { 'api-version': config.apiVersion },
+        defaultHeaders: { 'api-key': config.apiKey },
+      });
+      this.deployment = config.deployment;
+    } else {
+      console.warn('Azure OpenAI credentials missing for AzureEmailer');
+      this.client = null;
+      this.deployment = 'gpt-4o';
+    }
   }
 
-  async generate(company: string, points: string[]) {
-    const response = await this.client.chat.completions.create({
-      model: this.deployment,
-      messages: [
-        {
-          role: "system",
-          content: `You are Jerit Norville, CEO of GreenChainz. Write direct, confident cold emails (120 words max). Use short sentences. Sign: Best, Jerit Norville | Founder, GreenChainz | founder@greenchainz.com`
-        },
-        {
-          role: "user",
-          content: `Write email to ${company}\n\nKey points:\n${points.join('\n')}\n\nFormat:\nSubject: [subject line]\n\n[email body]`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 500
-    });
+  async draftEmail(recipient: string, topic: string, context: string): Promise<string> {
+    if (!this.client) {
+      return "Email drafting unavailable: Missing Azure OpenAI credentials.";
+    }
 
-    const text = response.choices[0].message.content || "";
-    const lines = text.split('\n').filter(l => l.trim());
-    
-    const subject = lines.find(l => l.toLowerCase().startsWith('subject:'))
-      ?.replace(/^subject:\s*/i, '') || `Partnership - ${company}`;
-    
-    const bodyStart = lines.findIndex(l => !l.toLowerCase().startsWith('subject:'));
-    const body = lines.slice(bodyStart).join('\n').trim();
+    try {
+      const response = await this.client.chat.completions.create({
+        model: this.deployment,
+        messages: [
+          { role: 'system', content: 'You are a professional assistant drafting emails for GreenChainz.' },
+          { role: 'user', content: `Draft a professional email to ${recipient} about ${topic}. Context: ${context}` }
+        ],
+        temperature: 0.7,
+      });
 
-    return { subject, body };
+      return response.choices[0].message.content || 'Failed to generate email draft.';
+    } catch (error) {
+      console.error('Error drafting email:', error);
+      return 'Error generating email draft.';
+    }
   }
 }

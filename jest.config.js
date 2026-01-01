@@ -7,15 +7,10 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  preset: 'ts-jest',
-  setupFilesAfterEnv: ['<rootDir>/test-env.js'],
-  testEnvironment: 'node', testPathIgnorePatterns: ['<rootDir>/tests/', '<rootDir>/infrastructure/', '<rootDir>/node_modules/'], // Use node for API route testing
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
-    '^@/components/(.*)$': '<rootDir>/components/$1',
-    '^@/pages/(.*)$': '<rootDir>/pages/$1',
-    '^@/lib/(.*)$': '<rootDir>/lib/$1',
-    '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
-    '^@/app/(.*)$': '<rootDir>/app/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   },
 }
 
