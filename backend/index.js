@@ -25,7 +25,46 @@ const errorMonitoring = require('./services/errorMonitoring');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yaml');
 
+// ============================================
+// AZURE SERVICES INTEGRATION
+// ============================================
+const { redisService } = require('./services/azureRedis');
+const { keyVaultService } = require('./services/azureKeyVault');
+const { storageService } = require('./services/azureStorage');
+const { appInsightsService } = require('./services/azureAppInsights');
+const { documentIntelligenceService } = require('./services/azureDocumentIntelligence');
+
 const app = express();
+
+// Initialize Azure services
+async function initializeAzureServices() {
+  console.log('🔷 Initializing Azure services...');
+  
+  // Initialize Application Insights first for telemetry
+  appInsightsService.init();
+  
+  // Initialize Key Vault for secrets management
+  await keyVaultService.init();
+  
+  // Initialize Redis cache
+  await redisService.connect();
+  
+  // Initialize Storage
+  await storageService.init();
+  
+  // Initialize Document Intelligence
+  await documentIntelligenceService.init();
+  
+  console.log('✅ Azure services initialized');
+}
+
+// Track application startup
+if (appInsightsService.config.enabled) {
+  appInsightsService.trackEvent('ApplicationStartup', {
+    environment: process.env.NODE_ENV || 'development',
+    version: require('./package.json').version
+  });
+}
 
 // Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -35,6 +74,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Middleware
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+
+// Azure Application Insights middleware for request tracking
+if (appInsightsService.config.enabled) {
+  app.use(appInsightsService.getMiddleware());
+}
 
 // Session middleware for OAuth
 app.use(session({
@@ -54,9 +98,21 @@ app.use(passport.session());
 // Serve static admin dashboard
 app.use('/admin/dashboard', express.static(path.join(__dirname, 'public')));
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({ message: 'GreenChainz Backend API is running!' });
+// Health check endpoint with Azure services status
+app.get('/', async (req, res) => {
+  const azureStatus = {
+    redis: redisService.isConnected,
+    keyVault: keyVaultService.isInitialized,
+    storage: storageService.isInitialized,
+    appInsights: appInsightsService.isInitialized,
+    documentIntelligence: documentIntelligenceService.isInitialized
+  };
+  
+  res.json({ 
+    message: 'GreenChainz Backend API is running!',
+    azure: azureStatus,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Serve OpenAPI spec (YAML)
@@ -419,9 +475,20 @@ app.post('/api/v1/suppliers/:id/certifications', authenticateToken, authorizeRol
   }
 });
 
-// List all suppliers with basic info and certification count
+// List all suppliers with basic info and certification count (with Redis caching)
 app.get('/api/v1/suppliers', async (req, res) => {
   try {
+    const cacheKey = 'suppliers:list';
+    
+    // Try Redis cache first
+    if (redisService.isConnected) {
+      const cached = await redisService.get(cacheKey);
+      if (cached) {
+        appInsightsService.trackEvent('CacheHit', { key: cacheKey });
+        return res.json(cached);
+      }
+    }
+    
     const result = await pool.query(`
       SELECT 
         c.CompanyID,
@@ -439,12 +506,20 @@ app.get('/api/v1/suppliers', async (req, res) => {
       ORDER BY c.CreatedAt DESC
     `);
 
-    res.json({
+    const response = {
       count: result.rows.length,
       suppliers: result.rows
-    });
+    };
+    
+    // Cache for 5 minutes
+    if (redisService.isConnected) {
+      await redisService.set(cacheKey, response, 300);
+    }
+
+    res.json(response);
   } catch (err) {
     console.error('Error listing suppliers:', err);
+    appInsightsService.trackException(err, { endpoint: '/api/v1/suppliers' });
     res.status(500).json({ error: 'Failed to list suppliers' });
   }
 });
@@ -1443,5 +1518,12 @@ const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, async () => {
   console.log(`🚀 Backend server listening at http://localhost:${PORT}`);
+  
+  // Initialize Azure services first
+  await initializeAzureServices();
+  
+  // Then initialize database schema
   await initSchema();
+  
+  console.log('✅ All services initialized successfully');
 });
