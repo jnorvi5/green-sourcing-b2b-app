@@ -22,48 +22,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Prepare prompt
-    // The prompt is based on the user request, with appended formatting instructions
-    // to ensure the response can be parsed by the frontend.
-    const basePrompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}`;
-    // Default mock response structure
-    interface EmailTemplate {
-      subject: string;
-      body: string;
-      metadata: {
-        generatedAt: string;
-        recipientType: string;
-        purpose: string;
-        model?: string;
-        provider?: string;
-        isStatic?: boolean;
-      };
-    }
-
-    // Initialize with mock data as fallback
-    let emailTemplate: EmailTemplate = {
-      subject: `GreenChainz - ${purpose}`,
-      body: `Hi [Name],
-
-I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified sustainable building materials.
-
-${context}
-
-We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
-
-    const formattingInstructions = `
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.
-`;
-
-    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
-
     // Construct the prompt based on user request + formatting instructions
     const basePrompt = `Write a professional B2B email for GreenChainz:
 Recipient: ${recipientType}
@@ -103,17 +61,6 @@ Instructions:
                 provider: 'foundry-agent',
                 model: agentId
               }
-          const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
-
-          emailTemplate = {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              provider: 'foundry-agent',
-              model: agentId
             }
           });
         }
@@ -157,17 +104,6 @@ Instructions:
               provider: 'azure-openai',
               model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
-        const { subject, body } = parseResponse(text, emailTemplate.subject);
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            provider: 'azure-openai',
-            model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
           }
         });
 
@@ -214,18 +150,6 @@ Instructions:
               model: 'gpt-4',
               provider: 'openai'
             }
-        const generatedText = completion.choices[0]?.message?.content || '';
-        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            model: 'gpt-4',
-            provider: 'openai'
           }
         });
       } catch (openAIError) {
@@ -255,8 +179,6 @@ Instructions:
 
         const text = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(text, purpose);
-        const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
-        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
         return NextResponse.json({
           success: true,
@@ -320,40 +242,6 @@ function parseResponse(text: string, defaultPurpose: string) {
     body = bodyLines.join('\n').trim();
   } else {
     body = text.trim();
-// Helper function to parse subject and body
-function parseResponse(text: string, defaultSubject: string): { subject: string, body: string } {
-  let subject = defaultSubject;
-  let body = text;
-
-  // Try regex first as it preserves formatting better
-  const subjectMatch = text.match(/^Subject:\s*(.*)/i) || text.match(/Subject:\s*(.*)/i);
-
-  if (subjectMatch) {
-    subject = subjectMatch[1].trim();
-    // Remove the match from the body
-    // If it was anchored to start, it removes it from start.
-    // If unanchored, we need to be careful not to remove "Subject:" from the middle of a sentence if that ever happens,
-    // but here we assume the LLM outputs it as a header.
-    // Using the matched string length and index to slice is safer.
-    if (subjectMatch.index !== undefined) {
-        const matchLength = subjectMatch[0].length;
-        // Take everything after the match
-        body = text.slice(subjectMatch.index + matchLength).trim();
-    } else {
-        // Fallback replacement if index is somehow missing
-        body = text.replace(subjectMatch[0], '').trim();
-    }
-  } else {
-    // Fallback: look for line starting with Subject:
-    const lines = text.split('\n');
-    const subjectLineIndex = lines.findIndex(l => l.trim().toLowerCase().startsWith('subject:'));
-
-    if (subjectLineIndex !== -1) {
-        const subjectLine = lines[subjectLineIndex];
-        subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-        // Take everything after the subject line
-        body = lines.slice(subjectLineIndex + 1).join('\n').trim();
-    }
   }
 
   return { subject, body };
