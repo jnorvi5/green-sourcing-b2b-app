@@ -3,7 +3,7 @@
 import { useState } from "react";
 import nextDynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -79,6 +79,12 @@ export default function SearchPage() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         <FadeIn>
           <div className="mb-12">
+        <div className="mb-12">
+          <FadeIn>
+
+        <FadeIn>
+          <div className="mb-12">
+
             <h1 className="text-4xl font-bold text-foreground mb-4 tracking-tight">
               Find Sustainable Materials
             </h1>

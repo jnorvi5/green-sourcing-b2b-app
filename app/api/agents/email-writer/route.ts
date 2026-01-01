@@ -5,6 +5,19 @@ import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 
 export const dynamic = 'force-dynamic';
 
+interface EmailTemplate {
+  subject: string;
+  body: string;
+  metadata: {
+    generatedAt: string;
+    recipientType?: string;
+    purpose?: string;
+    model?: string;
+    provider?: string;
+    isStatic?: boolean;
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { recipientType, purpose, context } = await request.json();
@@ -23,6 +36,54 @@ export async function POST(request: NextRequest) {
     }
 
     // Construct the prompt based on user request + formatting instructions
+    // Prepare prompt
+    // The prompt is based on the user request, with appended formatting instructions
+    // to ensure the response can be parsed by the frontend.
+    const basePrompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}`;
+
+    const formattingInstructions = `
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
+
+    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
+
+    // Default mock response structure
+    interface EmailTemplate {
+      subject: string;
+      body: string;
+      metadata: {
+        generatedAt: string;
+        recipientType: string;
+        purpose: string;
+        model?: string;
+        provider?: string;
+        isStatic?: boolean;
+      };
+    }
+
+    let emailTemplate: EmailTemplate | null = null;
+    // Initialize with mock data as fallback
+    let emailTemplate: EmailTemplate = getStaticTemplate(recipientType, purpose, context);
+
+    // Check if any AI provider is configured
+    if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
+      console.warn('No AI provider configured. Returning static template.');
+      return NextResponse.json({
+        success: true,
+        email: getStaticTemplate(recipientType, purpose, context),
+        email: emailTemplate,
+        warning: 'Generated with static template (No AI provider configured)'
+      });
+    }
+
+    // Prepare prompt
     const basePrompt = `Write a professional B2B email for GreenChainz:
 Recipient: ${recipientType}
 Purpose: ${purpose}
@@ -48,7 +109,7 @@ Instructions:
         const agentRes = await invokeFoundryAgent(agentId, fullPrompt);
 
         if (agentRes.success && agentRes.text) {
-          const { subject, body } = parseResponse(agentRes.text, purpose);
+          const { subject, body } = parseResponse(agentRes.text, `GreenChainz - ${purpose}`);
           return NextResponse.json({
             success: true,
             email: {
@@ -62,6 +123,12 @@ Instructions:
                 model: agentId
               }
             }
+          };
+          return NextResponse.json({ success: true, email: emailTemplate });
+
+          return NextResponse.json({
+            success: true,
+            email: emailTemplate
           });
         }
       } catch (agentError) {
@@ -71,7 +138,7 @@ Instructions:
     }
 
     // Try Azure OpenAI first if enabled
-    if (isAIEnabled && azureOpenAI) {
+    if (isAIEnabled && azureOpenAI && !emailTemplate) {
       try {
         const response = await azureOpenAI.chat.completions.create({
           model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
@@ -90,7 +157,7 @@ Instructions:
         });
 
         const text = response.choices[0].message.content || "";
-        const { subject, body } = parseResponse(text, purpose);
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
 
         return NextResponse.json({
           success: true,
@@ -105,6 +172,12 @@ Instructions:
               model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
           }
+        };
+         return NextResponse.json({ success: true, email: emailTemplate });
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
         });
 
       } catch (aiError) {
@@ -114,7 +187,7 @@ Instructions:
     }
 
     // Fallback to standard OpenAI
-    if (hasOpenAI) {
+    if (hasOpenAI && !emailTemplate) {
       try {
         const openai = new OpenAI({
           apiKey: process.env['OPENAI_API_KEY'],
@@ -136,7 +209,7 @@ Instructions:
         });
 
         const text = completion.choices[0]?.message?.content || '';
-        const { subject, body } = parseResponse(text, purpose);
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
 
         return NextResponse.json({
           success: true,
@@ -151,6 +224,12 @@ Instructions:
               provider: 'openai'
             }
           }
+        };
+         return NextResponse.json({ success: true, email: emailTemplate });
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
         });
       } catch (openAIError) {
         console.error('OpenAI generation failed:', openAIError);
@@ -159,7 +238,7 @@ Instructions:
     }
 
     // Try Anthropic
-    if (hasAnthropic) {
+    if (hasAnthropic && !emailTemplate) {
       try {
         const anthropic = new Anthropic({
           apiKey: process.env['ANTHROPIC_API_KEY'],
@@ -179,22 +258,22 @@ Instructions:
 
         const text = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(text, purpose);
+        const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
+        const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
-        return NextResponse.json({
-          success: true,
-          email: {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              model: 'claude-3-5-sonnet-20241022',
-              provider: 'anthropic'
-            }
+        emailTemplate = {
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            model: 'claude-3-5-sonnet-20241022',
+            provider: 'anthropic'
           }
-        });
-
+        };
+         return NextResponse.json({ success: true, email: emailTemplate });
       } catch (anthropicError) {
         console.error('Anthropic generation failed:', anthropicError);
         // Fall through to static
@@ -242,12 +321,40 @@ function parseResponse(text: string, defaultPurpose: string) {
     body = bodyLines.join('\n').trim();
   } else {
     body = text.trim();
+// Helper function to parse subject and body
+function parseResponse(text: string, defaultSubject: string): { subject: string, body: string } {
+  let subject = defaultSubject;
+  let body = text;
+
+  // Try regex first as it preserves formatting better
+  const subjectMatch = text.match(/^Subject:\s*(.*)/i) || text.match(/Subject:\s*(.*)/i);
+
+  if (subjectMatch) {
+    subject = subjectMatch[1].trim();
+    // Remove the match from the body
+    if (subjectMatch.index !== undefined) {
+        const matchLength = subjectMatch[0].length;
+        body = text.slice(subjectMatch.index + matchLength).trim();
+    } else {
+        body = text.replace(subjectMatch[0], '').trim();
+    }
+  } else {
+    // Fallback: look for line starting with Subject:
+    const lines = text.split('\n');
+    const subjectLineIndex = lines.findIndex(l => l.trim().toLowerCase().startsWith('subject:'));
+
+    if (subjectLineIndex !== -1) {
+        const subjectLine = lines[subjectLineIndex];
+        subject = subjectLine.replace(/^subject:\s*/i, '').trim();
+        // Take everything after the subject line
+        body = lines.slice(subjectLineIndex + 1).join('\n').trim();
+    }
   }
 
   return { subject, body };
 }
 
-function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined) {
+function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined): EmailTemplate {
   return {
     subject: `GreenChainz - ${purpose || 'Introduction'}`,
     body: `Hi [Name],
@@ -267,8 +374,9 @@ founder@greenchainz.com
 434-359-2460`,
     metadata: {
       generatedAt: new Date().toISOString(),
-      recipientType,
-      purpose,
+      recipientType: recipientType || 'Unknown',
+      purpose: purpose || 'Contact',
+      purpose: purpose || 'General',
       isStatic: true
     }
   };

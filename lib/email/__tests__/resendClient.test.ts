@@ -399,7 +399,12 @@ describe('resendClient', () => {
           error: null,
         });
 
-        const sendAt = new Date('2025-12-31T23:59:59Z');
+        // Use a dynamic future date to prevent test rot
+        const sendAt = new Date(Date.now() + 86400000); // Tomorrow
+        // Use a dynamic future date (1 year from now) to prevent test from aging out
+        const sendAt = new Date();
+        sendAt.setFullYear(sendAt.getFullYear() + 1);
+
         const result = await scheduleEmail(
           'test@example.com',
           'New Year Email',
@@ -414,7 +419,7 @@ describe('resendClient', () => {
           to: 'test@example.com',
           subject: 'New Year Email',
           html: '<h1>Happy New Year!</h1>',
-          scheduledAt: '2025-12-31T23:59:59.000Z',
+          scheduledAt: sendAt.toISOString(),
         });
       });
     });

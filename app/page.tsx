@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/HeroSection";
 import dynamic from "next/dynamic";
 
