@@ -10,7 +10,7 @@
 import { useState } from 'react';
 // Unused: import { useRouter } from 'next/navigation';
 import { TIER_LIMITS, TIER_PRICES } from '@/types/stripe';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';

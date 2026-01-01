@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FiSearch, FiFileText, FiCheckCircle, FiUpload, FiBarChart2, FiMessageSquare } from "react-icons/fi";
