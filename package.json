@@ -47,7 +47,6 @@
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.562.0",
     "mongodb": "^7.0.0",
-    "next": "15.5.9",
     "nodemailer": "^7.0.11",
     "openai": "^4.104.0",
     "pdfkit": "^0.14.0",
@@ -92,6 +91,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "15.1.7",
     "jest": "^30.2.0",
+    "next": "^16.1.1",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { createClient } from "@/lib/supabase/server";
 
 // Initialize Stripe with specific API version
 const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
@@ -14,13 +15,27 @@ const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401 }
+        );
+    }
+
     const body = await request.json();
-    const { priceId, userId, tier } = body;
+    const { priceId, tier } = body;
+    // userId is taken from the session for security, ignoring what is in the body if any.
+    const userId = session.user.id;
 
     // Validate required parameters
-    if (!priceId || !userId) {
+    if (!priceId) {
       return NextResponse.json(
-        { error: 'Missing required parameters: priceId and userId' },
+        { error: 'Missing required parameters: priceId' },
         { status: 400 }
       );
     }
@@ -32,7 +47,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] || process.env['NEXT_PUBLIC_SITE_URL'] || 'http://localhost:3001';
 
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionStripe = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
@@ -42,7 +57,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/billing`,
+      cancel_url: `${baseUrl}/pricing`,
       metadata: {
         userId: userId,
         role: subscriptionTier,
@@ -50,7 +65,7 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     });
 
-    if (!session.url) {
+    if (!sessionStripe.url) {
       return NextResponse.json(
         { error: 'Failed to create checkout session' },
         { status: 500 }
@@ -58,8 +73,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      checkout_url: session.url,
-      session_id: session.id,
+      checkout_url: sessionStripe.url,
+      session_id: sessionStripe.id,
     });
   } catch (error) {
     console.error('Create checkout session error:', error);
