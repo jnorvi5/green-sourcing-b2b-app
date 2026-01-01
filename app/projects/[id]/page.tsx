@@ -354,18 +354,24 @@ export default function ProjectDetailPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         {mat.status === "planned" && (
-                          <Link
-                            href={`/architect/rfq/new?project_id=${
-                              project.id
-                            }&material_id=${mat.id}&name=${encodeURIComponent(
-                              mat.name
-                            )}&qty=${mat.quantity}&unit=${mat.unit}&cat=${
-                              mat.category
-                            }`}
-                            className="text-teal-400 hover:text-teal-300 text-sm font-medium"
-                          >
-                            Create RFQ →
-                          </Link>
+                          (() => {
+                            const searchParams = new URLSearchParams({
+                              project_id: project.id,
+                              material_id: mat.id,
+                              name: mat.name,
+                              qty: String(mat.quantity),
+                              unit: mat.unit,
+                              cat: mat.category || "",
+                            });
+                            return (
+                              <Link
+                                href={`/architect/rfq/new?${searchParams.toString()}`}
+                                className="text-teal-400 hover:text-teal-300 text-sm font-medium"
+                              >
+                                Create RFQ →
+                              </Link>
+                            );
+                          })()
                         )}
                       </td>
                     </tr>
