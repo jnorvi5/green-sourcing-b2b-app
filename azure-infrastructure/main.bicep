@@ -1,12 +1,13 @@
 // Azure Infrastructure as Code (Bicep)
-// This template deploys the GreenChainz Hybrid Architecture:
-// 1. Azure Static Web Apps (Frontend)
-// 2. Azure Functions (Backend/Jobs)
-// 3. Azure OpenAI & Cognitive Search (AI)
-// 4. Azure Storage & Database connections
+// This template deploys the GreenChainz Platform on Azure App Service:
+// 1. Azure App Service Plan (Linux)
+// 2. Azure Web App (Next.js Application)
+// 3. Azure Storage Account (Images, EPDs)
+// 4. Azure OpenAI & Cognitive Search (AI)
+// 5. Application Insights (Monitoring)
 
 param location string = resourceGroup().location
-param appName string = 'greenchainz'
+param appName string = 'greenchainz-platform'
 param environment string = 'prod'
 param tags object = {
   Environment: environment
@@ -15,21 +16,41 @@ param tags object = {
 }
 
 // ============================================
-// 1. Azure Static Web Apps (Frontend)
+// 1. Azure App Service (Web App)
 // ============================================
-resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
-  name: '${appName}-frontend-${environment}'
-  location: location // Must be 'eastus2', 'centralus', 'westus2', 'westeurope', 'eastasia' for SWA free/standard
+
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: '${appName}-plan-${environment}'
+  location: location
   sku: {
-    name: 'Standard'
-    tier: 'Standard'
+    name: 'B1' // Basic Tier (Start with B1 or P1v2 for production)
+    tier: 'Basic'
+    size: 'B1'
+    family: 'B'
+    capacity: 1
   }
+  kind: 'linux'
   properties: {
-    repositoryUrl: 'https://github.com/jerit/greenchainz' // Update with actual repo URL
-    branch: 'main'
-    provider: 'GitHub'
-    stagingEnvironmentPolicy: 'Enabled'
-    allowConfigFileUpdates: true
+    reserved: true // Required for Linux
+  }
+  tags: tags
+}
+
+resource webApp 'Microsoft.Web/sites@2022-09-01' = {
+  name: '${appName}' // e.g. greenchainz-platform
+  location: location
+  kind: 'app,linux'
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'NODE|20-lts' // Use Node 20 LTS
+      appCommandLine: 'node server.js' // Critical for Next.js Standalone
+      alwaysOn: true // Keep app warm (Basic tier and up)
+      http20Enabled: true
+      minTlsVersion: '1.2'
+      ftpsState: 'FtpsOnly'
+    }
   }
   tags: tags
 }
@@ -38,7 +59,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
 // 2. Storage Account (General Purpose)
 // ============================================
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
-  name: toLower('${appName}store${environment}')
+  name: toLower(replace('${appName}store${environment}', '-', '')) // clean name
   location: location
   sku: {
     name: 'Standard_LRS'
@@ -99,58 +120,25 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   tags: tags
 }
 
-// ============================================
-// 4. Azure Functions (Backend/Jobs)
-// ============================================
-resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: '${appName}-plan-${environment}'
-  location: location
-  sku: {
-    name: 'Y1' // Consumption Plan
-    tier: 'Dynamic'
-  }
-  properties: {}
-  tags: tags
-}
-
-resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
-  name: '${appName}-functions-${environment}'
-  location: location
-  kind: 'functionapp,linux'
+// Link App Insights to Web App
+resource webAppConfig 'Microsoft.Web/sites/config@2022-09-01' = {
+  parent: webApp
+  name: 'appsettings'
   properties: {
-    serverFarmId: hostingPlan.id
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'node' // Can be 'python' if migrating later, but currently code is TS/Node
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsights.properties.ConnectionString
-        }
-        {
-          name: 'NEXT_API_BASE_URL'
-          value: 'https://${staticWebApp.properties.defaultHostname}' // Connects Function to Frontend
-        }
-      ]
-      linuxFxVersion: 'Node|20' // Use Node 20
-    }
-    httpsOnly: true
+    APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
+    ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
+    XDT_MicrosoftApplicationInsights_Mode: 'recommended'
+    // Default Node settings
+    WEBSITE_NODE_DEFAULT_VERSION: '~20'
+    NODE_ENV: 'production'
+    WEBSITE_RUN_FROM_PACKAGE: '1'
   }
-  tags: tags
 }
 
+
 // ============================================
-// 5. Azure AI Services
+// 4. Azure AI Services
 // ============================================
 resource cognitiveService 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   name: '${appName}-openai-${environment}'
@@ -182,7 +170,6 @@ resource searchService 'Microsoft.Search/searchServices@2023-11-01' = {
 // ============================================
 // Outputs
 // ============================================
-output staticWebAppHostname string = staticWebApp.properties.defaultHostname
-output functionAppHostname string = functionApp.properties.defaultHostName
+output webAppHostname string = webApp.properties.defaultHostName
 output storageAccountName string = storageAccount.name
 output openAiEndpoint string = cognitiveService.properties.endpoint
