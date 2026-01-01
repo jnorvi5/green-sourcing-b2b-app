@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Construct the prompt based on user request + formatting instructions
     // Prepare prompt
     // The prompt is based on the user request, with appended formatting instructions
     // to ensure the response can be parsed by the frontend.
@@ -121,17 +122,6 @@ Instructions:
                 provider: 'foundry-agent',
                 model: agentId
               }
-          const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
-
-          emailTemplate = {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              provider: 'foundry-agent',
-              model: agentId
             }
           };
           return NextResponse.json({ success: true, email: emailTemplate });
@@ -181,17 +171,6 @@ Instructions:
               provider: 'azure-openai',
               model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
-        const { subject, body } = parseResponse(text, emailTemplate.subject);
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            provider: 'azure-openai',
-            model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
           }
         };
          return NextResponse.json({ success: true, email: emailTemplate });
@@ -244,18 +223,6 @@ Instructions:
               model: 'gpt-4',
               provider: 'openai'
             }
-        const generatedText = completion.choices[0]?.message?.content || '';
-        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
-
-        emailTemplate = {
-          subject,
-          body,
-          metadata: {
-            generatedAt: new Date().toISOString(),
-            recipientType,
-            purpose,
-            model: 'gpt-4',
-            provider: 'openai'
           }
         };
          return NextResponse.json({ success: true, email: emailTemplate });
@@ -290,6 +257,7 @@ Instructions:
         });
 
         const text = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(text, purpose);
         const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
@@ -329,6 +297,30 @@ Instructions:
   }
 }
 
+// Helper to parse subject and body from AI response
+function parseResponse(text: string, defaultPurpose: string) {
+  // We do NOT filter empty lines here to preserve paragraph breaks
+  const lines = text.split('\n');
+
+  // Find line starting with Subject:
+  const subjectLineIndex = lines.findIndex(l => l.match(/^Subject:/i));
+
+  let subject = `GreenChainz - ${defaultPurpose}`;
+  let body = text;
+
+  if (subjectLineIndex !== -1) {
+    const subjectLine = lines[subjectLineIndex];
+    subject = subjectLine.replace(/^Subject:\s*/i, '').trim();
+
+    // Body is everything after the subject line
+    // We explicitly skip the subject line
+    const bodyLines = lines.slice(subjectLineIndex + 1);
+
+    // Trim leading/trailing empty lines from body, but preserve internal spacing
+    // join back first
+    body = bodyLines.join('\n').trim();
+  } else {
+    body = text.trim();
 // Helper function to parse subject and body
 function parseResponse(text: string, defaultSubject: string): { subject: string, body: string } {
   let subject = defaultSubject;
