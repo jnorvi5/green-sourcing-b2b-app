@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+// Use system font stack instead of Google Fonts to avoid network failures during build
+// Inter font can be added via CDN in production or as a static asset if needed
 
 // Dynamically import providers with error boundaries
 // const PostHogProvider = dynamic(
@@ -82,7 +78,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className={`${inter.className} bg-slate-950 text-white`}>
+      <body className="font-sans bg-slate-950 text-white">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
