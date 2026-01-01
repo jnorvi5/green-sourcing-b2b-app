@@ -44,6 +44,7 @@
     "framer-motion": "^12.23.26",
     "fuse.js": "^7.0.0",
     "iconv-lite": "^0.7.0",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.562.0",
     "mongodb": "^7.0.0",
