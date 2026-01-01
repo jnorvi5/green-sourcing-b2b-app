@@ -26,7 +26,6 @@ export default function ResetPasswordPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setVerifyingSession(false);
-        setSessionError(false);
       } else {
         setVerifyingSession(false);
         setSessionError(true);
