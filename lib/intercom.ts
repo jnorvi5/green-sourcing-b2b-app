@@ -45,7 +45,7 @@ interface IntercomWindow extends Window {
 }
 
 export function initIntercom(userId?: string, email?: string, name?: string) {
-  const APP_ID = process.env['NEXT_PUBLIC_INTERCOM_APP_ID'];
+  const APP_ID = process.env['NEXT_PUBLIC_INTERCOM_APP_ID'] || 'cqtm1euj';
 
   if (!APP_ID) {
     console.warn('Intercom init skipped: Missing NEXT_PUBLIC_INTERCOM_APP_ID');
@@ -55,12 +55,18 @@ export function initIntercom(userId?: string, email?: string, name?: string) {
   // Check for existing Intercom instance
   const existingWindow = window as unknown as IntercomWindow;
   if (typeof existingWindow !== 'undefined' && existingWindow.Intercom) {
-    existingWindow.Intercom('boot', {
-      app_id: APP_ID,
-      user_id: userId,
-      email: email,
-      name: name,
-    });
+    if (userId) {
+       existingWindow.Intercom('boot', {
+         app_id: APP_ID,
+         user_id: userId,
+         email: email,
+         name: name,
+       });
+    } else {
+       existingWindow.Intercom('boot', {
+         app_id: APP_ID,
+       });
+    }
     return;
   }
 
@@ -87,4 +93,18 @@ export function initIntercom(userId?: string, email?: string, name?: string) {
     i.q?.push(args);
   };
   w.Intercom = i;
+
+  // Initial boot
+  if (userId) {
+     w.Intercom('boot', {
+       app_id: APP_ID,
+       user_id: userId,
+       email: email,
+       name: name,
+     });
+  } else {
+     w.Intercom('boot', {
+       app_id: APP_ID,
+     });
+  }
 }

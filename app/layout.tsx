@@ -12,10 +12,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 //   { ssr: false }
 // );
 
-// const IntercomProvider = dynamic(
-//   () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
-//   { ssr: false }
-// );
+import IntercomProvider from "@/components/IntercomProvider";
 
 // const GoogleAnalytics = dynamic(
 //   () => import("@/components/GoogleAnalytics").catch(() => ({ default: () => null })),
@@ -100,9 +97,9 @@ export default function RootLayout({
         {/* <GoogleAnalytics /> */}
         {/* <PostHogProvider> */}
         <AuthProvider>
-          {/* <IntercomProvider> */}
-          {children}
-          {/* </IntercomProvider> */}
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
         </AuthProvider>
         {/* </PostHogProvider> */}
         {/* <AgentChat /> */}
