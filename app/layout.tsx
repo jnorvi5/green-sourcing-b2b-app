@@ -3,19 +3,14 @@ import Script from "next/script";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+import IntercomProvider from "@/components/IntercomProvider";
+
+// Use system font stack instead of Google Fonts to avoid network failures during build
+// Inter font can be added via CDN in production or as a static asset if needed
 
 // Dynamically import providers with error boundaries
-const PostHogProvider = dynamic(
-  () => import("@/components/PostHogProvider").then(mod => mod.PostHogProvider).catch(() => ({ default: ({ children }: any) => children })),
-  { ssr: false }
-);
 // const PostHogProvider = dynamic(
 //   () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
-//   { ssr: false }
-// );
-
-// const IntercomProvider = dynamic(
-//   () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
 //   { ssr: false }
 // );
 
@@ -30,12 +25,15 @@ const PostHogProvider = dynamic(
 // );
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://app.greenchainz.com"),
   title: "GreenChainz - Revit Plugin for Sustainable Design & Materials",
-  description: "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
+  description:
+    "Audit carbon in Revit and source verified green materials instantly. The all-in-one B2B marketplace and AI plugin for sustainable construction.",
   openGraph: {
     title: "GreenChainz - Revit Plugin for Sustainable Design",
-    description: "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
-    images: ['/images/plugin/demo-thumbnail.svg'],
+    description:
+      "Design greener, faster. Audit carbon in Revit and find verified suppliers in minutes.",
+    images: ["/images/plugin/demo-thumbnail.svg"],
   },
   icons: {
     icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
@@ -64,23 +62,27 @@ export default function RootLayout({
           }}
         />
         {/* End Google Tag Manager */}
-        <link
-          rel="preconnect"
-          href="https://ezgnhyymoqxaplungbabj.supabase.co"
-        />
-        <link
-          rel="dns-prefetch"
-          href="https://ezgnhyymoqxaplungbabj.supabase.co"
-        />
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
+            <link
+              rel="dns-prefetch"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
+          </>
+        )}
       </head>
-      <body className="bg-slate-950 text-white">
+      <body className="font-sans bg-slate-950 text-white">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-NV6SKWWJ"
             height="0"
             width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
+            className="hidden"
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
@@ -89,16 +91,16 @@ export default function RootLayout({
           id="cookieyes"
           type="text/javascript"
           src="https://cdn-cookieyes.com/client_data/80d633ac80d2b968de32ce14/script.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         {/* ✅ END COOKIEYES BANNER */}
         {/* <GoogleAnalytics /> */}
         {/* <PostHogProvider> */}
-          <AuthProvider>
-            {/* <IntercomProvider> */}
-              {children}
-            {/* </IntercomProvider> */}
-          </AuthProvider>
+        <AuthProvider>
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
+        </AuthProvider>
         {/* </PostHogProvider> */}
         {/* <AgentChat /> */}
       </body>

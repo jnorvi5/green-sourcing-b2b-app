@@ -58,6 +58,7 @@ export default function ImageUpload({
         onChange={handleFileChange}
         className={className}
         disabled={uploading}
+        aria-label="Upload file"
       />
     );
   }
@@ -74,6 +75,7 @@ export default function ImageUpload({
           type="file"
           onChange={handleFileChange}
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+          aria-label="Select file to upload"
         />
         <button
           onClick={handleUpload}

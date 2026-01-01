@@ -28,6 +28,7 @@ export async function GET() {
         .maybeSingle()
 
     const planName = (subscription?.supplier_plans as any)?.plan_name || 'Free';
+    const planName = (subscription?.supplier_plans as unknown as { plan_name: string })?.plan_name || 'Free';
 
     return NextResponse.json({
         plan_name: planName

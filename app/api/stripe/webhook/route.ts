@@ -1,95 +1,53 @@
-/**
- * POST /api/stripe/webhook
- * Handle Stripe webhook events
- */
-
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  verifyWebhookSignature,
-  handleCheckoutCompleted,
-  handleInvoicePaid,
-  handlePaymentFailed,
-  handleSubscriptionDeleted,
-  handleSubscriptionUpdated,
-  handleInvoiceFinalized,
-  handleInvoicePaymentSucceeded,
-  handlePaymentMethodAttached,
-  handleTrialWillEnd,
-} from '@/lib/stripe/webhooks';
+import { headers } from 'next/headers';
 import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
-export async function POST(request: NextRequest) {
-  try {
-    // Get raw body for signature verification
-    const body = await request.text();
-    const signature = request.headers.get('stripe-signature');
+// Initialize Stripe
+const stripe = new Stripe(process.env['STRIPE_SECRET_KEY']!, {
+  apiVersion: '2024-12-18.acacia' as Stripe.LatestApiVersion,
+});
 
-    if (!signature) {
-      return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
-    }
+const endpointSecret = process.env['STRIPE_WEBHOOK_SECRET']!;
 
-    // Verify webhook signature
-    let event: Stripe.Event;
-    try {
-      event = verifyWebhookSignature(body, signature);
-    } catch (error) {
-      console.error('Webhook signature verification failed:', error);
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
-    }
+export async function POST(req: Request) {
+  // Create Supabase client inside the function to avoid build-time issues
+  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
 
-    console.log(`📨 Webhook received: ${event.type}`);
-
-    // Handle different event types
-    switch (event.type) {
-      case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
-        break;
-
-      case 'invoice.paid':
-        await handleInvoicePaid(event.data.object as Stripe.Invoice);
-        break;
-
-      case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.Invoice);
-        break;
-
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
-        break;
-
-      case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
-        break;
-
-      case 'invoice.finalized':
-        await handleInvoiceFinalized(event.data.object as Stripe.Invoice);
-        break;
-
-      case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
-        break;
-
-      case 'payment_method.attached':
-        await handlePaymentMethodAttached(event.data.object as Stripe.PaymentMethod);
-        break;
-
-      case 'customer.subscription.trial_will_end':
-        await handleTrialWillEnd(event.data.object as Stripe.Subscription);
-        break;
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Webhook processing failed' },
-      { status: 500 }
-    );
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error('Missing Supabase credentials');
+    return new Response('Server configuration error', { status: 500 });
   }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const body = await req.text();
+  const signature = headers().get('stripe-signature') as string;
+
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error(`Webhook signature verification failed: ${error.message}`);
+    return new Response(`Webhook Error: ${error.message}`, { status: 400 });
+  }
+
+  // Handle Subscription Events
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const userId = session.metadata?.['user_id'];
+
+    if (userId) {
+      await supabase
+        .from('suppliers')
+        .update({
+          subscription_status: 'active',
+          stripe_customer_id: session.customer as string
+        })
+        .eq('id', userId);
+    }
+  }
+
+  return new Response(JSON.stringify({ received: true }), { status: 200 });
 }

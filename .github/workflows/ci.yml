@@ -1,12 +1,17 @@
-name: CI Tests
+name: CI Tests (Backend - DISABLED)
+# This workflow is disabled as there is no separate backend directory
+# The Next.js app handles both frontend and backend
+# Use vercel-deploy.yml or deploy-production.yml instead
 permissions:
   contents: read
 
 on:
-  push:
-    branches: [main, develop, 'feat/**']
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:  # Manual trigger only
+  # Disabled automatic triggers - uncomment if backend directory is added
+  # push:
+  #   branches: [main, develop, 'feat/**']
+  # pull_request:
+  #   branches: [main, develop]
 
 jobs:
   lint:

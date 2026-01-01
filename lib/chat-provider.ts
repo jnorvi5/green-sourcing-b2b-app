@@ -18,7 +18,6 @@ class IntercomProvider implements ChatProvider {
                 user_id: userId,
                 email,
                 name,
-<<<<<<< HEAD
                 created_at: Math.floor(Date.now() / 1000) as unknown as string,
             });
         }
@@ -46,23 +45,22 @@ class IntercomProvider implements ChatProvider {
     setMetadata(key: string, value: string) {
         if (typeof window !== 'undefined' && window.Intercom) {
             window.Intercom('update', { [key]: value });
-=======
                 created_at: Math.floor(Date.now() / 1000),
             });
         }
     }
 
     update() {
-            if (typeof window !== 'undefined' && (window as any).Intercom) {
-                (window as any).Intercom('update');
-            }
+        if (typeof window !== 'undefined' && (window as any).Intercom) {
+            (window as any).Intercom('update');
         }
+    }
 
-        shutdown() {
-            if (typeof window !== 'undefined' && (window as any).Intercom) {
-                (window as any).Intercom('shutdown');
-            }
+    shutdown() {
+        if (typeof window !== 'undefined' && (window as any).Intercom) {
+            (window as any).Intercom('shutdown');
         }
+    }
 
     openChat(rfqId: string) {
         if (typeof window !== 'undefined' && (window as any).Intercom) {
@@ -74,14 +72,13 @@ class IntercomProvider implements ChatProvider {
     setMetadata(key: string, value: string) {
         if (typeof window !== 'undefined' && (window as any).Intercom) {
             (window as any).Intercom('update', { [key]: value });
->>>>>>> fd168402960996d95b98e9a96bf7650bddb9d034
         }
     }
 }
 
-<<<<<<< HEAD
 // Export active provider
-=======
 // Export active provider (switch to Crisp later by changing this line)
->>>>>>> fd168402960996d95b98e9a96bf7650bddb9d034
+
+// Export active provider
+
 export const chatProvider: ChatProvider = new IntercomProvider();

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ClaimForm({
   supplierName,
   productCount,
   epdCount,
-  token
+  token,
 }: {
   supplierName: string;
   productCount: number;
   epdCount: number;
   token: string;
 }) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,16 +36,17 @@ export default function ClaimForm({
           emailRedirectTo: `${window.location.origin}/auth/callback?claim_token=${token}`,
           data: {
             claim_token: token,
-          }
+          },
         },
       });
 
       if (authError) throw authError;
 
       setSubmitted(true);
-    } catch (err: any) {
-      console.error('Claim error:', err);
-      setError(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Claim error:", error);
+      setError(error.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,13 +56,26 @@ export default function ClaimForm({
     return (
       <div className="text-center py-8 px-6">
         <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-          <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <svg
+            className="h-8 w-8 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Check your email</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          Check your email
+        </h3>
         <p className="text-gray-600 mb-6">
-          We've sent a verification link to <span className="font-semibold text-gray-900">{email}</span>.
+          We&apos;ve sent a verification link to{" "}
+          <span className="font-semibold text-gray-900">{email}</span>.
           <br />
           Click the link to unlock your profile.
         </p>
@@ -82,13 +96,22 @@ export default function ClaimForm({
           Claim {supplierName}
         </h2>
         <p className="text-gray-600">
-          We found <span className="font-semibold text-green-700">{productCount} products</span> and <span className="font-semibold text-green-700">{epdCount} EPDs</span> for your company.
+          We found{" "}
+          <span className="font-semibold text-green-700">
+            {productCount} products
+          </span>{" "}
+          and{" "}
+          <span className="font-semibold text-green-700">{epdCount} EPDs</span>{" "}
+          for your company.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Verify your work email to unlock this profile
           </label>
           <input
@@ -115,14 +138,30 @@ export default function ClaimForm({
         >
           {loading ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Verifying...
             </>
           ) : (
-            'Unlock Profile'
+            "Unlock Profile"
           )}
         </button>
       </form>

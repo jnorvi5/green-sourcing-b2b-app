@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "@/app/*": ["app/*"],
@@ -15,7 +15,7 @@
     },
     "types": ["node", "jest"],
     "jsx": "preserve",
-    "strict": false,
+    "strict": true,
     "noUncheckedIndexedAccess": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -54,8 +54,6 @@
     "lib/**/*.tsx",
     "types/**/*.ts",
     "types/**/*.tsx",
-    "pages/**/*.ts",
-    "pages/**/*.tsx",
     "models/**/*.ts",
     "instrumentation.ts",
     "instrumentation-client.ts",

@@ -15,8 +15,9 @@ import {
   FaBalanceScale,
   FaPaperPlane,
   FaCheckSquare,
-  FaTimes,
+  FaTimes, // eslint-disable-line @typescript-eslint/no-unused-vars
 } from "react-icons/fa";
+import Image from "next/image";
 
 // Types
 interface Product {
@@ -44,9 +45,63 @@ interface RFQ {
   };
 }
 
+// Mock Data for Test Mode
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: "p1",
+    name: "Eco-Friendly Insulation Batts",
+    description: "Recycled glass insulation with low embodied carbon.",
+    gwp: 1.2,
+    supplier: {
+      company_name: "GreenBuild Supplies",
+      location: "Portland, OR",
+    },
+    certifications: ["LEED", "Greenguard"],
+    image_url:
+      "https://images.unsplash.com/photo-1599696846175-654877797745?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p2",
+    name: "Reclaimed Oak Flooring",
+    description: "Sustainably sourced reclaimed wood flooring.",
+    gwp: 0.5,
+    supplier: { company_name: "Heritage Timbers", location: "Austin, TX" },
+    certifications: ["FSC Recycled"],
+    image_url:
+      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p3",
+    name: "Low-Carbon Concrete Block",
+    description: "Concrete blocks made with fly ash and recycled aggregates.",
+    gwp: 8.5,
+    supplier: { company_name: "CarbonCure Inc", location: "Seattle, WA" },
+    certifications: ["EPD Verified"],
+    image_url:
+      "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+  {
+    id: "p4",
+    name: "Hempcrete Panels",
+    description: "Carbon-negative wall panels made from hemp hurds.",
+    gwp: -1.5,
+    supplier: {
+      company_name: "Sustainable Structures",
+      location: "Denver, CO",
+    },
+    certifications: ["Bio-based"],
+    image_url:
+      "https://images.unsplash.com/photo-1594488518606-4b24c6e91307?auto=format&fit=crop&q=80&w=300&h=200",
+  },
+];
+
 function ArchitectDashboardInner() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [profile, setProfile] = useState<{ id?: string; full_name?: string; role?: string } | null>(null);
+  const [profile, setProfile] = useState<{
+    id?: string;
+    full_name?: string;
+    role?: string;
+  } | null>(null);
   const [, setSentRFQs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTestMode, setIsTestMode] = useState(false);
@@ -75,52 +130,133 @@ function ArchitectDashboardInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Mock Data for Test Mode
-  const MOCK_PRODUCTS: Product[] = [
-    {
-      id: "p1",
-      name: "Eco-Friendly Insulation Batts",
-      description: "Recycled glass insulation with low embodied carbon.",
-      gwp: 1.2,
-      supplier: {
-        company_name: "GreenBuild Supplies",
-        location: "Portland, OR",
-      },
-      certifications: ["LEED", "Greenguard"],
-      image_url:
-        "https://images.unsplash.com/photo-1599696846175-654877797745?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p2",
-      name: "Reclaimed Oak Flooring",
-      description: "Sustainably sourced reclaimed wood flooring.",
-      gwp: 0.5,
-      supplier: { company_name: "Heritage Timbers", location: "Austin, TX" },
-      certifications: ["FSC Recycled"],
-      image_url:
-        "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p3",
-      name: "Low-Carbon Concrete Block",
-      description: "Concrete blocks made with fly ash and recycled aggregates.",
-      gwp: 8.5,
-      supplier: { company_name: "CarbonCure Inc", location: "Seattle, WA" },
-      certifications: ["EPD Verified"],
-      image_url:
-        "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-    {
-      id: "p4",
-      name: "Hempcrete Panels",
-      description: "Carbon-negative wall panels made from hemp hurds.",
-      gwp: -0.5,
-      supplier: { company_name: "HempBlock", location: "Denver, CO" },
-      certifications: ["C2C Silver"],
-      image_url:
-        "https://images.unsplash.com/photo-1595846519845-68e298c2edd8?auto=format&fit=crop&q=80&w=300&h=200",
-    },
-  ];
+  // Search Handler
+  const handleSearch = useCallback(async () => {
+    setIsSearching(true);
+    try {
+      if (isTestMode) {
+        // Filter mock products
+        let results = [...MOCK_PRODUCTS];
+        if (searchTerm) {
+          const lower = searchTerm.toLowerCase();
+          results = results.filter(
+            (p) =>
+              p.name.toLowerCase().includes(lower) ||
+              p.description?.toLowerCase().includes(lower)
+          );
+        }
+        if (locationFilter) {
+          results = results.filter((p) =>
+            p.supplier?.location
+              ?.toLowerCase()
+              .includes(locationFilter.toLowerCase())
+          );
+        }
+        if (carbonThreshold !== "") {
+          results = results.filter(
+            (p) => (p.gwp || 0) <= Number(carbonThreshold)
+          );
+        }
+        setSearchResults(results);
+      } else {
+        // Real Supabase Query
+        // 1. Fetch Products
+        let query = supabase.from("products").select("*");
+
+        if (searchTerm) {
+          query = query.ilike("name", `%${searchTerm}%`);
+        }
+        // apply other filters ...
+
+        const { data: productData, error: productError } = await query;
+        if (productError) throw productError;
+
+        if (!productData || productData.length === 0) {
+          setSearchResults([]);
+          return;
+        }
+
+        // 2. Fetch Suppliers for these products
+        // Collect supplier IDs (which are user IDs)
+        const supplierIds = Array.from(
+          new Set(
+            productData
+              .map((p: Record<string, unknown>) => p["supplier_id"])
+              .filter(Boolean)
+          )
+        );
+
+        // Fetch from 'suppliers' table first, fall back to 'profiles'
+        const { data: supplierData } = await supabase
+          .from("suppliers")
+          .select("id, company_name, location")
+          .in("id", supplierIds);
+
+        const supplierMap = new Map();
+        supplierData?.forEach((s: Record<string, unknown>) =>
+          supplierMap.set(s["id"], s)
+        );
+
+        // Map data to Product interface
+        let products: Product[] = productData.map(
+          (item: Record<string, unknown>) => {
+            const sustainabilityData = item["sustainability_data"] as
+              | Record<string, unknown>
+              | null
+              | undefined;
+            return {
+              id: item["id"] as string,
+              name: item["name"] as string,
+              description: item["description"] as string | null,
+              image_url: item["image_url"] as string,
+              gwp:
+                (sustainabilityData?.["carbon_footprint"] as number) ||
+                (item["gwp"] as number) ||
+                0,
+              specifications: item["specifications"],
+              supplier_id: item["supplier_id"] as string,
+              supplier: {
+                company_name:
+                  ((
+                    supplierMap.get(item["supplier_id"]) as
+                      | Record<string, unknown>
+                      | undefined
+                  )?.["company_name"] as string) || "Unknown Supplier",
+                location:
+                  ((
+                    supplierMap.get(item["supplier_id"]) as
+                      | Record<string, unknown>
+                      | undefined
+                  )?.["location"] as string) || "Global",
+              },
+              certifications: (item["certifications"] as string[]) || [],
+            } as Product;
+          }
+        );
+
+        // Client-side carbon filter
+        if (carbonThreshold !== "") {
+          products = products.filter(
+            (p) => (p.gwp || 0) <= Number(carbonThreshold)
+          );
+        }
+
+        // Client-side location filter
+        if (locationFilter) {
+          const lowerLoc = locationFilter.toLowerCase();
+          products = products.filter((p) =>
+            p.supplier?.location?.toLowerCase().includes(lowerLoc)
+          );
+        }
+
+        setSearchResults(products);
+      }
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [isTestMode, searchTerm, locationFilter, carbonThreshold, supabase]);
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -195,8 +331,7 @@ function ArchitectDashboardInner() {
 
       setSentRFQs(rfqsData || []);
 
-      // Initial Product Load
-      await handleSearch();
+      // Initial Product Load handled by separate effect
     } catch (error) {
       console.error("Dashboard error:", error);
     } finally {
@@ -206,116 +341,12 @@ function ArchitectDashboardInner() {
 
   useEffect(() => {
     loadDashboard();
+    handleSearch(); // Initial search
     if (searchParams && searchParams.get("rfq") === "created") {
       setShowSuccessMessage(true);
       setTimeout(() => setShowSuccessMessage(false), 5000);
     }
-  }, [loadDashboard, searchParams]);
-
-  // Search Handler
-  const handleSearch = async () => {
-    setIsSearching(true);
-    try {
-      if (isTestMode) {
-        // Filter mock products
-        let results = [...MOCK_PRODUCTS];
-        if (searchTerm) {
-          const lower = searchTerm.toLowerCase();
-          results = results.filter(
-            (p) =>
-              p.name.toLowerCase().includes(lower) ||
-              p.description?.toLowerCase().includes(lower)
-          );
-        }
-        if (locationFilter) {
-          results = results.filter((p) =>
-            p.supplier?.location
-              ?.toLowerCase()
-              .includes(locationFilter.toLowerCase())
-          );
-        }
-        if (carbonThreshold !== "") {
-          results = results.filter(
-            (p) => (p.gwp || 0) <= Number(carbonThreshold)
-          );
-        }
-        setSearchResults(results);
-      } else {
-        // Real Supabase Query
-        // 1. Fetch Products
-        let query = supabase.from("products").select("*");
-
-        if (searchTerm) {
-          query = query.ilike("name", `%${searchTerm}%`);
-        }
-
-        const { data: productData, error: productError } = await query;
-        if (productError) throw productError;
-
-        if (!productData || productData.length === 0) {
-          setSearchResults([]);
-          return;
-        }
-
-        // 2. Fetch Suppliers for these products
-        // Collect supplier IDs (which are user IDs)
-        const supplierIds = Array.from(
-          new Set(productData.map((p: Record<string, unknown>) => p['supplier_id']).filter(Boolean))
-        );
-
-        // Fetch from 'suppliers' table first, fall back to 'profiles'
-        const { data: supplierData } = await supabase
-          .from("suppliers")
-          .select("id, company_name, location")
-          .in("id", supplierIds);
-
-        const supplierMap = new Map();
-        supplierData?.forEach((s: Record<string, unknown>) => supplierMap.set(s['id'], s));
-
-        // Map data to Product interface
-        let products: Product[] = productData.map((item: Record<string, unknown>) => {
-          const sustainabilityData = item['sustainability_data'] as Record<string, unknown> | null | undefined;
-          return {
-            id: item['id'] as string,
-            name: item['name'] as string,
-            description: item['description'] as string | null,
-            image_url: item['image_url'] as string,
-            gwp: (sustainabilityData?.['carbon_footprint'] as number) || (item['gwp'] as number) || 0,
-            specifications: item['specifications'],
-            supplier_id: item['supplier_id'] as string,
-            supplier: {
-              company_name:
-                (supplierMap.get(item['supplier_id']) as Record<string, unknown> | undefined)?.['company_name'] as string ||
-                "Unknown Supplier",
-              location: (supplierMap.get(item['supplier_id']) as Record<string, unknown> | undefined)?.['location'] as string || "Global",
-            },
-            certifications: (item['certifications'] as string[]) || [],
-          } as Product;
-        });
-
-        // Client-side carbon filter
-        if (carbonThreshold !== "") {
-          products = products.filter(
-            (p) => (p.gwp || 0) <= Number(carbonThreshold)
-          );
-        }
-
-        // Client-side location filter
-        if (locationFilter) {
-          const lowerLoc = locationFilter.toLowerCase();
-          products = products.filter((p) =>
-            p.supplier?.location?.toLowerCase().includes(lowerLoc)
-          );
-        }
-
-        setSearchResults(products);
-      }
-    } catch (err) {
-      console.error("Search failed:", err);
-    } finally {
-      setIsSearching(false);
-    }
-  };
+  }, [loadDashboard, handleSearch, searchParams]);
 
   // Comparison Logic
   const toggleCompare = (product: Product) => {
@@ -506,7 +537,9 @@ function ArchitectDashboardInner() {
               </div>
               <div>
                 <h3 className="font-semibold text-white">My Projects</h3>
-                <p className="text-sm text-gray-400">Manage projects & materials</p>
+                <p className="text-sm text-gray-400">
+                  Manage projects & materials
+                </p>
               </div>
             </div>
           </Link>
@@ -624,10 +657,11 @@ function ArchitectDashboardInner() {
               >
                 <div className="h-48 bg-gray-800 relative">
                   {product.image_url ? (
-                    <img
+                    <Image
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-600">
@@ -709,6 +743,7 @@ function ArchitectDashboardInner() {
             </button>
             <button
               onClick={() => setSelectedProducts([])}
+              aria-label="Clear selection"
               className="text-gray-400 hover:text-white transition-colors"
             >
               <FaTimes />
@@ -727,6 +762,7 @@ function ArchitectDashboardInner() {
                 </h2>
                 <button
                   onClick={() => setShowCompareModal(false)}
+                  aria-label="Close modal"
                   className="text-gray-400 hover:text-white"
                 >
                   <FaTimes size={24} />
@@ -741,10 +777,11 @@ function ArchitectDashboardInner() {
                     >
                       <div className="h-40 bg-gray-700 rounded-lg mb-4 overflow-hidden">
                         {product.image_url ? (
-                          <img
+                          <Image
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                           />
                         ) : (
                           <div className="flex items-center justify-center h-full text-gray-500">
@@ -834,6 +871,7 @@ function ArchitectDashboardInner() {
                 <h3 className="text-xl font-bold text-white">Request Quote</h3>
                 <button
                   onClick={() => setRfqModalOpen(false)}
+                  aria-label="Close modal"
                   className="text-gray-400 hover:text-white"
                 >
                   <FaTimes />
@@ -843,9 +881,11 @@ function ArchitectDashboardInner() {
               <div className="mb-6 bg-gray-800 p-4 rounded-lg flex items-start gap-4">
                 <div className="w-16 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                   {rfqTargetProduct.image_url && (
-                    <img
+                    <Image
                       src={rfqTargetProduct.image_url}
-                      className="w-full h-full object-cover"
+                      alt={rfqTargetProduct.name}
+                      fill
+                      className="object-cover"
                     />
                   )}
                 </div>
@@ -877,6 +917,8 @@ function ArchitectDashboardInner() {
                     Message to Supplier
                   </label>
                   <textarea
+                    id="rfqMessage"
+                    aria-label="Message to Supplier"
                     className="w-full bg-black/20 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-teal-500 outline-none h-32 resize-none"
                     value={rfqMessage}
                     onChange={(e) => setRfqMessage(e.target.value)}

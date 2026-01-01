@@ -13,6 +13,7 @@ export async function GET(
         {
             cookies: {
                 get: (name: string) => cookieStore.get(name)?.value,
+                get: async (name: string) => (await cookieStore).get(name)?.value,
                 set: () => { },
                 remove: () => { },
             },
@@ -47,6 +48,7 @@ export async function PATCH(
     { params }: { params: { id: string } }
 ) {
     const cookieStore = cookies()
+    const cookieStore = await cookies()
     const supabase = createServerClient(
         process.env['NEXT_PUBLIC_SUPABASE_URL']!,
         process.env['SUPABASE_SERVICE_ROLE_KEY']!,

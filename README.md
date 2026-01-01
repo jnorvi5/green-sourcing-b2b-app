@@ -5,7 +5,7 @@
 **Current Stack (As of December 2025):**
 - ✅ **Frontend:** Next.js 14 (App Router)
 - ✅ **Backend:** Next.js API Routes + Supabase
-- ✅ **Deployment:** Vercel
+- ✅ **Deployment:** Azure App Service
 - ✅ **Styling:** Tailwind CSS
 - ❌ **Vite:** REMOVED (see Migration Notes below)
 
@@ -46,12 +46,12 @@
 
 | Layer                 | Technology                             | Purpose                                                                                                                        |
 | --------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend**          | Vercel (Next.js/React)                 | Headless, API-first UI with automatic deployments from GitHub                                                                  |
+| **Frontend**          | Azure App Service (Next.js/React)      | Managed hosting with automatic scaling and deployment from GitHub                                                              |
 | **Backend**           | Supabase (PostgreSQL + Edge Functions) | Managed database (SQL for transactions) + instant REST/GraphQL APIs                                                            |
 | **Authentication**    | Supabase Auth + OAuth 2.0              | Multi-provider authentication (Google, LinkedIn, GitHub) with role-based access control                                        |
 | **Database Strategy** | Supabase (PostgreSQL)                  | SQL for transactional data (users, orders); JSONB columns for flexible product/sustainability data |
 | **Security & CDN**    | Cloudflare                             | DDoS protection, WAF, SSL/TLS, global CDN for performance                                                                      |
-| **Version Control**   | GitHub (Student Developer Pack)        | CI/CD pipeline via Vercel integration                                                                                          |
+| **Version Control**   | GitHub (Student Developer Pack)        | CI/CD pipeline via Azure Web App integration                                                                                   |
 
 ---
 
@@ -72,7 +72,7 @@
 - [ ] **IN PROGRESS**: Data provider partnerships (EPD International, WAP Sustainability, Building Transparency, Autodesk, FSC)
 - [ ] GitHub Student Developer Pack activated
 - [ ] Cloud credits approved (AWS/Google Cloud - pending)
-- [ ] Local MVP deployed to Vercel (staging environment)
+- [x] Local MVP deployed to Azure App Service (staging environment)
 
 ### **Phase 2: Data Integration (Weeks 5-8)**
 
@@ -223,7 +223,7 @@ Our platform aligns with:
 
 - **November 10, 2025**: Data provider contact list finalized, first outreach emails sent
 - **November 17, 2025**: Minimum 2 API partnership responses received
-- **December 1, 2025**: Local MVP deployed to Vercel staging
+- **December 1, 2025**: MVP deployed to Azure App Service production
 - **January 2026**: First anchor supplier onboarded
 
 ---

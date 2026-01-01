@@ -11,10 +11,11 @@
         "test": "echo \"No tests yet\""
     },
     "dependencies": {
+        "playwright-chromium": "^1.57.0"
     },
     "devDependencies": {
-        "@azure/functions": "^4.0.0",
+        "@azure/functions": "^4.10.0",
         "@types/node": "^20.0.0",
-        "typescript": "^5.0.0"
+        "typescript": "^5.9.3"
     }
 }

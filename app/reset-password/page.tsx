@@ -15,17 +15,32 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [verifyingSession, setVerifyingSession] = useState(true);
 
-  // Verify the reset token on mount
+  // Verify the reset token/session on mount
   useEffect(() => {
     const supabase = createClient();
 
-    // Check if user came from password reset email
-    supabase.auth.onAuthStateChange(async (event, _session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        // User is valid, show reset form
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setVerifyingSession(false);
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        setVerifyingSession(false);
+      } else if (event === 'SIGNED_OUT') {
+        // Optionally handle sign out
       }
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,6 +63,12 @@ export default function ResetPasswordPage() {
 
     try {
       const supabase = createClient();
+
+      // Ensure we have a session before trying to update
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Your session has expired or is invalid. Please request a new password reset link.');
+      }
 
       // Update password
       const { error: updateError } = await supabase.auth.updateUser({
@@ -123,6 +144,7 @@ export default function ResetPasswordPage() {
                 required
                 disabled={loading}
                 minLength={8}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-white dark:border-slate-700 placeholder:text-slate-400"
               />
               <p className="text-xs text-muted-foreground">
                 Must be at least 8 characters
@@ -142,6 +164,7 @@ export default function ResetPasswordPage() {
                 required
                 disabled={loading}
                 minLength={8}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-white dark:border-slate-700 placeholder:text-slate-400"
               />
             </div>
 

@@ -105,18 +105,18 @@ import { createClient } from "@/lib/supabase/client";
 
 ## Build Verification
 
-### Before Fixes:
+### Before Fixes
 
-```
+```text
 ❌ Failed to compile.
 ❌ Merge conflict marker encountered.
 ❌ Failed to fetch `Inter` from Google Fonts.
 ❌ Error: Supabase client requires URL and API key
 ```
 
-### After Fixes:
+### After Fixes
 
-```
+```text
 ✅ Compiled successfully
 ✅ Generating static pages (62/62)
 ✅ Build completed successfully
@@ -193,6 +193,7 @@ cat tailwind.config.js
    ```
 
 4. Clean up unused images
+
    ```bash
    cd public/logos
    rm Imagine_*.jpg  # If confirmed unused

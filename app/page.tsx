@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/home/HeroSection";
@@ -23,8 +25,9 @@ const HowItWorksSection = dynamic(
   }
 );
 
-const PluginDemoSection = dynamic(
-  () => import("@/components/home/PluginDemoSection"),
+// Changed PluginDemoSection to PlatformPreviewSection
+const PlatformPreviewSection = dynamic(
+  () => import("@/components/home/PlatformPreviewSection"),
   {
     loading: () => <div className="py-24 bg-slate-950 min-h-[500px]" />,
   }
@@ -46,15 +49,15 @@ const TestimonialsSection = dynamic(
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-950">
       <Header />
       <HeroSection />
-      <StatsSection />
+      {/* <StatsSection /> -- Hiding Stats as we are in Foundation phase */}
       <ProblemSolutionSection />
-      <PluginDemoSection />
-      <HowItWorksSection />
-      <TestimonialsSection />
-      <PricingSection />
+      <PlatformPreviewSection />
+      {/* <HowItWorksSection /> -- Keeping this might be confusing if the platform isn't live, but let's check content first. Actually, Problem/Solution covers the 'Why', PlatformPreview covers 'What'. */}
+      {/* <TestimonialsSection /> -- Hiding Testimonials as we have no users yet */}
+      {/* <PricingSection /> -- Hiding Pricing for now */}
       <Footer />
     </div>
   );

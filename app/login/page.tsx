@@ -72,12 +72,19 @@ export default function LoginPage() {
     }
 
     try {
+      // Add timeout to prevent infinite loading (30 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
         credentials: "include", // Important: include cookies in request
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -86,6 +93,13 @@ export default function LoginPage() {
       }
 
       if (response.ok) {
+        // Safety check: ensure we have the expected response structure
+        if (!data.user) {
+          setError("Unexpected response from server. Please try again.");
+          logger.error("Login response missing user object", { data });
+          return;
+        }
+        
         // Session cookies are set by the API, just redirect
         if (data.user.user_type === "supplier") {
           router.push("/supplier/dashboard");
@@ -108,8 +122,13 @@ export default function LoginPage() {
         }
       }
     } catch (err) {
-      logger.error("Login exception", { error: err });
-      setError("Network error. Please check your connection.");
+      if (err instanceof Error && err.name === 'AbortError') {
+        logger.error("Login request timed out");
+        setError("Request timed out. Please check your connection and try again.");
+      } else {
+        logger.error("Login exception", { error: err });
+        setError("Network error. Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }
@@ -335,8 +354,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-md"
                   disabled={loading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <FiEyeOff className="w-5 h-5" />
@@ -349,8 +369,11 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="hidden peer" />
-                <div className="w-4 h-4 border border-primary rounded flex items-center justify-center peer-checked:bg-primary peer-checked:text-primary-foreground text-transparent">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                />
+                <div className="w-4 h-4 border border-primary rounded flex items-center justify-center peer-checked:bg-primary peer-checked:text-primary-foreground text-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2">
                   <FiCheckSquare className="w-3 h-3" />
                 </div>
                 {/* Fallback checkbox if custom one is tricky */}
