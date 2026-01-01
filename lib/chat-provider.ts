@@ -18,6 +18,33 @@ class IntercomProvider implements ChatProvider {
                 user_id: userId,
                 email,
                 name,
+                created_at: Math.floor(Date.now() / 1000) as unknown as string,
+            });
+        }
+    }
+
+    update() {
+        if (typeof window !== 'undefined' && window.Intercom) {
+            window.Intercom('update');
+        }
+    }
+
+    shutdown() {
+        if (typeof window !== 'undefined' && window.Intercom) {
+            window.Intercom('shutdown');
+        }
+    }
+
+    openChat(rfqId: string) {
+        if (typeof window !== 'undefined' && window.Intercom) {
+            window.Intercom('update', { rfq_id: rfqId });
+            window.Intercom('show');
+        }
+    }
+
+    setMetadata(key: string, value: string) {
+        if (typeof window !== 'undefined' && window.Intercom) {
+            window.Intercom('update', { [key]: value });
                 created_at: Math.floor(Date.now() / 1000),
             });
         }
@@ -50,4 +77,8 @@ class IntercomProvider implements ChatProvider {
 }
 
 // Export active provider
+// Export active provider (switch to Crisp later by changing this line)
+
+// Export active provider
+
 export const chatProvider: ChatProvider = new IntercomProvider();

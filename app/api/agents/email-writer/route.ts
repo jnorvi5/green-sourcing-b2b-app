@@ -25,12 +25,30 @@ export async function POST(request: NextRequest) {
     const hasOpenAI = !!process.env['OPENAI_API_KEY'];
     const hasAnthropic = !!process.env['ANTHROPIC_API_KEY'];
 
+    // Default mock response structure
+    interface EmailTemplate {
+      subject: string;
+      body: string;
+      metadata: {
+        generatedAt: string;
+        recipientType: string;
+        purpose: string;
+        model?: string;
+        provider?: string;
+        isStatic?: boolean;
+      };
+    }
+
+    // Initialize with mock data as fallback
+    let emailTemplate: EmailTemplate = getStaticTemplate(recipientType, purpose, context);
+
     // Check if any AI provider is configured
     if (!hasOpenAI && !isAIEnabled && !hasAnthropic) {
       console.warn('No AI provider configured. Returning static template.');
       return NextResponse.json({
         success: true,
         email: getStaticTemplate(recipientType, purpose, context),
+        email: emailTemplate,
         warning: 'Generated with static template (No AI provider configured)'
       });
     }
@@ -74,7 +92,23 @@ Instructions:
                 provider: 'foundry-agent',
                 model: agentId
               }
+          const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
+
+          emailTemplate = {
+            subject,
+            body,
+            metadata: {
+              generatedAt: new Date().toISOString(),
+              recipientType,
+              purpose,
+              provider: 'foundry-agent',
+              model: agentId
             }
+          };
+
+          return NextResponse.json({
+            success: true,
+            email: emailTemplate
           });
         }
       } catch (agentError) {
@@ -117,7 +151,23 @@ Instructions:
               provider: 'azure-openai',
               model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
             }
+        const { subject, body } = parseResponse(text, emailTemplate.subject);
+
+        emailTemplate = {
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            provider: 'azure-openai',
+            model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
           }
+        };
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
         });
 
       } catch (aiError) {
@@ -163,7 +213,24 @@ Instructions:
               model: 'gpt-4',
               provider: 'openai'
             }
+        const generatedText = completion.choices[0]?.message?.content || '';
+        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
+
+        emailTemplate = {
+          subject,
+          body,
+          metadata: {
+            generatedAt: new Date().toISOString(),
+            recipientType,
+            purpose,
+            model: 'gpt-4',
+            provider: 'openai'
           }
+        };
+
+        return NextResponse.json({
+          success: true,
+          email: emailTemplate
         });
       } catch (openAIError) {
         console.error('OpenAI generation failed:', openAIError);
@@ -192,6 +259,8 @@ Instructions:
 
         const text = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(text, `GreenChainz - ${purpose}`);
+        const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
+        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
         return NextResponse.json({
           success: true,
@@ -241,6 +310,7 @@ function parseResponse(text: string, defaultSubject: string): { subject: string,
 
   if (subjectMatch) {
     subject = subjectMatch[1].trim();
+    // Remove the match from the body
     if (subjectMatch.index !== undefined) {
         const matchLength = subjectMatch[0].length;
         body = text.slice(subjectMatch.index + matchLength).trim();
@@ -283,8 +353,8 @@ founder@greenchainz.com
 434-359-2460`,
     metadata: {
       generatedAt: new Date().toISOString(),
-      recipientType,
-      purpose,
+      recipientType: recipientType || 'Unknown',
+      purpose: purpose || 'General',
       isStatic: true
     }
   };

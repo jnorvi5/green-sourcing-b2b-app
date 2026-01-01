@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, Playfair_Display } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+import IntercomProvider from "@/components/IntercomProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,11 +21,6 @@ const playfair = Playfair_Display({
 // Dynamically import providers with error boundaries
 // const PostHogProvider = dynamic(
 //   () => import("@/components/PostHogProvider").catch(() => ({ default: ({ children }: any) => children })),
-//   { ssr: false }
-// );
-
-// const IntercomProvider = dynamic(
-//   () => import("@/components/IntercomProvider").catch(() => ({ default: ({ children }: any) => children })),
 //   { ssr: false }
 // );
 
@@ -110,9 +107,9 @@ export default function RootLayout({
         {/* <GoogleAnalytics /> */}
         {/* <PostHogProvider> */}
         <AuthProvider>
-          {/* <IntercomProvider> */}
-          {children}
-          {/* </IntercomProvider> */}
+          <IntercomProvider>
+            {children}
+          </IntercomProvider>
         </AuthProvider>
         {/* </PostHogProvider> */}
         {/* <AgentChat /> */}
