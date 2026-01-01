@@ -6,15 +6,8 @@ import { azureOpenAI, isAIEnabled } from '@/lib/azure-openai';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  let recipientType = '';
-  let purpose = '';
-  let context = '';
-
   try {
-    const body = await request.json();
-    recipientType = body.recipientType;
-    purpose = body.purpose;
-    context = body.context;
+    const { recipientType, purpose, context } = await request.json();
 
     const hasOpenAI = !!process.env['OPENAI_API_KEY'];
     const hasAnthropic = !!process.env['ANTHROPIC_API_KEY'];
@@ -43,6 +36,7 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    // Initialize with mock data as fallback
     let emailTemplate: EmailTemplate = {
       subject: `GreenChainz - ${purpose}`,
       body: `Hi [Name],
@@ -68,6 +62,22 @@ founder@greenchainz.com`,
       }
     };
 
+    // Construct the prompt based on user request + formatting instructions
+    const basePrompt = `Write a professional B2B email for GreenChainz:
+Recipient: ${recipientType}
+Purpose: ${purpose}
+Context: ${context}`;
+
+    const formattingInstructions = `
+Instructions:
+- Start your response exactly with "Subject: <Your Subject Here>"
+- Then provide the email body.
+- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
+- Keep it concise and professional.
+`;
+
+    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
+
     // Try Foundry Agent (OUTREACH-SCALER) if configured
     const agentId = process.env['AGENT_OUTREACH_SCALER_ID'];
     if (agentId) {
@@ -75,32 +85,10 @@ founder@greenchainz.com`,
         console.log("Delegating email generation to Foundry Agent:", agentId);
         const { invokeFoundryAgent } = await import('@/lib/azure-foundry');
 
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Format:
-Subject: [subject line]
-
-[email body]`;
-
-        const agentRes = await invokeFoundryAgent(agentId, prompt);
+        const agentRes = await invokeFoundryAgent(agentId, fullPrompt);
 
         if (agentRes.success && agentRes.text) {
-          const text = agentRes.text;
-          // Parse subject/body same as Azure OpenAI logic
-          const lines = text.split('\n').filter((l: string) => l.trim());
-          const subjectLine = lines.find((l: string) => l.toLowerCase().startsWith('subject:'));
-
-          let subject = emailTemplate.subject;
-          let body = text;
-
-          if (subjectLine) {
-            subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-            const bodyStart = lines.findIndex((l: string) => l.toLowerCase().startsWith('subject:')) + 1;
-            body = lines.slice(bodyStart).join('\n').trim();
-          }
+          const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
 
           emailTemplate = {
             subject,
@@ -110,7 +98,7 @@ Subject: [subject line]
               recipientType,
               purpose,
               provider: 'foundry-agent',
-              model: agentId // Tracking the Agent ID
+              model: agentId
             }
           };
           return NextResponse.json({ success: true, email: emailTemplate });
@@ -124,23 +112,6 @@ Subject: [subject line]
     // Try Azure OpenAI first if enabled
     if (isAIEnabled && azureOpenAI) {
       try {
-        const azurePrompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Template:
-- Subject line
-- Greeting
-- Value proposition
-- Call to action
-- Sign: Jerit Norville, Founder - founder@greenchainz.com
-
-Format:
-Subject: [subject line]
-
-[email body]`;
-
         const response = await azureOpenAI.chat.completions.create({
           model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o",
           messages: [
@@ -150,7 +121,7 @@ Subject: [subject line]
             },
             {
               role: "user",
-              content: azurePrompt
+              content: fullPrompt
             }
           ],
           temperature: 0.7,
@@ -158,23 +129,7 @@ Subject: [subject line]
         });
 
         const text = response.choices[0].message.content || "";
-
-        // Simple parsing logic
-        const lines = text.split('\n').filter(l => l.trim());
-        const subjectLine = lines.find(l => l.toLowerCase().startsWith('subject:'));
-
-        let subject = emailTemplate.subject;
-        let body = text;
-
-        if (subjectLine) {
-          subject = subjectLine.replace(/^subject:\s*/i, '').trim();
-          // Assuming body follows subject
-          const bodyStart = lines.findIndex(l => l.toLowerCase().startsWith('subject:')) + 1;
-          body = lines.slice(bodyStart).join('\n').trim();
-        } else {
-          // Fallback if formatting is off, treat whole text as body
-          body = text.trim();
-        }
+        const { subject, body } = parseResponse(text, emailTemplate.subject);
 
         emailTemplate = {
           subject,
@@ -196,24 +151,12 @@ Subject: [subject line]
       }
     }
 
-    // Fallback to standard OpenAI if Azure failed or not enabled, and API key exists
+    // Fallback to standard OpenAI
     if (hasOpenAI) {
       try {
         const openai = new OpenAI({
           apiKey: process.env['OPENAI_API_KEY'],
         });
-
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.
-`;
 
         const completion = await openai.chat.completions.create({
           model: 'gpt-4',
@@ -224,26 +167,14 @@ Instructions:
             },
             {
               role: 'user',
-              content: prompt
+              content: fullPrompt
             }
           ],
           temperature: 0.7,
         });
 
         const generatedText = completion.choices[0]?.message?.content || '';
-
-        // Parse the generated text to extract subject and body
-        let subject = `GreenChainz - ${purpose}`;
-        let body = generatedText;
-
-        // Robustly extract the subject line
-        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
-
-        if (subjectMatch) {
-          subject = subjectMatch[1].trim();
-          // Remove the subject line (and any preceding label) from the body
-          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-        }
+        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
         emailTemplate = {
           subject,
@@ -264,23 +195,12 @@ Instructions:
       }
     }
 
-    // Try Anthropic if enabled and OpenAI failed or wasn't available
+    // Try Anthropic
     if (hasAnthropic) {
       try {
         const anthropic = new Anthropic({
           apiKey: process.env['ANTHROPIC_API_KEY'],
         });
-
-        const prompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}
-
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.`;
 
         const message = await anthropic.messages.create({
           model: 'claude-3-5-sonnet-20241022',
@@ -289,25 +209,13 @@ Instructions:
           messages: [
             {
               role: 'user',
-              content: prompt
+              content: fullPrompt
             }
           ]
         });
 
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
-
-        // Parse the generated text to extract subject and body
-        let subject = `GreenChainz - ${purpose}`;
-        let body = generatedText;
-
-        // Robustly extract the subject line
-        const subjectMatch = generatedText.match(/^Subject:\s*(.*)/i) || generatedText.match(/Subject:\s*(.*)/i);
-
-        if (subjectMatch) {
-          subject = subjectMatch[1].trim();
-          // Remove the subject line (and any preceding label) from the body
-          body = generatedText.replace(/^Subject:.*(\r\n|\n|\r)/i, '').trim();
-        }
+        const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
         emailTemplate = {
           subject,
@@ -338,13 +246,51 @@ Instructions:
 
   } catch (error) {
     console.error('Email writer error:', error);
-    // If extraction of variables failed, use defaults
     return NextResponse.json({
       success: true,
       email: getStaticTemplate('Unknown', 'Contact', 'Context unavailable due to error'),
       warning: 'Generated with static template (API error)'
     });
   }
+}
+
+// Helper function to parse subject and body
+function parseResponse(text: string, defaultSubject: string): { subject: string, body: string } {
+  let subject = defaultSubject;
+  let body = text;
+
+  // Try regex first as it preserves formatting better
+  const subjectMatch = text.match(/^Subject:\s*(.*)/i) || text.match(/Subject:\s*(.*)/i);
+
+  if (subjectMatch) {
+    subject = subjectMatch[1].trim();
+    // Remove the match from the body
+    // If it was anchored to start, it removes it from start.
+    // If unanchored, we need to be careful not to remove "Subject:" from the middle of a sentence if that ever happens,
+    // but here we assume the LLM outputs it as a header.
+    // Using the matched string length and index to slice is safer.
+    if (subjectMatch.index !== undefined) {
+        const matchLength = subjectMatch[0].length;
+        // Take everything after the match
+        body = text.slice(subjectMatch.index + matchLength).trim();
+    } else {
+        // Fallback replacement if index is somehow missing
+        body = text.replace(subjectMatch[0], '').trim();
+    }
+  } else {
+    // Fallback: look for line starting with Subject:
+    const lines = text.split('\n');
+    const subjectLineIndex = lines.findIndex(l => l.trim().toLowerCase().startsWith('subject:'));
+
+    if (subjectLineIndex !== -1) {
+        const subjectLine = lines[subjectLineIndex];
+        subject = subjectLine.replace(/^subject:\s*/i, '').trim();
+        // Take everything after the subject line
+        body = lines.slice(subjectLineIndex + 1).join('\n').trim();
+    }
+  }
+
+  return { subject, body };
 }
 
 function getStaticTemplate(recipientType: string | undefined, purpose: string | undefined, context: string | undefined) {
