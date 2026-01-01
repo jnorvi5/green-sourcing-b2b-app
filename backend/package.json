@@ -10,6 +10,9 @@
     "seed": "node scripts/seed.js"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.0",
+    "@azure/keyvault-secrets": "^4.10.0",
+    "applicationinsights": "^3.12.1",
     "bcrypt": "^6.0.0",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
@@ -17,7 +20,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.22.1",
     "express-session": "^1.18.1",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.2",
+    "lusca": "^1.7.0",
     "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
@@ -26,7 +31,6 @@
     "passport-microsoft": "^1.0.0",
     "pg": "^8.11.3",
     "swagger-ui-express": "^5.0.1",
-    "yaml": "^2.5.1",
-    "lusca": "^1.7.0"
+    "yaml": "^2.5.1"
   }
 }

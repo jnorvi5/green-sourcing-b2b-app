@@ -1,4 +1,11 @@
 require('dotenv').config();
+const { initAppInsights } = require('./config/azure');
+const { initRedis } = require('./config/redis');
+
+// Initialize Azure services
+initAppInsights();
+initRedis();
+
 const express = require('express');
 const cors = require('cors');
 const { pool } = require('./db');
@@ -595,9 +602,20 @@ app.get('/api/v1/suppliers/:id/score', async (req, res) => {
   }
 });
 
-// Platform metrics endpoint (optimized with parallel queries)
+// Platform metrics endpoint (optimized with parallel queries + Redis cache)
 app.get('/api/v1/metrics', authenticateToken, authorizeRoles('Admin'), async (req, res) => {
   try {
+    const { getClient } = require('./config/redis');
+    const redis = getClient();
+    const cacheKey = 'admin:metrics';
+
+    if (redis) {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return res.json(JSON.parse(cached));
+      }
+    }
+
     // Optimized: Run all count queries in parallel instead of sequentially
     const [suppliersRes, productsRes, rfqsRes, responsesRes, fscValidRes, fscExpiredRes] = await Promise.all([
       pool.query('SELECT COUNT(*) AS suppliers FROM Suppliers'),
@@ -624,7 +642,7 @@ app.get('/api/v1/metrics', authenticateToken, authorizeRoles('Admin'), async (re
       avgScore = scoreList.length ? (scoreList.reduce((sum, s) => sum + s.score, 0) / scoreList.length) : 0;
     }
 
-    res.json({
+    const responseData = {
       totals: {
         suppliers: Number(suppliersRes.rows[0].suppliers),
         products: Number(productsRes.rows[0].products),
@@ -638,7 +656,13 @@ app.get('/api/v1/metrics', authenticateToken, authorizeRoles('Admin'), async (re
         scoreCount: scoreList.length
       },
       timestamp: new Date().toISOString()
-    });
+    };
+
+    if (redis) {
+      await redis.set(cacheKey, JSON.stringify(responseData), 'EX', 300); // Cache for 5 minutes
+    }
+
+    res.json(responseData);
   } catch (e) {
     console.error('❌ Metrics error:', e);
     res.status(500).json({ error: 'Failed to retrieve metrics' });

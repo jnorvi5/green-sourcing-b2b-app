@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: greenchainzregistry.azurecr.io
-  IMAGE_NAME: greenchainz-web
-  CONTAINER_APP: greenchainz-app
-  RESOURCE_GROUP: greenchainz-rg
+  REGISTRY: acrgreenchainzprod916.azurecr.io
+  IMAGE_NAME: greenchainz-backend
+  CONTAINER_APP: greenchainz-container
+  RESOURCE_GROUP: rg-greenchainz-prod-container
 
 jobs:
   build-deploy:
@@ -28,6 +28,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: backend/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
       
