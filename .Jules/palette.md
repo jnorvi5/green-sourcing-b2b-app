@@ -5,3 +5,7 @@
 ## 2024-05-23 - Click Outside Interaction Bug
 **Learning:** A simple "click outside" handler on the document will fire when the trigger button is clicked, immediately closing the menu before the button's onClick toggles it back open.
 **Action:** Always exclude the trigger element from the "click outside" check (e.g., using a ref for the trigger and checking `!triggerRef.current.contains(event.target)`).
+
+## 2024-05-24 - Interactive States for Static Sites
+**Learning:** Static landing pages (`.html`) often neglect `:hover` and `:focus-visible` states, making them feel unresponsive and hindering keyboard navigation.
+**Action:** Always add explicit `:focus` styles (e.g., `box-shadow` or `border`) and meaningful `:hover` transitions (e.g., `transform`, `filter`) to all interactive elements, even in simple CSS.
