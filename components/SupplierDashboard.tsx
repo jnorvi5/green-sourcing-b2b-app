@@ -40,6 +40,7 @@ import { NotificationDropdown } from "@/components/supplier/NotificationDropdown
 import { AnalyticsSection } from "@/components/supplier/AnalyticsSection";
 import { QuickAddProductModal } from "@/components/supplier/QuickAddProductModal";
 import { MobileBottomNav } from "@/components/supplier/MobileBottomNav";
+import { AiInsightsCard } from "@/components/supplier/AiInsightsCard";
 import { useSupplierNotifications } from "@/hooks/useSupplierNotifications";
 import {
   calculateMonthlyWinRate,
@@ -522,6 +523,11 @@ export function SupplierDashboard() {
             )
           );
         })()}
+
+        {/* AI Insights - NEW */}
+        <div className="mb-6">
+          <AiInsightsCard stats={stats} />
+        </div>
 
         {/* Stats Cards - Enhanced with 8 cards total */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

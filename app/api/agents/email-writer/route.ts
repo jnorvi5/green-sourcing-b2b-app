@@ -22,13 +22,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Prepare prompt
-    // The prompt is based on the user request, with appended formatting instructions
-    // to ensure the response can be parsed by the frontend.
-    const basePrompt = `Write a professional B2B email for GreenChainz:
-Recipient: ${recipientType}
-Purpose: ${purpose}
-Context: ${context}`;
     // Default mock response structure
     interface EmailTemplate {
       subject: string;
@@ -52,19 +45,15 @@ I'm Jerit Norville, founder of GreenChainz - the B2B marketplace for verified su
 
 ${context}
 
-We're targeting Q1 2026 launch with 50 suppliers and 200 architects.
+We're targeting Q1 2026 launch with 50 suppliers and 200 architects.`,
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        recipientType,
+        purpose: purpose,
+        isStatic: true
+      }
+    };
 
-    const formattingInstructions = `
-Instructions:
-- Start your response exactly with "Subject: <Your Subject Here>"
-- Then provide the email body.
-- Sign off as: Jerit Norville, Founder - founder@greenchainz.com
-- Keep it concise and professional.
-`;
-
-    const fullPrompt = `${basePrompt}\n${formattingInstructions}`;
-
-    // Construct the prompt based on user request + formatting instructions
     const basePrompt = `Write a professional B2B email for GreenChainz:
 Recipient: ${recipientType}
 Purpose: ${purpose}
@@ -90,21 +79,7 @@ Instructions:
         const agentRes = await invokeFoundryAgent(agentId, fullPrompt);
 
         if (agentRes.success && agentRes.text) {
-          const { subject, body } = parseResponse(agentRes.text, purpose);
-          return NextResponse.json({
-            success: true,
-            email: {
-              subject,
-              body,
-              metadata: {
-                generatedAt: new Date().toISOString(),
-                recipientType,
-                purpose,
-                provider: 'foundry-agent',
-                model: agentId
-              }
           const { subject, body } = parseResponse(agentRes.text, emailTemplate.subject);
-
           emailTemplate = {
             subject,
             body,
@@ -115,7 +90,8 @@ Instructions:
               provider: 'foundry-agent',
               model: agentId
             }
-          });
+          };
+          return NextResponse.json({ success: true, email: emailTemplate });
         }
       } catch (agentError) {
         console.error('Foundry Agent invocation failed:', agentError);
@@ -143,20 +119,6 @@ Instructions:
         });
 
         const text = response.choices[0].message.content || "";
-        const { subject, body } = parseResponse(text, purpose);
-
-        return NextResponse.json({
-          success: true,
-          email: {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              provider: 'azure-openai',
-              model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
-            }
         const { subject, body } = parseResponse(text, emailTemplate.subject);
 
         emailTemplate = {
@@ -169,7 +131,8 @@ Instructions:
             provider: 'azure-openai',
             model: process.env['AZURE_OPENAI_DEPLOYMENT'] || "gpt-4o"
           }
-        });
+        };
+        return NextResponse.json({ success: true, email: emailTemplate });
 
       } catch (aiError) {
         console.error('Azure OpenAI generation failed:', aiError);
@@ -199,21 +162,6 @@ Instructions:
           temperature: 0.7,
         });
 
-        const text = completion.choices[0]?.message?.content || '';
-        const { subject, body } = parseResponse(text, purpose);
-
-        return NextResponse.json({
-          success: true,
-          email: {
-            subject,
-            body,
-            metadata: {
-              generatedAt: new Date().toISOString(),
-              recipientType,
-              purpose,
-              model: 'gpt-4',
-              provider: 'openai'
-            }
         const generatedText = completion.choices[0]?.message?.content || '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -227,7 +175,8 @@ Instructions:
             model: 'gpt-4',
             provider: 'openai'
           }
-        });
+        };
+        return NextResponse.json({ success: true, email: emailTemplate });
       } catch (openAIError) {
         console.error('OpenAI generation failed:', openAIError);
         // Fall through to Anthropic
@@ -253,8 +202,6 @@ Instructions:
           ]
         });
 
-        const text = message.content[0].type === 'text' ? message.content[0].text : '';
-        const { subject, body } = parseResponse(text, purpose);
         const generatedText = message.content[0].type === 'text' ? message.content[0].text : '';
         const { subject, body } = parseResponse(generatedText, `GreenChainz - ${purpose}`);
 
@@ -296,30 +243,6 @@ Instructions:
   }
 }
 
-// Helper to parse subject and body from AI response
-function parseResponse(text: string, defaultPurpose: string) {
-  // We do NOT filter empty lines here to preserve paragraph breaks
-  const lines = text.split('\n');
-
-  // Find line starting with Subject:
-  const subjectLineIndex = lines.findIndex(l => l.match(/^Subject:/i));
-
-  let subject = `GreenChainz - ${defaultPurpose}`;
-  let body = text;
-
-  if (subjectLineIndex !== -1) {
-    const subjectLine = lines[subjectLineIndex];
-    subject = subjectLine.replace(/^Subject:\s*/i, '').trim();
-
-    // Body is everything after the subject line
-    // We explicitly skip the subject line
-    const bodyLines = lines.slice(subjectLineIndex + 1);
-
-    // Trim leading/trailing empty lines from body, but preserve internal spacing
-    // join back first
-    body = bodyLines.join('\n').trim();
-  } else {
-    body = text.trim();
 // Helper function to parse subject and body
 function parseResponse(text: string, defaultSubject: string): { subject: string, body: string } {
   let subject = defaultSubject;
@@ -330,17 +253,10 @@ function parseResponse(text: string, defaultSubject: string): { subject: string,
 
   if (subjectMatch) {
     subject = subjectMatch[1].trim();
-    // Remove the match from the body
-    // If it was anchored to start, it removes it from start.
-    // If unanchored, we need to be careful not to remove "Subject:" from the middle of a sentence if that ever happens,
-    // but here we assume the LLM outputs it as a header.
-    // Using the matched string length and index to slice is safer.
     if (subjectMatch.index !== undefined) {
         const matchLength = subjectMatch[0].length;
-        // Take everything after the match
         body = text.slice(subjectMatch.index + matchLength).trim();
     } else {
-        // Fallback replacement if index is somehow missing
         body = text.replace(subjectMatch[0], '').trim();
     }
   } else {
