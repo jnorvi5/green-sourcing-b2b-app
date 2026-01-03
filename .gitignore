@@ -22,3 +22,15 @@ node_modules/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# IDEs
+.vscode/
+.idea/
+
+# Testing
+coverage/
+
+# Certificates and Keys
+*.pem
+*.key
+*.crt
