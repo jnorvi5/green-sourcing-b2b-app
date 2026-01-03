@@ -23,13 +23,18 @@ redisClient.on('connect', () => console.log('Redis Client Connected'));
 // Connect to Redis (async)
 redisClient.connect().catch(console.error);
 
+// Security Check: Ensure secrets are provided in production
+if (isProduction && !process.env.COOKIE_SECRET) {
+    throw new Error('FATAL: COOKIE_SECRET must be defined in production environment.');
+}
+
 const sessionConfig = {
   store: new RedisStore({
     client: redisClient,
     prefix: 'gc_sess:',
   }),
   name: COOKIE_NAMES.SESSION,
-  secret: process.env.COOKIE_SECRET || 'default-secret-change-me',
+  secret: process.env.COOKIE_SECRET || 'dev-secret-change-me',
   resave: false,
   saveUninitialized: false,
   cookie: {
