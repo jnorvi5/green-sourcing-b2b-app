@@ -30,7 +30,7 @@ export default function Logo({ height = 40, showText = true }: LogoProps) {
         />
       )}
       {showText && (
-        <span className="text-2xl font-bold text-white tracking-tight">
+        <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
           GreenChainz
         </span>
       )}
