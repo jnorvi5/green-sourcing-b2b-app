@@ -39,7 +39,7 @@ import { useEffect } from "react";
 
 function App() {
   useEffect(() => {
-    const appId = import.meta.env.VITE_INTERCOM_APP_ID || "w0p2831g";
+    const appId = import.meta.env.VITE_INTERCOM_APP_ID;
 
     if (!appId) {
       console.warn(
@@ -50,7 +50,7 @@ function App() {
 
     try {
       const result = Intercom({
-        app_id: appId, // Fallback or env
+        app_id: appId,
       });
 
       if (result && typeof (result as any).catch === "function") {
