@@ -20,6 +20,7 @@ const linkedinService = require('../services/payments/linkedin');
 const { getEnvOrFallback } = require('../config/validateEnv');
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+// getEnvOrFallback handles production security by throwing if JWT_SECRET is missing
 const JWT_SECRET = getEnvOrFallback('JWT_SECRET', 'dev-secret-key', { minLength: 32 });
 
 // ============================================

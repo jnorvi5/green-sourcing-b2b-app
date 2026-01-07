@@ -24,3 +24,8 @@ node_modules/
 *.tsbuildinfo
 tmp/
 .azure
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
