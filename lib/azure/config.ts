@@ -11,12 +11,15 @@ import sql from "mssql";
 // ============================================================================
 // AZURE BLOB STORAGE (File uploads, PDFs, EPDs)
 // ============================================================================
+// Lazy initialization or dummy for build time
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-if (!connectionString) {
-    throw new Error("Missing AZURE_STORAGE_CONNECTION_STRING");
-}
 
-export const blobService = BlobServiceClient.fromConnectionString(connectionString);
+// Export a proxy or handle initialization in functions
+// For now, if missing, we use a development placeholder to prevent build failures
+// but functions will fail at runtime if not set properly.
+const safeConnectionString = connectionString || "UseDevelopmentStorage=true";
+
+export const blobService = BlobServiceClient.fromConnectionString(safeConnectionString);
 
 /**
  * Get or create a blob container

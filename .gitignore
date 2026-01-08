@@ -3,24 +3,38 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-lock.yaml
 
 # Env
 .env
+.env.local
+.env*.local
 
 # OS
 .DS_Store
 Thumbs.db
+*.swp
 
 # Logs
 logs
 *.log
 logs/**
-.next/
-node_modules/
-.env.local
-.env*.local
 
-# TypeScript incremental build info
+# Next.js
+.next/
+dist/
+build/
+
+# TypeScript
 *.tsbuildinfo
+
+# Editors
+.vscode/
+.idea/
+
+# Azure
+.azure/
+
+# Temp
 tmp/
-.azure
+coverage/
