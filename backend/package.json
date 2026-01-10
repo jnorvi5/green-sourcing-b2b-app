@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "private": true,
   "type": "commonjs",
+  "engines": {
+    "node": ">=18.18.0",
+    "npm": ">=8.0.0"
+  },
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
