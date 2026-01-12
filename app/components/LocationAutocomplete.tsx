@@ -32,7 +32,9 @@ export default function LocationAutocomplete({
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const listboxId = `${id}-listbox`;
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function LocationAutocomplete({
         !wrapperRef.current.contains(event.target as Node)
       ) {
         setShowSuggestions(false);
+        setActiveIndex(-1);
       }
     }
 
@@ -71,6 +74,7 @@ export default function LocationAutocomplete({
       if (data.success) {
         setSuggestions(data.data.suggestions);
         setShowSuggestions(true);
+        setActiveIndex(-1); // Reset active index on new results
       }
     } catch (error) {
       console.error("Location autocomplete error:", error);
@@ -96,6 +100,7 @@ export default function LocationAutocomplete({
     // Set the display value
     onChange(suggestion.description);
     setShowSuggestions(false);
+    setActiveIndex(-1);
 
     // Geocode to get exact coordinates
     try {
@@ -114,6 +119,34 @@ export default function LocationAutocomplete({
       }
     } catch (error) {
       console.error("Geocoding error:", error);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setActiveIndex((prev) =>
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (activeIndex >= 0 && activeIndex < suggestions.length) {
+          handleSelect(suggestions[activeIndex]);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        setShowSuggestions(false);
+        setActiveIndex(-1);
+        break;
     }
   };
 
@@ -142,9 +175,18 @@ export default function LocationAutocomplete({
           onFocus={() =>
             value && suggestions.length > 0 && setShowSuggestions(true)
           }
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
+          aria-expanded={showSuggestions}
+          aria-haspopup="listbox"
+          aria-controls={listboxId}
+          aria-activedescendant={
+            activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined
+          }
+          role="combobox"
+          aria-autocomplete="list"
           className={`w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
             error ? "border-red-300" : "border-gray-300"
           }`}
@@ -163,14 +205,24 @@ export default function LocationAutocomplete({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {suggestions.map((suggestion) => (
-            <button
+        <ul
+          id={listboxId}
+          role="listbox"
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
+          {suggestions.map((suggestion, index) => (
+            <li
               key={suggestion.placeId}
+              id={`${id}-option-${index}`}
+              role="option"
+              aria-selected={index === activeIndex}
               onClick={() => handleSelect(suggestion)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-start gap-3 border-b border-gray-100 last:border-b-0 transition"
+              onMouseEnter={() => setActiveIndex(index)}
+              className={`w-full px-4 py-3 text-left cursor-pointer flex items-start gap-3 border-b border-gray-100 last:border-b-0 transition ${
+                index === activeIndex ? "bg-gray-100" : "hover:bg-gray-50"
+              }`}
             >
-              <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">
                   {suggestion.description}
@@ -183,9 +235,9 @@ export default function LocationAutocomplete({
                   </p>
                 )}
               </div>
-            </button>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
