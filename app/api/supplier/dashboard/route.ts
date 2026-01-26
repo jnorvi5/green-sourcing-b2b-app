@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { verifyToken } from '@/lib/auth/jwt';
+import { getAuthUser, unauthorizedResponse, forbiddenResponse } from '@/lib/auth/api';
 
 // Types for the dashboard response
 interface DashboardMetrics {
@@ -16,12 +16,8 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url);
         const supplierId = searchParams.get('supplier_id');
 
-        const authHeader = req.headers.get('authorization');
-        const token = authHeader?.split(' ')[1];
-        if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const user = verifyToken(token);
-        if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        const user = await getAuthUser();
+        if (!user) return unauthorizedResponse();
 
         if (!supplierId) {
              return NextResponse.json({ error: 'Supplier ID is required' }, { status: 400 });
@@ -34,7 +30,7 @@ export async function GET(req: NextRequest) {
                 [supplierId, user.userId]
             );
             if (ownershipCheck.rows.length === 0) {
-                 return NextResponse.json({ error: 'Forbidden: You do not own this supplier profile' }, { status: 403 });
+                 return forbiddenResponse('You do not own this supplier profile');
             }
         }
 

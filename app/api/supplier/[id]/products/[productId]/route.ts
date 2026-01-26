@@ -1,17 +1,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { verifyToken } from '@/lib/auth/jwt';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/api';
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string; productId: string }> }) {
     const { id, productId } = await params;
     try {
-        const authHeader = req.headers.get('authorization');
-        const token = authHeader?.split(' ')[1];
-        if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const user = verifyToken(token);
-        if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        const user = await getAuthUser();
+        if (!user) return unauthorizedResponse();
 
         // Ownership Check
         if (user.role !== 'admin') {
@@ -55,12 +51,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string; productId: string }> }) {
     const { id, productId } = await params;
     try {
-        const authHeader = req.headers.get('authorization');
-        const token = authHeader?.split(' ')[1];
-        if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const user = verifyToken(token);
-        if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        const user = await getAuthUser();
+        if (!user) return unauthorizedResponse();
 
         // Ownership Check
         if (user.role !== 'admin') {
@@ -88,3 +80,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+

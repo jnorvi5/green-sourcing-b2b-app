@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractEPDData, extractCertificationData } from '@/lib/azure/document-intelligence';
-import { authenticateRequest, unauthorizedResponse } from '@/lib/auth/middleware';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/api';
 import { validateDocumentUrl } from '@/lib/utils/url-validation';
 
 export async function POST(req: NextRequest) {
   // Authentication check
-  const user = authenticateRequest(req);
+  const user = await getAuthUser();
   if (!user) {
     return unauthorizedResponse('Authentication required to extract documents');
   }
@@ -81,3 +81,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { invokeFoundryWorkflow } from '@/lib/foundry/client';
-import { authenticateRequest, unauthorizedResponse } from '@/lib/auth/middleware';
+import { getAuthUser, unauthorizedResponse } from '@/lib/auth/api';
 import { validateWorkflowName } from '@/lib/utils/url-validation';
 
 export async function POST(req: NextRequest) {
   // Authentication check
-  const user = authenticateRequest(req);
+  const user = await getAuthUser();
   if (!user) {
     return unauthorizedResponse('Authentication required to trigger workflows');
   }
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   // Authentication check
-  const user = authenticateRequest(req);
+  const user = await getAuthUser();
   if (!user) {
     return unauthorizedResponse('Authentication required to check workflow status');
   }
@@ -127,3 +127,4 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
