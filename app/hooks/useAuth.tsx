@@ -1,78 +1,49 @@
 "use client";
 
-import { useState, useEffect, useContext, createContext } from 'react';
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
   email: string;
   role: string;
-  full_name: string;
+  name: string;
 }
 
-interface AuthContextType {
+interface UseAuthReturn {
   user: User | null;
   loading: boolean;
-  login: (data: any) => Promise<void>;
+  login: (provider: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  login: async () => {},
-  logout: async () => {},
-});
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+/**
+ * Custom auth hook using NextAuth
+ * Provides a consistent interface for authentication across the app
+ */
+export const useAuth = (): UseAuthReturn => {
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Initial check (Optional: You can disable this if /api/auth/me isn't ready)
-  useEffect(() => {
-    // For now, we assume not logged in on refresh to verify the explicit login flow first
-    setLoading(false);
-  }, []);
+  const user = session?.user ? {
+    id: session.user.id as string,
+    email: session.user.email || "",
+    role: (session.user as any).role || "user",
+    name: session.user.name || "",
+  } : null;
 
-  const login = async (formData: any) => {
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      // Success
-      setUser(data.user);
-      
-      // Force a hard refresh/redirect to ensure middleware sees the new cookie
-      if (data.user.role === 'supplier') {
-        window.location.href = '/supplier/dashboard';
-      } else {
-        window.location.href = '/architect/dashboard';
-      }
-    } catch (error) {
-      console.error("Login Hook Error:", error);
-      throw error;
-    }
+  const login = async (provider: string) => {
+    await signIn(provider);
   };
 
   const logout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
-    router.push('/login');
+    await signOut({ callbackUrl: '/login' });
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return {
+    user,
+    loading: status === "loading",
+    login,
+    logout,
+  };
 };
-
-export const useAuth = () => useContext(AuthContext);

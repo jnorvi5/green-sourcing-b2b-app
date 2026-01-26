@@ -1,30 +1,29 @@
 // app/(protected)/ProtectedShell.tsx
 "use client";
 
-import { useMsal } from "@azure/msal-react";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-const loginRequest = { scopes: ["User.Read"] };
+import { useEffect } from "react";
 
 export function ProtectedShell({ children }: { children: React.ReactNode }) {
-  const { instance, accounts } = useMsal();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    const run = async () => {
-      if (accounts.length === 0) {
-        try {
-          await instance.ssoSilent(loginRequest);
-        } catch {
-          await instance.loginRedirect(loginRequest);
-        }
-      }
-    };
-    run();
-  }, [accounts, instance]);
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
-  if (accounts.length === 0) return null; // or loading spinner
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  if (!session) return null;
 
   return <>{children}</>;
 }

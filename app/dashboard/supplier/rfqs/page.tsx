@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Search, MessageSquare, Filter, DollarSign } from 'lucide-react';
-import { useAuth } from '@/lib/auth';
+import { useAuth } from '@/app/hooks/useAuth';
 
 const BACKEND_URL =
    process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
