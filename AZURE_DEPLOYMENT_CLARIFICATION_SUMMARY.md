@@ -240,8 +240,15 @@ git push origin main
 
 ### Verify Deployment
 ```bash
-# Frontend
-az containerapp show --name greenchainz-frontend --resource-group rg-greenchainz-prod-container
+# NOTE: Verify resource group names with your Azure environment before running these commands.
+# The commands below use 'rg-greenchainz-prod-container' as the production resource group.
+# If your resources are in different resource groups, adjust accordingly.
+
+# List all Container Apps to verify resource groups
+az containerapp list --output table
+
+# Frontend (verify resource group first)
+az containerapp show --name greenchainz-frontend --resource-group <YOUR_RESOURCE_GROUP>
 
 # Backend
 az containerapp show --name greenchainz-container --resource-group rg-greenchainz-prod-container
